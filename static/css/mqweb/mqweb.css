@@ -1,0 +1,26 @@
+body { font-family:Arial, Helvetica, Sans-Serif; font-size:1.0em;}
+
+.details h2
+{
+  float:left;
+  width:14.125em;
+  text-align:right;
+  font-size:100%;
+  margin:0 1.5em .5em 0;
+  padding-top:.5em;
+  clear:both;
+}
+
+.detail
+{
+  border-top:1px dotted #ccc;
+  padding:.5em 0 .5em 15.625em;
+}
+
+.detail td
+{
+  border-top:1px dotted #ccc;
+  border-right:1px dotted #ccc;
+  padding:.5em .5em .5em .5em;
+}
+

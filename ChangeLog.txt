@@ -1,0 +1,29 @@
+0.0.8
+  - Solve bug #4 Chars shift on messagecontroller.
+  - Show EBCDIC/ASCII in message hex view
+
+0.0.7
+  - Can connect in client mode
+  - Add support for channels
+  - IP's can be denied/allowed
+  - Use Poco 1.5
+  - JSON module was donated to POCO, so we use that one.
+  - Support for z/OS
+  - ASCII / EBCDIC view of messages
+
+0.0.6
+
+  - Use own JSON classes
+  - Make a first binary for Linux i686 available
+
+0.0.5
+
+  - Maintenance Release
+
+0.0.4
+
+  - Show message in hex using jQuery/Fancybox
+
+0.0.3
+
+  - Resolve 2219 (MQRC_CALL_IN_PROGRESS): Protect all MQI calls with a global mutex
