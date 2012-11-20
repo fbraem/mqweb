@@ -15,9 +15,9 @@ Building MQWeb
 6. Create mqweb.properties in the directory that contains the mqweb executable
    and change the following properties:
    
-    mq.web.static=<full path to folder where the mqweb static files are stored>
-    mq.web.templates=<full path to folder where the mqweb templates are stored>
-    mq.web.port=<port number>
+    mq.web.static=&lt;full path to folder where the mqweb static files are stored&gt;
+    mq.web.templates=&lt;full path to folder where the mqweb templates are stored&gt;
+    mq.web.port=&lt;port number&gt;
 
     When mq.web.port is omitted, 8081 will be used.
 
@@ -37,11 +37,11 @@ Running MQWeb
    
    b) Configure mqweb:
    Add mq.web.qmgr properties as follows:
-    mq.web.qmgr.<qmgrName>.connection=<host>(<port>)
-    mq.web.qmgr.<qmgrName>.channel=<channelName>
-   Where <qmgrName> is the name of the queuemanager, <host> the server where
-   the queuemanager is running. <port> is the port of the listener and
-   <channelName> is the name of the server connection channel.
+    mq.web.qmgr.&lt;qmgrName&gt;.connection=&lt;host&gt;(&lt;port&gt;)
+    mq.web.qmgr.&lt;qmgrName&gt;.channel=&lt;channelName&gt;
+   Where &lt;qmgrName&gt; is the name of the queuemanager, &lt;host&gt; the server where
+   the queuemanager is running. &lt;port&gt; is the port of the listener and
+   &lt;channelName&gt; is the name of the server connection channel.
    
 2. When no name is passed in the URL, mqweb will try to connect to the default
    queuemanager. In bindings mode this is done by connecting with a blank
