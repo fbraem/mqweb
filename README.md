@@ -14,13 +14,11 @@ Building MQWeb
 5. Build mqweb with the target you specified in step 4.
 6. Create mqweb.properties in the directory that contains the mqweb executable
    and change the following properties:
-
 ```
-    mq.web.static=<full path to folder where the mqweb static files are stored>;
-    mq.web.templates=<full path to folder where the mqweb templates are stored>;
-    mq.web.port=<port number>;
+    mq.web.static=<full path to folder where the mqweb static files are stored>
+    mq.web.templates=<full path to folder where the mqweb templates are stored>
+    mq.web.port=<port number>
 ```
-
     When mq.web.port is omitted, 8081 will be used.
 
 Running MQWeb
