@@ -21,7 +21,8 @@ Building MQWeb
     mq.web.port=<port number>
 ```
 
-    When mq.web.port is omitted, 8081 will be used.
+
+   When mq.web.port is omitted, 8081 will be used.
 
 Running MQWeb
 -------------
