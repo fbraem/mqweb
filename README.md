@@ -15,11 +15,11 @@ Building MQWeb
 6. Create mqweb.properties in the directory that contains the mqweb executable
    and change the following properties:
 
-
+```
     mq.web.static=<full path to folder where the mqweb static files are stored>;
     mq.web.templates=<full path to folder where the mqweb templates are stored>;
     mq.web.port=<port number>;
-
+```
 
     When mq.web.port is omitted, 8081 will be used.
 
@@ -39,10 +39,10 @@ Running MQWeb
    
    b) Configure mqweb:
    Add mq.web.qmgr properties as follows:
-
+```
     mq.web.qmgr.<qmgrName>.connection=<host>(<port>)
     mq.web.qmgr.<qmgrName>.channel=<channelName>
-   
+```
    Where &lt;qmgrName&gt; is the name of the queuemanager, &lt;host&gt; the server where
    the queuemanager is running. &lt;port&gt; is the port of the listener and
    &lt;channelName&gt; is the name of the server connection channel.
