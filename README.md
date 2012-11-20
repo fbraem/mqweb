@@ -20,6 +20,7 @@ Building MQWeb
     mq.web.templates=<full path to folder where the mqweb templates are stored>
     mq.web.port=<port number>
 ```
+
     When mq.web.port is omitted, 8081 will be used.
 
 Running MQWeb
