@@ -59,7 +59,7 @@ void ChannelListController::handle()
 
   std::string channelNameField = form.get("channelName", "*");
   filter->set("name", channelNameField.empty() ? "*" : channelNameField);
-  filter->set("type", form.get("channelType", "all"));
+  filter->set("type", form.get("channelType", "All"));
   filter->set("excludeSystem", form.get("channelExcludeSystem", "0").compare("1") == 0);
 
   ChannelMQMapper channelMapper(*_commandServer.get());
@@ -74,9 +74,11 @@ void ChannelListController::handle()
     {
       Poco::JSON::Object::Ptr jsonChannel = it->extract<Poco::JSON::Object::Ptr>();
 
-      std::string channelName = jsonChannel->getValue<std::string>("channelName");
+	  Poco::JSON::Object::Ptr jsonChannelName = jsonChannel->getObject("ChannelName");
+      poco_assert_dbg(! jsonChannelName.isNull());
+	  std::string channelName = jsonChannelName->getValue<std::string>("value");
 
-      Poco::JSON::Object::Ptr jsonType = jsonChannel->getObject("channelType");
+	  Poco::JSON::Object::Ptr jsonType = jsonChannel->getObject("ChannelType");
       poco_assert_dbg(! jsonType.isNull());
       std::string type = jsonType->get("value");
 
@@ -86,6 +88,7 @@ void ChannelListController::handle()
 
   filter = new Poco::JSON::Object();
   filter->set("name", channelNameField.empty() ? "*" : channelNameField);
+  filter->set("type", form.get("channelType", "All"));
   ChannelStatusMQMapper channelStatusMapper(*_commandServer.get());
   Poco::JSON::Array::Ptr statuses = channelStatusMapper.inquire(filter);
 
@@ -96,9 +99,11 @@ void ChannelListController::handle()
     {
       Poco::JSON::Object::Ptr jsonStatus = it->extract<Poco::JSON::Object::Ptr>();
 
-      std::string channelName = jsonStatus->getValue<std::string>("channelName");
+	  Poco::JSON::Object::Ptr jsonChannelName = jsonStatus->getObject("ChannelName");
+      poco_assert_dbg(! jsonChannelName.isNull());
+	  std::string channelName = jsonChannelName->getValue<std::string>("value");
 
-      Poco::JSON::Object::Ptr jsonType = jsonStatus->getObject("channelType");
+      Poco::JSON::Object::Ptr jsonType = jsonStatus->getObject("ChannelType");
       poco_assert_dbg(! jsonType.isNull());
       std::string type = jsonType->get("value");
 
@@ -106,8 +111,8 @@ void ChannelListController::handle()
       if ( jsonChannel.isNull() )
       {
         jsonChannel = new Poco::JSON::Object();
-        jsonChannel->set("channelName", channelName);
-        jsonChannel->set("channelType", jsonType);
+        jsonChannel->set("ChannelName", jsonChannelName);
+		jsonChannel->set("ChannelType", jsonType);
         jsonChannel->set("autodefined", true);
         jsonAllChannels->set(type + "/" + channelName, jsonChannel);
         jsonChannels->add(jsonChannel);

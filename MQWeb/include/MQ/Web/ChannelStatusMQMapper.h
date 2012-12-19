@@ -27,7 +27,7 @@ namespace MQ {
 namespace Web {
 
 class ChannelStatusMQMapper : public MQMapper
-  /// Maps channel object to Websphere MQ
+	/// Maps channel status to Websphere MQ
 {
 public:
 
@@ -47,6 +47,7 @@ public:
 
 
   Poco::JSON::Array::Ptr inquire(const Poco::JSON::Object::Ptr& filter);
+
 
 private:
 

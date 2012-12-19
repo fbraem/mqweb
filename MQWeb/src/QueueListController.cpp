@@ -20,13 +20,12 @@
  */
 #include <Poco/Net/HTMLForm.h>
 #include <Poco/DateTimeFormatter.h>
+#include <Poco/JSON/TemplateCache.h>
 
 #include <MQ/MQException.h>
 #include <MQ/CommandServer.h>
-
 #include <MQ/Web/QueueListController.h>
-
-#include <Poco/JSON/TemplateCache.h>
+#include <MQ/Web/QueueMQMapper.h>
 
 namespace MQ
 {
@@ -47,153 +46,65 @@ QueueListController::~QueueListController()
 
 void QueueListController::handle()
 {
-  if ( _request.getMethod().compare("POST") != 0 )
-  {
-    _response.setStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
-    return;
-  }
-  Poco::Net::HTMLForm form(_request, _request.stream());
-  PCF::Ptr inquireQ = _commandServer->createCommand(MQCMD_INQUIRE_Q);
+	if ( _request.getMethod().compare("POST") != 0 )
+	{
+		_response.setStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+		return;
+	}
 
-  std::string queueNameField = form.get("queueName", "*");
-  if ( queueNameField.empty() )
-  {
-    queueNameField = "*";
-  }
-  inquireQ->addParameter(MQCA_Q_NAME, queueNameField);
+	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
 
-  std::string queueDepthField = form.get("queueDepth", "");
+	Poco::Net::HTMLForm form(_request, _request.stream());
 
-  int queueDepth;
-  if ( Poco::NumberParser::tryParse(queueDepthField, queueDepth) )
-  {
-    inquireQ->addFilter(MQIA_CURRENT_Q_DEPTH, MQCFOP_NOT_LESS, queueDepth);
-  }
+	std::string queueNameField = form.get("queueName", "*");
+	if ( queueNameField.empty() )
+	{
+		queueNameField = "*";
+	}
+	filter->set("name", queueNameField);
 
-  std::string queueType = form.get("queueType", "all");
-  if ( queueType.compare("all") != 0 )
-  {
-    switch(queueType[0])
-    {
-      case 'l': inquireQ->addParameter(MQIA_Q_TYPE, MQQT_LOCAL); break;
-      case 'a': inquireQ->addParameter(MQIA_Q_TYPE, MQQT_ALIAS); break;
-      case 'c': inquireQ->addParameter(MQIA_Q_TYPE, MQQT_CLUSTER); break;
-      case 'r': inquireQ->addParameter(MQIA_Q_TYPE, MQQT_REMOTE); break;
-      case 'm': inquireQ->addParameter(MQIA_Q_TYPE, MQQT_MODEL); break;
-      default: break;
-    }
-  }
+	std::string queueDepthField = form.get("queueDepth", "");
+	int queueDepth;
+	if ( Poco::NumberParser::tryParse(queueDepthField, queueDepth) )
+	{
+		filter->set("qdepth", queueDepth);
+	}
 
-  std::vector<Poco::SharedPtr<PCF> > commandResponse;
-  _commandServer->sendCommand(inquireQ, commandResponse);
-  if ( commandResponse.size() > 0 )
-  {
-    std::vector<Poco::SharedPtr<PCF> >::iterator it = commandResponse.begin();
-    if ( (*it)->getCompletionCode() != MQCC_OK )
-    {
-      if ( (*it)->getReasonCode() != MQRCCF_NONE_FOUND && 
-		   (*it)->getReasonCode() != MQRC_UNKNOWN_OBJECT_NAME )
-      {
-        throw MQException(_qmgr->name(), "PCF", (*it)->getCompletionCode(), (*it)->getReasonCode());
-      }
-    }
+	filter->set("type", form.get("queueType", "All"));
+	filter->set("excludeSystem", form.get("queueExcludeSystem", "0").compare("1") == 0);
 
-    bool excludeSystem = form.get("queueExcludeSystem", "0").compare("1") == 0;
-    bool excludeTemp = form.get("queueExcludeTemp", "0").compare("1") == 0;
+	QueueMQMapper queueMapper(*_commandServer.get());
+	Poco::JSON::Array::Ptr jsonQueues = queueMapper.inquire(filter);
 
-    Poco::JSON::Array::Ptr queues = new Poco::JSON::Array();
-    for(; it != commandResponse.end(); it++)
-    {
-		if (    (*it)->getReasonCode() == MQRCCF_NONE_FOUND
-             || (*it)->getReasonCode() == MQRC_UNKNOWN_OBJECT_NAME )
+	for(int i = 0; i < jsonQueues->size(); ++i)
+	{
+		Poco::JSON::Object::Ptr jsonQueue = jsonQueues->getObject(i);
+		if ( ! jsonQueue.isNull() )
 		{
-			break;
+			Poco::JSON::Object::Ptr jsonType = jsonQueue->getObject("QType");
+			if ( !jsonType.isNull() )
+			{
+				// Add a property with the type as propertyname and true as value
+				// to help a view to check which type of queue we have. For example:
+				// { 
+				//   "QType" : { "value" : 1, "display" : "Local", "Local" : true } 
+				// }
+				std::string display = jsonType->optValue<std::string>("display", "");
+				if ( ! display.empty() )
+				{
+					jsonType->set(display, true);
+				}
+			}
 		}
+	}
 
-		if ( (*it)->isExtendedResponse() )
-		{
-			continue;
-		}
+	_data->set("queues", jsonQueues);
 
-      Poco::JSON::Object::Ptr queue = new Poco::JSON::Object();
+	Poco::JSON::Template::Ptr tpl = Poco::JSON::TemplateCache::instance()->getTemplate(Poco::Path("queueList.tpl"));
+	poco_assert_dbg(!tpl.isNull());
 
-      std::string name = (*it)->getParameterString(MQCA_Q_NAME);
-      if (    excludeSystem
-           && name.compare(0, 7, "SYSTEM.") == 0 )
-      {
-        continue;
-      }
-
-      if (    excludeTemp
-           && (*it)->getParameterNum(MQIA_DEFINITION_TYPE) == MQQDT_TEMPORARY_DYNAMIC )
-      {
-        continue;
-      }
-
-      queue->set("name", name);
-      int type = (*it)->getParameterNum(MQIA_Q_TYPE);
-      switch(type)
-      {
-        case MQQT_ALIAS: queue->set("type", "Alias"); break;
-        case MQQT_CLUSTER: queue->set("type", "Cluster"); break;
-        case MQQT_LOCAL: queue->set("type", "Local"); break;
-        case MQQT_REMOTE: queue->set("type", "Remote"); break;
-        case MQQT_MODEL: queue->set("type", "Model"); break;
-      }
-      queue->set("description", (*it)->getParameterString(MQCA_Q_DESC));
-
-      int value = (*it)->getParameterNum(MQIA_CURRENT_Q_DEPTH);
-      if ( value != -1 )
-      {
-        queue->set("curdepth", value);
-      }
-
-      value = (*it)->getParameterNum(MQIA_OPEN_INPUT_COUNT);
-      if ( value != -1 )
-      {
-        queue->set("inputprocs", value);
-      }
-
-      value = (*it)->getParameterNum(MQIA_OPEN_OUTPUT_COUNT);
-      if ( value != -1 )
-      {
-        queue->set("outputprocs", value);
-      }
-
-      queue->set("getAllowed", (*it)->getParameterNum(MQIA_INHIBIT_GET) == MQQA_GET_ALLOWED);
-      queue->set("putAllowed", (*it)->getParameterNum(MQIA_INHIBIT_PUT) == MQQA_PUT_ALLOWED);
-
-      if (type == MQQT_ALIAS )
-      {
-        queue->set("baseQueue", (*it)->getParameterString(MQCA_BASE_Q_NAME));
-      }
-
-      if (    type == MQQT_LOCAL
-           || type == MQQT_MODEL )
-      {
-        if ( (*it)->getParameterNum(MQIA_USAGE) != MQUS_NORMAL )
-        {
-          queue->set("usage", "Transmission Queue");
-        }
-      }
-
-      if ( type == MQQT_REMOTE )
-      {
-        queue->set("remoteQueueManager", (*it)->getParameterString(MQCA_REMOTE_Q_MGR_NAME));
-        queue->set("remoteQueue", (*it)->getParameterString(MQCA_REMOTE_Q_NAME));
-        queue->set("xmitQueue", (*it)->getParameterString(MQCA_XMIT_Q_NAME));
-      }
-
-      queues->add(queue);
-    }
-    _data->set("queues", queues);
-  }
-
-  Poco::JSON::Template::Ptr tpl = Poco::JSON::TemplateCache::instance()->getTemplate(Poco::Path("queueList.tpl"));
-  poco_assert_dbg(!tpl.isNull());
-
-  tpl->render(_data, _response.send());
-  _response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+	tpl->render(_data, _response.send());
+	_response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
 }
 
 } } // Namespace MQ::Web

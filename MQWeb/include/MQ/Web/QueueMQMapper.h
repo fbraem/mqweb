@@ -27,38 +27,31 @@ namespace MQ {
 namespace Web {
 
 class QueueMQMapper : public MQMapper
-  /// Maps channel object to Websphere MQ
+	/// Maps queue object to Websphere MQ
 {
 public:
 
-  QueueMQMapper(CommandServer& commandServer);
+	QueueMQMapper(CommandServer& commandServer);
 
 
-  virtual ~QueueMQMapper();
+	virtual ~QueueMQMapper();
 
 
-  void change(const Poco::JSON::Object::Ptr&obj);
+	void change(const Poco::JSON::Object::Ptr&obj);
 
 
-  void create(const Poco::JSON::Object::Ptr& obj, bool replace = false);
+	void create(const Poco::JSON::Object::Ptr& obj, bool replace = false);
 
 
-  void copy(const Poco::JSON::Object::Ptr& obj, bool replace = false);
+	void copy(const Poco::JSON::Object::Ptr& obj, bool replace = false);
 
 
-  Poco::JSON::Array::Ptr inquire(const Poco::JSON::Object::Ptr& filter);
-
-  
-  static std::string getType(MQLONG type);
-
+	Poco::JSON::Array::Ptr inquire(const Poco::JSON::Object::Ptr& filter);
 
 private:
 
 
-  void map(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json);
-
-
-  QueueMQMapper(const QueueMQMapper&);
+	QueueMQMapper(const QueueMQMapper&);
 };
 
 

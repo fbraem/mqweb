@@ -32,88 +32,88 @@
     <div style="clear:both" />
   <div id="tabs">
    <ul>
-    <li><a href="#queue"><?= queue.name ?></a></li>
+    <li><a href="#queue"><?= queue.QName.value ?></a></li>
     <li><a href="#messages">Messages</a></li>
    </ul>
    <div id="queue">
     <?if queue.description ?>
-     <em style="padding:5px;"><?= queue.description ?></em>
+     <em style="padding:5px;"><?= queue.QDesc.value ?></em>
     <?endif ?>
     <br />
     <div class="details" id="qmgrDetail">
-     <?ifexist queue.definitionType ?>
-      <h2>Type:</h2><div class="detail"><?= queue.type ?> - <?= queue.definitionType ?> - <?= queue.usage ?></div> <!-- detail -->
+     <?ifexist queue.DefinitionType ?>
+      <h2>Type:</h2><div class="detail"><?= queue.QType.display ?> - <?= queue.DefinitionType.display ?> - <?= queue.Usage.display ?></div> <!-- detail -->
      <?else ?>
-      <h2>Type:</h2><div class="detail"><?= queue.type ?> <?= queue.usage ?></div> <!-- detail -->
+      <h2>Type:</h2><div class="detail"><?= queue.QType.display ?> <?= queue.Usage.display ?></div> <!-- detail -->
      <?endif ?>
-     <?ifexist queue.curdepth ?>
-      <h2>Depth:</h2><div class="detail"><?= queue.curdepth ?> / <?ifexist queue.maxQueueDepth ?><?= queue.maxQueueDepth ?><?else ?>-<?endif ?></div> <!-- detail -->
+     <?ifexist queue.CurrentQDepth ?>
+      <h2>Depth:</h2><div class="detail"><?= queue.CurrentQDepth.value ?> / <?ifexist queue.MaxQDepth ?><?= queue.MaxQDepth.value ?><?else ?>-<?endif ?></div> <!-- detail -->
      <?else ?>
-      <h2>Depth:</h2><div class="detail">- / <?ifexist queue.maxQueueDepth ?><?= queue.maxQueueDepth ?><?else ?>-<?endif ?></div> <!-- detail -->
+      <h2>Depth:</h2><div class="detail">- / <?ifexist queue.MaxQDepth ?><?= queue.MaxQDepth.value ?><?else ?>-<?endif ?></div> <!-- detail -->
      <?endif ?>
-     <?ifexist queue.inputprocs ?>
-      <h2>MQOPEN:</h2><div class="detail"><?= queue.inputprocs ?> for Input, <?= queue.outputprocs ?> for Output</div> <!-- detail -->
+     <?ifexist queue.OpenInputCount ?>
+      <h2>MQOPEN:</h2><div class="detail"><?= queue.OpenInputCount.value ?> for Input, <?= queue.OpenOutputCount.value ?> for Output</div> <!-- detail -->
      <?endif ?>
-     <?ifexist queue.getAllowed ?>
-      <h2>Operations:</h2><div class="detail">Get <?= queue.getAllowed ?> - Put <?= queue.putAllowed ?></div> <!-- detail -->
+     <?ifexist queue.InhibitGet ?>
+      <h2>Operations:</h2><div class="detail">Get <?= queue.InhibitGet.display ?> - Put <?= queue.InhibitPut.display ?></div> <!-- detail -->
      <?endif ?>
-     <?ifexist queue.createDate ?>
-      <h2>Creation Date:</h2><div class="detail"><?= queue.createDate ?></div> <!-- detail -->
+     <?ifexist queue.CreationDate ?>
+      <h2>Creation Date:</h2><div class="detail"><?= queue.CreationDate.value ?> <?= queue.CreationTime.value ?></div> <!-- detail -->
      <?endif ?>
-     <h2>Alteration Date:</h2><div class="detail"><?= queue.alterDate ?></div> <!-- detail -->
-     <?if queue.backoutQueue ?>
+     <h2>Alteration Date:</h2><div class="detail"><?= queue.AlterationDate.value ?> <?= queue.AlterationTime.value ?></div> <!-- detail -->
+     <?if queue.BackoutRequeueName.value ?>
       <h2>Backout:</h2>
       <div class="detail">
-       <a href="/<?= qmgr.name ?>/Queues/<?= queue.backoutQueue ?>"><?= queue.backoutQueue ?></a> - Threshold: <?= queue.backoutThreshold?> - Harden: <?= queue.hardenBackout ?>
+       <a href="/<?= qmgr.name ?>/Queues/<?= queue.BackoutRequeueName.value ?>"><?= queue.BackoutRequeueName.value ?></a> - Threshold: <?= queue.BackoutThreshold.value?> - Harden: <?= queue.HardenGetBackout.display ?>
       </div> <!-- detail -->
      <?endif ?>
-     <?if queue.baseQueue ?>
-      <h2>Target Queue:</h2><div class="detail"><a href="/<?= qmgr.name ?>/Queues/<?= queue.baseQueue ?>"><?= queue.baseQueue ?></a></div> <!-- detail -->
+     <?if queue.BaseQName ?>
+      <h2>Target Queue:</h2><div class="detail"><a href="/<?= qmgr.name ?>/Queues/<?= queue.BaseQName.value ?>"><?= queue.BaseQName.value ?></a></div> <!-- detail -->
      <?endif ?>
-     <h2>Default Binding:</h2><div class="detail"><?= queue.bind ?></div> <!-- detail -->
-     <?ifexist queue.inputopen ?>
-      <h2>Default Input Open:</h2><div class="detail"><?= queue.inputopen ?></div> <!-- detail -->
+     <h2>Default Binding:</h2><div class="detail"><?= queue.DefBind.display ?></div> <!-- detail -->
+     <?ifexist queue.DefInputOpenOption ?>
+      <h2>Default Input Open:</h2><div class="detail"><?= queue.DefInputOpenOption.display ?></div> <!-- detail -->
      <? endif ?>
-     <?ifexist queue.distributionList ?>
-      <h2>Distribution List:</h2><div class="detail"><?= queue.distributionList ?></div> <!-- detail -->
+     <?ifexist queue.DistLists ?>
+      <h2>Distribution List:</h2><div class="detail"><?= queue.DistLists.display ?></div> <!-- detail -->
      <?endif ?>
-     <?ifexist queue.persist ?>
-      <h2>Default Persistence:</h2><div class="detail"><?= queue.persist ?></div> <!-- detail -->
+     <?ifexist queue.DefPersistence ?>
+      <h2>Default Persistence:</h2><div class="detail"><?= queue.DefPersistence.display ?></div> <!-- detail -->
      <?endif ?>
-     <?ifexist queue.priority ?>
-      <h2>Default Priority:</h2><div class="detail"><?= queue.priority ?></div> <!-- detail -->
+     <?ifexist queue.DefPriority ?>
+      <h2>Default Priority:</h2><div class="detail"><?= queue.DefPriority.value ?></div> <!-- detail -->
      <?endif ?>
-     <?ifexist queue.defReadAhead ?>
-      <h2>Default Read Ahead:</h2><div class="detail"><?= queue.defReadAhead ?></div> <!-- detail -->
+     <?ifexist queue.DefReadAhead ?>
+      <h2>Default Read Ahead:</h2><div class="detail"><?= queue.DefReadAhead.display ?></div> <!-- detail -->
      <?endif ?>
-     <?ifexist queue.defPutRespType ?>
-      <h2>Default Put Response Type:</h2><div class="detail"><?= queue.defPutRespType ?></div> <!-- detail -->
+     <?ifexist queue.DefaultPutResponse ?>
+      <h2>Default Put Response Type:</h2><div class="detail"><?= queue.DefaultPutResponse.display ?></div> <!-- detail -->
      <?endif ?>
-     <?ifexist queue.depthHighEvent ?>
-      <h2>Depth Hight Event:</h2><div class="detail"><?= queue.depthHighEvent ?> - Limit: <?= queue.depthHighLimit ?></div> <!-- detail -->
+     <?ifexist queue.QDepthHighEvent ?>
+      <h2>Depth Hight Event:</h2><div class="detail"><?= queue.QDepthHighEvent.display ?> - Limit: <?= queue.QDepthHighLimit.value ?></div> <!-- detail -->
      <?endif ?>
-     <?ifexist queue.depthLowEvent ?>
-      <h2>Depth Low Event:</h2><div class="detail"><?= queue.depthLowEvent ?> - Limit: <?= queue.depthLowLimit ?></div> <!-- detail -->
+     <?ifexist queue.QDepthLowEvent ?>
+      <h2>Depth Low Event:</h2><div class="detail"><?= queue.QDepthLowEvent.display ?> - Limit: <?= queue.QDepthLowLimit.value ?></div> <!-- detail -->
      <?endif ?>
-     <?ifexist queue.depthMaxEvent ?>
-      <h2>Depth Max Event:</h2><div class="detail"><?= queue.depthMaxEvent ?></div> <!-- detail -->
+     <?ifexist queue.QDepthMaxEvent ?>
+      <h2>Depth Max Event:</h2><div class="detail"><?= queue.QDepthMaxEvent.display ?></div> <!-- detail -->
      <?endif ?>
-     <?if queue.initiationQueue ?>
-      <h2>Initiation Queue:</h2><div class="detail"><a href="/<?= qmgr.name ?>/Queues/<?= queue.initiationQueue ?>"><?= queue.initationQueue ?></a></div> <!-- detail -->
+     <?if queue.InitiationQName.value ?>
+      <h2>Initiation Queue:</h2><div class="detail"><a href="/<?= qmgr.name ?>/Queues/<?= queue.InitiationQName.value ?>"><?= queue.InitiationQName.value ?></a></div> <!-- detail -->
      <?endif ?>
-     <?ifexist queue.maxMessageLength ?>
-      <h2>Maximum Message Length:</h2><div class="detail"><?= queue.maxMessageLength ?></div> <!-- detail -->
+     <?ifexist queue.MaxMsgLength ?>
+      <h2>Maximum Message Length:</h2><div class="detail"><?= queue.MaxMsgLength.value ?></div> <!-- detail -->
      <?endif ?>
-     <?ifexist queue.messageDelivery ?>
-      <h2>Message Delivery:</h2><div class="detail"><?= queue.messageDelivery ?></div> <!-- detail -->
+     <?ifexist queue.MsgDeliverySequence ?>
+      <h2>Message Delivery:</h2><div class="detail"><?= queue.MsgDeliverySequence.display ?></div> <!-- detail -->
      <?endif ?>
-     <?if queue.process ?>
-      <h2>Process:</h2><div class="detail"><?= queue.process ?></div> <!-- detail -->
+     <?if queue.ProcessName.value ?>
+      <h2>Process:</h2><div class="detail"><?= queue.ProcessName.value ?></div> <!-- detail -->
      <?endif ?>
-     <?ifexist queue.triggerControl ?>
+     <?ifexist queue.TriggerControl ?>
        <h2>Trigger:</h2>
        <div class="detail">
-        <?= queue.triggerControl ?> - Type: <?= queue.triggerType ?> - Depth: <?= queue.triggerDepth ?> - Message Priority: <?= queue.triggerMessagePriority ?> - Data: <?= queue.triggerData ?>
+        <?= queue.TriggerControl.display ?> - Type: <?= queue.TriggerType.display ?> - Depth: <?= queue.TriggerDepth.value ?> - Message Priority: <?= queue.TriggerMsgPriority.value ?> - Data: <?= Queue.TriggerData.value ?>
        </div> <!-- detail -->
      <? endif ?>
     </div> <!-- details -->
@@ -136,7 +136,7 @@
 	   var options = { 
 	                   target: '#messageTableDiv',
 	                   type: 'POST',
-	                   url: '<?= queue.name ?>/Messages'
+	                   url: '<?= queue.QName.value ?>/Messages'
 	                 }; 
 	   jQuery('#messageFilterForm').ajaxForm(options);
 	  </script>

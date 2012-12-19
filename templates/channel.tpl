@@ -32,49 +32,49 @@
   <div style="clear:both"> </div>
   <div id="tabs">
    <ul>
-    <li><a href="#channel"><?= channel.channelName ?></a></li>
+    <li><a href="#channel"><?= channel.ChannelName.value ?></a></li>
     <li><a href="#status">Status</a></li>
    </ul>
    <div id="channel">
-    <?if channel.channelDesc ?>
-     <em style="padding:5px;"><?= channel.channelDesc ?></em>
+    <?if channel.ChannelDesc ?>
+     <em style="padding:5px;"><?= channel.ChannelDesc.value ?></em>
     <?endif ?>
     <br />
     <div class="details">
      <h2>Type:</h2>
      <div class="detail">
-      <?= channel.channelType.value ?>
+      <?= channel.ChannelType.display ?>
      </div> <!-- detail -->
      <h2>Alteration Date:</h2>
      <div class="detail">
-      <?= channel.alterationDate ?>
+      <?= channel.AlterationDate.value ?> <?= channel.AlterationTime.value ?>
      </div> <!-- detail -->
-     <?if channel.connectionName ?>
+     <?if channel.ConnectionName ?>
       <h2>Connection Name:</h2>
       <div class="detail">
-       <?= channel.connectionName ?></a>
+       <?= channel.ConnectionName.value ?></a>
       </div> <!-- detail -->
 		 <?endif ?>
-     <?if channel.mcaUserIdentifier ?>
+     <?if channel.MCAUserIdentifier ?>
       <h2>MCA User:</h2>
       <div class="detail">
-       <?= channel.mcaUserIdentifier ?></a>
+       <?= channel.MCAUserIdentifier.value ?></a>
       </div> <!-- detail -->
 		 <?endif ?>
-     <?if channel.securityExit ?>
+     <?if channel.SecurityExit ?>
       <h2>Security Exit:</h2>
       <div class="detail">
-       <?= channel.securityExit ?></a>
+       <?= channel.SecurityExit.value ?></a>
       </div> <!-- detail -->
       <h2>Security User Data:</h2>
       <div class="detail">
-       <?= channel.securityUserData ?></a>
+       <?= channel.SecurityUserData.value ?></a>
       </div> <!-- detail -->
 		 <?endif ?>
-     <?if channel.xmitQueue ?>
+     <?if channel.XmitQName ?>
       <h2>Transmission Queue:</h2>
       <div class="detail">
-       <a href="../Queues/<?= channel.xmitQueue ?>"><?= channel.xmitQueue ?></a>
+       <a href="../Queues/<?= channel.XmitQName.value ?>"><?= channel.XmitQName.value ?></a>
       </div> <!-- detail -->
 		 <?endif ?>
     </div> <!-- details -->

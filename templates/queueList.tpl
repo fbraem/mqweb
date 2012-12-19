@@ -5,25 +5,25 @@
   </tr>
   <? for queue queues ?>
     <tr class="detail">
-     <td><a href="/<?= qmgr.name ?>/Queues/<?= queue.name ?>"><?= queue.name ?></a>
-      <? if queue.baseQueue ?>
+     <td><a href="/<?= qmgr.name ?>/Queues/<?= queue.QName.value ?>"><?= queue.QName.value ?></a>
+      <? if queue.BaseQName ?>
        <br />
-       <span style="padding:5px;font-size:0.8em">Target: <a href="/<?= qmgr.name ?>/Queues/<?= queue.baseQueue ?>"><?= queue.baseQueue ?></a></span>
+       <span style="padding:5px;font-size:0.8em">Target: <a href="/<?= qmgr.name ?>/Queues/<?= queue.BaseQName.value ?>"><?= queue.BaseQName.value ?></a></span>
       <? endif ?>
-      <? if queue.remoteQueue ?>
+      <? if queue.RemoteQName ?>
        <br />
-       <span style="padding:5px;font-size:0.8em">Qmgr: <?= queue.remoteQueuemanager ?> Queue: <?= queue.remoteQueue ?></span><br />
-       <span style="padding:5px;font-size:0.8em">Transmission Queue: <a href="/<?= qmgr.name ?>/Queues/<?= queue.xmitQueue ?>"><?= queue.xmitQueue ?></a></span>
+       <span style="padding:5px;font-size:0.8em">Qmgr: <?= queue.RemoteQmgrName.value ?> Queue: <?= queue.RemoteQName.value ?></span><br />
+       <span style="padding:5px;font-size:0.8em">Transmission Queue: <a href="/<?= qmgr.name ?>/Queues/<?= queue.XmitQName.value ?>"><?= queue.XmitQName.value ?></a></span>
       <? endif ?>
-      <? if queue.description ?>
-        <br /><em style="padding:5px;font-size:0.8em"><?= queue.description ?></em>      
+      <? if queue.QDesc.value ?>
+        <br /><em style="padding:5px;font-size:0.8em"><?= queue.QDesc.value ?></em>      
       <? endif ?>
      </td>
-     <td><?= queue.type ?></td>
-     <? ifexist queue.curdepth ?>
-      <? if queue.curdepth ?>
+     <td><?= queue.QType.display ?></td>
+     <? ifexist queue.CurrentQDepth ?>
+      <? if queue.CurrentQDepth.value ?>
        <td style="text-align:right;background-color:#FF9966">
-        <?= queue.curdepth ?>
+        <?= queue.CurrentQDepth.value ?>
        </td>
       <? else ?>
        <td style="text-align:right;">
@@ -35,30 +35,47 @@
      <? endif ?>
      </td>
      <td style="text-align:right">
-      <? ifexist queue.inputprocs ?>
-       <?= queue.inputprocs ?>
+      <? ifexist queue.OpenInputCount ?>
+       <?= queue.OpenInputCount.value ?>
       <? else ?>
        -
      <? endif ?>
      </td>
      <td style="text-align:right">
-      <? ifexist queue.outputprocs ?>
-       <?= queue.outputprocs ?>
+      <? ifexist queue.OpenOutputCount ?>
+       <?= queue.OpenOutputCount.value ?>
       <? else ?>
        -
      <? endif ?>
      </td>
-     <? if queue.getAllowed ?>
-      <td style="text-align:center"><img src="/static/img/enabled.gif" /></td>
-     <? else ?>
-      <td style="text-align:center"><img src="/static/img/disabled.gif" /></td>
-     <? endif ?>
-     <? if queue.putAllowed ?>
-      <td style="text-align:center"><img src="/static/img/enabled.gif" /></td>
-     <? else ?>
-      <td style="text-align:center"><img src="/static/img/disabled.gif" /></td>
-     <? endif ?>
-     <td><?= queue.usage ?></td>
+     <td style="text-align:center">
+      <? if queue.InhibitGet ?>
+       <? if queue.InhibitGet.value ?>
+        <img src="/static/img/disabled.gif" />
+       <? else ?>
+        <img src="/static/img/enabled.gif" />
+       <? endif ?>
+      <? else ?>
+       -
+      <? endif ?>
+     </td>
+     <td style="text-align:center">
+      <? if queue.InhibitPut ?>
+       <? if queue.InhibitPut.value ?>
+        <img src="/static/img/disabled.gif" />
+       <? else ?>
+        <img src="/static/img/enabled.gif" />
+       <? endif ?>
+      <? else ?>
+       -
+      <? endif ?>
+     </td>
+     <td>
+      <? if queue.Usage ?>
+       <?= queue.Usage.display ?></td>
+      <? else ?>
+       -
+      <? endif ?>
     </tr>
   <? endfor ?>
  </table>

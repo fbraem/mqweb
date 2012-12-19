@@ -22,33 +22,46 @@
 #define _MQWeb_MQMapper_H
 
 #include <MQ/Web/Mapper.h>
+#include <MQ/Web/MapInitializer.h>
+#include <MQ/Web/Dictionary.h>
+
 #include <MQ/CommandServer.h>
 
 namespace MQ {
 namespace Web {
 
+typedef std::map<MQLONG, std::string> DisplayMap;
+typedef MapInitializer<MQLONG, std::string> DisplayMapInitializer;
+
 
 class MQMapper : public Mapper
-  /// Mapper for mapping objects to/from Websphere MQ
+	/// Mapper for mapping objects to/from Websphere MQ
 {
 public:
-  MQMapper(CommandServer& commandServer);
-  
-  
-  virtual ~MQMapper();
+	MQMapper(CommandServer& commandServer);
 
 
-  static void mapNumberToJSON(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter);
+	virtual ~MQMapper();
 
 
-  static void mapStringToJSON(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter);
+	void mapToJSON(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json);
 
 
-  static void mapDateToJSON(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int dateParameter, int timeParameter);
+	static void mapNumberToJSON(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter);
 
+
+	static void mapStringToJSON(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter);
+
+
+	static void mapDateToJSON(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int dateParameter, int timeParameter);
+
+	
 protected:
 
-  MQ::CommandServer& _commandServer;
+	MQ::CommandServer& _commandServer;
+
+
+	static Dictionary _dictionary;
 };
 
 

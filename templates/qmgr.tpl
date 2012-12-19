@@ -19,7 +19,9 @@
   <div style="float:right;font-size:0.8em;">
    Name: <a href="/<?= qmgr.name ?>"><?= qmgr.name ?></a><br />
    Id: <?= qmgr.id ?><br />
-   Created: <?= qmgr.createDate ?><br />
+   <? ifexist qmgr.createDate ?>
+     Created: <?= qmgr.createDate ?><br />
+   <? endif ?>
    Modified: <?= qmgr.alterDate ?>
   </div>
   <? if qmgr.description ?>
@@ -78,14 +80,14 @@
       <fieldset style="float:left;margin-top:-10px;margin-left:30px;">
        <legend>&nbsp;Queue Type&nbsp;</legend>
        <div style="float:left;">
-        <input type="radio" name="queueType" value="all" />All<br />
-        <input type="radio" name="queueType" value="l" />Local<br />
-        <input type="radio" name="queueType" value="a" />Alias
+        <input type="radio" name="queueType" value="All" />All<br />
+        <input type="radio" name="queueType" value="Local" />Local<br />
+        <input type="radio" name="queueType" value="Alias" />Alias
        </div>
        <div style="float:left;">
-        <input type="radio" name="queueType" value="c" />Cluster<br />
-        <input type="radio" name="queueType" value="m" />Model<br />
-        <input type="radio" name="queueType" value="r" />Remote
+        <input type="radio" name="queueType" value="Cluster" />Cluster<br />
+        <input type="radio" name="queueType" value="Model" />Model<br />
+        <input type="radio" name="queueType" value="Remote" />Remote
        </div>
       </fieldset>
       <div style="float:left;">
@@ -115,24 +117,24 @@
       <fieldset style="float:left;margin-top:-10px;margin-left:30px;">
        <legend>&nbsp;Channel Type&nbsp;</legend>
        <div style="float:left;">
-        <input type="radio" name="channelType" value="all" />All<br />
-        <input type="radio" name="channelType" value="sender" />Sender
+        <input type="radio" name="channelType" value="All" />All<br />
+        <input type="radio" name="channelType" value="Sender" />Sender
        </div>
        <div style="float:left;">
-        <input type="radio" name="channelType" value="server" />Server<br />
-        <input type="radio" name="channelType" value="receiver" />Receiver
+        <input type="radio" name="channelType" value="Server" />Server<br />
+        <input type="radio" name="channelType" value="Receiver" />Receiver
        </div>
        <div style="float:left;">
-        <input type="radio" name="channelType" value="requester" />Requester<br />
-        <input type="radio" name="channelType" value="svrconn" />Server-connection
+        <input type="radio" name="channelType" value="Requester" />Requester<br />
+        <input type="radio" name="channelType" value="Server-connection" />Server-connection
        </div>
        <div style="float:left;">
-        <input type="radio" name="channelType" value="clntconn" />Client-connection<br />
-        <input type="radio" name="channelType" value="clusrcvr" />Cluster-receiver
+        <input type="radio" name="channelType" value="Client-connection" />Client-connection<br />
+        <input type="radio" name="channelType" value="Cluster-receiver" />Cluster-receiver
        </div>
        <div style="float:left;">
-        <input type="radio" name="channelType" value="clussdr" />Cluster-sender<br />
-        <input type="radio" name="channelType" value="mqtt" />Telemetry
+        <input type="radio" name="channelType" value="Cluster-sender" />Cluster-sender<br />
+        <input type="radio" name="channelType" value="Telemetry" />Telemetry
        </div>
       </fieldset>
       <div style="float:left;">

@@ -70,7 +70,7 @@ void ChannelController::handle()
   jsonQmgr->set("description", _qmgr->description());
 
   Poco::Net::HTMLForm form(_request);
-  std::string type = form.get("type", "all");
+  std::string type = form.get("type", "All");
 
   Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
   filter->set("name", channelName);
