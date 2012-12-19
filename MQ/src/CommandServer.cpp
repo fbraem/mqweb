@@ -64,7 +64,7 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
   do
   {
     msgResponse = new PCF(_qmgr->zos());
-    msgResponse->buffer().resize(REPLY_MESSAGE_LEN);
+    msgResponse->buffer().resize(REPLY_MESSAGE_LEN, false);
 
     try
     {
@@ -74,7 +74,7 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
     {
       if ( mqe.reason() == MQRC_TRUNCATED_MSG_FAILED )
       {
-        msgResponse->buffer().resize(msgResponse->dataLength());
+        msgResponse->buffer().resize(msgResponse->dataLength(), false);
         msgResponse->clear();
         _replyQ.get(*msgResponse.get(), MQGMO_CONVERT | MQGMO_NO_SYNCPOINT);
       }
