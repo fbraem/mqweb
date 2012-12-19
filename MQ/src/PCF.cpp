@@ -242,9 +242,9 @@ void PCF::addFilter(MQLONG parameter, MQLONG op, MQLONG value)
 }
 
 
-std::vector<int> PCF::getParameters() const
+std::vector<MQLONG> PCF::getParameters() const
 {
-    std::vector<int> parameters;
+    std::vector<MQLONG> parameters;
     for(std::map<MQLONG, int>::const_iterator it = _pointers.begin(); it != _pointers.end(); it++)
     {
         MQLONG *pcfType = (MQLONG*) &buffer()[it->second];
