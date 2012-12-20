@@ -101,12 +101,6 @@ public:
 		/// Returns true when this PCF message is the last of a response.
 
 
-	std::string getParameterString(MQLONG parameter) const;
-		/// Returns the string value of a parameter.
-		/// When the parameter doesn't exist or is not a string, an empty
-		/// string is returned.
-
-
 	Poco::DateTime getParameterDate(MQLONG dateParameter, MQLONG timeParameter) const;
 		/// Combines a date and time parameter and returns it as a DateTime object
 		/// When the date parameter doesn't exist, the current date is returned.
@@ -116,6 +110,18 @@ public:
 		/// Returns the numeric value of a parameter.
 		/// Poco::NotFoundException will be thrown when the parameter isn't found.
 		/// Poco::BadCastException will be thrown when the parameter doesn't contain a numeric value.
+
+
+	std::string getParameterString(MQLONG parameter) const;
+		/// Returns the string value of a parameter.
+		/// Poco::NotFoundException will be thrown when the parameter isn't found.
+		/// Poco::BadCastException will be thrown when the parameter doesn't contain a string value.
+
+
+	std::vector<std::string> getParameterStringList(MQLONG parameter) const;
+		/// Returns a vector of strings of a parameter.
+		/// Poco::NotFoundException will be thrown when the parameter isn't found.
+		/// Poco::BadCastException will be thrown when the parameter doesn't contain a string list.
 
 
 	bool hasParameter(MQLONG parameter) const;
