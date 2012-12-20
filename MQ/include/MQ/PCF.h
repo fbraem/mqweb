@@ -32,93 +32,118 @@
 
 #include <MQ/Message.h>
 
-namespace MQ
-{
+namespace MQ {
 
 class PCF : public Message
+	/// Represents a Programmable Command Format (PCF) message.
 {
 public:
 
-explicit PCF(bool zos = false);
+	explicit PCF(bool zos = false);
+		/// Creates an empty PCF message
+		/// Use this constructor to get a PCF message from a queue.
 
 
-explicit PCF(int cmd, bool zos = false);
+	explicit PCF(int cmd, bool zos = false);
+		/// Creates an empty PCF message for a command
+		/// Use this constructor to put a PFC on a queue.
 
 
-virtual ~PCF();
+	virtual ~PCF();
+		/// Destructor.
 
 
-void addParameter(MQLONG parameter, const std::string& value);
+	void addParameter(MQLONG parameter, const std::string& value);
+		/// Add a string parameter.
 
 
-void addParameter(MQLONG parameter, MQLONG value);
+	void addParameter(MQLONG parameter, MQLONG value);
+		/// Add a numeric parameter.
 
 
-void addParameterList(MQLONG parameter, MQLONG *values);
+	void addParameterList(MQLONG parameter, MQLONG *values);
+		/// Add a numeric list parameter.
 
 
-void addFilter(MQLONG parameter, MQLONG op, const std::string& value);
+	void addFilter(MQLONG parameter, MQLONG op, const std::string& value);
+		/// Add a filter with a string value.
 
 
-void addFilter(MQLONG parameter, MQLONG op, MQLONG value);
+	void addFilter(MQLONG parameter, MQLONG op, MQLONG value);
+		/// Add a filter with a numeric value.
 
 
-int getCommand() const;
+	int getCommand() const;
+		/// Returns the command.
 
 
-int getCompletionCode() const;
+	int getCompletionCode() const;
+		/// Returns the completion code.
 
 
-int getReasonCode() const;
+	int getReasonCode() const;
+		/// Returns the reason code.
 
 
-bool isExtendedResponse() const;
+	bool isExtendedResponse() const;
+		/// Returns true when this is an extended response.
 
 
-bool isNumber(MQLONG parameter) const;
+	bool isNumber(MQLONG parameter) const;
+		/// Returns true when the value of the parameter is a numeric value.
 
 
-bool isString(MQLONG parameter) const;
+	bool isString(MQLONG parameter) const;
+		/// Returns true when the value of the parameter is a string value.
 
 
-bool isLast() const;
+	bool isLast() const;
+		/// Returns true when this PCF message is the last of a response.
 
 
-std::string getParameterString(MQLONG parameter) const;
+	std::string getParameterString(MQLONG parameter) const;
+		/// Returns the string value of a parameter.
+		/// When the parameter doesn't exist or is not a string, an empty
+		/// string is returned.
 
 
-Poco::DateTime getParameterDate(MQLONG dateParameter, MQLONG timeParameter) const;
+	Poco::DateTime getParameterDate(MQLONG dateParameter, MQLONG timeParameter) const;
+		/// Combines a date and time parameter and returns it as a DateTime object
+		/// When the date parameter doesn't exist, the current date is returned.
 
 
-MQLONG getParameterNum(MQLONG parameter) const;
+	MQLONG getParameterNum(MQLONG parameter) const;
+		/// Returns the numeric value of a parameter.
+		/// -1 is returned when the parameter doesn't exist or is not numeric.
+
+	bool hasParameter(MQLONG parameter) const;
+		/// Returns true when the parameter is found in the PCF message.
 
 
-bool hasParameter(MQLONG parameter) const;
+	std::vector<MQLONG> getParameters() const;
+		/// Returns a vector with all parameter ids.
 
 
-std::vector<MQLONG> getParameters() const;
+	typedef Poco::SharedPtr<PCF> Ptr;
 
 
-typedef Poco::SharedPtr<PCF> Ptr;
-
-
-typedef std::vector<Ptr> Vector;
+	typedef std::vector<Ptr> Vector;
 
 private:
 
-std::map<MQLONG, int> _pointers;
+	std::map<MQLONG, int> _pointers;
 
 
-bool _zos;
+	bool _zos;
 
 
-PCF(const PCF& pcf);
+	PCF(const PCF& pcf);
 
 
-void init();
+	void init();
 
 
-friend class CommandServer;
+	friend class CommandServer;
 };
 
 
