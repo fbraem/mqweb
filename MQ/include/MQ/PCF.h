@@ -114,7 +114,9 @@ public:
 
 	MQLONG getParameterNum(MQLONG parameter) const;
 		/// Returns the numeric value of a parameter.
-		/// -1 is returned when the parameter doesn't exist or is not numeric.
+		/// Poco::NotFoundException will be thrown when the parameter isn't found.
+		/// Poco::BadCastException will be thrown when the parameter doesn't contain a numeric value.
+
 
 	bool hasParameter(MQLONG parameter) const;
 		/// Returns true when the parameter is found in the PCF message.
@@ -122,6 +124,18 @@ public:
 
 	std::vector<MQLONG> getParameters() const;
 		/// Returns a vector with all parameter ids.
+
+
+	MQLONG optParameterNum(MQLONG parameter, MQLONG def = 0) const;
+		/// Returns the numeric value of a parameter.
+		/// When the parameter isn't found or doesn't contain a numeric value,
+		/// def will be returned.
+
+
+	std::string optParameterString(MQLONG parameter, const std::string& def = "") const;
+		/// Returns the string value of a parameter.
+		/// When the parameter doesn't exist or is not a string, an empty
+		/// string is returned.
 
 
 	typedef Poco::SharedPtr<PCF> Ptr;

@@ -81,21 +81,36 @@ std::string PCF::getParameterString(MQLONG parameter) const
 {
 	MQCFH* header = (MQCFH*)(MQBYTE*) &(buffer()[0]);
 	std::map<MQLONG, int>::const_iterator it = _pointers.find(parameter);
-	if ( it != _pointers.end() )
+	if ( it == _pointers.end() )
+		throw Poco::NotFoundException(parameter);
+
+	MQLONG *pcfType = (MQLONG*) &buffer()[it->second];
+	if ( *pcfType == MQCFT_STRING || *pcfType == MQCFT_BYTE_STRING )
 	{
-		MQLONG *pcfType = (MQLONG*) &buffer()[it->second];
-		if (    *pcfType == MQCFT_STRING
-		        || *pcfType == MQCFT_BYTE_STRING )
-		{
-			MQCFST* pcfParam = (MQCFST*) &buffer()[it->second];
-			std::string result(pcfParam->String, pcfParam->StringLength);
-			result.erase(result.find_last_not_of(" \n\r\t")+1); // trim
-			return result;
-		}
+		MQCFST* pcfParam = (MQCFST*) &buffer()[it->second];
+		std::string result(pcfParam->String, pcfParam->StringLength);
+		result.erase(result.find_last_not_of(" \n\r\t")+1); // trim
+		return result;
 	}
-	return "";
+
+	throw Poco::BadCastException(parameter);
 }
 
+
+std::string PCF::optParameterString(MQLONG parameter, const std::string& def) const
+{
+	std::string result = def;
+
+	try
+	{
+		result = getParameterString(parameter);
+	}
+	catch(...)
+	{
+	}
+
+	return result;
+}
 
 Poco::DateTime PCF::getParameterDate(MQLONG dateParameter, MQLONG timeParameter) const
 {
@@ -118,16 +133,31 @@ Poco::DateTime PCF::getParameterDate(MQLONG dateParameter, MQLONG timeParameter)
 MQLONG PCF::getParameterNum(MQLONG parameter) const
 {
 	std::map<MQLONG, int>::const_iterator it = _pointers.find(parameter);
-	if ( it != _pointers.end() )
+	if ( it == _pointers.end() )
+		throw Poco::NotFoundException(parameter);
+
+	MQLONG *pcfType = (MQLONG*) &buffer()[it->second];
+	if ( *pcfType == MQCFT_INTEGER )
 	{
-		MQLONG *pcfType = (MQLONG*) &buffer()[it->second];
-		if ( *pcfType == MQCFT_INTEGER )
-		{
-			MQCFIN* pcfParam = (MQCFIN*) &buffer()[it->second];
-			return pcfParam->Value;
-		}
+		MQCFIN* pcfParam = (MQCFIN*) &buffer()[it->second];
+		return pcfParam->Value;
 	}
-	return -1;
+
+	throw Poco::BadCastException(parameter);
+}
+
+
+MQLONG PCF::optParameterNum(MQLONG parameter, MQLONG def) const
+{
+	MQLONG result = def;
+	try
+	{
+		result = getParameterNum(parameter);
+	}
+	catch(...)
+	{
+	}
+	return result;
 }
 
 
@@ -136,29 +166,15 @@ void PCF::addParameter(MQLONG parameter, const std::string& value)
 	MQLONG structLength = ((MQCFST_STRUC_LENGTH_FIXED + value.length()) / 4 + 1) * 4;
 	_pointers[parameter] = buffer().size();
 	buffer().resize(buffer().size() + structLength);
-	/*if ( _zos )
-	{
-	    MQCFBS* pcfParam = (MQCFBS*) &buffer()[_pointers[parameter]];
-	    pcfParam->Type         = MQCFT_BYTE_STRING;
-	    pcfParam->StrucLength  = structLength;
-	    pcfParam->Parameter    = parameter;
-	    pcfParam->StringLength = value.length();
-		memcpy(pcfParam->String, value.c_str(), pcfParam->StringLength);
-	    MQCFH* header = (MQCFH*) (MQBYTE*) &buffer()[0];
-	    header->ParameterCount++;
-	}
-	else */
-	{
-		MQCFST* pcfParam = (MQCFST*) &buffer()[_pointers[parameter]];
-		pcfParam->Type           = MQCFT_STRING;
-		pcfParam->StrucLength    = structLength;
-		pcfParam->Parameter      = parameter;
-		pcfParam->CodedCharSetId = MQCCSI_DEFAULT;
-		pcfParam->StringLength   = value.length();
-		memcpy(pcfParam->String, value.c_str(), pcfParam->StringLength);
-		MQCFH* header = (MQCFH*) (MQBYTE*) &buffer()[0];
-		header->ParameterCount++;
-	}
+	MQCFST* pcfParam = (MQCFST*) &buffer()[_pointers[parameter]];
+	pcfParam->Type           = MQCFT_STRING;
+	pcfParam->StrucLength    = structLength;
+	pcfParam->Parameter      = parameter;
+	pcfParam->CodedCharSetId = MQCCSI_DEFAULT;
+	pcfParam->StringLength   = value.length();
+	memcpy(pcfParam->String, value.c_str(), pcfParam->StringLength);
+	MQCFH* header = (MQCFH*) (MQBYTE*) &buffer()[0];
+	header->ParameterCount++;
 }
 
 
