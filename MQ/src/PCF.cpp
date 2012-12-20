@@ -146,6 +146,28 @@ MQLONG PCF::getParameterNum(MQLONG parameter) const
 	throw Poco::BadCastException(parameter);
 }
 
+std::vector<std::string> PCF::getParameterStringList(MQLONG parameter) const
+{
+	std::map<MQLONG, int>::const_iterator it = _pointers.find(parameter);
+	if ( it == _pointers.end() )
+		throw Poco::NotFoundException(parameter);
+
+	MQLONG *pcfType = (MQLONG*) &buffer()[it->second];
+	if ( *pcfType == MQCFT_STRING_LIST )
+	{
+		std::vector<std::string> list;
+		MQCFSL* pcfParam = (MQCFSL*) &buffer()[it->second];
+		for(int i = 0; i < pcfParam->Count; ++i)
+		{
+			std::string result(pcfParam->Strings, i * pcfParam->StringLength, pcfParam->StringLength);
+			result.erase(result.find_last_not_of(" \n\r\t")+1); // trim
+			list.push_back(result);
+		}
+		return list;
+	}
+
+	throw Poco::BadCastException(parameter);
+}
 
 MQLONG PCF::optParameterNum(MQLONG parameter, MQLONG def) const
 {
