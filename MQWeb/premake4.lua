@@ -23,6 +23,7 @@ project "MQWeb"
     flags { "Symbols" }
         
   configuration "windows"
+      flags { "WinMain" }
 	  defines { 
               "_WINDOWS", 
               "_USRDLL", 
