@@ -30,10 +30,8 @@
 #include <Poco/Logger.h>
 #include <Poco/HexBinaryEncoder.h>
 
-#include <Poco/JSON/TemplateCache.h>
-
-#include <MQ/MQException.h>
 #include <MQ/Web/MessageController.h>
+#include <MQ/MQException.h>
 #include <MQ/Message.h>
 #include <MQ/QueueManager.h>
 #include <MQ/Queue.h>
@@ -83,32 +81,133 @@ static unsigned char EBCDIC_translate_ASCII[256] =
 namespace MQ {
 namespace Web {
 
-MessageController::MessageController(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
-	: Controller(request, response)
+MessageController::MessageController() : MQController()
 {
 }
 
 
 MessageController::~MessageController()
 {
-
 }
 
 
-void MessageController::handle()
+void MessageController::list()
 {
-	Poco::URI uri(_request.getURI());
-	std::vector<std::string> paths;
-	uri.getPathSegments(paths);
-
-	if ( paths.size() < 5 )
+	if ( !isPost() )
 	{
-		_response.setStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
 		return;
 	}
 
-	std::string queueName = paths[2];
-	std::string messageId = paths[4];
+	std::vector<std::string> parameters = getParameters();
+	// First parameter is queuemanager
+	// Second parameter is queuename
+	if ( parameters.size() < 2 )
+	{
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+		return;
+	}
+
+	std::string queueName = parameters[1];
+	Poco::JSON::Object::Ptr jsonQueue = new Poco::JSON::Object();
+	jsonQueue->set("name", queueName);
+	set("queue", jsonQueue);
+
+	Poco::Net::HTMLForm form(request(), request().stream());
+
+	std::string limitField = form.get("limit");
+	int limit = -1;
+	if ( ! limitField.empty() )
+	{
+		Poco::NumberParser::tryParse(limitField, limit);
+	}
+
+	std::string teaserField = form.get("teaser");
+	int teaser = 0;
+	if ( ! teaserField.empty() )
+	{
+		Poco::NumberParser::tryParse(teaserField, teaser);
+	}
+
+	Poco::JSON::Array::Ptr jsonMessages = new Poco::JSON::Array();
+
+	Queue q(qmgr(), queueName);
+	q.open(MQOO_BROWSE);
+
+	int count = 0;
+	while(1)
+	{
+		Message msg(teaser);
+		try
+		{
+			q.get(msg, MQGMO_BROWSE_NEXT + MQGMO_ACCEPT_TRUNCATED_MSG, 0);
+		}
+		catch(MQException mqe)
+		{
+			if ( mqe.reason() == MQRC_NO_MSG_AVAILABLE )
+			{
+				break;
+			}
+			if ( mqe.reason() != MQRC_TRUNCATED_MSG_ACCEPTED )
+			{
+				throw;
+			}
+		}
+
+		count++;
+		Poco::JSON::Object::Ptr jsonMessage = new Poco::JSON::Object();
+
+		BufferPtr id = msg.getMessageId();
+		std::stringstream hexId;
+		for(int i = 0; i < id->size(); ++i)
+		{
+			hexId << std::setw(2) << std::setfill('0') << std::hex << std::uppercase << (int) (*id)[i];
+		}
+		jsonMessage->set("id", hexId.str());
+
+		jsonMessage->set("putDate", Poco::DateTimeFormatter::format(msg.getPutDate(), "%d-%m-%Y %H:%M:%S"));
+		jsonMessage->set("user", msg.getUser());
+		jsonMessage->set("putApplication", msg.getPutApplication());
+		jsonMessage->set("format", msg.getFormat());
+		jsonMessage->set("length", msg.dataLength());
+		jsonMessage->set("encoding", msg.getEncoding());
+		jsonMessage->set("ccsid", msg.getCodedCharSetId());
+
+		std::string data;
+		if ( teaser > 0 && msg.getFormat().compare(MQFMT_STRING) == 0 )
+		{
+			if ( msg.dataLength() < msg.buffer().size() )
+			{
+				msg.buffer().resize(msg.dataLength());
+			}
+			data = std::string(msg.buffer().begin(), msg.buffer().end());
+			if ( teaser < msg.dataLength() )
+			{
+				data += " ...";
+			}
+			jsonMessage->set("data", data);
+		}
+
+		jsonMessages->add(jsonMessage);
+	}
+
+	set("messages", jsonMessages);
+	render("messageList.tpl");
+}
+
+
+void MessageController::view()
+{
+	std::vector<std::string> parameters = getParameters();
+
+	if ( parameters.size() < 3 )
+	{
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+		return;
+	}
+
+	std::string queueName = parameters[1];
+	std::string messageId = parameters[2];
 
 	Buffer id(MQ_MSG_ID_LENGTH);
 	for(int i = 0; i < MQ_MSG_ID_LENGTH; i++)
@@ -123,7 +222,7 @@ void MessageController::handle()
 	Message message;
 	message.setMessageId(id);
 
-	Queue q(_qmgr, queueName);
+	Queue q(qmgr(), queueName);
 	q.open(MQOO_BROWSE);
 
 	try
@@ -147,10 +246,8 @@ void MessageController::handle()
 	}
 	message.buffer().resize(message.dataLength());
 
-	Poco::Net::HTMLForm form(_request);
+	Poco::Net::HTMLForm form(request());
 	std::string type = form.get("type", "detail");
-
-	Poco::JSON::Template::Ptr tpl;
 
 	Poco::JSON::Object::Ptr jsonMessage = new Poco::JSON::Object();
 
@@ -254,21 +351,8 @@ void MessageController::handle()
 		jsonMessage->set("id", messageId);
 	}
 
-	_data->set("message", jsonMessage);
-
-	tpl = Poco::JSON::TemplateCache::instance()->getTemplate(Poco::Path("message.tpl"));
-	if ( ! tpl.isNull() )
-	{
-		// Don't cache the result
-		_response.set("Cache-Control", "no-cache,no-store,must-revalidate");
-		_response.set("Pragma", "no-cache");
-		_response.set("Expires", "0");
-		tpl->render(_data, _response.send());
-		_response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-		return;
-	}
-
-	_response.setStatus(Poco::Net::HTTPResponse::HTTP_REASON_BAD_REQUEST);
+	set("message", jsonMessage);
+	render("message.tpl");
 }
 
 } } // Namespace MQ::Web

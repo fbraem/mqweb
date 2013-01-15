@@ -20,10 +20,12 @@
  */
 #include <sstream>
 
-#include <MQ/Web/QueueController.h>
+#include <MQ/Web/Controller.h>
 #include <MQ/MQSubsystem.h>
 
 #include <Poco/Util/Application.h>
+#include <Poco/NullStream.h>
+#include <Poco/StreamCopier.h>
 #include <Poco/URI.h>
 
 #include <Poco/JSON/TemplateCache.h>
@@ -33,100 +35,105 @@ namespace MQ
 namespace Web
 {
 
-Controller::Controller(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
-  : _request(request)
-  , _response(response)
-  , _data(new Poco::JSON::Object())
+
+Controller::Controller() : _data(new Poco::JSON::Object())
 {
-  Poco::URI uri(request.getURI());
-  std::vector<std::string> paths;
-  uri.getPathSegments(paths);
-
-  MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQSubsystem>();
-  Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
-
-  if ( paths.size() > 0 )
-  {
-     _qmgr = new QueueManager(paths[0]);
-  }
-  else
-  {
-    if ( mqSystem.client() )
-    {
-      _qmgr = new QueueManager(config.getString("mq.web.defaultQmgr", "*"));
-    }
-    else // In bindings mode we can connect to the default queuemanager
-    {
-      _qmgr = new QueueManager();
-    }
-  }
-
-  if ( mqSystem.binding() )
-  {
-    _qmgr->connect();
-  }
-  else
-  {
-    // In client mode we check for a configuration
-    // When this is not available, we hope that a channel tab file
-    // is configured.
-    std::string qmgrConfig = "mq.web.qmgr." + _qmgr->name();
-    std::string qmgrConfigConnection = qmgrConfig + ".connection";
-    std::string qmgrConfigChannel = qmgrConfig + ".channel";
-
-    if ( config.has(qmgrConfigConnection) )
-    {
-      std::string connection;
-      std::string channel;
-
-      try
-      {
-        connection = config.getString(qmgrConfigConnection);
-      }
-      catch(Poco::NotFoundException nfe)
-      {
-        poco_error_f1(Poco::Logger::get("mq.web"), "Can't find %s property in configuration file", qmgrConfigConnection);
-        //TODO: redirect to error page
-      }
-
-      try
-      {
-        channel = config.getString(qmgrConfigChannel);
-      }
-      catch(Poco::NotFoundException nfe)
-      {
-        poco_error_f1(Poco::Logger::get("mq.web"), "Can't find %s property in configuration file", qmgrConfigChannel);
-        //TODO: redirect to error page
-      }
-      _qmgr->connect(channel, connection);
-    }
-    else // Hope that there is a channel tab file available
-    {
-      _qmgr->connect();
-    }
-  }
-
-  Poco::JSON::Object::Ptr jsonQmgr(new Poco::JSON::Object());
-  _data->set("qmgr", jsonQmgr);
-  jsonQmgr->set("name", _qmgr->name());
-  jsonQmgr->set("zos", _qmgr->zos());
-
-  _commandServer = new CommandServer(_qmgr, "SYSTEM.MQEXPLORER.REPLY.MODEL");
 }
 
 
 Controller::~Controller()
 {
-
 }
 
-void Controller::renderTemplate(const std::string& templateFile)
+void Controller::handlePart(const Poco::Net::MessageHeader& header, std::istream& stream)
 {
-  Poco::JSON::Template::Ptr tpl = Poco::JSON::TemplateCache::instance()->getTemplate(Poco::Path(templateFile));
-  poco_assert_dbg(!tpl.isNull());
+	//TODO
+}
 
-  tpl->render(_data, _response.send());
-  _response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+
+void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
+{
+	_parameters = parameters;
+	_request = &request;
+	_response = &response;
+
+	if ( _parameters.size() > 0 )
+	{
+		_action = _parameters.front();
+		_parameters.erase(_parameters.begin());
+	}
+	else
+	{
+		_action = getDefaultAction();
+	}
+
+	for(std::vector<std::string>::iterator it = _parameters.begin(); it != _parameters.end(); ++it)
+	{
+		int pos = it->find_first_of(':');
+		if ( pos != std::string::npos )
+		{
+			std::string name = it->substr(0, pos);
+			std::string value = it->substr(pos+1);
+			_namedParameters[name] = value;
+		}
+	}
+
+	_form.load(request, request.stream(), *this);
+
+	// Make sure everything is read, otherwise this can result
+	// in Bad Request error in the next call.
+	Poco::NullOutputStream nos;
+	Poco::StreamCopier::copyStream(request.stream(), nos);
+
+	try
+	{
+		beforeAction();
+
+		if ( response.getStatus() != Poco::Net::HTTPResponse::HTTP_OK
+			|| _data->has("error") )
+		{
+			//TODO: return error template file or json error
+		}
+
+		const ActionMap& actions = getActions();
+		ActionMap::const_iterator it = actions.find(_action);
+		if ( it != actions.end() )
+		{
+			ActionFn action = it->second;
+			(this->*action)();
+		}
+
+		afterAction();
+	}
+	catch(...)
+	{
+		//TODO: redirect to an error page
+	}
+}
+
+void Controller::render(const std::string& templateFile)
+{
+	Poco::JSON::Template::Ptr tpl = Poco::JSON::TemplateCache::instance()->getTemplate(Poco::Path(templateFile));
+	poco_assert_dbg(!tpl.isNull());
+
+	_response->setChunkedTransferEncoding(true);
+	_response->setContentType("text/html");
+
+	// Don't cache are views
+	_response->set("Cache-Control", "no-cache,no-store,must-revalidate");
+	_response->set("Pragma", "no-cache");
+	_response->set("Expires", "0");
+
+	tpl->render(_data, _response->send());
+}
+
+
+void Controller::render()
+{
+	_response->setChunkedTransferEncoding(true);
+	_response->setContentType("application/json");
+
+	_data->stringify(_response->send());
 }
 
 

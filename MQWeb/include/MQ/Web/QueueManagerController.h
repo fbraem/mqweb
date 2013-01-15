@@ -22,7 +22,8 @@
 #ifndef _MQWeb_QueueManagerController_h
 #define _MQWeb_QueueManagerController_h
 
-#include <MQ/Web/QueueController.h>
+#include <MQ/Web/MQController.h>
+#include <MQ/Web/MapInitializer.h>
 
 namespace MQ
 {
@@ -30,18 +31,39 @@ namespace Web
 {
 
 
-  class QueueManagerController : public Controller
-  {
-  public:
-    QueueManagerController(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
-    
-    
-    virtual ~QueueManagerController();
-    
-    
-    void handle();
-  };
+class QueueManagerController : public MQController
+{
+public:
+	QueueManagerController();
 
-} } // Namespace MQ::Web
+
+	virtual ~QueueManagerController();
+
+
+	const std::map<std::string, Controller::ActionFn>& getActions() const;
+
+
+	std::string getDefaultAction() const;
+
+
+	void view();
+};
+
+
+inline const Controller::ActionMap& QueueManagerController::getActions() const
+{
+	static Controller::ActionMap actions
+		= MapInitializer<std::string, Controller::ActionFn>
+			("view", static_cast<ActionFn>(&QueueManagerController::view));
+	return actions;
+}
+
+
+inline std::string QueueManagerController::getDefaultAction() const
+{
+	return "view";
+}
+
+}} // Namespace MQ::Web
 
 #endif // _MQWeb_QueueManagerController_h

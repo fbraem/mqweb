@@ -22,21 +22,17 @@
 #include <Poco/Net/HTMLForm.h>
 #include <Poco/URI.h>
 
-#include <MQ/MQException.h>
-#include <MQ/CommandServer.h>
-
+#include <MQ/Web/MQController.h>
 #include <MQ/Web/ChannelController.h>
 #include <MQ/Web/ChannelMQMapper.h>
-
-#include <Poco/JSON/TemplateCache.h>
+#include <MQ/Web/ChannelStatusMQMapper.h>
 
 namespace MQ
 {
 namespace Web
 {
 
-ChannelController::ChannelController(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
-  : Controller(request, response)
+ChannelController::ChannelController() : MQController()
 {
 }
 
@@ -47,45 +43,116 @@ ChannelController::~ChannelController()
 }
 
 
-void ChannelController::handle()
+void ChannelController::list()
 {
-  Poco::URI uri(_request.getURI());
-  std::vector<std::string> paths;
-  uri.getPathSegments(paths);
+	if ( !isPost() )
+	{
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+		return;
+	}
 
-  if ( paths.size() < 3 )
-  {
-    _response.setStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
-    return;
-  }
+	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
 
-  std::string channelName = paths[2];
+	Poco::Net::HTMLForm form(request(), request().stream());
 
-  Poco::JSON::Object::Ptr jsonQmgr = _data->getObject("qmgr");
-  poco_assert_dbg(!jsonQmgr.isNull());
+	std::string channelNameField = form.get("channelName", "*");
+	filter->set("name", channelNameField.empty() ? "*" : channelNameField);
+	filter->set("type", form.get("channelType", "All"));
+	filter->set("excludeSystem", form.get("channelExcludeSystem", "0").compare("1") == 0);
 
-  jsonQmgr->set("createDate", Poco::DateTimeFormatter::format(_qmgr->creationDate(), "%d-%m-%Y %H:%M:%S"));
-  jsonQmgr->set("alterDate", Poco::DateTimeFormatter::format(_qmgr->alterationDate(), "%d-%m-%Y %H:%M:%S"));
-  jsonQmgr->set("id", _qmgr->id());
-  jsonQmgr->set("description", _qmgr->description());
+	ChannelMQMapper channelMapper(*commandServer());
+	Poco::JSON::Array::Ptr jsonChannels = channelMapper.inquire(filter);
 
-  Poco::Net::HTMLForm form(_request);
-  std::string type = form.get("type", "All");
+	// A channel name is not unique. To make it possible to associate the status
+	// to the correct channel, we store all channels in a temporary JSON object
+	Poco::JSON::Object::Ptr jsonAllChannels = new Poco::JSON::Object();
+	for(Poco::JSON::Array::ValueVector::const_iterator it = jsonChannels->begin(); it != jsonChannels->end(); ++it)
+	{
+		if ( it->type() == typeid(Poco::JSON::Object::Ptr) )
+		{
+			Poco::JSON::Object::Ptr jsonChannel = it->extract<Poco::JSON::Object::Ptr>();
 
-  Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
-  filter->set("name", channelName);
-  filter->set("type", type);
+			Poco::JSON::Object::Ptr jsonChannelName = jsonChannel->getObject("ChannelName");
+			poco_assert_dbg(! jsonChannelName.isNull());
+			std::string channelName = jsonChannelName->getValue<std::string>("value");
 
-  ChannelMQMapper channelMapper(*_commandServer.get());
-  Poco::JSON::Array::Ptr jsonChannels = channelMapper.inquire(filter);
-  Poco::JSON::Object::Ptr jsonChannel = jsonChannels->getObject(0);
+			Poco::JSON::Object::Ptr jsonType = jsonChannel->getObject("ChannelType");
+			poco_assert_dbg(! jsonType.isNull());
+			std::string type = jsonType->get("value");
 
-  if ( !jsonChannel.isNull() )
-  {
-    _data->set("channel", jsonChannel);
-  }
+			jsonAllChannels->set(type + "/" + channelName, *it);
+		}
+	}
 
-  renderTemplate("channel.tpl");
+	filter = new Poco::JSON::Object();
+	filter->set("name", channelNameField.empty() ? "*" : channelNameField);
+	filter->set("type", form.get("channelType", "All"));
+	ChannelStatusMQMapper channelStatusMapper(*commandServer());
+	Poco::JSON::Array::Ptr statuses = channelStatusMapper.inquire(filter);
+
+	// Associate all status objects to their corresponding channel object
+	for(Poco::JSON::Array::ValueVector::const_iterator it = statuses->begin(); it != statuses->end(); ++it)
+	{
+	if ( it->type() == typeid(Poco::JSON::Object::Ptr) )
+	{
+		Poco::JSON::Object::Ptr jsonStatus = it->extract<Poco::JSON::Object::Ptr>();
+
+		Poco::JSON::Object::Ptr jsonChannelName = jsonStatus->getObject("ChannelName");
+		poco_assert_dbg(! jsonChannelName.isNull());
+		std::string channelName = jsonChannelName->getValue<std::string>("value");
+
+		Poco::JSON::Object::Ptr jsonType = jsonStatus->getObject("ChannelType");
+		poco_assert_dbg(! jsonType.isNull());
+		std::string type = jsonType->get("value");
+
+		Poco::JSON::Object::Ptr jsonChannel = jsonAllChannels->getObject(type + "/" + channelName);
+		if ( jsonChannel.isNull() )
+		{
+			jsonChannel = new Poco::JSON::Object();
+			jsonChannel->set("ChannelName", jsonChannelName);
+			jsonChannel->set("ChannelType", jsonType);
+			jsonChannel->set("autodefined", true);
+			jsonAllChannels->set(type + "/" + channelName, jsonChannel);
+			jsonChannels->add(jsonChannel);
+		}
+		jsonChannel->set("status", jsonStatus);
+		}
+	}
+
+	set("channels", jsonChannels);
+	render("channelList.tpl");
+}
+
+
+void ChannelController::view()
+{
+	std::vector<std::string> parameters = getParameters();
+
+	// First parameter is the queuemanager name
+	// Second parameter is the channelname
+	if ( parameters.size() < 2 )
+	{
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+		return;
+	}
+
+	std::string channelName = parameters[1];
+
+	std::string type = form().get("type", "All");
+
+	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+	filter->set("name", channelName);
+	filter->set("type", type);
+
+	ChannelMQMapper channelMapper(*commandServer());
+	Poco::JSON::Array::Ptr jsonChannels = channelMapper.inquire(filter);
+	Poco::JSON::Object::Ptr jsonChannel = jsonChannels->getObject(0);
+
+	if ( !jsonChannel.isNull() )
+	{
+		set("channel", jsonChannel);
+	}
+	render("channel.tpl");
 }
 
 

@@ -19,9 +19,9 @@
  * permissions and limitations under the Licence.
  */
 #include <MQ/Web/RequestHandlerFactory.h>
-#include <MQ/Web/MQRequestHandler.h>
 #include <MQ/Web/StaticRequestHandler.h>
 #include <MQ/Web/DenyRequestHandler.h>
+#include <MQ/Web/ControllerRequestHandler.h>
 
 #include <Poco/Logger.h>
 #include <Poco/RegularExpression.h>
@@ -39,76 +39,77 @@ RequestHandlerFactory::RequestHandlerFactory() : Poco::Net::HTTPRequestHandlerFa
 
 Poco::Net::HTTPRequestHandler* RequestHandlerFactory::createRequestHandler(const Poco::Net::HTTPServerRequest& request)
 {
-  static std::string staticURI = "/static";
-  std::string uri = request.getURI();
-  
-  Poco::Logger& logger = Poco::Logger::get("mq.web.access");
-  logger.information(Poco::Logger::format("IP: $0 URI: $1 ($2)", request.clientAddress().toString(), uri, request.getMethod()));
-  
-  if ( ! filter(request) )
-  {
-    return new DenyRequestHandler();
-  }
+	static std::string staticURI = "/static";
+	std::string uri = request.getURI();
 
-  if ( ! uri.compare(0, staticURI.size(), staticURI) )
-  {
-    return new StaticRequestHandler();
-  }
-  
-  return new MQRequestHandler();
+	Poco::Logger& logger = Poco::Logger::get("mq.web.access");
+	logger.information(Poco::Logger::format("IP: $0 URI: $1 ($2)", request.clientAddress().toString(), uri, request.getMethod()));
+
+	if ( ! filter(request) )
+	{
+		return new DenyRequestHandler();
+	}
+
+	if ( ! uri.compare(0, staticURI.size(), staticURI) 
+		|| ! uri.compare("/favicon.ico") )
+	{
+		return new StaticRequestHandler();
+	}
+
+	return new ControllerRequestHandler();
 }
 
 bool RequestHandlerFactory::filter(const Poco::Net::HTTPServerRequest& request)
 {
-  Poco::Logger& logger = Poco::Logger::get("mq.web");
+	Poco::Logger& logger = Poco::Logger::get("mq.web");
 
-  bool allowed = true;
+	bool allowed = true;
 
-  std::string ip = request.clientAddress().host().toString();
+	std::string ip = request.clientAddress().host().toString();
 
-  //TODO: move this to Application and exit MQWeb when an invalid regex is found
-  static Poco::Util::AbstractConfiguration* allowIPs = Poco::Util::Application::instance().config().createView("mq.web.allow");
-  static Poco::Util::AbstractConfiguration* denyIPs = Poco::Util::Application::instance().config().createView("mq.web.deny");
+	//TODO: move this to Application and exit MQWeb when an invalid regex is found
+	static Poco::Util::AbstractConfiguration* allowIPs = Poco::Util::Application::instance().config().createView("mq.web.allow");
+	static Poco::Util::AbstractConfiguration* denyIPs = Poco::Util::Application::instance().config().createView("mq.web.deny");
 
-  Poco::Util::AbstractConfiguration::Keys keys;
+	Poco::Util::AbstractConfiguration::Keys keys;
 
-  allowIPs->keys(keys);
-  if ( keys.size() > 0 ) // Check if IP is allowed
-  {
-    allowed = false;
-    for(Poco::Util::AbstractConfiguration::Keys::iterator it = keys.begin(); it != keys.end(); ++it)
-    {
-      std::string regexValue = allowIPs->getString(*it);
-      poco_trace_f3(logger, "IP Allow Check %s : %s (%s)", ip, regexValue, *it);
-      Poco::RegularExpression regex(allowIPs->getString(*it));
-      if ( regex.match(ip) )
-      {
-        poco_debug_f2(logger, "IP %s allowed (mq.web.allow.%s matched)", ip, *it);
-        allowed = true;
-        break;
-      }
-    }
-  }
+	allowIPs->keys(keys);
+	if ( keys.size() > 0 ) // Check if IP is allowed
+	{
+		allowed = false;
+		for(Poco::Util::AbstractConfiguration::Keys::iterator it = keys.begin(); it != keys.end(); ++it)
+		{
+			std::string regexValue = allowIPs->getString(*it);
+			poco_trace_f3(logger, "IP Allow Check %s : %s (%s)", ip, regexValue, *it);
+			Poco::RegularExpression regex(allowIPs->getString(*it));
+			if ( regex.match(ip) )
+			{
+				poco_debug_f2(logger, "IP %s allowed (mq.web.allow.%s matched)", ip, *it);
+				allowed = true;
+				break;
+			}
+		}
+	}
 
-  denyIPs->keys(keys);
-  if ( keys.size() > 0 ) // Check if IP is denied
-  {
-    for(Poco::Util::AbstractConfiguration::Keys::iterator it = keys.begin(); it != keys.end(); ++it)
-    {
-      std::string regexValue = denyIPs->getString(*it);
+	denyIPs->keys(keys);
+	if ( keys.size() > 0 ) // Check if IP is denied
+	{
+		for(Poco::Util::AbstractConfiguration::Keys::iterator it = keys.begin(); it != keys.end(); ++it)
+		{
+			std::string regexValue = denyIPs->getString(*it);
 
-      poco_trace_f3(logger, "IP Deny Check %s : %s (%s)", ip, regexValue, *it);
-      Poco::RegularExpression regex(denyIPs->getString(*it));
-      if ( regex.match(ip) )
-      {
-        poco_warning_f2(logger, "IP %s denied (mq.web.deny.%s matched)", ip, *it);
-        allowed = false;
-        break;
-      }
-    }
-  }
+			poco_trace_f3(logger, "IP Deny Check %s : %s (%s)", ip, regexValue, *it);
+			Poco::RegularExpression regex(denyIPs->getString(*it));
+			if ( regex.match(ip) )
+			{
+				poco_warning_f2(logger, "IP %s denied (mq.web.deny.%s matched)", ip, *it);
+				allowed = false;
+				break;
+			}
+		}
+	}
 
-  return allowed;
+	return allowed;
 }
 
 } } // Namespace MQ::Web

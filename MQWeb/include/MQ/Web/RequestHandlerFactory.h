@@ -31,19 +31,19 @@ namespace MQ
 namespace Web
 {
 
-  class RequestHandlerFactory: public Poco::Net::HTTPRequestHandlerFactory
-  {
-  public:
+class RequestHandlerFactory: public Poco::Net::HTTPRequestHandlerFactory
+{
+public:
 
-    RequestHandlerFactory();
+	RequestHandlerFactory();
 
 
-    Poco::Net::HTTPRequestHandler* createRequestHandler(const Poco::Net::HTTPServerRequest& request);
+	Poco::Net::HTTPRequestHandler* createRequestHandler(const Poco::Net::HTTPServerRequest& request);
 
-  private:
+private:
 
-    bool filter(const Poco::Net::HTTPServerRequest& request);
-  };
+	bool filter(const Poco::Net::HTTPServerRequest& request);
+};
 
 } } // Namespace MQ::Web
 

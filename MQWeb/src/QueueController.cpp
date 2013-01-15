@@ -20,10 +20,7 @@
  */
 #include <Poco/DateTimeFormatter.h>
 #include <Poco/URI.h>
-#include <Poco/JSON/TemplateCache.h>
-
-#include <MQ/MQException.h>
-#include <MQ/CommandServer.h>
+#include <Poco/Net/HTMLForm.h>
 
 #include <MQ/Web/QueueController.h>
 #include <MQ/Web/QueueMQMapper.h>
@@ -33,44 +30,92 @@ namespace MQ
 namespace Web
 {
 
-QueueController::QueueController(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
-  : Controller(request, response)
+
+QueueController::QueueController() : MQController()
 {
 }
 
 
 QueueController::~QueueController()
 {
-
 }
 
 
-void QueueController::handle()
+void QueueController::list()
 {
-	Poco::URI uri(_request.getURI());
-	std::vector<std::string> paths;
-	uri.getPathSegments(paths);
-
-	if ( paths.size() < 3 )
+	if ( !isPost() )
 	{
-		_response.setStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
 		return;
 	}
 
-	std::string queueName = paths[2];
+	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
 
-	Poco::JSON::Object::Ptr jsonQmgr = _data->getObject("qmgr");
-	poco_assert_dbg(!jsonQmgr.isNull());
+	std::string queueNameField = form().get("queueName", "*");
+	if ( queueNameField.empty() )
+	{
+		queueNameField = "*";
+	}
+	filter->set("name", queueNameField);
 
-	jsonQmgr->set("createDate", Poco::DateTimeFormatter::format(_qmgr->creationDate(), "%d-%m-%Y %H:%M:%S"));
-	jsonQmgr->set("alterDate", Poco::DateTimeFormatter::format(_qmgr->alterationDate(), "%d-%m-%Y %H:%M:%S"));
-	jsonQmgr->set("id", _qmgr->id());
-	jsonQmgr->set("description", _qmgr->description());
+	std::string queueDepthField = form().get("queueDepth", "");
+	int queueDepth;
+	if ( Poco::NumberParser::tryParse(queueDepthField, queueDepth) )
+	{
+		filter->set("qdepth", queueDepth);
+	}
+
+	filter->set("type", form().get("queueType", "All"));
+	filter->set("excludeSystem", form().get("queueExcludeSystem", "0").compare("1") == 0);
+
+	QueueMQMapper queueMapper(*commandServer());
+	Poco::JSON::Array::Ptr jsonQueues = queueMapper.inquire(filter);
+
+	for(int i = 0; i < jsonQueues->size(); ++i)
+	{
+		Poco::JSON::Object::Ptr jsonQueue = jsonQueues->getObject(i);
+		if ( ! jsonQueue.isNull() )
+		{
+			Poco::JSON::Object::Ptr jsonType = jsonQueue->getObject("QType");
+			if ( !jsonType.isNull() )
+			{
+				// Add a property with the type as propertyname and true as value
+				// to help a view to check which type of queue we have. For example:
+				// {
+				//   "QType" : { "value" : 1, "display" : "Local", "Local" : true }
+				// }
+				std::string display = jsonType->optValue<std::string>("display", "");
+				if ( ! display.empty() )
+				{
+					jsonType->set(display, true);
+				}
+			}
+		}
+	}
+
+	set("queues", jsonQueues);
+	render("queueList.tpl");
+}
+
+
+void QueueController::view()
+{
+	std::vector<std::string> parameters = getParameters();
+
+	// First parameter is the queuemanager name
+	// Second parameter is the queue name
+	if ( parameters.size() < 2 )
+	{
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+		return;
+	}
+
+	std::string queueName = parameters[1];
 
 	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
 	filter->set("name", queueName);
 
-	QueueMQMapper queueMapper(*_commandServer.get());
+	QueueMQMapper queueMapper(*commandServer());
 	Poco::JSON::Array::Ptr jsonQueues = queueMapper.inquire(filter);
 
 	if ( jsonQueues->size() > 0 )
@@ -78,7 +123,7 @@ void QueueController::handle()
 		Poco::JSON::Object::Ptr jsonQueue = jsonQueues->getObject(0);
 		if ( ! jsonQueue.isNull() )
 		{
-			_data->set("queue", jsonQueues->getObject(0));
+			set("queue", jsonQueues->getObject(0));
 
 			Poco::JSON::Object::Ptr jsonType = jsonQueue->getObject("QType");
 			if ( !jsonType.isNull() )
@@ -94,17 +139,14 @@ void QueueController::handle()
 					jsonType->set(display, true);
 				}
 			}
-			Poco::JSON::Template::Ptr tpl = Poco::JSON::TemplateCache::instance()->getTemplate(Poco::Path("queue.tpl"));
-			poco_assert_dbg(!tpl.isNull());
 
-			tpl->render(_data, _response.send());
-			_response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+			render("queue.tpl");
 
 			return;
 		}
 	}
 
-	_response.setStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
+	setResponseStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
 }
 
 

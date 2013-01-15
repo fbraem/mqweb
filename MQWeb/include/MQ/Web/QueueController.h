@@ -22,27 +22,50 @@
 #ifndef _MQWeb_QueueController_h
 #define _MQWeb_QueueController_h
 
-#include <MQ/Web/Controller.h>
+#include <MQ/Web/MQController.h>
+#include <MQ/Web/MapInitializer.h>
 
 namespace MQ {
 namespace Web {
 
-class QueueController : public Controller
-  /// Controller that shows the details of a queue
+class QueueController : public MQController
+	/// Controller that shows the details of a queue
 {
 public:
-  QueueController(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
-    /// Constructor
+	QueueController();
+		/// Constructor
+
+	virtual ~QueueController();
+		/// Destructor
+
+	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 
 
-  virtual ~QueueController();
-    /// Destructor
+	std::string getDefaultAction() const;
 
-  void handle();
-    /// Sends a MQCMD_INQUIRE_Q command to get the details of the queue
+
+	void list();
+
+
+	void view();
 
 private:
 };
+
+
+inline const Controller::ActionMap& QueueController::getActions() const
+{
+	static Controller::ActionMap actions 
+		= MapInitializer<std::string, Controller::ActionFn>
+			("list", static_cast<ActionFn>(&QueueController::list))
+			("view", static_cast<ActionFn>(&QueueController::view));
+	return actions;
+}
+
+inline std::string QueueController::getDefaultAction() const
+{
+	return "list";
+}
 
 
 } } // Namespace MQ::Web
