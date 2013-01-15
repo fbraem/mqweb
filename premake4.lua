@@ -1,8 +1,21 @@
+-- Where is MQ?
+if os.is("windows") then
+ mq_inc = "c:\\Program Files\\IBM\\Websphere MQ\\tools\\c\\include"
+elseif os.is("linux") then
+ mq_inc = "/opt/mqm/inc"
+else
+ print "Please set mq_inc to the directory which contains the Websphere MQ header files"
+ os.exit(1)
+end
+
 -- Where is POCO?
 
 -- only set this when you didn't install POCO (you didn't run 'install make')
 --poco_dir = "/home/bronx/Development/PocoTrunk"
 --poco_lib_dir = poco_dir .. "/shared/lib/Linux/i686"
+
+--poco_dir = "c:\\poco-1.5.0-all"
+--poco_lib_dir = poco_dir .. "\\lib"
 
 -- Try to find POCO ourselves when the directory is not set
 if not poco_dir or #poco_dir == 0 then

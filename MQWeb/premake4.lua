@@ -29,9 +29,6 @@ project "MQWeb"
               "WIN32", 
               "_CRT_SECURE_NO_DEPRECATE" 
             }
-  
-  configuration "linux"
-    includedirs { "/opt/mqm/inc" }
 
   configuration { "windows", "codelite or codeblock" }
     defines {
@@ -42,6 +39,7 @@ project "MQWeb"
   
     libdirs { 
                 poco_lib_dir
+                , "../bin/Debug"
             }
 
     -- Set the include paths
@@ -53,6 +51,7 @@ project "MQWeb"
                   , poco_dir .. "/JSON/include"
                   , "include"
                   , "../MQ/include"
+                  , mq_inc
                 }
 
   configuration "Debug"

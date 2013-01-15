@@ -20,8 +20,6 @@ project "MQ"
                 , poco_dir .. "/Util/include"
                 , poco_dir .. "/XML/include"
                 , "include"
-              }  
-
-  configuration "linux"
-    includedirs { "/opt/mqm/inc" }
+                , mq_inc
+              }
 
