@@ -28,7 +28,7 @@ Running MQWeb
 -------------
 
 1. By default mqweb connects in bindings mode. This can be changed by 
-   setting the mq.web.mode property to 'client' and to configure Websphere MQ 
+   setting the mq.mode property to 'client' and to configure Websphere MQ 
    client or mqweb. 
    
    a) Configure Websphere MQ Client: 
@@ -41,6 +41,7 @@ Running MQWeb
    b) Configure mqweb:
    Add mq.web.qmgr properties as follows:
 ```
+    mq.mode=client
     mq.web.qmgr.<qmgrName>.connection=<host>(<port>)
     mq.web.qmgr.<qmgrName>.channel=<channelName>
 ```
