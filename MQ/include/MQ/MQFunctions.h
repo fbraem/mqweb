@@ -26,7 +26,7 @@
 #include <map>
 
 #include <Poco/SharedLibrary.h>
-#include <Poco/NamedMutex.h>
+#include <Poco/Mutex.h>
 
 #ifndef _MQ_MQFunctions_H
 #define _MQ_MQFunctions_H
@@ -149,7 +149,7 @@ private:
 	InqFn _inqFn;
 
 
-	static Poco::NamedMutex _MQIMutex;
+	static Poco::Mutex _MQIMutex;
 
 
 	void trace(const std::string& subject, const std::string& function, PMQLONG cc, PMQLONG rc);

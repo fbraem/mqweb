@@ -32,7 +32,7 @@
 namespace MQ
 {
 
-Poco::NamedMutex MQFunctions::_MQIMutex("MQIMutex");
+Poco::Mutex MQFunctions::_MQIMutex;
 
 MQFunctions::MQFunctions() :   
     _connFn(NULL)
@@ -75,7 +75,7 @@ void MQFunctions::conn(char* qmgrName, MQHCONN* hconn, PMQLONG cc, PMQLONG rc)
 {
   poco_assert_dbg(_connFn != NULL);
 
-  Poco::ScopedLock<Poco::NamedMutex> lock(_MQIMutex);
+  Poco::ScopedLock<Poco::Mutex> lock(_MQIMutex);
   _connFn(qmgrName, hconn, cc, rc);
 
   trace(qmgrName, "MQCONN", cc, rc);
@@ -105,7 +105,7 @@ void MQFunctions::connx(char* qmgrName, MQCNO* connectOpts, MQHCONN* hconn, PMQL
 {
   poco_assert_dbg(_connxFn != NULL);
 
-  Poco::ScopedLock<Poco::NamedMutex> lock(_MQIMutex);
+  Poco::ScopedLock<Poco::Mutex> lock(_MQIMutex);
   _connxFn(qmgrName, connectOpts, hconn, cc, rc);
 
   trace(qmgrName, "MQCONNX", cc, rc);
@@ -134,7 +134,7 @@ void MQFunctions::open(MQHCONN conn, MQOD* od, MQLONG options, MQHOBJ* obj, PMQL
 {
   poco_assert_dbg(_openFn != NULL);
 
-  Poco::ScopedLock<Poco::NamedMutex> lock(_MQIMutex);
+  Poco::ScopedLock<Poco::Mutex> lock(_MQIMutex);
   _openFn(conn, od, options, obj, cc, rc);
 
   trace(od->ObjectName, "MQOPEN", cc, rc);
@@ -163,7 +163,7 @@ void MQFunctions::put(MQHCONN conn, MQHOBJ obj, MQMD* md, MQPMO* options, MQLONG
 {
   poco_assert_dbg(_putFn != NULL);
 
-  Poco::ScopedLock<Poco::NamedMutex> lock(_MQIMutex);
+  Poco::ScopedLock<Poco::Mutex> lock(_MQIMutex);
   _putFn(conn, obj, md, options, size, buffer, cc, rc);
 
   trace("", "MQPUT", cc, rc);
@@ -187,7 +187,7 @@ void MQFunctions::get(MQHCONN conn, MQHOBJ obj, MQMD* md, MQGMO* options, MQLONG
 {
   poco_assert_dbg(_getFn != NULL);
 
-  Poco::ScopedLock<Poco::NamedMutex> lock(_MQIMutex);
+  Poco::ScopedLock<Poco::Mutex> lock(_MQIMutex);
   _getFn(conn, obj, md, options, size, buffer, dataLength, cc, rc);
 
   trace("", "MQGET", cc, rc);
@@ -210,7 +210,7 @@ void MQFunctions::close(MQHCONN conn, MQHOBJ* obj, MQLONG options, PMQLONG cc, P
 {
   poco_assert_dbg(_closeFn != NULL);
 
-  Poco::ScopedLock<Poco::NamedMutex> lock(_MQIMutex);
+  Poco::ScopedLock<Poco::Mutex> lock(_MQIMutex);
   _closeFn(conn, obj, options, cc, rc);
 
   trace("", "MQCLOSE", cc, rc);
@@ -232,7 +232,7 @@ void MQFunctions::disc(PMQHCONN conn, PMQLONG cc, PMQLONG rc)
 {
   poco_assert_dbg(_discFn != NULL);
 
-  Poco::ScopedLock<Poco::NamedMutex> lock(_MQIMutex);
+  Poco::ScopedLock<Poco::Mutex> lock(_MQIMutex);
   _discFn(conn, cc, rc);
 }
 
@@ -252,7 +252,7 @@ void MQFunctions::inq(MQHCONN conn, MQHOBJ obj, MQLONG selectorCount, PMQLONG se
 {
   poco_assert_dbg(_inqFn != NULL);
 
-  Poco::ScopedLock<Poco::NamedMutex> lock(_MQIMutex);
+  Poco::ScopedLock<Poco::Mutex> lock(_MQIMutex);
   _inqFn(conn, obj, selectorCount, selectors, intAttrCount, intAttrs, charAttrLength, charAttrs, cc, rc);
 }
 
