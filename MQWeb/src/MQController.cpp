@@ -85,7 +85,7 @@ void MQController::beforeAction()
 			{
 				connection = config.getString(qmgrConfigConnection);
 			}
-			catch(Poco::NotFoundException nfe)
+			catch(Poco::NotFoundException& nfe)
 			{
 				poco_error_f1(Poco::Logger::get("mq.web"), "Can't find %s property in configuration file", qmgrConfigConnection);
 				//TODO: redirect to error page
@@ -95,7 +95,7 @@ void MQController::beforeAction()
 			{
 				channel = config.getString(qmgrConfigChannel);
 			}
-			catch(Poco::NotFoundException nfe)
+			catch(Poco::NotFoundException& nfe)
 			{
 				poco_error_f1(Poco::Logger::get("mq.web"), "Can't find %s property in configuration file", qmgrConfigChannel);
 				//TODO: redirect to error page
@@ -150,7 +150,7 @@ bool MQController::connect()
 		_qmgr->connect();
 		ok = true;
 	}
-	catch(MQException mqe)
+	catch(MQException& mqe)
 	{
 		handleException(mqe);
 	}
@@ -165,7 +165,7 @@ bool MQController::connect(const std::string& channel, const std::string& connec
 		_qmgr->connect(channel, connection);
 		ok = true;
 	}
-	catch(MQException mqe)
+	catch(MQException& mqe)
 	{
 		handleException(mqe);
 	}

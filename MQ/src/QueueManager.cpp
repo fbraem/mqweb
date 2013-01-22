@@ -44,7 +44,7 @@ namespace MQ
       {
         disconnect();
       }
-      catch(MQException mqe)
+      catch(MQException& mqe)
       {
         // Don't throw exceptions from a destructor
         // See: http://www.parashift.com/c++-faq-lite/exceptions.html#faq-17.9

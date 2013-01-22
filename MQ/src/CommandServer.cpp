@@ -70,7 +70,7 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
     {
       _replyQ.get(*msgResponse.get(), MQGMO_CONVERT | MQGMO_NO_SYNCPOINT, wait);
     }
-    catch(MQException mqe)
+    catch(MQException& mqe)
     {
       if ( mqe.reason() == MQRC_TRUNCATED_MSG_FAILED )
       {

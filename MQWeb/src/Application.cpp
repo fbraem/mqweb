@@ -53,7 +53,7 @@ void MQWebApplication::initialize(Application& self)
 	{
 		ServerApplication::initialize(self);
 	}
-	catch(Poco::NotFoundException nfe)
+	catch(Poco::NotFoundException& nfe)
 	{
 	// We can get here when some log configuration is not available
 		std::cout << "Please check your logger configuration because we got a NotFoundException for " << nfe.message() << std::endl;
@@ -106,14 +106,13 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 
 	Poco::Logger& logger = Poco::Logger::get("mq.web");
 
-	// For now on, load in binding mode
 	MQ::MQSubsystem& mqSystem = getSubsystem<MQ::MQSubsystem>();
 
 	try
 	{
 		mqSystem.load();
 	}
-	catch(Poco::LibraryLoadException lle)
+	catch(Poco::LibraryLoadException& lle)
 	{
 		Poco::Logger::get("mq").fatal(lle.message());
 		return Application::EXIT_SOFTWARE;
@@ -131,13 +130,13 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 		templatePath.assign(templatesValue);
 		templatePath.makeDirectory();
 	}
-	catch(Poco::NotFoundException nfe)
+	catch(Poco::NotFoundException& nfe)
 	{
 		templatePath.assign(config().getString("application.dir"));
 		templatePath.pushDirectory("templates");
 		poco_warning_f1(logger, "No mq.web.templates found in the configuration file. Trying to use %s", templatePath.toString());
 	}
-	catch(Poco::PathSyntaxException pse)
+	catch(Poco::PathSyntaxException& pse)
 	{
 		poco_fatal_f1(logger, "Invalid path specified for mq.web.templates: %s", templatesValue);
 		return Application::EXIT_CONFIG;
@@ -162,14 +161,14 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 		staticPath.assign(staticValue);
 		staticPath.makeDirectory();
 	}
-	catch(Poco::NotFoundException nfe)
+	catch(Poco::NotFoundException& nfe)
 	{
 		staticPath.assign(config().getString("application.dir"));
 		staticPath.pushDirectory("static");
 		config().setString("mq.web.static", staticPath.toString());
 		poco_warning_f1(logger, "No mq.web.static found in the configuration file. Trying to use %s", staticPath.toString());
 	}
-	catch(Poco::PathSyntaxException pse)
+	catch(Poco::PathSyntaxException& pse)
 	{
 		poco_fatal_f1(logger, "Invalid path specified for mq.web.static: %s", staticValue);
 		return Application::EXIT_CONFIG;
@@ -200,5 +199,6 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 
 	return Application::EXIT_OK;
 }
+
 
 POCO_SERVER_MAIN(MQWebApplication)
