@@ -32,35 +32,37 @@
 class MQWebApplication : public Poco::Util::ServerApplication
 {
 public:
-  MQWebApplication();
 
-  ~MQWebApplication();
+	MQWebApplication();
+
+
+	~MQWebApplication();
 
 protected:
 
-  void initialize(Application& self);
+	void initialize(Application& self);
 
 
-  void uninitialize();
+	void uninitialize();
 
 
-  void defineOptions(Poco::Util::OptionSet& options);
+	void defineOptions(Poco::Util::OptionSet& options);
 
 
-  void handleOption(const std::string& name, const std::string& value);
+	void handleOption(const std::string& name, const std::string& value);
 
 
-  void displayHelp();
+	void displayHelp();
 
 
-  int main(const std::vector<std::string>& args);
+	int main(const std::vector<std::string>& args);
 
 
 private:
-  bool _helpRequested;
+	bool _helpRequested;
 
 
-  Poco::JSON::TemplateCache _cache;
+	Poco::JSON::TemplateCache _cache;
 };
 
 #endif //  _MQWeb_Application_H
