@@ -35,6 +35,7 @@ namespace Web
 
 RequestHandlerFactory::RequestHandlerFactory() : Poco::Net::HTTPRequestHandlerFactory()
 {
+	ControllerRequestHandler::registerControllers();
 }
 
 Poco::Net::HTTPRequestHandler* RequestHandlerFactory::createRequestHandler(const Poco::Net::HTTPServerRequest& request)
