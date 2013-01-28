@@ -85,7 +85,7 @@ void MQController::beforeAction()
 			{
 				connection = config.getString(qmgrConfigConnection);
 			}
-			catch(Poco::NotFoundException& nfe)
+			catch(Poco::NotFoundException&)
 			{
 				poco_error_f1(Poco::Logger::get("mq.web"), "Can't find %s property in configuration file", qmgrConfigConnection);
 				//TODO: redirect to error page
@@ -95,7 +95,7 @@ void MQController::beforeAction()
 			{
 				channel = config.getString(qmgrConfigChannel);
 			}
-			catch(Poco::NotFoundException& nfe)
+			catch(Poco::NotFoundException&)
 			{
 				poco_error_f1(Poco::Logger::get("mq.web"), "Can't find %s property in configuration file", qmgrConfigChannel);
 				//TODO: redirect to error page

@@ -130,13 +130,13 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 		templatePath.assign(templatesValue);
 		templatePath.makeDirectory();
 	}
-	catch(Poco::NotFoundException& nfe)
+	catch(Poco::NotFoundException&)
 	{
 		templatePath.assign(config().getString("application.dir"));
 		templatePath.pushDirectory("templates");
 		poco_warning_f1(logger, "No mq.web.templates found in the configuration file. Trying to use %s", templatePath.toString());
 	}
-	catch(Poco::PathSyntaxException& pse)
+	catch(Poco::PathSyntaxException&)
 	{
 		poco_fatal_f1(logger, "Invalid path specified for mq.web.templates: %s", templatesValue);
 		return Application::EXIT_CONFIG;
@@ -161,14 +161,14 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 		staticPath.assign(staticValue);
 		staticPath.makeDirectory();
 	}
-	catch(Poco::NotFoundException& nfe)
+	catch(Poco::NotFoundException&)
 	{
 		staticPath.assign(config().getString("application.dir"));
 		staticPath.pushDirectory("static");
 		config().setString("mq.web.static", staticPath.toString());
 		poco_warning_f1(logger, "No mq.web.static found in the configuration file. Trying to use %s", staticPath.toString());
 	}
-	catch(Poco::PathSyntaxException& pse)
+	catch(Poco::PathSyntaxException&)
 	{
 		poco_fatal_f1(logger, "Invalid path specified for mq.web.static: %s", staticValue);
 		return Application::EXIT_CONFIG;
