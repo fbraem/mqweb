@@ -113,18 +113,27 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 
 void Controller::render(const std::string& templateFile)
 {
-	Poco::JSON::Template::Ptr tpl = Poco::JSON::TemplateCache::instance()->getTemplate(Poco::Path(templateFile));
-	poco_assert_dbg(!tpl.isNull());
+	Poco::JSON::Template::Ptr tpl;
+	try
+	{
+		tpl = Poco::JSON::TemplateCache::instance()->getTemplate(Poco::Path(templateFile));
+		_response->setChunkedTransferEncoding(true);
+		_response->setContentType("text/html");
 
-	_response->setChunkedTransferEncoding(true);
-	_response->setContentType("text/html");
+		// Don't cache are views
+		_response->set("Cache-Control", "no-cache,no-store,must-revalidate");
+		_response->set("Pragma", "no-cache");
+		_response->set("Expires", "0");
 
-	// Don't cache are views
-	_response->set("Cache-Control", "no-cache,no-store,must-revalidate");
-	_response->set("Pragma", "no-cache");
-	_response->set("Expires", "0");
-
-	tpl->render(_data, _response->send());
+		tpl->render(_data, _response->send());
+	}
+	catch(Poco::FileNotFoundException&)
+	{
+		poco_error_f1(Poco::Logger::get("mq.web"), "Can't render template %s", templateFile);
+		//TODO: redirect to an error page
+		_response->setStatusAndReason(Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR, "Can't render template. Please check the MQWeb configuration.");
+		_response->send();
+	}
 }
 
 
