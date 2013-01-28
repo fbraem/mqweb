@@ -6,7 +6,7 @@
   <? for channel channels ?>
     <tr class="detail">
      <td>
-      <a href="/<?= qmgr.name ?>/Channels/<?= channel.ChannelName.value ?>?type=<?= channel.ChannelType.display ?>"><?= channel.ChannelName.value ?></a>
+      <a href="/channel/view/<?= qmgr.name ?>/<?= channel.ChannelName.value ?>?type=<?= channel.ChannelType.display ?>"><?= channel.ChannelName.value ?></a>
       <?if channel.autodefined?><sup>auto-defined</sup><?endif ?>
       <?if channel.channelDesc ?>
        <br /><em style="padding:5px;font-size:0.8em"><?= channel.channelDesc ?></em> 

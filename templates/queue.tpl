@@ -64,11 +64,11 @@
      <?if queue.BackoutRequeueName.value ?>
       <h2>Backout:</h2>
       <div class="detail">
-       <a href="/<?= qmgr.name ?>/Queues/<?= queue.BackoutRequeueName.value ?>"><?= queue.BackoutRequeueName.value ?></a> - Threshold: <?= queue.BackoutThreshold.value?> - Harden: <?= queue.HardenGetBackout.display ?>
+       <a href="/queue/view/<?= qmgr.name ?>/<?= queue.BackoutRequeueName.value ?>"><?= queue.BackoutRequeueName.value ?></a> - Threshold: <?= queue.BackoutThreshold.value?> - Harden: <?= queue.HardenGetBackout.display ?>
       </div> <!-- detail -->
      <?endif ?>
      <?if queue.BaseQName ?>
-      <h2>Target Queue:</h2><div class="detail"><a href="/<?= qmgr.name ?>/Queues/<?= queue.BaseQName.value ?>"><?= queue.BaseQName.value ?></a></div> <!-- detail -->
+      <h2>Target Queue:</h2><div class="detail"><a href="/queue/view/<?= qmgr.name ?>/<?= queue.BaseQName.value ?>"><?= queue.BaseQName.value ?></a></div> <!-- detail -->
      <?endif ?>
      <h2>Default Binding:</h2><div class="detail"><?= queue.DefBind.display ?></div> <!-- detail -->
      <?ifexist queue.DefInputOpenOption ?>
@@ -99,7 +99,7 @@
       <h2>Depth Max Event:</h2><div class="detail"><?= queue.QDepthMaxEvent.display ?></div> <!-- detail -->
      <?endif ?>
      <?if queue.InitiationQName.value ?>
-      <h2>Initiation Queue:</h2><div class="detail"><a href="/<?= qmgr.name ?>/Queues/<?= queue.InitiationQName.value ?>"><?= queue.InitiationQName.value ?></a></div> <!-- detail -->
+      <h2>Initiation Queue:</h2><div class="detail"><a href="/queue/view/<?= qmgr.name ?>/<?= queue.InitiationQName.value ?>"><?= queue.InitiationQName.value ?></a></div> <!-- detail -->
      <?endif ?>
      <?ifexist queue.MaxMsgLength ?>
       <h2>Maximum Message Length:</h2><div class="detail"><?= queue.MaxMsgLength.value ?></div> <!-- detail -->
@@ -136,7 +136,7 @@
 	   var options = { 
 	                   target: '#messageTableDiv',
 	                   type: 'POST',
-	                   url: '<?= queue.QName.value ?>/Messages'
+	                   url: '/message/list/<?= qmgr.name ?>/<?= queue.QName.value ?>'
 	                 }; 
 	   jQuery('#messageFilterForm').ajaxForm(options);
 	  </script>

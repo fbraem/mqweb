@@ -5,7 +5,7 @@
   </tr>
   <? for queue queues ?>
     <tr class="detail">
-     <td><a href="/<?= qmgr.name ?>/Queues/<?= queue.QName.value ?>"><?= queue.QName.value ?></a>
+     <td><a href="/queue/view/<?= qmgr.name ?>/<?= queue.QName.value ?>"><?= queue.QName.value ?></a>
       <? if queue.BaseQName ?>
        <br />
        <span style="padding:5px;font-size:0.8em">Target: <a href="/<?= qmgr.name ?>/Queues/<?= queue.BaseQName.value ?>"><?= queue.BaseQName.value ?></a></span>

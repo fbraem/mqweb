@@ -19,7 +19,7 @@
  <body>
   <h1 style="width:80%;float:left;"><?= qmgr.name ?></h1>
   <div style="float:right;font-size:0.8em;">
-   Name: <a href="../../<?= qmgr.name ?>"><?= qmgr.name ?></a><br />
+   Name: <a href="/qmgr/view/<?= qmgr.name ?>"><?= qmgr.name ?></a><br />
    Id: <?= qmgr.id ?><br />
    Created: <?= qmgr.createDate ?><br />
    Modified: <?= qmgr.alterDate ?>
@@ -74,7 +74,7 @@
      <?if channel.XmitQName ?>
       <h2>Transmission Queue:</h2>
       <div class="detail">
-       <a href="../Queues/<?= channel.XmitQName.value ?>"><?= channel.XmitQName.value ?></a>
+       <a href="/queue/view/<?= qmgr.name ?>/<?= channel.XmitQName.value ?>"><?= channel.XmitQName.value ?></a>
       </div> <!-- detail -->
 		 <?endif ?>
     </div> <!-- details -->

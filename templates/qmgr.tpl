@@ -17,7 +17,7 @@
  <body>
   <h1 style="width:80%;float:left;"><?= qmgr.name ?></h1>
   <div style="float:right;font-size:0.8em;">
-   Name: <a href="/<?= qmgr.name ?>"><?= qmgr.name ?></a><br />
+   Name: <a href="/qmgr/view/<?= qmgr.name ?>"><?= qmgr.name ?></a><br />
    Id: <?= qmgr.id ?><br />
    <? ifexist qmgr.createDate ?>
      Created: <?= qmgr.createDate ?><br />
@@ -60,12 +60,12 @@
     <? if qmgr.deadLetterQueue ?>
      <h2>Dead letter Queue:</h2>
       <div class="detail">
-       <a href="/<?= qmgr.name ?>/Queues/<?= qmgr.deadLetterQueue ?>"><?= qmgr.deadLetterQueue ?></a>
+       <a href="/queue/view/<?= qmgr.name ?>/<?= qmgr.deadLetterQueue ?>"><?= qmgr.deadLetterQueue ?></a>
       </div>
     <? endif ?>
     <h2>Command Server:</h2>
     <div class="detail">
-      <a href="/<?= qmgr.name ?>/Queues/<?= qmgr.commandQueue ?>"><?= qmgr.commandQueue ?></a> - Level: <?= qmgr.commandLevel ?>
+      <a href="/queue/view/<?= qmgr.name ?>/<?= qmgr.commandQueue ?>"><?= qmgr.commandQueue ?></a> - Level: <?= qmgr.commandLevel ?>
     </div>
    </div> <!-- End QMGR tab -->
    <div id="queues"> <!-- Begin QUEUES tab -->
@@ -101,7 +101,7 @@
      var options = { 
                      target: '#queueTableDiv',
                      type: 'POST',
-                     url: '<?= qmgr.name ?>/Queues'
+                     url: '/queue/list/<?= qmgr.name ?>'
                    }; 
      jQuery('#queueFilterForm').ajaxForm(options);
     </script>
@@ -147,7 +147,7 @@
       var options = { 
                       target: '#channelTableDiv',
                       type: 'POST',
-                      url: '<?= qmgr.name ?>/Channels'
+                      url: '/channels/list/<?= qmgr.name ?>'
                     }; 
       jQuery('#channelFilterForm').ajaxForm(options);
     </script>
