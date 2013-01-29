@@ -152,7 +152,7 @@ inline void Controller::beforeAction()
 
 inline Poco::JSON::Object& Controller::data()
 {
-	poco_assert_dbg(!_data);
+	poco_assert_dbg(_data);
 
 	return *_data;
 }
@@ -200,7 +200,7 @@ inline void Controller::setResponseStatus(Poco::Net::HTTPServerResponse::HTTPSta
 
 inline Poco::Net::HTTPServerRequest& Controller::request()
 {
-	poco_assert_dbg(!_request);
+	poco_assert_dbg(_request);
 
 	return *_request;
 }
@@ -208,7 +208,7 @@ inline Poco::Net::HTTPServerRequest& Controller::request()
 
 inline Poco::Net::HTTPServerResponse& Controller::response()
 {
-	poco_assert_dbg(!_response);
+	poco_assert_dbg(_response);
 
 	return *_response;
 }
