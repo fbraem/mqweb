@@ -115,14 +115,14 @@ void MessageController::list()
 
 	Poco::Net::HTMLForm form(request(), request().stream());
 
-	std::string limitField = form.get("limit");
+	std::string limitField = form.get("limit", "");
 	int limit = -1;
 	if ( ! limitField.empty() )
 	{
 		Poco::NumberParser::tryParse(limitField, limit);
 	}
 
-	std::string teaserField = form.get("teaser");
+	std::string teaserField = form.get("teaser", "");
 	int teaser = 0;
 	if ( ! teaserField.empty() )
 	{
