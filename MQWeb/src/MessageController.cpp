@@ -185,7 +185,7 @@ void MessageController::list()
 			{
 				data += " ...";
 			}
-			jsonMessage->set("data", data);
+			jsonMessage->set("data", htmlize(data));
 		}
 
 		jsonMessages->add(jsonMessage);
@@ -309,7 +309,7 @@ void MessageController::view()
 				jsonMessageDump = jsonDump->getObject(row++);
 				if ( !jsonMessageDump.isNull() )
 				{
-					jsonMessageDump->set("ebcdic", oss.str());
+					jsonMessageDump->set("ebcdic", htmlize(oss.str()));
 					oss.str("");
 				}
 			}
@@ -332,7 +332,7 @@ void MessageController::view()
 				jsonMessageDump = jsonDump->getObject(row++);
 				if ( !jsonMessageDump.isNull() )
 				{
-					jsonMessageDump->set("ascii", oss.str());
+					jsonMessageDump->set("ascii", htmlize(oss.str()));
 					oss.str("");
 				}
 			}
