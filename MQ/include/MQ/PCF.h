@@ -132,6 +132,13 @@ public:
 		/// Returns a vector with all parameter ids.
 
 
+
+	void init();
+		/// Initializes the internal PCF structures. Call this when you retrieved
+		/// a PFC message from a queue and before you start retrieving information
+		/// from it.
+
+
 	MQLONG optParameterNum(MQLONG parameter, MQLONG def = 0) const;
 		/// Returns the numeric value of a parameter.
 		/// When the parameter isn't found or doesn't contain a numeric value,
@@ -158,9 +165,6 @@ private:
 
 
 	PCF(const PCF& pcf);
-
-
-	void init();
 
 
 	friend class CommandServer;
