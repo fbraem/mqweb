@@ -44,16 +44,16 @@ public:
 	virtual ~MQMapper();
 
 
-	void mapToJSON(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json);
+	static void mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json);
 
 
-	static void mapNumberToJSON(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter);
+	static void mapNumberToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter);
 
 
-	static void mapStringToJSON(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter);
+	static void mapStringToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter);
 
 
-	static void mapDateToJSON(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int dateParameter, int timeParameter);
+	static void mapDateToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int dateParameter, int timeParameter);
 
 
 	static std::string getReasonString(MQLONG reasonCode);

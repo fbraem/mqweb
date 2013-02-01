@@ -111,7 +111,7 @@ Poco::JSON::Array::Ptr QueueMQMapper::inquire(const Poco::JSON::Object::Ptr& fil
 			Poco::JSON::Object::Ptr jsonQueue = new Poco::JSON::Object();
 			jsonQueues->add(jsonQueue);
 
-			mapToJSON(*it, jsonQueue);
+			mapToJSON(**it, jsonQueue);
 		}
 	}
 

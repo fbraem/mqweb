@@ -104,7 +104,7 @@ Poco::JSON::Array::Ptr ChannelStatusMQMapper::inquire(const Poco::JSON::Object::
 				break;
 
 			Poco::JSON::Object::Ptr jsonChannelStatus = new Poco::JSON::Object();
-			mapToJSON(*it, jsonChannelStatus);
+			mapToJSON(**it, jsonChannelStatus);
 			jsonStatuses->add(jsonChannelStatus);
 		}
 	}

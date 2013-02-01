@@ -1061,9 +1061,9 @@ MQMapper::~MQMapper()
 {
 }
 
-void MQMapper::mapToJSON(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json)
+void MQMapper::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json)
 {
-	std::vector<MQLONG> parameters = pcf->getParameters();
+	std::vector<MQLONG> parameters = pcf.getParameters();
 	for(std::vector<MQLONG>::iterator it = parameters.begin(); it != parameters.end(); ++it)
 	{
 		std::string name = _dictionary.getName(*it);
@@ -1074,9 +1074,9 @@ void MQMapper::mapToJSON(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json)
 
 			field->set("id", *it);
 
-			if ( pcf->isNumber(*it) )
+			if ( pcf.isNumber(*it) )
 			{
-				MQLONG value = pcf->getParameterNum(*it);
+				MQLONG value = pcf.getParameterNum(*it);
 				field->set("value", value);
 
 				if ( _dictionary.hasDisplayMap(*it) )
@@ -1086,9 +1086,9 @@ void MQMapper::mapToJSON(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json)
 						? Poco::format("Unknown value %ld for %ld", value, *it) : displayValue);
 				}
 			}
-			else if ( pcf->isString(*it) )
+			else if ( pcf.isString(*it) )
 			{
-				field->set("value", pcf->getParameterString(*it));
+				field->set("value", pcf.getParameterString(*it));
 			}
 			else
 			{
@@ -1098,30 +1098,30 @@ void MQMapper::mapToJSON(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json)
 	}
 }
 
-void MQMapper::mapNumberToJSON(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter)
+void MQMapper::mapNumberToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter)
 {
-  if ( pcf->hasParameter(parameter) )
+  if ( pcf.hasParameter(parameter) )
   {
-    json->set(name, pcf->getParameterNum(parameter));
+    json->set(name, pcf.getParameterNum(parameter));
   }
 }
 
 
-void MQMapper::mapStringToJSON(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter)
+void MQMapper::mapStringToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter)
 {
-  if (    pcf->hasParameter(parameter) )
+  if (    pcf.hasParameter(parameter) )
   {
-    json->set(name, pcf->getParameterString(parameter));
+    json->set(name, pcf.getParameterString(parameter));
   }
 }
 
 
-void MQMapper::mapDateToJSON(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int dateParameter, int timeParameter)
+void MQMapper::mapDateToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int dateParameter, int timeParameter)
 {
-  if (    pcf->hasParameter(dateParameter) 
-       && pcf->hasParameter(timeParameter) )
+  if (    pcf.hasParameter(dateParameter)
+       && pcf.hasParameter(timeParameter) )
   {
-    Poco::DateTime dateTime = pcf->getParameterDate(dateParameter, timeParameter);
+    Poco::DateTime dateTime = pcf.getParameterDate(dateParameter, timeParameter);
     json->set(name, Poco::DateTimeFormatter::format(dateTime, "%d-%m-%Y %H:%M:%S"));
   }
 }
