@@ -55,13 +55,19 @@ public:
 
 	static void mapDateToJSON(const PCF::Ptr& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int dateParameter, int timeParameter);
 
-	
+
+	static std::string getReasonString(MQLONG reasonCode);
+
+
 protected:
 
 	MQ::CommandServer& _commandServer;
 
 
 	static Dictionary _dictionary;
+
+
+	static DisplayMap _reasonCodes;
 };
 
 
