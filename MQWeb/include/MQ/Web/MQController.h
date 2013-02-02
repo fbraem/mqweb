@@ -52,6 +52,12 @@ public:
 	void beforeAction();
 
 
+protected:
+
+
+	void handle(const std::vector<std::string>& parameters, Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
+
+
 private:
 
 
@@ -60,11 +66,6 @@ private:
 
 	CommandServer::Ptr _commandServer;
 
-
-	bool connect();
-
-
-	bool connect(const std::string& channel, const std::string& connection);
 
 };
 

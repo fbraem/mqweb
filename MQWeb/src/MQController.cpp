@@ -62,10 +62,9 @@ void MQController::beforeAction()
 		}
 	}
 
-	bool connected = false;
 	if ( mqSystem.binding() )
 	{
-		connected = connect();
+		_qmgr->connect();
 	}
 	else
 	{
@@ -81,36 +80,16 @@ void MQController::beforeAction()
 			std::string connection;
 			std::string channel;
 
-			try
-			{
-				connection = config.getString(qmgrConfigConnection);
-			}
-			catch(Poco::NotFoundException&)
-			{
-				poco_error_f1(Poco::Logger::get("mq.web"), "Can't find %s property in configuration file", qmgrConfigConnection);
-				//TODO: redirect to error page
-			}
+			connection = config.getString(qmgrConfigConnection);
+			channel = config.getString(qmgrConfigChannel, "SYSTEM.DEFAULT.SVRCONN");
 
-			try
-			{
-				channel = config.getString(qmgrConfigChannel);
-			}
-			catch(Poco::NotFoundException&)
-			{
-				poco_error_f1(Poco::Logger::get("mq.web"), "Can't find %s property in configuration file", qmgrConfigChannel);
-				//TODO: redirect to error page
-			}
-
-			connected = connect(channel, connection);
+			_qmgr->connect(channel, connection);
 		}
 		else // Hope that there is a channel tab file available
 		{
-			connected = connect();
+			_qmgr->connect();
 		}
 	}
-
-	if ( ! connected )
-		return;
 
 	Poco::JSON::Object::Ptr jsonQmgr(new Poco::JSON::Object());
 	set("qmgr", jsonQmgr);
@@ -142,36 +121,18 @@ void MQController::handleException(const MQException& mqe)
 	error->set("reason", mqe.reason());
 }
 
-bool MQController::connect()
+
+void MQController::handle(const std::vector<std::string>& parameters, Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
 {
-	bool ok = false;
 	try
 	{
-		_qmgr->connect();
-		ok = true;
+		Controller::handle(parameters, request, response);
 	}
 	catch(MQException& mqe)
 	{
 		handleException(mqe);
 	}
-	return ok;
 }
-
-bool MQController::connect(const std::string& channel, const std::string& connection)
-{
-	bool ok = false;
-	try
-	{
-		_qmgr->connect(channel, connection);
-		ok = true;
-	}
-	catch(MQException& mqe)
-	{
-		handleException(mqe);
-	}
-	return ok;
-}
-
 
 
 }} // namespace MQ::Web

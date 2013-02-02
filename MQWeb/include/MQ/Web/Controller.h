@@ -107,12 +107,13 @@ public:
 protected:
 
 
-	void handlePart(const Poco::Net::MessageHeader& header, std::istream& stream);
+	virtual void handlePart(const Poco::Net::MessageHeader& header, std::istream& stream);
+
+
+	virtual void handle(const std::vector<std::string>& parameters, Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
 
 
 private:
-
-	void handle(const std::vector<std::string>& parameters, Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
 
 
 	Poco::Net::HTTPServerRequest* _request;
