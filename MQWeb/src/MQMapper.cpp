@@ -36,7 +36,23 @@ Dictionary MQMapper::_dictionary = Dictionary()
 		(MQQSGD_SHARED, "Shared")
 	)
 	(MQCA_Q_MGR_NAME, "QMgrName")
-	
+
+	// QueueManager properties
+	(MQIA_PLATFORM, "Platform", DisplayMapInitializer
+		(MQPL_UNIX, "UNIX")
+		(MQPL_NSK, "Compaq NonStop Kernel")
+		(MQPL_OS400, "i5/OS")
+		(MQPL_VMS, "HP OpenVMS")
+		(MQPL_WINDOWS_NT, "Windows")
+		(MQPL_ZOS, "z/OS")
+	)
+	(MQIA_CODED_CHAR_SET_ID, "CodedCharSetID")
+	(MQCA_COMMAND_INPUT_Q_NAME, "CommandInputQName")
+	(MQIA_COMMAND_LEVEL, "CommandLevel")
+	(MQCA_DEAD_LETTER_Q_NAME, "DeadLetterQName")
+	(MQCA_Q_MGR_DESC, "QMgrDesc")
+	(MQCA_Q_MGR_IDENTIFIER, "QMgrIdentifier")
+
 	// QUEUE properties
 	(MQCA_BACKOUT_REQ_Q_NAME, "BackoutRequeueName")
 	(MQIA_BACKOUT_THRESHOLD, "BackoutThreshold")
