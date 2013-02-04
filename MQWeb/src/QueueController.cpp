@@ -23,7 +23,7 @@
 #include <Poco/Net/HTMLForm.h>
 
 #include <MQ/Web/QueueController.h>
-#include <MQ/Web/QueueMQMapper.h>
+#include <MQ/Web/QueueMapper.h>
 
 namespace MQ
 {
@@ -68,7 +68,7 @@ void QueueController::list()
 	filter->set("type", form().get("queueType", "All"));
 	filter->set("excludeSystem", form().get("queueExcludeSystem", "0").compare("1") == 0);
 
-	QueueMQMapper queueMapper(*commandServer());
+	QueueMapper queueMapper(*commandServer());
 	Poco::JSON::Array::Ptr jsonQueues = queueMapper.inquire(filter);
 
 	for(int i = 0; i < jsonQueues->size(); ++i)
@@ -115,7 +115,7 @@ void QueueController::view()
 	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
 	filter->set("name", queueName);
 
-	QueueMQMapper queueMapper(*commandServer());
+	QueueMapper queueMapper(*commandServer());
 	Poco::JSON::Array::Ptr jsonQueues = queueMapper.inquire(filter);
 
 	if ( jsonQueues->size() > 0 )
@@ -130,8 +130,8 @@ void QueueController::view()
 			{
 				// Add a property with the type as propertyname and true as value
 				// to help a view to check which type of queue we have. For example:
-				// { 
-				//   "QType" : { "value" : 1, "display" : "Local", "Local" : true } 
+				// {
+				//   "QType" : { "value" : 1, "display" : "Local", "Local" : true }
 				// }
 				std::string display = jsonType->optValue<std::string>("display", "");
 				if ( ! display.empty() )

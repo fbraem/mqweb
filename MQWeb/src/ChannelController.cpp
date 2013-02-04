@@ -24,8 +24,8 @@
 
 #include <MQ/Web/MQController.h>
 #include <MQ/Web/ChannelController.h>
-#include <MQ/Web/ChannelMQMapper.h>
-#include <MQ/Web/ChannelStatusMQMapper.h>
+#include <MQ/Web/ChannelMapper.h>
+#include <MQ/Web/ChannelStatusMapper.h>
 
 namespace MQ
 {
@@ -60,7 +60,7 @@ void ChannelController::list()
 	filter->set("type", form.get("channelType", "All"));
 	filter->set("excludeSystem", form.get("channelExcludeSystem", "0").compare("1") == 0);
 
-	ChannelMQMapper channelMapper(*commandServer());
+	ChannelMapper channelMapper(*commandServer());
 	Poco::JSON::Array::Ptr jsonChannels = channelMapper.inquire(filter);
 
 	// A channel name is not unique. To make it possible to associate the status
@@ -87,7 +87,7 @@ void ChannelController::list()
 	filter = new Poco::JSON::Object();
 	filter->set("name", channelNameField.empty() ? "*" : channelNameField);
 	filter->set("type", form.get("channelType", "All"));
-	ChannelStatusMQMapper channelStatusMapper(*commandServer());
+	ChannelStatusMapper channelStatusMapper(*commandServer());
 	Poco::JSON::Array::Ptr statuses = channelStatusMapper.inquire(filter);
 
 	// Associate all status objects to their corresponding channel object
@@ -144,7 +144,7 @@ void ChannelController::view()
 	filter->set("name", channelName);
 	filter->set("type", type);
 
-	ChannelMQMapper channelMapper(*commandServer());
+	ChannelMapper channelMapper(*commandServer());
 	Poco::JSON::Array::Ptr jsonChannels = channelMapper.inquire(filter);
 	Poco::JSON::Object::Ptr jsonChannel = jsonChannels->getObject(0);
 
