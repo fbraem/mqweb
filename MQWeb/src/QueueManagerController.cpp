@@ -21,10 +21,7 @@
 #include <sstream>
 
 #include <MQ/Web/QueueManagerController.h>
-
-#include <Poco/DateTimeFormatter.h>
-
-#include <Poco/JSON/TemplateCache.h>
+#include <MQ/Web/QueueManagerMapper.h>
 
 namespace MQ
 {
@@ -44,37 +41,16 @@ QueueManagerController::~QueueManagerController()
 
 void QueueManagerController::view()
 {
-	PCF::Ptr inquireQmgr = commandServer()->createCommand(MQCMD_INQUIRE_Q_MGR);
+	QueueManagerMapper queueManagerMapper(*commandServer());
 
-	Poco::JSON::Object::Ptr jsonQmgr = data().getObject("qmgr");
+	Poco::JSON::Object::Ptr dummyFilter = new Poco::JSON::Object();
+	Poco::JSON::Array::Ptr jsonQueueManagers = queueManagerMapper.inquire(dummyFilter);
 
-	jsonQmgr->set("createDate", Poco::DateTimeFormatter::format(qmgr()->creationDate(), "%d-%m-%Y %H:%M:%S"));
-	jsonQmgr->set("alterDate", Poco::DateTimeFormatter::format(qmgr()->alterationDate(), "%d-%m-%Y %H:%M:%S"));
-	jsonQmgr->set("id", qmgr()->id());
-	jsonQmgr->set("description", qmgr()->description());
-
-	std::vector<Poco::SharedPtr<PCF> > commandResponse;
-	commandServer()->sendCommand(inquireQmgr, commandResponse);
-
-	if ( commandResponse.size() > 0 )
+	if ( jsonQueueManagers->size() > 0 )
 	{
-		jsonQmgr->set("ccsid", commandResponse[0]->getParameterNum(MQIA_CODED_CHAR_SET_ID));
-		jsonQmgr->set("deadLetterQueue", commandResponse[0]->getParameterString(MQCA_DEAD_LETTER_Q_NAME));
-		jsonQmgr->set("commandQueue", commandResponse[0]->getParameterString(MQCA_COMMAND_INPUT_Q_NAME));
-		jsonQmgr->set("commandLevel", commandResponse[0]->getParameterNum(MQIA_COMMAND_LEVEL));
-
-		switch(commandResponse[0]->getParameterNum(MQIA_PLATFORM))
-		{
-		case MQPL_AIX: jsonQmgr->set("platform", "UNIX"); break;
-		case MQPL_NSK: jsonQmgr->set("platform", "Compaq NonStop Kernel"); break;
-		case MQPL_OS400: jsonQmgr->set("platform", "i5/OS"); break;
-		case MQPL_VMS: jsonQmgr->set("platform", "HP OpenVMS"); break;
-		case MQPL_WINDOWS_NT: jsonQmgr->set("platform", "Windows"); break;
-		case MQPL_ZOS: jsonQmgr->set("platform", "z/OS"); break;
-		}
+		set("qmgr", jsonQueueManagers->get(0));
+		render("home.tpl");
 	}
-
-	render("qmgr.tpl");
 }
 
 
