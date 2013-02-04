@@ -45,6 +45,9 @@ public:
 	void list();
 
 
+	void event();
+
+
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 
 
@@ -58,7 +61,9 @@ inline const Controller::ActionMap& MessageController::getActions() const
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
 			("list", static_cast<ActionFn>(&MessageController::list))
-			("view", static_cast<ActionFn>(&MessageController::view));
+			("view", static_cast<ActionFn>(&MessageController::view))
+			("event", static_cast<ActionFn>(&MessageController::event))
+		;
 	return actions;
 }
 

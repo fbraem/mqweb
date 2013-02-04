@@ -22,8 +22,6 @@
 #include <sstream>
 #include <iomanip>
 
-#include <MQ/Buffer.h>
-
 #include <Poco/DateTimeFormatter.h>
 #include <Poco/Net/HTMLForm.h>
 #include <Poco/URI.h>
@@ -31,10 +29,12 @@
 #include <Poco/HexBinaryEncoder.h>
 
 #include <MQ/Web/MessageController.h>
+#include <MQ/Web/MQMapper.h>
 #include <MQ/MQException.h>
 #include <MQ/Message.h>
 #include <MQ/QueueManager.h>
 #include <MQ/Queue.h>
+#include <MQ/Buffer.h>
 
 /*
 static  unsigned char
@@ -230,7 +230,7 @@ void MessageController::view()
 		//message.setCodedCharSetId(1208);
 		q.get(message, MQGMO_BROWSE_FIRST /*| MQGMO_CONVERT*/);
 	}
-	catch(MQException mqe)
+	catch(MQException& mqe)
 	{
 		if ( mqe.reason()   == MQRC_TRUNCATED_MSG_FAILED
 			|| mqe.reason() == MQRC_TRUNCATED )
@@ -354,5 +354,121 @@ void MessageController::view()
 	set("message", jsonMessage);
 	render("message.tpl");
 }
+
+
+void MessageController::event()
+{
+	std::vector<std::string> parameters = getParameters();
+
+	if ( parameters.size() < 2 )
+	{
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+		return;
+	}
+
+	Poco::JSON::Array::Ptr jsonEvents = new Poco::JSON::Array();
+	set("events", jsonEvents);
+
+	std::string queueName = parameters[1];
+	Queue q(qmgr(), queueName);
+	q.open(MQOO_BROWSE);
+
+	std::string messageId;
+	if ( parameters.size() > 2 )
+	{
+		messageId = parameters[2];
+
+		Buffer id(MQ_MSG_ID_LENGTH);
+		for(int i = 0; i < MQ_MSG_ID_LENGTH; i++)
+		{
+			std::stringstream ss;
+			int val;
+			ss << std::setbase(16) << "0x" << messageId.substr(i * 2, 2);
+			ss >> val;
+			id[i] = (unsigned char) val;
+		}
+
+		PCF message(qmgr()->zos());
+		message.setMessageId(id);
+
+		try
+		{
+			q.get(message, MQGMO_BROWSE_FIRST | MQGMO_CONVERT);
+		}
+		catch(MQException& mqe)
+		{
+			if ( mqe.reason()   == MQRC_TRUNCATED_MSG_FAILED
+				|| mqe.reason() == MQRC_TRUNCATED )
+			{
+				message.buffer().resize(message.dataLength(), false);
+				q.get(message, MQGMO_BROWSE_FIRST | MQGMO_CONVERT);
+			}
+			else
+			{
+				throw;
+			}
+		}
+		message.buffer().resize(message.dataLength());
+		message.init();
+
+		Poco::JSON::Object::Ptr jsonReason = new Poco::JSON::Object();
+		set("reason", jsonReason);
+		jsonReason->set("code", message.getReasonCode());
+		std::string reasonCodeStr = MQMapper::getReasonString(message.getReasonCode());
+		jsonReason->set("desc", reasonCodeStr);
+
+		Poco::JSON::Object::Ptr jsonEvent = new Poco::JSON::Object();
+		set("event", jsonEvent);
+		jsonEvent->set("putDate", Poco::DateTimeFormatter::format(message.getPutDate(), "%d-%m-%Y %H:%M:%S"));
+		MQMapper::mapToJSON(message, jsonEvent);
+
+		std::string templateName = Poco::format("events/%s.tpl", reasonCodeStr);
+		render(templateName);
+	}
+	else // Get all event messages
+	{
+		int count = 0;
+		while(1)
+		{
+			PCF message(qmgr()->zos());
+			message.buffer().resize(1000, false);
+			try
+			{
+				q.get(message, MQGMO_BROWSE_NEXT | MQGMO_CONVERT);
+			}
+			catch(MQException& mqe)
+			{
+				if ( mqe.reason() == MQRC_NO_MSG_AVAILABLE )
+				{
+					break;
+				}
+
+				if ( mqe.reason()   == MQRC_TRUNCATED_MSG_FAILED
+					|| mqe.reason() == MQRC_TRUNCATED )
+				{
+					message.buffer().resize(message.dataLength(), false);
+					message.clear();
+					q.get(message, MQGMO_BROWSE_NEXT | MQGMO_CONVERT);
+				}
+				else
+				{
+					throw;
+				}
+			}
+			message.buffer().resize(message.dataLength());
+			message.init();
+
+			Poco::JSON::Object::Ptr jsonEvent = new Poco::JSON::Object();
+			jsonEvents->add(jsonEvent);
+
+			jsonEvent->set("reason", message.getReasonCode());
+			jsonEvent->set("desc", MQMapper::getReasonString(message.getReasonCode()));
+			jsonEvent->set("putDate", Poco::DateTimeFormatter::format(message.getPutDate(), "%d-%m-%Y %H:%M:%S"));
+		}
+	}
+
+	render("events.tpl");
+}
+
 
 } } // Namespace MQ::Web
