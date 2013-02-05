@@ -1,9 +1,13 @@
 <h2>Queue Manager Active</h2>
 <table>
 	<tr>
-		<td>Reason Code</td><td><?= reason.code ?> - <?= reason.desc ?></td>
-		<td>Put DateTime</td><td><?= event.putDate ?></td>
-		<td>Queue Manager</td><td><?= event.QMgrName.value ?></td>
+		<th>Put DateTime</th><td><?= event.putDate ?></td>
+	</tr>
+	<tr>
+		<th>Reason Code</th><td><?= reason.code ?> - <?= reason.desc ?></td>
+	</tr>
+	<tr>
+		<th>Queue Manager</th><td><?= event.QMgrName.value ?></td>
 	</tr>
 </table>
 <p>
