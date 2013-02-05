@@ -401,6 +401,8 @@ void MessageController::event()
 				|| mqe.reason() == MQRC_TRUNCATED )
 			{
 				message.buffer().resize(message.dataLength(), false);
+				message.clear();
+				message.setMessageId(id);
 				q.get(message, MQGMO_BROWSE_FIRST | MQGMO_CONVERT);
 			}
 			else
@@ -422,8 +424,39 @@ void MessageController::event()
 		jsonEvent->set("putDate", Poco::DateTimeFormatter::format(message.getPutDate(), "%d-%m-%Y %H:%M:%S"));
 		MQMapper::mapToJSON(message, jsonEvent);
 
-		std::string templateName = Poco::format("events/%s.tpl", reasonCodeStr);
+		std::string templateName;
+		if ( message.getReasonCode() == MQRC_NOT_AUTHORIZED )
+		{
+			switch(message.getParameterNum(MQIACF_REASON_QUALIFIER))
+			{
+			case MQRQ_CONN_NOT_AUTHORIZED:
+			case MQRQ_SYS_CONN_NOT_AUTHORIZED:
+				templateName = Poco::format("events/%s-1.tpl", reasonCodeStr);
+				break;
+			case MQRQ_OPEN_NOT_AUTHORIZED:
+				templateName = Poco::format("events/%s-2.tpl", reasonCodeStr);
+				break;
+			case MQRQ_CLOSE_NOT_AUTHORIZED:
+				templateName = Poco::format("events/%s-3.tpl", reasonCodeStr);
+				break;
+			case MQRQ_CMD_NOT_AUTHORIZED:
+				templateName = Poco::format("events/%s-4.tpl", reasonCodeStr);
+				break;
+			case MQRQ_SUB_NOT_AUTHORIZED:
+				templateName = Poco::format("events/%s-5.tpl", reasonCodeStr);
+				break;
+			case MQRQ_SUB_DEST_NOT_AUTHORIZED:
+				templateName = Poco::format("events/%s-6.tpl", reasonCodeStr);
+				break;
+			}
+		}
+		else
+		{
+			templateName = Poco::format("events/%s.tpl", reasonCodeStr);
+		}
 		render(templateName);
+
+		return;
 	}
 	else // Get all event messages
 	{
@@ -464,6 +497,17 @@ void MessageController::event()
 			jsonEvent->set("reason", message.getReasonCode());
 			jsonEvent->set("desc", MQMapper::getReasonString(message.getReasonCode()));
 			jsonEvent->set("putDate", Poco::DateTimeFormatter::format(message.getPutDate(), "%d-%m-%Y %H:%M:%S"));
+			BufferPtr id = message.getMessageId();
+			std::stringstream hexId;
+			for(int i = 0; i < id->size(); ++i)
+			{
+				hexId << std::setw(2) << std::setfill('0') << std::hex << std::uppercase << (int) (*id)[i];
+			}
+			jsonEvent->set("id", hexId.str());
+
+			Poco::JSON::Object::Ptr jsonEventFields = new Poco::JSON::Object();
+			jsonEvent->set("fields", jsonEventFields);
+			MQMapper::mapToJSON(message, jsonEventFields);
 		}
 	}
 
