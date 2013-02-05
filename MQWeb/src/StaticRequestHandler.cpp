@@ -59,8 +59,16 @@ void StaticRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, 
   {
     Poco::Path staticPath(staticPathname);
     staticPath.makeDirectory();
-    staticPath.popDirectory();
-    staticPath.append(uri.getPath());
+
+	std::vector<std::string> uriPathSegments;
+	uri.getPathSegments(uriPathSegments);
+	std::vector<std::string>::iterator it = uriPathSegments.begin();
+	it++;
+	for(; it != uriPathSegments.end(); ++it)
+	{
+		staticPath.append(*it);
+	}
+
     Poco::File staticFile(staticPath);
     
     Poco::Logger& logger = Poco::Logger::get("mq.web.access");
