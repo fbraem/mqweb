@@ -21,6 +21,8 @@
 #include <sstream>
 #include <iomanip>
 
+#include <Poco/HexBinaryEncoder.h>
+#include <Poco/HexBinaryDecoder.h>
 #include <Poco/DateTime.h>
 #include <Poco/DateTimeParser.h>
 
@@ -28,20 +30,48 @@
 
 namespace MQ
 {
-  
+
 MQMD Message::_initialMD = {MQMD_DEFAULT};
 
+
 Message::Message(int size) 
-  : _buffer(size)
-  , _md(_initialMD)
-  , _dataLength(0L)
+	: _buffer(size)
+	, _md(_initialMD)
+	, _dataLength(0L)
 {
 }
 
 
+std::string Message::getBufferAsHex(const MQBYTE* buffer, long size)
+{
+	std::ostringstream oss;
+
+	Poco::HexBinaryEncoder hexEncoder(oss);
+	hexEncoder.rdbuf()->setLineLength(0);
+	hexEncoder.rdbuf()->setUppercase(true);
+	hexEncoder.write((const char*) buffer, size);
+	hexEncoder.close();
+
+	return oss.str();
+}
+
+
+void Message::setBufferFromHex(MQBYTE* buffer, long size, const std::string& hex)
+{
+	std::istringstream iss(hex);
+	Poco::HexBinaryDecoder decoder(iss);
+	int c = decoder.get();
+	int i = 0;
+	while (c != -1 && i < size)
+	{
+		buffer[i++] = (unsigned char) c;
+		c = decoder.get();
+	}
+}
+
 BufferPtr Message::getCorrelationId() const
 {
-  return new Buffer(_md.CorrelId, MQ_CORREL_ID_LENGTH);
+	return new Buffer(_md.CorrelId, MQ_CORREL_ID_LENGTH);
 }
 
 
@@ -53,21 +83,23 @@ void Message::setCorrelationId(const Buffer& buffer)
 				buffer.size() > MQ_CORREL_ID_LENGTH ? MQ_CORREL_ID_LENGTH : buffer.size());
 }
 
+
 BufferPtr Message::getMessageId() const
 {
-  return new Buffer(_md.MsgId, MQ_MSG_ID_LENGTH);
+	return new Buffer(_md.MsgId, MQ_MSG_ID_LENGTH);
 }
+
 
 bool Message::isEmptyMessageId() const
 {
-  for(int i = 0; i < MQ_MSG_ID_LENGTH; i++)
-  {
-    if ( _md.MsgId[i] != 0 )
-    {
-      return false;
-    }
-  }
-  return true;
+	for(int i = 0; i < MQ_MSG_ID_LENGTH; i++)
+	{
+		if ( _md.MsgId[i] != 0 )
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
 void Message::setMessageId(const Buffer& buffer)
@@ -78,38 +110,50 @@ void Message::setMessageId(const Buffer& buffer)
 				buffer.size() > MQ_MSG_ID_LENGTH ? MQ_MSG_ID_LENGTH : buffer.size());
 }
 
+
+void Message::setMessageId(const std::string& hex)
+{
+	setBufferFromHex(_md.MsgId, MQ_MSG_ID_LENGTH, hex);
+}
+
+std::string Message::getMessageIdHex() const
+{
+	return getBufferAsHex(_md.MsgId, MQ_MSG_ID_LENGTH);
+}
+
+
 Poco::DateTime Message::getPutDate() const
 {
-  Poco::DateTime dateTime;
+	Poco::DateTime dateTime;
 
-  std::string dateValue(_md.PutDate, MQ_PUT_DATE_LENGTH);
-  std::string timeValue(_md.PutTime, MQ_PUT_TIME_LENGTH);
-  dateValue += timeValue;
- 
-  int timeZone;
-  Poco::DateTimeParser::parse("%Y%n%e%H%M%S", dateValue, dateTime, timeZone);
-  return dateTime;
+	std::string dateValue(_md.PutDate, MQ_PUT_DATE_LENGTH);
+	std::string timeValue(_md.PutTime, MQ_PUT_TIME_LENGTH);
+	dateValue += timeValue;
+
+	int timeZone;
+	Poco::DateTimeParser::parse("%Y%n%e%H%M%S", dateValue, dateTime, timeZone);
+	return dateTime;
 }
 
 std::string Message::getUser() const
 {
-  std::string user(_md.UserIdentifier, MQ_USER_ID_LENGTH);
-  user.erase(user.find_last_not_of(" \n\r\t")+1); // trim
-  return user;
+	std::string user(_md.UserIdentifier, MQ_USER_ID_LENGTH);
+	user.erase(user.find_last_not_of(" \n\r\t")+1); // trim
+	return user;
 }
 
 std::string Message::getPutApplication() const
 {
-  std::string app(_md.PutApplName, MQ_PUT_APPL_NAME_LENGTH);
-  app.erase(app.find_last_not_of(" \n\r\t")+1); // trim
-  return app;
+	std::string app(_md.PutApplName, MQ_PUT_APPL_NAME_LENGTH);
+	app.erase(app.find_last_not_of(" \n\r\t")+1); // trim
+	return app;
 }
 
 std::string Message::getReplyToQueue() const
 {
-  std::string q(_md.ReplyToQ, MQ_Q_NAME_LENGTH);
-  q.erase(q.find_last_not_of(" \n\r\t")+1); // trim
-  return q;
+	std::string q(_md.ReplyToQ, MQ_Q_NAME_LENGTH);
+	q.erase(q.find_last_not_of(" \n\r\t")+1); // trim
+	return q;
 }
 
 }

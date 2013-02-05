@@ -73,57 +73,63 @@ public:
 
 
 	BufferPtr getMessageId() const;
+
+
+	std::string getMessageIdHex() const;
 	
 	
 	bool isEmptyMessageId() const;
 	
 	
 	void setMessageId(const Buffer& buffer);
-	
+
+
+	void setMessageId(const std::string& hex);
+
 
 	MQLONG persistence() const;
 
 
 	void setPersistence(MQLONG persistence);
 
-	
+
 	std::string getReplyToQueue() const;
-	
-	
+
+
 	void setReplyToQueue(const std::string& queue);
-	
+
 
 	MQLONG getType() const;
 
 
 	void setType(MQLONG type);
-	
-	
+
+
 	Poco::DateTime getPutDate() const;
-	
-	
+
+
 	std::string getPutApplication() const;
-	
-	
+
+
 	std::string getUser() const;
-	
-	
+
+
 	MQLONG dataLength() const;
-	
+
 
 private:
-	
+
 	Buffer _buffer;
-	
+
 
 	MQMD _md;
-	
+
 
 	// Contains the length of the message on the queue
 	// Only valid when the message is browsed or retrieved.
 	MQLONG _dataLength;
-	
-	
+
+
 	MQMD* md();
 
 
@@ -131,6 +137,12 @@ private:
 
 
 	friend class Queue;
+
+
+	static std::string getBufferAsHex(const MQBYTE* buffer, long size);
+
+
+	static void setBufferFromHex(MQBYTE* buffer, long size, const std::string& hex);
 
 };
 
