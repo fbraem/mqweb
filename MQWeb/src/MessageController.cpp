@@ -157,14 +157,7 @@ void MessageController::list()
 		count++;
 		Poco::JSON::Object::Ptr jsonMessage = new Poco::JSON::Object();
 
-		BufferPtr id = msg.getMessageId();
-		std::stringstream hexId;
-		for(int i = 0; i < id->size(); ++i)
-		{
-			hexId << std::setw(2) << std::setfill('0') << std::hex << std::uppercase << (int) (*id)[i];
-		}
-		jsonMessage->set("id", hexId.str());
-
+		jsonMessage->set("id", msg.getMessageIdHex());
 		jsonMessage->set("putDate", Poco::DateTimeFormatter::format(msg.getPutDate(), "%d-%m-%Y %H:%M:%S"));
 		jsonMessage->set("user", msg.getUser());
 		jsonMessage->set("putApplication", msg.getPutApplication());
@@ -209,18 +202,8 @@ void MessageController::view()
 	std::string queueName = parameters[1];
 	std::string messageId = parameters[2];
 
-	Buffer id(MQ_MSG_ID_LENGTH);
-	for(int i = 0; i < MQ_MSG_ID_LENGTH; i++)
-	{
-		std::stringstream ss;
-		int val;
-		ss << std::setbase(16) << "0x" << messageId.substr(i * 2, 2);
-		ss >> val;
-		id[i] = (unsigned char) val;
-	}
-
 	Message message;
-	message.setMessageId(id);
+	message.setMessageId(messageId);
 
 	Queue q(qmgr(), queueName);
 	q.open(MQOO_BROWSE);
@@ -378,18 +361,8 @@ void MessageController::event()
 	{
 		messageId = parameters[2];
 
-		Buffer id(MQ_MSG_ID_LENGTH);
-		for(int i = 0; i < MQ_MSG_ID_LENGTH; i++)
-		{
-			std::stringstream ss;
-			int val;
-			ss << std::setbase(16) << "0x" << messageId.substr(i * 2, 2);
-			ss >> val;
-			id[i] = (unsigned char) val;
-		}
-
 		PCF message(qmgr()->zos());
-		message.setMessageId(id);
+		message.setMessageId(messageId);
 
 		try
 		{
@@ -402,7 +375,7 @@ void MessageController::event()
 			{
 				message.buffer().resize(message.dataLength(), false);
 				message.clear();
-				message.setMessageId(id);
+				message.setMessageId(messageId);
 				q.get(message, MQGMO_BROWSE_FIRST | MQGMO_CONVERT);
 			}
 			else
