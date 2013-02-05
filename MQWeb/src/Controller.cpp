@@ -36,7 +36,7 @@ namespace Web
 {
 
 
-Controller::Controller() : _data(new Poco::JSON::Object())
+Controller::Controller() : _format("html"), _data(new Poco::JSON::Object())
 {
 }
 
@@ -67,9 +67,16 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 		_action = getDefaultAction();
 	}
 
+	int pos = _action.find_last_of('.');
+	if ( pos != std::string::npos )
+	{
+		_format = _action.substr(pos+1);
+		_action = _action.substr(0, pos);
+	}
+
 	for(std::vector<std::string>::iterator it = _parameters.begin(); it != _parameters.end(); ++it)
 	{
-		int pos = it->find_first_of(':');
+		pos = it->find_first_of(':');
 		if ( pos != std::string::npos )
 		{
 			std::string name = it->substr(0, pos);

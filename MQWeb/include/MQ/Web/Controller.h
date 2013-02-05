@@ -71,6 +71,9 @@ public:
 	virtual const ActionMap& getActions() const = 0;
 
 
+	std::string format() const;
+
+
 	virtual std::string getDefaultAction() const = 0;
 
 
@@ -125,6 +128,9 @@ private:
 	Poco::Net::HTMLForm _form;
 
 
+	std::string _format;
+
+
 	Poco::JSON::Object::Ptr _data;
 
 
@@ -146,10 +152,12 @@ inline void Controller::afterAction()
 	//default: do nothing
 }
 
+
 inline void Controller::beforeAction()
 {
 	//default: do nothing
 }
+
 
 inline Poco::JSON::Object& Controller::data()
 {
@@ -158,14 +166,22 @@ inline Poco::JSON::Object& Controller::data()
 	return *_data;
 }
 
+
 inline Poco::Net::HTMLForm& Controller::form()
 {
 	return _form;
 }
 
+
 inline std::string Controller::getAction() const
 {
 	return _action;
+}
+
+
+inline std::string Controller::format() const
+{
+	return _format;
 }
 
 
