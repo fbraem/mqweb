@@ -1,11 +1,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html lang="en-US" xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
 <head>
-	<title>MQWeb - <?= qmgr.name ?></title>
+	<title>MQWeb - <?= qmgr.QMgrName.value ?></title>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-	<link rel="shortcut icon" href="/static2/css/images/favicon.ico" />
-	<link rel="stylesheet" href="/static2/css/style.css" type="text/css" media="all" />
-	<script src="/static2/js/jquery-1.7.1.min.js" type="text/javascript" charset="utf-8"></script>
+	<link rel="shortcut icon" href="/static/css/images/favicon.ico" />
+	<link rel="stylesheet" href="/static/css/style.css" type="text/css" media="all" />
+	<script src="/static/js/jquery-1.7.1.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+	  
+	</script>
 </head>
 <body>
 	<!-- Wrapper -->
@@ -18,7 +21,7 @@
 				<div id="header">
 					<!-- Logo -->
 					<div id="logo">
-						<h1>MQWeb - <a href="/qmgr/view/<?= qmgr.name ?>" title="home"><?= qmgr.name ?></a></h1>
+						<h1>MQWeb - <a href="/qmgr/view/<?= qmgr.QMgrName.value ?>" title="home"><?= qmgr.QMgrName.value ?></a></h1>
 						<p class="slogan">Administrating Websphere MQ with a browser</p>
 					</div>
 					<div class="socials">
@@ -36,8 +39,8 @@
 				<!-- Navigation -->
 				<div id="navigation">
 					<ul>
-						<li><a title="Home" href="/qmgr/view/<?= qmgr.name ?>">Home</a></li>
-						<li><a title="Queues" href="/queue/list">Queues</a></li>
+						<li><a title="Home" href="/qmgr/view/<?= qmgr.QMgrName.value ?>">Home</a></li>
+						<li><a title="Queues" href="/queue/list/<?= qmgr.QMgrName.value ?>">Queues</a></li>
 					</ul>
 					<div class="cl"></div>
 				</div>
@@ -47,10 +50,18 @@
 					<!-- Content -->
 					<div id="content">
 						<div class="post">
-							<h3>QueueManager <strong><?= qmgr.name ?></strong></h3>
-							<img src="/static2/css/images/briefcase.jpg" alt="briefcase" />
-							<p><strong><?= qmgr.description ?></strong></p>
-						</div>
+							<h3>QueueManager <strong><?= qmgr.QMgrName.value ?></strong></h3>
+							<img src="/static/css/images/briefcase.jpg" alt="briefcase" />
+							<p><strong><?= qmgr.QMgrDesc.value ?></strong></p>
+							<div class="details" style="float:left;">
+							  <h2>QueueManager ID</h2><div class="detail"><?= qmgr.QMgrIdentifier.value ?></div>
+							  <? ifexist qmgr.CreationDate ?>
+							    <h2>Creation Date</h2><div class="detail"><?= qmgr.CreationDate.value ?> <?= qmgr.CreationTime.value ?></div>
+							  <? endif ?>
+							  <h2>Alteration Date</h2><div class="detail"><?= qmgr.AlterationDate.value ?> <?= qmgr.AlterationTime.value ?></div>
+							  <h2>Dead Letter Queue</h2><div class="detail"><a href="/queue/view/<?=qmgr.QMgrName.value?>/<?= qmgr.DeadLetterQName.value ?>"><?= qmgr.DeadLetterQName.value ?></a></div>
+						  </div>
+					  </div>
 					</div>
 					<!-- END Content -->
 					<!-- Sidebar -->
@@ -58,7 +69,7 @@
 						<div class="box">
 							<h3>Our Services</h3>
 							<ul>
-								<li><a title="Popular belief lorem" href="#">Popular belief lorem</a></li>
+								<li><a title="List Queues Containing Messages" href="#">List Non-empty Queues</a></li>
 								<li><a title="Ipsum is not simply" href="#">Ipsum is not simply</a></li>
 								<li><a title="Dom text roots" href="#">Dom text roots</a></li>
 								<li><a title="Popular belief lorem" href="#">Popular belief lorem</a></li>
@@ -70,9 +81,18 @@
 					<div class="cl"></div>
 					<div class="widgets">
 						<div class="col activities">
-							<h3>What We Do</h3>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed est risus, in bibendum nibh. Suspendisse potenti. Sed eget enim id nisi pellentesque fringilla in at turpis amet</p>
-							<a title="Read More" class="read-more" href="#">Read More</a>
+							<h3>Local Queues</h3>
+							<p style="margin-bottom:5px">This is a list with local queues that contains at least one message.</p>
+                <div>
+                 <a href="/queue/view/<?=qmgr.QMgrName.value?>/<?= qmgr.DeadLetterQName.value ?>"><?= qmgr.DeadLetterQName.value ?></a> 2 <br />
+                 <a href="/queue/view/<?=qmgr.QMgrName.value?>/<?= qmgr.DeadLetterQName.value ?>"><?= qmgr.DeadLetterQName.value ?></a> 3 <br />
+                 <a href="/queue/view/<?=qmgr.QMgrName.value?>/<?= qmgr.DeadLetterQName.value ?>"><?= qmgr.DeadLetterQName.value ?></a> 15<br />
+                 <a href="/queue/view/<?=qmgr.QMgrName.value?>/<?= qmgr.DeadLetterQName.value ?>"><?= qmgr.DeadLetterQName.value ?></a> 16<br />
+                 <a href="/queue/view/<?=qmgr.QMgrName.value?>/<?= qmgr.DeadLetterQName.value ?>"><?= qmgr.DeadLetterQName.value ?></a> 201<br />
+                 <a href="/queue/view/<?=qmgr.QMgrName.value?>/<?= qmgr.DeadLetterQName.value ?>"><?= qmgr.DeadLetterQName.value ?></a> 1<br />
+                 <a href="/queue/view/<?=qmgr.QMgrName.value?>/<?= qmgr.DeadLetterQName.value ?>"><?= qmgr.DeadLetterQName.value ?></a> 12<br />
+               </div>							
+							
 						</div>
 						<div class="col about-us">
 							<h3>Who We Are</h3>
