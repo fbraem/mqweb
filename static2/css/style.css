@@ -94,3 +94,21 @@ a.read-more { padding-left: 6px; font-size: 11px; color: #0099d1; background: ur
 #bottom-nav { line-height: 19px; color: #008097; }
 #bottom-nav a { color: #82d1df; }
 #bottom-nav span { padding: 0 9px; }
+
+.details h2
+{
+  float:left;
+  width:14.125em;
+  text-align:right;
+  font-size:100%;
+  margin:0 1.5em .5em 0;
+  padding-top:.5em;
+  clear:both;
+}
+
+.detail
+{
+  border-top:1px dotted #ccc;
+  padding:.5em 0 .5em 15.625em;
+}
+
