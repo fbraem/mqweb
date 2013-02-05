@@ -49,7 +49,14 @@ void QueueManagerController::view()
 	if ( jsonQueueManagers->size() > 0 )
 	{
 		set("qmgr", jsonQueueManagers->get(0));
-		render("home.tpl");
+		if ( format().compare("html") == 0 )
+		{
+			render("home.tpl");
+		}
+		else if ( format().compare("json") == 0 )
+		{
+			data().stringify(response().send());
+		}
 	}
 }
 
