@@ -90,7 +90,11 @@ public:
 	void setCodedCharSetId(MQLONG ccsid);
 		/// Sets the coded character set id
 
-	
+
+	MQLONG dataLength() const;
+		/// Returns the data length of the message
+
+
 	MQLONG getEncoding() const;
 		/// Gets the encoding
 	
@@ -135,12 +139,28 @@ public:
 		/// Sets the persistence flag
 
 
+	std::string getPutApplication() const;
+		/// Returns the name of the put application
+
+
+	Poco::DateTime getPutDate() const;
+		/// Returns the put datetime
+
+
 	std::string getReplyToQueue() const;
 		/// Returns the name of the reply-to-queue
 
 
 	void setReplyToQueue(const std::string& queue);
 		/// Sets the name of the reply-to-queue
+
+
+	MQLONG getReport() const;
+		/// Get the report attribute
+
+
+	void setReport(MQLONG report);
+		/// Set the report attribute
 
 
 	MQLONG getType() const;
@@ -151,20 +171,8 @@ public:
 		/// Sets the type of the message
 
 
-	Poco::DateTime getPutDate() const;
-		/// Returns the put datetime
-
-
-	std::string getPutApplication() const;
-		/// Returns the name of the put application
-
-
 	std::string getUser() const;
 		/// Returns the name of the user
-
-
-	MQLONG dataLength() const;
-		/// Returns the data length of the message
 
 
 private:
@@ -261,6 +269,12 @@ inline std::string Message::getCorrelationIdHex() const
 }
 
 
+inline MQLONG Message::dataLength() const
+{
+	return _dataLength;
+}
+
+
 inline bool Message::isEmptyCorrelationId() const
 {
 	return isEmptyBuffer(_md.CorrelId, MQ_CORREL_ID_LENGTH);
@@ -352,6 +366,18 @@ inline void Message::setReplyToQueue(const std::string& queue)
 }
 
 
+inline MQLONG Message::getReport() const
+{
+	return _md.Report;
+}
+
+
+inline void Message::setReport(MQLONG report)
+{
+	_md.Report = report;
+}
+
+
 inline void Message::setType(MQLONG type)
 {
 	_md.MsgType = type;
@@ -360,12 +386,6 @@ inline void Message::setType(MQLONG type)
 inline MQLONG Message::getType() const
 {
 	return _md.MsgType;
-}
-
-
-inline MQLONG Message::dataLength() const
-{
-	return _dataLength;
 }
 
 
