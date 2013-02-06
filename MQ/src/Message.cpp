@@ -69,56 +69,26 @@ void Message::setBufferFromHex(MQBYTE* buffer, long size, const std::string& hex
 	}
 }
 
-BufferPtr Message::getCorrelationId() const
-{
-	return new Buffer(_md.CorrelId, MQ_CORREL_ID_LENGTH);
-}
 
-
-void Message::setCorrelationId(const Buffer& buffer)
+void Message::copyBuffer(MQBYTE* target, const Buffer& buffer, long maxSize)
 {
-	std::memset(_md.CorrelId, 0, MQ_CORREL_ID_LENGTH);
-	std::memcpy(_md.CorrelId, 
+ 	std::memset(target, 0, maxSize);
+	std::memcpy(target, 
 				buffer.begin(), 
-				buffer.size() > MQ_CORREL_ID_LENGTH ? MQ_CORREL_ID_LENGTH : buffer.size());
+				buffer.size() > maxSize ? maxSize : buffer.size());
 }
 
 
-BufferPtr Message::getMessageId() const
+bool Message::isEmptyBuffer(const MQBYTE* buffer, long size)
 {
-	return new Buffer(_md.MsgId, MQ_MSG_ID_LENGTH);
-}
-
-
-bool Message::isEmptyMessageId() const
-{
-	for(int i = 0; i < MQ_MSG_ID_LENGTH; i++)
+	for(long i = 0; i < size; i++)
 	{
-		if ( _md.MsgId[i] != 0 )
+		if ( buffer[i] != 0 )
 		{
 			return false;
 		}
 	}
 	return true;
-}
-
-void Message::setMessageId(const Buffer& buffer)
-{
-	std::memset(_md.MsgId, 0, MQ_MSG_ID_LENGTH);
-	std::memcpy(_md.MsgId, 
-				buffer.begin(), 
-				buffer.size() > MQ_MSG_ID_LENGTH ? MQ_MSG_ID_LENGTH : buffer.size());
-}
-
-
-void Message::setMessageId(const std::string& hex)
-{
-	setBufferFromHex(_md.MsgId, MQ_MSG_ID_LENGTH, hex);
-}
-
-std::string Message::getMessageIdHex() const
-{
-	return getBufferAsHex(_md.MsgId, MQ_MSG_ID_LENGTH);
 }
 
 
