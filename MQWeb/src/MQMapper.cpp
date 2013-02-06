@@ -533,6 +533,57 @@ Dictionary MQMapper::_dictionary = Dictionary()
 		(MQCHSSTATE_SERIALIZING, "Serializing")
 	)
 	(MQIACH_XMITQ_TIME_INDICATOR, "XQTime")
+
+	// Connection Properties
+	(MQIA_APPL_TYPE, "ApplType", DisplayMapInitializer
+		(MQAT_UNKNOWN, "Unknown")
+		(MQAT_NO_CONTEXT, "No Context")
+		(MQAT_CICS, "CICS Transaction")
+		(MQAT_MVS, "Z/OS")
+		(MQAT_IMS, "IMS Transaction")
+		(MQAT_OS2, "OS/2")
+		(MQAT_DOS, "DOS")
+		(MQAT_UNIX, "Unix")
+		(MQAT_QMGR, "QueueManager Process")
+		(MQAT_OS400, "OS/400")
+		(MQAT_WINDOWS, "Windows")
+		(MQAT_CICS_VSE, "CICS VSE")
+		(MQAT_WINDOWS_NT, "Windows NT")
+		(MQAT_VMS, "VMS")
+		(MQAT_GUARDIAN, "Guardian")
+		(MQAT_NSK, "NSK")
+		(MQAT_VOS, "VOS")
+		(MQAT_OPEN_TP1, "Open TP1")
+		(MQAT_VM, "VM")
+		(MQAT_IMS_BRIDGE, "IMS Bridge")
+		(MQAT_XCF, "XCF")
+		(MQAT_CICS_BRIDGE, "CICS Bridge")
+		(MQAT_NOTES_AGENT, "Notes Agent")
+		(MQAT_TPF, "TPF")
+		(MQAT_USER, "User Application")
+		(MQAT_BROKER, "Broker")
+		(MQAT_JAVA, "Java")
+		(MQAT_DQM, "DQM")
+		(MQAT_CHANNEL_INITIATOR, "Channel Initiator")
+		(MQAT_WLM, "WLM")
+		(MQAT_BATCH, "Batch Application")
+		(MQAT_RRS_BATCH, "RRS-coordinated Batch Application")
+		(MQAT_SIB, "SIB")
+		(MQAT_SYSTEM_EXTENSION, "System Extension")
+	)
+	(MQCACF_USER_IDENTIFIER, "UserIdentifier")
+	(MQCACF_APPL_NAME, "ApplName")
+	(MQCACF_OBJECT_Q_MGR_NAME, "ObjectQMgrName")
+
+	// Process Properties
+	(MQCA_PROCESS_NAME, "ProcessName")
+
+	// Topic Properties
+	(MQCA_TOPIC_STRING, "TopicString")
+	(MQCA_ADMIN_TOPIC_NAME, "AdminTopicNames")
+
+	// Namelist Properties
+	(MQCA_NAMELIST_NAME, "NamelistName")
 ;
 
 #define RCSTR(x) (x, #x)
