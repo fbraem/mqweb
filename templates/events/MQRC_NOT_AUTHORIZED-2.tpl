@@ -15,6 +15,12 @@
 	<tr>
 		<th>User</th><td><?= event.UserIdentifier.value ?></td>
 	</tr>
+	<tr>
+		<th>Application Type</th><td><?= event.ApplType.display ?></td>
+	</tr>
+	<tr>
+		<th>Application</th><td><?= event.ApplName.value ?></td>
+	</tr>
 </table>
 <p>
 On an MQOPEN or MQPUT1 call, the user is not authorized to open the object for the options specified.
