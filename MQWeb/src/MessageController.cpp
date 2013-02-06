@@ -78,8 +78,38 @@ static unsigned char EBCDIC_translate_ASCII[256] =
 	0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x2E, 0x2E, 0x2E, 0x2E, 0x2E, 0x2E 
 };
 
+
 namespace MQ {
 namespace Web {
+
+
+#define RCSTR(x) (x, #x)
+
+DisplayMap MessageController::_reportCodes = DisplayMapInitializer
+	RCSTR(MQRO_EXCEPTION                 )
+	RCSTR(MQRO_EXCEPTION_WITH_DATA       )
+	RCSTR(MQRO_EXCEPTION_WITH_FULL_DATA  )
+	RCSTR(MQRO_EXPIRATION                )
+	RCSTR(MQRO_EXPIRATION_WITH_DATA      )
+	RCSTR(MQRO_EXPIRATION_WITH_FULL_DATA )
+	RCSTR(MQRO_COA                       )
+	RCSTR(MQRO_COA_WITH_DATA             )
+	RCSTR(MQRO_COA_WITH_FULL_DATA        )
+	RCSTR(MQRO_COD                       )
+	RCSTR(MQRO_COD_WITH_DATA             )
+	RCSTR(MQRO_COD_WITH_FULL_DATA        )
+	RCSTR(MQRO_PAN                       )
+	RCSTR(MQRO_NAN                       )
+	RCSTR(MQRO_ACTIVITY                  )
+	RCSTR(MQRO_NEW_MSG_ID                )
+	RCSTR(MQRO_PASS_MSG_ID               )
+	RCSTR(MQRO_COPY_MSG_ID_TO_CORREL_ID  )
+	RCSTR(MQRO_PASS_CORREL_ID            )
+	RCSTR(MQRO_DEAD_LETTER_Q             )
+	RCSTR(MQRO_DISCARD_MSG               )
+	RCSTR(MQRO_PASS_DISCARD_AND_EXPIRY   )
+	RCSTR(MQRO_NONE                      )
+;
 
 MessageController::MessageController() : MQController()
 {
@@ -487,5 +517,22 @@ void MessageController::event()
 	render("events.tpl");
 }
 
+
+void MessageController::mapMessageToJSON(const Message& message, Poco::JSON::Object& obj)
+{
+	obj.set("accountToken", message.getAccountTokenHex());
+	obj.set("putDate", Poco::DateTimeFormatter::format(message.getPutDate(), "%d-%m-%Y %H:%M:%S"));
+	obj.set("id", message.getMessageIdHex());
+	obj.set("correlationId", message.getCorrelationIdHex());
+	obj.set("user", message.getUser());
+	obj.set("putApplication", message.getPutApplication());
+	obj.set("format", message.getFormat());
+	obj.set("length", message.dataLength());
+	obj.set("encoding", message.getEncoding());
+	obj.set("ccsid", message.getCodedCharSetId());
+
+	DisplayMap::const_iterator it = _reportCodes.find(message.getReport());
+	obj.set("report", it == _reportCodes.end() ? "" : it->second);
+}
 
 } } // Namespace MQ::Web

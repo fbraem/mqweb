@@ -23,7 +23,7 @@
 #define _MQWeb_MessageController_h
 
 #include <MQ/Web/MQController.h>
-#include <MQ/Web/MapInitializer.h>
+#include <MQ/Web/Dictionary.h>
 
 namespace MQ
 {
@@ -53,7 +53,14 @@ public:
 
 	std::string getDefaultAction() const;
 
+
 private:
+
+
+	static void mapMessageToJSON(const Message& message, Poco::JSON::Object& obj);
+
+
+	static DisplayMap _reportCodes;
 };
 
 inline const Controller::ActionMap& MessageController::getActions() const
