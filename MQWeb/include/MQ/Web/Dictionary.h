@@ -6,10 +6,13 @@
 #include <map>
 #include <string>
 
+#include <MQ/Web/MapInitializer.h>
+
 namespace MQ {
 namespace Web {
 
 typedef std::map<MQLONG, std::string> DisplayMap;
+typedef MapInitializer<MQLONG, std::string> DisplayMapInitializer;
 
 class Dictionary
 {

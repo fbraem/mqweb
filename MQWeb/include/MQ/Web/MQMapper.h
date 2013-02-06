@@ -22,16 +22,12 @@
 #define _MQWeb_MQMapper_H
 
 #include <MQ/Web/Mapper.h>
-#include <MQ/Web/MapInitializer.h>
 #include <MQ/Web/Dictionary.h>
 
 #include <MQ/CommandServer.h>
 
 namespace MQ {
 namespace Web {
-
-typedef std::map<MQLONG, std::string> DisplayMap;
-typedef MapInitializer<MQLONG, std::string> DisplayMapInitializer;
 
 
 class MQMapper : public Mapper
