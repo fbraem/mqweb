@@ -137,7 +137,21 @@ void MQFunctions::open(MQHCONN conn, MQOD* od, MQLONG options, MQHOBJ* obj, PMQL
   Poco::ScopedLock<Poco::Mutex> lock(_MQIMutex);
   _openFn(conn, od, options, obj, cc, rc);
 
-  trace(od->ObjectName, "MQOPEN", cc, rc);
+  Poco::Logger& logger = Poco::Logger::get("mq");
+  if ( logger.trace() )
+  {
+	std::string name(od->ObjectName, MQ_OBJECT_NAME_LENGTH);
+	size_t zero = name.find_first_of('\0');
+	if ( zero != std::string::npos ) // MQ Strings can have only 0's
+	{
+		name = name.substr(0, zero);
+	}
+	else
+	{
+		name.erase(name.find_last_not_of(" \n\r\t")+1); // trim
+	}
+	trace(name, "MQOPEN", cc, rc);
+  }
 }
 
 MQHOBJ MQFunctions::open(MQHCONN conn, MQOD* od, MQLONG options)
@@ -150,8 +164,15 @@ MQHOBJ MQFunctions::open(MQHCONN conn, MQOD* od, MQLONG options)
 
   if ( cc != MQCC_OK )
   {
-    std::string name(od->ObjectName, MQ_OBJECT_NAME_LENGTH);
-    name.erase(name.find_last_not_of(" \n\r\t")+1); // trim
+	std::string name(od->ObjectName, MQ_OBJECT_NAME_LENGTH);
+	if ( name.find_first_not_of('\0') == std::string::npos ) // MQ Strings can have only 0's
+	{
+		name = "";
+	}
+	else
+	{
+		name.erase(name.find_last_not_of(" \n\r\t")+1); // trim
+	}
 
     throw MQException(name, "MQOPEN", cc, rc);
   }
@@ -234,6 +255,8 @@ void MQFunctions::disc(PMQHCONN conn, PMQLONG cc, PMQLONG rc)
 
   Poco::ScopedLock<Poco::Mutex> lock(_MQIMutex);
   _discFn(conn, cc, rc);
+
+  trace("", "MQDISC", cc, rc);
 }
 
 void MQFunctions::disc(PMQHCONN conn)
