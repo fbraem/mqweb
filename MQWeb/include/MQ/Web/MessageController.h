@@ -61,6 +61,12 @@ private:
 
 
 	static DisplayMap _reportCodes;
+
+
+	static DisplayMap _messageTypeCodes;
+
+
+	static DisplayMap _feedbackCodes;
 };
 
 inline const Controller::ActionMap& MessageController::getActions() const

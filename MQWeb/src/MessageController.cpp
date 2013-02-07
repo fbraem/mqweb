@@ -111,6 +111,80 @@ DisplayMap MessageController::_reportCodes = DisplayMapInitializer
 	RCSTR(MQRO_NONE                      )
 ;
 
+DisplayMap MessageController::_messageTypeCodes = DisplayMapInitializer
+	RCSTR(MQMT_REQUEST)
+	RCSTR(MQMT_REPLY)
+	RCSTR(MQMT_DATAGRAM)
+	RCSTR(MQMT_REPORT)
+	RCSTR(MQMT_MQE_FIELDS_FROM_MQE)
+	RCSTR(MQMT_MQE_FIELDS)
+;
+
+
+DisplayMap MessageController::_feedbackCodes = DisplayMapInitializer
+	RCSTR(MQFB_NONE                   )
+	RCSTR(MQFB_QUIT                   )
+	RCSTR(MQFB_EXPIRATION             )
+	RCSTR(MQFB_COA                    )
+	RCSTR(MQFB_COD                    )
+	RCSTR(MQFB_CHANNEL_COMPLETED      )
+	RCSTR(MQFB_CHANNEL_FAIL_RETRY     )
+	RCSTR(MQFB_CHANNEL_FAIL           )
+	RCSTR(MQFB_APPL_CANNOT_BE_STARTED )
+	RCSTR(MQFB_TM_ERROR               )
+	RCSTR(MQFB_APPL_TYPE_ERROR        )
+	RCSTR(MQFB_STOPPED_BY_MSG_EXIT    )
+	RCSTR(MQFB_ACTIVITY               )
+	RCSTR(MQFB_XMIT_Q_MSG_ERROR       )
+	RCSTR(MQFB_PAN                    )
+	RCSTR(MQFB_NAN                    )
+	RCSTR(MQFB_STOPPED_BY_CHAD_EXIT   )
+	RCSTR(MQFB_STOPPED_BY_PUBSUB_EXIT )
+	RCSTR(MQFB_NOT_A_REPOSITORY_MSG   )
+	RCSTR(MQFB_BIND_OPEN_CLUSRCVR_DEL )
+	RCSTR(MQFB_MAX_ACTIVITIES         )
+	RCSTR(MQFB_NOT_FORWARDED          )
+	RCSTR(MQFB_NOT_DELIVERED          )
+	RCSTR(MQFB_UNSUPPORTED_FORWARDING )
+	RCSTR(MQFB_UNSUPPORTED_DELIVERY   )
+	RCSTR(MQFB_DATA_LENGTH_ZERO       )
+	RCSTR(MQFB_DATA_LENGTH_NEGATIVE   )
+	RCSTR(MQFB_DATA_LENGTH_TOO_BIG    )
+	RCSTR(MQFB_BUFFER_OVERFLOW        )
+	RCSTR(MQFB_LENGTH_OFF_BY_ONE      )
+	RCSTR(MQFB_IIH_ERROR              )
+	RCSTR(MQFB_NOT_AUTHORIZED_FOR_IMS )
+	RCSTR(MQFB_IMS_ERROR              )
+	RCSTR(MQFB_IMS_FIRST              )
+	RCSTR(MQFB_IMS_LAST               )
+	RCSTR(MQFB_CICS_INTERNAL_ERROR    )
+	RCSTR(MQFB_CICS_NOT_AUTHORIZED    )
+	RCSTR(MQFB_CICS_BRIDGE_FAILURE    )
+	RCSTR(MQFB_CICS_CORREL_ID_ERROR   )
+	RCSTR(MQFB_CICS_CCSID_ERROR       )
+	RCSTR(MQFB_CICS_ENCODING_ERROR    )
+	RCSTR(MQFB_CICS_CIH_ERROR         )
+	RCSTR(MQFB_CICS_UOW_ERROR         )
+	RCSTR(MQFB_CICS_COMMAREA_ERROR    )
+	RCSTR(MQFB_CICS_APPL_NOT_STARTED  )
+	RCSTR(MQFB_CICS_APPL_ABENDED      )
+	RCSTR(MQFB_CICS_DLQ_ERROR         )
+	RCSTR(MQFB_CICS_UOW_BACKED_OUT    )
+	RCSTR(MQFB_PUBLICATIONS_ON_REQUEST)
+	RCSTR(MQFB_SUBSCRIBER_IS_PUBLISHER)
+	RCSTR(MQFB_MSG_SCOPE_MISMATCH     )
+	RCSTR(MQFB_SELECTOR_MISMATCH      )
+	RCSTR(MQFB_NOT_A_GROUPUR_MSG      )
+	RCSTR(MQRC_PUT_INHIBITED          )
+	RCSTR(MQRC_Q_FULL                 )
+	RCSTR(MQRC_NOT_AUTHORIZED         )
+	RCSTR(MQRC_Q_SPACE_NOT_AVAILABLE  )
+	RCSTR(MQRC_PERSISTENT_NOT_ALLOWED )
+	RCSTR(MQRC_MSG_TOO_BIG_FOR_Q_MGR  )
+	RCSTR(MQRC_MSG_TOO_BIG_FOR_Q      )
+;
+
+
 MessageController::MessageController() : MQController()
 {
 }
@@ -186,15 +260,7 @@ void MessageController::list()
 
 		count++;
 		Poco::JSON::Object::Ptr jsonMessage = new Poco::JSON::Object();
-
-		jsonMessage->set("id", msg.getMessageIdHex());
-		jsonMessage->set("putDate", Poco::DateTimeFormatter::format(msg.getPutDate(), "%d-%m-%Y %H:%M:%S"));
-		jsonMessage->set("user", msg.getUser());
-		jsonMessage->set("putApplication", msg.getPutApplication());
-		jsonMessage->set("format", msg.getFormat());
-		jsonMessage->set("length", msg.dataLength());
-		jsonMessage->set("encoding", msg.getEncoding());
-		jsonMessage->set("ccsid", msg.getCodedCharSetId());
+		mapMessageToJSON(msg, *jsonMessage);
 
 		std::string data;
 		if ( teaser > 0 && msg.getFormat().compare(MQFMT_STRING) == 0 )
@@ -520,19 +586,51 @@ void MessageController::event()
 
 void MessageController::mapMessageToJSON(const Message& message, Poco::JSON::Object& obj)
 {
-	obj.set("accountToken", message.getAccountTokenHex());
-	obj.set("putDate", Poco::DateTimeFormatter::format(message.getPutDate(), "%d-%m-%Y %H:%M:%S"));
-	obj.set("id", message.getMessageIdHex());
-	obj.set("correlationId", message.getCorrelationIdHex());
-	obj.set("user", message.getUser());
-	obj.set("putApplication", message.getPutApplication());
-	obj.set("format", message.getFormat());
-	obj.set("length", message.dataLength());
-	obj.set("encoding", message.getEncoding());
-	obj.set("ccsid", message.getCodedCharSetId());
-
 	DisplayMap::const_iterator it = _reportCodes.find(message.getReport());
-	obj.set("report", it == _reportCodes.end() ? "" : it->second);
+	obj.set("Report", it == _reportCodes.end() ? "" : it->second);
+
+	it = _messageTypeCodes.find(message.getMsgType());
+	obj.set("MsgType", it == _messageTypeCodes.end() ? "" : it->second);
+
+	obj.set("Expiry", message.getExpiry());
+
+	it = _feedbackCodes.find(message.getFeedback());
+	if ( it == _feedbackCodes.end() )
+	{
+		obj.set("Feedback", message.getFeedback());
+	}
+	else
+	{
+		obj.set("Feedback", it->second);
+	}
+
+	obj.set("Encoding", message.getEncoding());
+	obj.set("CodedCharSetId", message.getCodedCharSetId());
+	obj.set("Format", message.getFormat());
+	obj.set("Priority", message.getPriority());
+	obj.set("Persistence", message.getPersistence());
+	obj.set("MsgId", message.getMessageIdHex());
+	obj.set("CorrelId", message.getCorrelationIdHex());
+	obj.set("BackoutCount", message.backoutCount());
+	obj.set("ReplyToQ", message.getReplyToQueue());
+	obj.set("ReplyToQmgr", message.getReplyToQMgr());
+	obj.set("UserIdentifier", message.getUser());
+	obj.set("AccountingToken", message.getAccountingTokenHex());
+	obj.set("ApplIdentityData", message.getApplIdentityData());
+
+	const DisplayMap& applTypes = MQMapper::getDisplayMap(MQIA_APPL_TYPE);
+	it = applTypes.find(message.getPutApplType());
+	obj.set("PutApplType", it == applTypes.end() ? "" : it->second);
+
+	obj.set("PutApplName", message.getPutApplName());
+	obj.set("PutDate", Poco::DateTimeFormatter::format(message.getPutDate(), "%d-%m-%Y %H:%M:%S"));
+	obj.set("ApplOriginData", message.getApplOriginData());
+	obj.set("GroupId", message.getGroupIdHex());
+	obj.set("MsgSeqNumber", message.getMsgSeqNumber());
+	obj.set("Offset", message.getOffset());
+	obj.set("MsgFlags", message.getMsgFlags());
+	obj.set("OriginalLength", message.getOriginalLength());
+	obj.set("Length", message.dataLength());
 }
 
 } } // Namespace MQ::Web
