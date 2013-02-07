@@ -89,8 +89,7 @@ std::string PCF::getParameterString(MQLONG parameter) const
 	{
 		MQCFST* pcfParam = (MQCFST*) &buffer()[it->second];
 		std::string result(pcfParam->String, pcfParam->StringLength);
-		result.erase(result.find_last_not_of(" \n\r\t")+1); // trim
-		return result;
+		return Poco::trimRightInPlace(result);
 	}
 
 	throw Poco::BadCastException(parameter);
@@ -115,9 +114,9 @@ std::string PCF::optParameterString(MQLONG parameter, const std::string& def) co
 Poco::DateTime PCF::getParameterDate(MQLONG dateParameter, MQLONG timeParameter) const
 {
 	std::string dateValue = getParameterString(dateParameter);
-	dateValue.erase(dateValue.find_last_not_of(" \n\r\t")+1); // trim
+	Poco::trimRightInPlace(dateValue);
 	std::string timeValue = getParameterString(timeParameter);
-	timeValue.erase(timeValue.find_last_not_of(" \n\r\t")+1); // trim
+	Poco::trimRightInPlace(timeValue);
 	dateValue += timeValue;
 	if ( ! dateValue.empty() )
 	{
@@ -160,7 +159,7 @@ std::vector<std::string> PCF::getParameterStringList(MQLONG parameter) const
 		for(int i = 0; i < pcfParam->Count; ++i)
 		{
 			std::string result(pcfParam->Strings, i * pcfParam->StringLength, pcfParam->StringLength);
-			result.erase(result.find_last_not_of(" \n\r\t")+1); // trim
+			Poco::trimRightInPlace(result);
 			list.push_back(result);
 		}
 		return list;
