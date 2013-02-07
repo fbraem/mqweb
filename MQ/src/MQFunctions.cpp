@@ -21,6 +21,7 @@
 #include <MQ/MQFunctions.h>
 #include <MQ/MQException.h>
 
+#include <Poco/String.h>
 #include <Poco/ScopedLock.h>
 #include <Poco/Logger.h>
 #include <Poco/NumberFormatter.h>
@@ -146,10 +147,8 @@ void MQFunctions::open(MQHCONN conn, MQOD* od, MQLONG options, MQHOBJ* obj, PMQL
 	{
 		name = name.substr(0, zero);
 	}
-	else
-	{
-		name.erase(name.find_last_not_of(" \n\r\t")+1); // trim
-	}
+
+	Poco::trimRightInPlace(name);
 	trace(name, "MQOPEN", cc, rc);
   }
 }
@@ -165,14 +164,13 @@ MQHOBJ MQFunctions::open(MQHCONN conn, MQOD* od, MQLONG options)
   if ( cc != MQCC_OK )
   {
 	std::string name(od->ObjectName, MQ_OBJECT_NAME_LENGTH);
-	if ( name.find_first_not_of('\0') == std::string::npos ) // MQ Strings can have only 0's
+	size_t zero = name.find_first_not_of('\0');
+	if ( zero == std::string::npos ) // MQ Strings can have only 0's
 	{
-		name = "";
+		name = name.substr(0, zero);
 	}
-	else
-	{
-		name.erase(name.find_last_not_of(" \n\r\t")+1); // trim
-	}
+
+	Poco::trimRightInPlace(name);
 
     throw MQException(name, "MQOPEN", cc, rc);
   }
@@ -323,9 +321,7 @@ void MQFunctions::inq(MQHCONN conn, MQHOBJ obj, const std::vector<int>& intSelec
   {
     std::string value = result.substr(0, it->second);
     result.erase(0, it->second);
-    value.erase(value.find_last_not_of(" \n\r\t")+1); // trim
-
-    charResult[it->first] = value;
+    charResult[it->first] = Poco::trimRightInPlace(value);
   }
 }
 
