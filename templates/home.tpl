@@ -7,7 +7,18 @@
 	<link rel="stylesheet" href="/static/css/style.css" type="text/css" media="all" />
 	<script src="/static/js/jquery-1.7.1.min.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
-	  
+	$(document).ready(function(){
+	  $.getJSON('/queue/list.json/<?= qmgr.QMgrName.value ?>?queueDepth=1&queueType=Local', 
+	  		    function(data) 
+	  		    {
+  					var div = '';
+ 					$.each(data.queues, function(key, val) 
+ 					{
+    					div += val.QName.value + '<br />';
+  					});
+ 				  	$('#localQueues').html(div);
+				});
+	});
 	</script>
 </head>
 <body>
@@ -83,16 +94,7 @@
 						<div class="col activities">
 							<h3>Local Queues</h3>
 							<p style="margin-bottom:5px">This is a list with local queues that contains at least one message.</p>
-                <div>
-                 <a href="/queue/view/<?=qmgr.QMgrName.value?>/<?= qmgr.DeadLetterQName.value ?>"><?= qmgr.DeadLetterQName.value ?></a> 2 <br />
-                 <a href="/queue/view/<?=qmgr.QMgrName.value?>/<?= qmgr.DeadLetterQName.value ?>"><?= qmgr.DeadLetterQName.value ?></a> 3 <br />
-                 <a href="/queue/view/<?=qmgr.QMgrName.value?>/<?= qmgr.DeadLetterQName.value ?>"><?= qmgr.DeadLetterQName.value ?></a> 15<br />
-                 <a href="/queue/view/<?=qmgr.QMgrName.value?>/<?= qmgr.DeadLetterQName.value ?>"><?= qmgr.DeadLetterQName.value ?></a> 16<br />
-                 <a href="/queue/view/<?=qmgr.QMgrName.value?>/<?= qmgr.DeadLetterQName.value ?>"><?= qmgr.DeadLetterQName.value ?></a> 201<br />
-                 <a href="/queue/view/<?=qmgr.QMgrName.value?>/<?= qmgr.DeadLetterQName.value ?>"><?= qmgr.DeadLetterQName.value ?></a> 1<br />
-                 <a href="/queue/view/<?=qmgr.QMgrName.value?>/<?= qmgr.DeadLetterQName.value ?>"><?= qmgr.DeadLetterQName.value ?></a> 12<br />
-               </div>							
-							
+                <div id="localQueues"> </div>							
 						</div>
 						<div class="col about-us">
 							<h3>Who We Are</h3>
