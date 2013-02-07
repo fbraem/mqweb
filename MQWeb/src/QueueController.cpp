@@ -43,12 +43,6 @@ QueueController::~QueueController()
 
 void QueueController::list()
 {
-	if ( !isPost() )
-	{
-		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
-		return;
-	}
-
 	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
 
 	std::string queueNameField = form().get("queueName", "*");
@@ -94,7 +88,15 @@ void QueueController::list()
 	}
 
 	set("queues", jsonQueues);
-	render("queueList.tpl");
+
+	if ( format().compare("html") == 0 )
+	{
+		render("queueList.tpl");
+	}
+	else if ( format().compare("json") == 0 )
+	{
+		data().stringify(response().send());
+	}
 }
 
 
