@@ -55,6 +55,8 @@ public:
 	static std::string getReasonString(MQLONG reasonCode);
 
 
+	static const DisplayMap& getDisplayMap(MQLONG id);
+
 protected:
 
 	MQ::CommandServer& _commandServer;
@@ -66,6 +68,11 @@ protected:
 	static DisplayMap _reasonCodes;
 };
 
+
+inline const DisplayMap& MQMapper::getDisplayMap(MQLONG id)
+{
+	return _dictionary.getDisplayMap(id);
+}
 
 }} // Namespace MQ::Web
 
