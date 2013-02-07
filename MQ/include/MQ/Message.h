@@ -26,6 +26,7 @@
 
 #include <string.h>
 
+#include <Poco/String.h>
 #include <Poco/SharedPtr.h>
 #include <Poco/Buffer.h>
 
@@ -54,18 +55,41 @@ public:
 		/// Clears the content and the fields of the message.
 
 
-	BufferPtr getAccountToken() const;
+	BufferPtr getAccountingToken() const;
+		/// Gets the accounting token
 
 
-	std::string getAccountTokenHex() const;
+	std::string getAccountingTokenHex() const;
+		/// Gets the accounting token as hex
 
 
-	void setAccountToken(const Buffer& buffer);
+	void setAccountingToken(const Buffer& buffer);
+		/// Sets the accounting token
 
-	
+
+	std::string getApplIdentityData() const;
+		/// Gets the application data relating to identity
+
+
+	void setApplIdentityData(const std::string& applIdentity);
+		/// Sets the application data relating to identity
+
+
+	std::string getApplOriginData() const;
+		/// Gets the application data relating to origin
+
+
+	void setApplOriginData(const std::string& applOriginData);
+		/// Sets the application data relating to origin
+
+
+	MQLONG backoutCount() const;
+		// Returns the backout counter
+
+
 	BufferPtr getCorrelationId() const;
 		/// Returns a copy of the correlation id in a buffer
-	
+
 
 	std::string getCorrelationIdHex() const;
 		/// Returns the correlation id in a hex format
@@ -102,6 +126,22 @@ public:
 	void setEncoding(MQLONG encoding);
 		///.Sets the encoding
 	
+
+	MQLONG getExpiry() const;
+		/// Gets the message lifetime
+
+
+	void setExpiry(MQLONG expiry);
+		/// Sets the message lifetime
+
+
+	MQLONG getFeedback() const;
+		/// Get feedback or reason code
+
+
+	void setFeedback(MQLONG feedback);
+		/// Set feedback or reason code
+
 	
 	std::string getFormat() const;
 		/// Gets the format
@@ -111,8 +151,36 @@ public:
 		/// Sets the format
 
 
+	BufferPtr getGroupId() const;
+		/// Returns the group identifier
+
+
+	std::string getGroupIdHex() const;
+		/// Returns the group identifier in hex format
+
+
+	bool isEmptyGroupId() const;
+		/// Returns true when the group identifier contains only 0-bytes.
+
+
+	void setGroupId(const Buffer& buffer);
+		/// Sets the group identifier from a buffer
+
+
+	void setGroupId(const std::string& hex);
+		/// Sets the group identifier from a hex string
+
+
+	MQLONG getMsgFlags() const;
+		/// Gets the message flags
+
+
+	void setMsgFlags(MQLONG flags);
+		/// Sets the message flags
+
+
 	BufferPtr getMessageId() const;
-		/// Returns a copy of the message id as a Buffer
+		/// Returns a the message id as a Buffer
 
 
 	std::string getMessageIdHex() const;
@@ -120,7 +188,7 @@ public:
 	
 	
 	bool isEmptyMessageId() const;
-		/// Returns true when the message id is initialized with 0 bytes
+		/// Returns true when the message id contains only 0-bytes
 	
 	
 	void setMessageId(const Buffer& buffer);
@@ -131,7 +199,35 @@ public:
 		/// Sets the message id from a hex string
 
 
-	MQLONG persistence() const;
+	MQLONG getMsgSeqNumber() const;
+		/// Gets the sequence number of logical message within group
+
+
+	void setMsgSeqNumber(MQLONG seqNumber);
+		/// Sets the sequence number of logical message within group
+
+
+	MQLONG getMsgType() const;
+		/// Gets the message type
+
+
+	void setMsgType(MQLONG type);
+		/// Sets the message type
+
+
+	MQLONG getOffset() const;
+		/// Gets the offset of data in physical message from start of logical message
+
+
+	void setOffset(MQLONG offset);
+		/// Sets the offset of data in physical message from start of logical message
+
+
+	MQLONG getOriginalLength() const;
+		/// Gets length of original message
+
+
+	MQLONG getPersistence() const;
 		/// Returns the persistence flag
 
 
@@ -139,12 +235,39 @@ public:
 		/// Sets the persistence flag
 
 
-	std::string getPutApplication() const;
-		/// Returns the name of the put application
+	MQLONG getPriority() const;
+		/// Returns the message priority
+
+
+	void setPriority(MQLONG prio);
+		/// Sets the message priority
+
+
+	std::string getPutApplName() const;
+		/// Returns the name of application that put the message
+
+
+	void setPutApplName(const std::string& app);
+		/// Sets the name of application that put the message
+
+
+	MQLONG getPutApplType() const;
+		/// Gets the type of application that put the message
+
+	void setPutApplType(MQLONG appType);
+		/// Sets the type of application that put the message
 
 
 	Poco::DateTime getPutDate() const;
 		/// Returns the put datetime
+
+
+	std::string getReplyToQMgr() const;
+		/// Returns the name of the reply queue manager
+
+
+	void setReplyToQMgr(const std::string& qmgr);
+		/// Sets the name of reply queue manager
 
 
 	std::string getReplyToQueue() const;
@@ -207,24 +330,53 @@ private:
 
 
 	static void setBufferFromHex(MQBYTE* buffer, long size, const std::string& hex);
-
 };
 
 
-inline std::string Message::getAccountTokenHex() const
+inline std::string Message::getAccountingTokenHex() const
 {
 	return getBufferAsHex(_md.AccountingToken, MQ_ACCOUNTING_TOKEN_LENGTH);
 }
 
 
-inline void Message::setAccountToken(const Buffer& buffer)
+inline void Message::setAccountingToken(const Buffer& buffer)
 {
 	copyBuffer(_md.AccountingToken, buffer, MQ_ACCOUNTING_TOKEN_LENGTH);
 }
 
-inline BufferPtr Message::getAccountToken() const
+inline BufferPtr Message::getAccountingToken() const
 {
 	return new Buffer(_md.AccountingToken, MQ_ACCOUNTING_TOKEN_LENGTH);
+}
+
+
+inline std::string Message::getApplIdentityData() const
+{
+	return Poco::trimRight(std::string(_md.ApplIdentityData, MQ_APPL_IDENTITY_DATA_LENGTH));
+}
+
+
+inline void Message::setApplIdentityData(const std::string& applIdentity)
+{
+	strncpy(_md.ApplIdentityData, applIdentity.c_str(), MQ_APPL_IDENTITY_DATA_LENGTH);
+}
+
+
+inline std::string Message::getApplOriginData() const
+{
+	return Poco::trimRight(std::string(_md.ApplOriginData, MQ_APPL_ORIGIN_DATA_LENGTH));
+}
+
+
+inline void Message::setApplOriginData(const std::string& applOriginData)
+{
+	strncpy(_md.ApplOriginData, applOriginData.c_str(), MQ_APPL_ORIGIN_DATA_LENGTH);
+}
+
+
+inline MQLONG Message::backoutCount() const
+{
+	return _md.BackoutCount;
 }
 
 
@@ -305,6 +457,30 @@ inline void Message::setEncoding(MQLONG encoding)
 }
 
 
+inline MQLONG Message::getExpiry() const
+{
+	return _md.Expiry;
+}
+
+
+inline void Message::setExpiry(MQLONG expiry)
+{
+	_md.Expiry = expiry;
+}
+
+
+inline MQLONG Message::getFeedback() const
+{
+	return _md.Feedback;
+}
+
+
+inline void Message::setFeedback(MQLONG feedback)
+{
+	_md.Feedback = feedback;
+}
+
+
 inline std::string Message::getFormat() const
 {
 	std::string s(_md.Format, MQ_FORMAT_LENGTH - 1);
@@ -320,6 +496,48 @@ inline void Message::setFormat(const std::string& format)
 inline MQMD* Message::md()
 {
 	return &_md;
+}
+
+
+inline BufferPtr Message::getGroupId() const
+{
+	return new Buffer(_md.GroupId, MQ_GROUP_ID_LENGTH);
+}
+
+
+inline bool Message::isEmptyGroupId() const
+{
+	return isEmptyBuffer(_md.GroupId, MQ_GROUP_ID_LENGTH);
+}
+
+
+inline void Message::setGroupId(const Buffer& buffer)
+{
+	copyBuffer(_md.GroupId, buffer, MQ_GROUP_ID_LENGTH);
+}
+
+
+inline void Message::setGroupId(const std::string& hex)
+{
+	setBufferFromHex(_md.GroupId, MQ_GROUP_ID_LENGTH, hex);
+}
+
+
+inline std::string Message::getGroupIdHex() const
+{
+	return getBufferAsHex(_md.GroupId, MQ_GROUP_ID_LENGTH);
+}
+
+
+inline MQLONG Message::getMsgFlags() const
+{
+	return _md.MsgFlags;
+}
+
+
+inline void Message::setMsgFlags(MQLONG flags)
+{
+	_md.MsgFlags = flags;
 }
 
 
@@ -345,24 +563,124 @@ inline void Message::setMessageId(const std::string& hex)
 	setBufferFromHex(_md.MsgId, MQ_MSG_ID_LENGTH, hex);
 }
 
+
 inline std::string Message::getMessageIdHex() const
 {
 	return getBufferAsHex(_md.MsgId, MQ_MSG_ID_LENGTH);
 }
 
-inline MQLONG Message::persistence() const
+
+inline MQLONG Message::getMsgSeqNumber() const
+{
+	return _md.MsgSeqNumber;
+}
+
+
+inline void Message::setMsgSeqNumber(MQLONG seqNumber)
+{
+	_md.MsgSeqNumber = seqNumber;
+}
+
+
+inline MQLONG Message::getOffset() const
+{
+	return _md.Offset;
+}
+
+
+inline void Message::setOffset(MQLONG offset)
+{
+	_md.Offset = offset;
+}
+
+
+inline MQLONG Message::getOriginalLength() const
+{
+	return _md.OriginalLength;
+}
+
+
+inline MQLONG Message::getMsgType() const
+{
+	return _md.MsgType;
+}
+
+
+inline void Message::setMsgType(MQLONG type)
+{
+	_md.MsgType = type;
+}
+
+
+inline MQLONG Message::getPersistence() const
 {
 	return _md.Persistence;
 }
+
 
 inline void Message::setPersistence(MQLONG persistence)
 {
 	_md.Persistence = persistence;
 }
 
+
+inline MQLONG Message::getPriority() const
+{
+	return _md.Priority;
+}
+
+
+inline void Message::setPriority(MQLONG prio)
+{
+	_md.Priority = prio;
+}
+
+
+inline std::string Message::getPutApplName() const
+{
+	return Poco::trimRight(std::string(_md.PutApplName, MQ_PUT_APPL_NAME_LENGTH));
+}
+
+
+inline void Message::setPutApplName(const std::string& app)
+{
+	strncpy(_md.PutApplName, app.c_str(), MQ_PUT_APPL_NAME_LENGTH);
+}
+
+
+inline MQLONG Message::getPutApplType() const
+{
+	return _md.PutApplType;
+}
+
+
+inline void Message::setPutApplType(MQLONG applType)
+{
+	_md.PutApplType = applType;
+}
+
+
+inline void Message::setReplyToQMgr(const std::string& qmgr)
+{
+	strncpy(_md.ReplyToQMgr, qmgr.c_str(), MQ_Q_MGR_NAME_LENGTH);
+}
+
+
+inline std::string Message::getReplyToQMgr() const
+{
+	return Poco::trimRight(std::string(_md.ReplyToQMgr, MQ_Q_MGR_NAME_LENGTH));
+}
+
+
 inline void Message::setReplyToQueue(const std::string& queue)
 {
 	strncpy(_md.ReplyToQ, queue.c_str(), MQ_Q_NAME_LENGTH);
+}
+
+
+inline std::string Message::getReplyToQueue() const
+{
+	return Poco::trimRight(std::string(_md.ReplyToQ, MQ_Q_NAME_LENGTH));
 }
 
 
@@ -386,6 +704,11 @@ inline void Message::setType(MQLONG type)
 inline MQLONG Message::getType() const
 {
 	return _md.MsgType;
+}
+
+inline std::string Message::getUser() const
+{
+	return Poco::trimRight(std::string(_md.UserIdentifier, MQ_USER_ID_LENGTH));
 }
 
 

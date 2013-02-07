@@ -105,25 +105,4 @@ Poco::DateTime Message::getPutDate() const
 	return dateTime;
 }
 
-std::string Message::getUser() const
-{
-	std::string user(_md.UserIdentifier, MQ_USER_ID_LENGTH);
-	user.erase(user.find_last_not_of(" \n\r\t")+1); // trim
-	return user;
-}
-
-std::string Message::getPutApplication() const
-{
-	std::string app(_md.PutApplName, MQ_PUT_APPL_NAME_LENGTH);
-	app.erase(app.find_last_not_of(" \n\r\t")+1); // trim
-	return app;
-}
-
-std::string Message::getReplyToQueue() const
-{
-	std::string q(_md.ReplyToQ, MQ_Q_NAME_LENGTH);
-	q.erase(q.find_last_not_of(" \n\r\t")+1); // trim
-	return q;
-}
-
 }
