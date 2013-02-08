@@ -7,19 +7,28 @@
 	<link rel="stylesheet" href="/static/css/style.css" type="text/css" media="all" />
 	<script src="/static/js/jquery-1.7.1.min.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
-	$(document).ready(function(){
-	  $.getJSON('/queue/list.json/<?= qmgr.QMgrName.value ?>?queueDepth=1&queueType=Local', 
-	  		    function(data) 
-	  		    {
-  					var div = '';
- 					$.each(data.queues, function(key, val) 
- 					{
-    					div += val.QName.value + '<br />';
-  					});
- 				  	$('#localQueues').html(div);
-				});
-	});
-	</script>
+	$(document).ready(function()
+	{
+  	$.ajax(
+  	{
+      url: "/queue/list.json/<?= qmgr.QMgrName.value ?>?queueDepth=1&queueType=Local",
+      cache: false,
+      dataType: "json",
+      success: function(data) 
+      {
+        var div = '';
+     		$.each(data.queues, function(key, val) 
+     		      {
+        	      div += val.QName.value + '<br />';
+      	      });
+     		$('#localQueues').html(div);
+      },
+      error: function (request, status, error) 
+      { 
+        alert(status + ", " + error); 
+      }
+    });
+  });</script>
 </head>
 <body>
 	<!-- Wrapper -->
