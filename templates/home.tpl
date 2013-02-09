@@ -9,31 +9,33 @@
 	<script type="text/javascript">
 	$(document).ready(function()
 	{
-  	$.ajax(
-  	{
-      url: "/queue/list.json/<?= qmgr.QMgrName.value ?>?queueDepth=1&queueType=Local",
-      cache: false,
-      dataType: "json",
-      success: function(data) 
-      {
-        var div = '';
-     		$.each(data.queues, function(key, val) 
-     		      {
-        	      div += val.QName.value + '<br />';
-      	      });
-     		$('#localQueues').html(div);
-      },
-      error: function (request, status, error) 
-      { 
-        alert(status + ", " + error); 
-      }
-    });
-  });</script>
+		$.ajax(
+		{
+			url: "/queue/list.json/<?= qmgr.QMgrName.value ?>?queueDepth=1&queueType=Local",
+			cache: false,
+			dataType: "json",
+			success: function(data)
+			{
+				var div = '<table>';
+				$.each(data.queues, function(key, val)
+				{
+					div += '<tr><th style="border-bottom:1px dotted #CCC;text-align:left;">' + val.QName.value + '</th><td style="border-bottom:1px dotted #CCC;text-align:right;">' + val.CurrentQDepth.value + '</td></tr>';
+				});
+				div += '</table>';
+				$('#localQueues').html(div);
+			},
+			error: function (request, status, error)
+			{
+				alert(status + ", " + error);
+			}
+		});
+	});
+	</script>
 </head>
 <body>
 	<!-- Wrapper -->
 	<div id="wrapper">
-		<div class="shell">		
+		<div class="shell">
 			<div id="wrapper-top"></div>
 			<!-- Wrapper Middle -->
 			<div id="wrapper-middle">
@@ -51,9 +53,9 @@
 						<a title="Digg" class="digg" href="#">digg</a>
 						<a title="Delicious" class="delicious" href="#">Delicious</a>
 						<a title="Stumble Upon" class="su" href="#">su</a>
-						<a title="RSS" class="rss" href="#">rss</a> -->						
+						<a title="RSS" class="rss" href="#">rss</a> -->
 					</div>
-					<div class="cl"></div>								
+					<div class="cl"></div>
 				</div>
 				<!-- END Header -->
 				<!-- Navigation -->
@@ -64,7 +66,7 @@
 					</ul>
 					<div class="cl"></div>
 				</div>
-				<!-- END Navigation -->						
+				<!-- END Navigation -->
 				<!-- Main -->
 				<div id="main">
 					<!-- Content -->
@@ -93,7 +95,7 @@
 								<li><a title="Ipsum is not simply" href="#">Ipsum is not simply</a></li>
 								<li><a title="Dom text roots" href="#">Dom text roots</a></li>
 								<li><a title="Popular belief lorem" href="#">Popular belief lorem</a></li>
-								<li><a title="Ipsum is not simply" href="#">Ipsum is not simply</a></li>								
+								<li><a title="Ipsum is not simply" href="#">Ipsum is not simply</a></li>
 							</ul>
 						</div>
 					</div>
@@ -103,7 +105,8 @@
 						<div class="col activities">
 							<h3>Local Queues</h3>
 							<p style="margin-bottom:5px">This is a list with local queues that contains at least one message.</p>
-                <div id="localQueues"> </div>							
+							<div id="localQueues" class="details">
+							</div>
 						</div>
 						<div class="col about-us">
 							<h3>Who We Are</h3>
@@ -120,7 +123,7 @@
 					<div class="widgets">
 						<div class="projects">
 							<h3>Latest Projects</h3>
-							<div class="cl"></div>						
+							<div class="cl"></div>
 						</div>
 						<div class="col contacts">
 							<h3>Contact Us</h3>
@@ -128,7 +131,7 @@
 							<p><strong>Github:</strong>&nbsp;<a href="https://github.com/fbraem/mqweb/issues">https://github.com/fbraem/mqweb</a></p>
 							<p><strong>Issues:</strong>&nbsp;<a href="https://github.com/fbraem/mqweb/issues">https://github.com/fbraem/mqweb/issues</a></p>
 						</div>
-						<div class="cl"></div>						
+						<div class="cl"></div>
 					</div>
 				</div>
 				<!-- END Main -->
