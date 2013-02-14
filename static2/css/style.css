@@ -68,7 +68,7 @@ a.read-more { padding-left: 6px; font-size: 11px; color: #0099d1; background: ur
 
 .widgets { position: relative; margin-top: 29px; padding: 38px 0 0 3px; width: 938px; background: url(images/widgets.png) no-repeat center 0; }
 
-.col { display: inline; float: left; padding-right: 52px; width: 264px; }
+.col { display: inline; float: left; padding-right: 32px; width: 264px; }
 .col a.read-more { line-height: 30px;  }
 
 .activities h3 { padding: 4px 0 12px 36px; background: url(images/activities.png) no-repeat 0 4px; }
