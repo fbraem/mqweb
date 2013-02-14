@@ -5,34 +5,165 @@
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<link rel="shortcut icon" href="/static/css/images/favicon.ico" />
 	<link rel="stylesheet" href="/static/css/style.css" type="text/css" media="all" />
+	<style>
+    td {
+    	border: 1px solid #C1DAD7;
+    	background: #fff;
+    	padding: 3px 3px 3px 6px;
+    	color: #6D929B;
+    }
+    
+    td.alt {
+    	background: #F5FAFA;
+    	color: #B4AA9D;
+    }	  
+	</style>
 	<script src="/static/js/jquery-1.7.1.min.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
 	$(document).ready(function()
 	{
+    loadLocalQueues();
+    loadXmitQueues();
+    loadChannelStatus();
+	});
+
+  function loadLocalQueues()
+  {	
 		$.ajax(
 		{
-			url: "/queue/list.json/<?= qmgr.QMgrName.value ?>?queueDepth=1&queueType=Local",
+		  beforeSend: function() {
+		    $("#localQueues").html($("#ajaxOverlay").html());
+		  },
+			url: "/queue/list.json/<?= qmgr.QMgrName.value ?>?queueDepth=1&queueType=Local&queueExcludeSystem=1&queueUsage=normal",
 			cache: false,
 			dataType: "json",
 			success: function(data)
 			{
-				var div = '<table>';
+			  if ( data.error )
+			  {
+			    showError($("#localQueues"), data.error);
+			    return;
+			  }
+
+        var i = 1;
+				var div = '<table style="width:100%;border-spacing:0;border-collapse:collapse">';
 				$.each(data.queues, function(key, val)
 				{
-					div += '<tr><th style="border-bottom:1px dotted #CCC;text-align:left;">' + val.QName.value + '</th><td style="border-bottom:1px dotted #CCC;text-align:right;">' + val.CurrentQDepth.value + '</td></tr>';
+				  var cl = '';
+				  if ( i++ % 2 == 0 )
+				  {
+				    cl = 'class="alt"';
+				  }
+					div += '<tr><td ' + cl +'>' + val.QName.value + '</th><td ' + cl +' style="text-align:right;padding-right:6px;">' + val.CurrentQDepth.value + '</td></tr>';
 				});
 				div += '</table>';
 				$('#localQueues').html(div);
 			},
 			error: function (request, status, error)
 			{
-				alert(status + ", " + error);
+				$("#localQueues").html("An error occurred while retrieving local queues: " + status + ", " + error);
 			}
 		});
-	});
+  }	
+	
+	function loadXmitQueues()
+	{
+		$.ajax(
+		{
+		  beforeSend: function() {
+		    $("#xmitQueues").html($("#ajaxOverlay").html());
+		  },
+			url: "/queue/list.json/<?= qmgr.QMgrName.value ?>?queueDepth=1&queueUsage=xmitq",
+			cache: false,
+			dataType: "json",
+			success: function(data)
+			{
+			  if ( data.error )
+			  {
+			    showError($("#xmitQueues"), data.error);
+			    return;
+			  }
+
+        var i = 1;
+				var div = '<table style="width:100%;border-spacing:0;border-collapse:collapse">';
+				$.each(data.queues, function(key, val)
+				{
+				  var cl = '';
+				  if ( i++ % 2 == 0 )
+				  {
+				    cl = 'class="alt"';
+				  }
+					div += '<tr><td ' + cl +'>' + val.QName.value + '</th><td ' + cl +' style="text-align:right;padding-right:6px;">' + val.CurrentQDepth.value + '</td></tr>';
+				});
+				div += '</table>';
+				$('#xmitQueues').html(div);
+			},
+			error: function (request, status, error)
+			{
+				$("#xmitq").html("An error occurred while retrieving local queues: " + status + ", " + error);
+			}
+		});
+	}
+	
+	function loadChannelStatus()
+	{
+		$.ajax(
+		{
+		  beforeSend: function() {
+		    $("#channelStatus").html($("#ajaxOverlay").html());
+		  },
+			url: "/chs/list.json/<?= qmgr.QMgrName.value ?>",
+			cache: false,
+			dataType: "json",
+			success: function(data)
+			{
+			  if ( data.error )
+			  {
+			    showError($("#channelStatus"), data.error);
+			    return;
+			  }
+
+        var i = 1;
+				var div = '<table style="width:100%;border-spacing:0;border-collapse:collapse">';
+				$.each(data.statuses, function(key, val)
+				{
+				  var cl = '';
+				  if ( i++ % 2 == 0 )
+				  {
+				    cl = 'class="alt"';
+				  }
+					div += '<tr><td ' + cl +'>' + val.ChannelName.value + '</th><td ' + cl +' style="padding-right:6px;">' + val.ChannelStatus.display + '</td></tr>';
+				});
+				div += '</table>';
+				$('#channelStatus').html(div);
+			},
+			error: function (request, status, error)
+			{
+				$("#channelStatus").html("An error occurred while retrieving local queues: " + status + ", " + error);
+			}
+		});
+  }	
+	
+	function showError(el, error)
+	{
+    var html = '<div style="margin-top:5px;padding:10px;border:1px solid red;background-color:#FF9999;">';
+    html += '<img style="float:left;display:block;" src="/static/images/error.png" alt="error" />'
+    html += '<div style="float:left;margin-left:20px;">';
+    html += '<strong>Object: </strong>' + error.object + '<br />';
+    html += '<strong>Function: </strong>' + error.function + '<br />';
+    html += '<strong>Code: </strong>' + error.code  + '<br />';
+    html += '<strong>Reason: </strong>' + error.reason;
+    html += '</div><div class="cl"> </div>';
+	  
+	  el.html(html);
+	}
 	</script>
 </head>
 <body>
+  <div id="ajaxOverlay" style="display:none;">
+   <div id="ajaxSpinner" style="background:url('/static/images/ajaxSpinner.gif') no-repeat center center transparent; width:100%;height:40px;">
+   </div>
+  </div>
 	<!-- Wrapper -->
 	<div id="wrapper">
 		<div class="shell">
@@ -105,18 +236,23 @@
 						<div class="col activities">
 							<h3>Local Queues</h3>
 							<p style="margin-bottom:5px">This is a list with local queues that contains at least one message.</p>
-							<div id="localQueues" class="details">
+							<div id="localQueues">
 							</div>
+							<a title="Reload" class="read-more" href="#" onclick="loadLocalQueues();return false;">Reload</a>
 						</div>
-						<div class="col about-us">
-							<h3>Who We Are</h3>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed est risus, in bibendum nibh. Suspendisse potenti. Sed eget enim id nisi pellentesque fringilla in at turpis amet</p>
-							<a title="Read More" class="read-more" href="#">Read More</a>
+						<div class="col activities">
+							<h3>Transmission Queues</h3>
+							<p style="margin-bottom:5px">This is a list with transmission queues that contains at least one message. On a healthy system, this list would be empty ...</p>
+							<div id="xmitQueues">
+							</div>
+							<a title="Reload" class="read-more" href="#" onclick="loadXmitQueues();return false;">Reload</a>
 						</div>
-						<div class="col we-hire">
-							<h3>We Hire</h3>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed est risus, in bibendum nibh. Suspendisse potenti. Sed eget enim id nisi pellentesque fringilla in at turpis amet</p>
-							<a title="Read More" class="read-more" href="#">Read More</a>
+						<div class="col activities">
+							<h3>Channel Status</h3>
+							<p>This is a list with channel statuses.</p>
+							<div id="channelStatus">
+							</div>
+							<a title="Reload" class="read-more" href="#" onclick="loadChannelStatus();return false;">Reload</a>
 						</div>
 						<div class="cl"></div>
 					</div>
