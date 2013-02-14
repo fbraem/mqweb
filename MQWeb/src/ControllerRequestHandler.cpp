@@ -22,6 +22,7 @@
 #include <MQ/Web/QueueController.h>
 #include <MQ/Web/QueueManagerController.h>
 #include <MQ/Web/ChannelController.h>
+#include <MQ/Web/ChannelStatusController.h>
 #include <MQ/Web/MessageController.h>
 
 #include <Poco/URI.h>
@@ -67,6 +68,7 @@ void ControllerRequestHandler::registerControllers()
 	_controllerFactory.registerClass<QueueController>("queue");
 	_controllerFactory.registerClass<ChannelController>("channel");
 	_controllerFactory.registerClass<MessageController>("message");
+	_controllerFactory.registerClass<ChannelStatusController>("chs");
 }
 
 
