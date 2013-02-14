@@ -65,6 +65,20 @@ Poco::JSON::Array::Ptr QueueMapper::inquire(const Poco::JSON::Object::Ptr& filte
 		inquireQ->addFilter(MQIA_CURRENT_Q_DEPTH, MQCFOP_NOT_LESS, filter->getValue<int>("qdepth"));
 	}
 
+	MQLONG usage = -1;
+	if ( filter->has("usage") )
+	{
+		std::string usageValue = filter->optValue<std::string>("usage", "");
+		if ( usageValue.compare("xmitq") == 0 )
+		{
+			usage = MQUS_TRANSMISSION;
+		}
+		else if ( usageValue.compare("normal") == 0 )
+		{
+			usage = MQUS_NORMAL;
+		}
+	}
+
 	std::string queueType = filter->optValue<std::string>("type", "All");
 	MQLONG queueTypeValue = _dictionary.getDisplayId(MQIA_Q_TYPE, queueType);
 	poco_assert_dbg(queueTypeValue != -1);
@@ -94,6 +108,15 @@ Poco::JSON::Array::Ptr QueueMapper::inquire(const Poco::JSON::Object::Ptr& filte
 		{
 			if ( (*it)->isExtendedResponse() ) // Skip extended response
 				continue;
+
+			if ( usage != -1 && (*it)->hasParameter(MQIA_USAGE) )
+			{
+				MQLONG queueUsage = (*it)->getParameterNum(MQIA_USAGE);
+				if ( queueUsage != usage )
+				{
+					continue;
+				}
+			}
 
 			std::string qName = (*it)->getParameterString(MQCA_Q_NAME);
 			if ( excludeSystem

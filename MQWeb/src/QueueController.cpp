@@ -59,6 +59,11 @@ void QueueController::list()
 		filter->set("qdepth", queueDepth);
 	}
 
+	if ( form().has("queueUsage") )
+	{
+		filter->set("usage", form().get("queueUsage"));
+	}
+
 	filter->set("type", form().get("queueType", "All"));
 	filter->set("excludeSystem", form().get("queueExcludeSystem", "0").compare("1") == 0);
 
