@@ -21,6 +21,7 @@
 #include <Poco/DateTimeFormatter.h>
 #include <Poco/Net/HTMLForm.h>
 #include <Poco/URI.h>
+#include <Poco/JSON/Array.h>
 
 #include <MQ/Web/MQController.h>
 #include <MQ/Web/ChannelController.h>
@@ -66,7 +67,7 @@ void ChannelController::list()
 	// A channel name is not unique. To make it possible to associate the status
 	// to the correct channel, we store all channels in a temporary JSON object
 	Poco::JSON::Object::Ptr jsonAllChannels = new Poco::JSON::Object();
-	for(Poco::JSON::Array::ValueVector::const_iterator it = jsonChannels->begin(); it != jsonChannels->end(); ++it)
+	for(Poco::JSON::Array::ValueVec::const_iterator it = jsonChannels->begin(); it != jsonChannels->end(); ++it)
 	{
 		if ( it->type() == typeid(Poco::JSON::Object::Ptr) )
 		{
@@ -91,7 +92,7 @@ void ChannelController::list()
 	Poco::JSON::Array::Ptr statuses = channelStatusMapper.inquire(filter);
 
 	// Associate all status objects to their corresponding channel object
-	for(Poco::JSON::Array::ValueVector::const_iterator it = statuses->begin(); it != statuses->end(); ++it)
+	for(Poco::JSON::Array::ValueVec::const_iterator it = statuses->begin(); it != statuses->end(); ++it)
 	{
 	if ( it->type() == typeid(Poco::JSON::Object::Ptr) )
 	{
@@ -121,6 +122,16 @@ void ChannelController::list()
 
 	set("channels", jsonChannels);
 	render("channelList.tpl");
+
+	if ( format().compare("html") == 0 )
+	{
+		render("channelList.tpl");
+	}
+	else if ( format().compare("json") == 0 )
+	{
+		data().stringify(response().send());
+	}
+
 }
 
 
