@@ -119,6 +119,15 @@ void MQController::handleException(const MQException& mqe)
 		case MQCC_FAILED: error->set("code", "ERROR"); break;
 	}
 	error->set("reason", mqe.reason());
+
+	if ( format().compare("html") == 0 )
+	{
+		render("error.tpl");
+	}
+	else if ( format().compare("json") == 0 )
+	{
+		data().stringify(response().send());
+	}
 }
 
 
@@ -131,6 +140,10 @@ void MQController::handle(const std::vector<std::string>& parameters, Poco::Net:
 	catch(MQException& mqe)
 	{
 		handleException(mqe);
+	}
+	catch(...)
+	{
+		//TODO: redirect to an error page
 	}
 }
 
