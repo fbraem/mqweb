@@ -92,30 +92,23 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 	Poco::NullOutputStream nos;
 	Poco::StreamCopier::copyStream(request.stream(), nos);
 
-	try
+	beforeAction();
+
+	if ( response.getStatus() != Poco::Net::HTTPResponse::HTTP_OK
+		|| _data->has("error") )
 	{
-		beforeAction();
-
-		if ( response.getStatus() != Poco::Net::HTTPResponse::HTTP_OK
-			|| _data->has("error") )
-		{
-			//TODO: return error template file or json error
-		}
-
-		const ActionMap& actions = getActions();
-		ActionMap::const_iterator it = actions.find(_action);
-		if ( it != actions.end() )
-		{
-			ActionFn action = it->second;
-			(this->*action)();
-		}
-
-		afterAction();
+		//TODO: return error template file or json error
 	}
-	catch(...)
+
+	const ActionMap& actions = getActions();
+	ActionMap::const_iterator it = actions.find(_action);
+	if ( it != actions.end() )
 	{
-		//TODO: redirect to an error page
+		ActionFn action = it->second;
+		(this->*action)();
 	}
+
+	afterAction();
 }
 
 void Controller::render(const std::string& templateFile)
@@ -132,7 +125,9 @@ void Controller::render(const std::string& templateFile)
 		_response->set("Pragma", "no-cache");
 		_response->set("Expires", "0");
 
-		tpl->render(_data, _response->send());
+		std::ostream& os = _response->send();
+		tpl->render(_data, os);
+		os.flush();
 	}
 	catch(Poco::FileNotFoundException&)
 	{
