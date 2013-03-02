@@ -44,6 +44,15 @@ StaticRequestHandler::StaticRequestHandler()
 
 void StaticRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
 {
+	// Check for the favicon.ico request, we don't have one for now, 
+	// so set status code to HTTP_NOT_FOUND
+	if ( request.getURI().compare("/favicon.ico") == 0 )
+	{
+		response.setStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
+		response.send();
+		return;
+	}
+
   std::string lastModifiedHeader = request.get("If-Modified-Since", "");
 
   Poco::URI uri(request.getURI());
