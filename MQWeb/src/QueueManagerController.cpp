@@ -22,6 +22,8 @@
 
 #include <MQ/Web/QueueManagerController.h>
 #include <MQ/Web/QueueManagerMapper.h>
+#include <MQ/Web/TemplateView.h>
+#include <MQ/Web/JSONView.h>
 
 namespace MQ
 {
@@ -51,11 +53,11 @@ void QueueManagerController::view()
 		set("qmgr", jsonQueueManagers->get(0));
 		if ( format().compare("html") == 0 )
 		{
-			render("home.tpl");
+			setView(new TemplateView("home.tpl"));
 		}
 		else if ( format().compare("json") == 0 )
 		{
-			data().stringify(response().send());
+			setView(new JSONView());
 		}
 	}
 }

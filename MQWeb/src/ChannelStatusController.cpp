@@ -26,6 +26,8 @@
 #include <MQ/Web/ChannelStatusController.h>
 #include <MQ/Web/ChannelMapper.h>
 #include <MQ/Web/ChannelStatusMapper.h>
+#include <MQ/Web/TemplateView.h>
+#include <MQ/Web/JSONView.h>
 
 namespace MQ
 {
@@ -58,11 +60,11 @@ void ChannelStatusController::list()
 
 	if ( format().compare("html") == 0 )
 	{
-		render("channelStatus.tpl");
+		setView(new TemplateView("channelStatus.tpl"));
 	}
 	else if ( format().compare("json") == 0 )
 	{
-		data().stringify(response().send());
+		setView(new JSONView());
 	}
 
 }

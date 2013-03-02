@@ -21,12 +21,13 @@
 #include <Poco/DateTimeFormatter.h>
 #include <Poco/Net/HTMLForm.h>
 #include <Poco/URI.h>
-#include <Poco/JSON/Array.h>
 
 #include <MQ/Web/MQController.h>
 #include <MQ/Web/ChannelController.h>
 #include <MQ/Web/ChannelMapper.h>
 #include <MQ/Web/ChannelStatusMapper.h>
+#include <MQ/Web/TemplateView.h>
+#include <MQ/Web/JSONView.h>
 
 namespace MQ
 {
@@ -121,15 +122,14 @@ void ChannelController::list()
 	}
 
 	set("channels", jsonChannels);
-	render("channelList.tpl");
 
 	if ( format().compare("html") == 0 )
 	{
-		render("channelList.tpl");
+		setView(new TemplateView("channelList.tpl"));
 	}
 	else if ( format().compare("json") == 0 )
 	{
-		data().stringify(response().send());
+		setView(new JSONView());
 	}
 
 }
@@ -163,7 +163,7 @@ void ChannelController::view()
 	{
 		set("channel", jsonChannel);
 	}
-	render("channel.tpl");
+	setView(new TemplateView("channel.tpl"));
 }
 
 

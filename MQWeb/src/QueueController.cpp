@@ -24,6 +24,8 @@
 
 #include <MQ/Web/QueueController.h>
 #include <MQ/Web/QueueMapper.h>
+#include <MQ/Web/TemplateView.h>
+#include <MQ/Web/JSONView.h>
 
 namespace MQ
 {
@@ -43,6 +45,12 @@ QueueController::~QueueController()
 
 void QueueController::list()
 {
+	if ( request().getMethod().compare("GET") == 0 && format().compare("html") == 0 )
+	{
+		setView(new TemplateView("queues.tpl"));
+		return;
+	}
+
 	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
 
 	std::string queueNameField = form().get("queueName", "*");
@@ -65,7 +73,8 @@ void QueueController::list()
 	}
 
 	filter->set("type", form().get("queueType", "All"));
-	filter->set("excludeSystem", form().get("queueExcludeSystem", "0").compare("1") == 0);
+	filter->set("excludeSystem", form().get("queueExcludeSystem", "1").compare("1") == 0);
+	filter->set("excludeTemp", form().get("queueExcludeTemp", "1").compare("1") == 0);
 
 	QueueMapper queueMapper(*commandServer());
 	Poco::JSON::Array::Ptr jsonQueues = queueMapper.inquire(filter);
@@ -96,11 +105,11 @@ void QueueController::list()
 
 	if ( format().compare("html") == 0 )
 	{
-		render("queueList.tpl");
+		setView(new TemplateView("queueList.tpl"));
 	}
 	else if ( format().compare("json") == 0 )
 	{
-		data().stringify(response().send());
+		setView(new JSONView());
 	}
 }
 
@@ -147,7 +156,7 @@ void QueueController::view()
 				}
 			}
 
-			render("queue.tpl");
+			setView(new TemplateView("queue.tpl"));
 
 			return;
 		}

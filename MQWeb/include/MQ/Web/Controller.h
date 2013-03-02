@@ -32,6 +32,7 @@
 
 #include <MQ/QueueManager.h>
 #include <MQ/CommandServer.h>
+#include <MQ/Web/View.h>
 
 namespace MQ {
 namespace Web {
@@ -101,10 +102,10 @@ public:
 	void setResponseStatus(Poco::Net::HTTPServerResponse::HTTPStatus status);
 
 
-	void render(const std::string& templateFile);
-
-
 	void render();
+
+
+	void setView(Poco::SharedPtr<View> v);
 
 
 protected:
@@ -143,13 +144,20 @@ private:
 	std::map<std::string, std::string> _namedParameters;
 
 
+	Poco::SharedPtr<View> _view;
+
+
 	friend class ControllerRequestHandler;
 };
 
 
 inline void Controller::afterAction()
 {
-	//default: do nothing
+	//default: render the view if one is set
+	if ( !_view.isNull() )
+	{
+		render();
+	}
 }
 
 
@@ -230,6 +238,11 @@ inline Poco::Net::HTTPServerResponse& Controller::response()
 	return *_response;
 }
 
+
+inline void Controller::setView(Poco::SharedPtr<View> v)
+{
+	_view = v;
+}
 
 }} // Namespace MQ::Web
 

@@ -21,9 +21,11 @@
 #include <Poco/Util/Application.h>
 #include <Poco/JSON/Object.h>
 
-#include "MQ/Web/MQController.h"
-#include "MQ/MQSubsystem.h"
-#include "MQ/MQException.h"
+#include <MQ/Web/MQController.h>
+#include <MQ/MQSubsystem.h>
+#include <MQ/MQException.h>
+#include <MQ/Web/TemplateView.h>
+#include <MQ/Web/JSONView.h>
 
 namespace MQ {
 namespace Web {
@@ -91,15 +93,12 @@ void MQController::beforeAction()
 		}
 	}
 
-	Poco::JSON::Object::Ptr jsonQmgr(new Poco::JSON::Object());
-	set("qmgr", jsonQmgr);
+	Poco::JSON::Object::Ptr jsonMQWeb(new Poco::JSON::Object());
+	set("mqweb", jsonMQWeb);
 
-	jsonQmgr->set("name", _qmgr->name());
-	jsonQmgr->set("zos", _qmgr->zos());
-	jsonQmgr->set("createDate", Poco::DateTimeFormatter::format(_qmgr->creationDate(), "%d-%m-%Y %H:%M:%S"));
-	jsonQmgr->set("alterDate", Poco::DateTimeFormatter::format(_qmgr->alterationDate(), "%d-%m-%Y %H:%M:%S"));
-	jsonQmgr->set("id", _qmgr->id());
-	jsonQmgr->set("description", _qmgr->description());
+	jsonMQWeb->set("qmgr", _qmgr->name());
+	jsonMQWeb->set("zos", _qmgr->zos());
+	jsonMQWeb->set("qmgrId", _qmgr->id());
 
 	//TODO: configure the model queue!
 	_commandServer = new CommandServer(_qmgr, "SYSTEM.MQEXPLORER.REPLY.MODEL");
@@ -109,9 +108,10 @@ void MQController::beforeAction()
 void MQController::handleException(const MQException& mqe)
 {
 	Poco::JSON::Object::Ptr error = new Poco::JSON::Object();
+
 	set("error", error);
 	error->set("object", mqe.object());
-	error->set("function", mqe.function());
+	error->set("fn", mqe.function());
 	switch(mqe.code())
 	{
 		case MQCC_OK: error->set("code", "OK"); break;
@@ -122,11 +122,11 @@ void MQController::handleException(const MQException& mqe)
 
 	if ( format().compare("html") == 0 )
 	{
-		render("error.tpl");
+		setView(new TemplateView("error.tpl"));
 	}
 	else if ( format().compare("json") == 0 )
 	{
-		data().stringify(response().send());
+		setView(new JSONView());
 	}
 }
 
@@ -140,6 +140,7 @@ void MQController::handle(const std::vector<std::string>& parameters, Poco::Net:
 	catch(MQException& mqe)
 	{
 		handleException(mqe);
+		render();
 	}
 	catch(...)
 	{

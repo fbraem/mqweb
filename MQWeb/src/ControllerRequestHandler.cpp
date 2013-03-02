@@ -36,6 +36,8 @@ Poco::DynamicFactory<Controller> ControllerRequestHandler::_controllerFactory;
 
 void ControllerRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
 {
+	Poco::Logger& logger = Poco::Logger::get("mq.web");
+
 	Poco::URI uri(request.getURI());
 
 	std::vector<std::string> paths;

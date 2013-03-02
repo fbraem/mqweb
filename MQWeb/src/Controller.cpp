@@ -111,40 +111,11 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 	afterAction();
 }
 
-void Controller::render(const std::string& templateFile)
-{
-	Poco::JSON::Template::Ptr tpl;
-	try
-	{
-		tpl = Poco::JSON::TemplateCache::instance()->getTemplate(Poco::Path(templateFile));
-		_response->setChunkedTransferEncoding(true);
-		_response->setContentType("text/html");
-
-		// Don't cache are views
-		_response->set("Cache-Control", "no-cache,no-store,must-revalidate");
-		_response->set("Pragma", "no-cache");
-		_response->set("Expires", "0");
-
-		std::ostream& os = _response->send();
-		tpl->render(_data, os);
-		os.flush();
-	}
-	catch(Poco::FileNotFoundException&)
-	{
-		poco_error_f1(Poco::Logger::get("mq.web"), "Can't render template %s", templateFile);
-		//TODO: redirect to an error page
-		_response->setStatusAndReason(Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR, "Can't render template. Please check the MQWeb configuration.");
-		_response->send();
-	}
-}
-
-
 void Controller::render()
 {
-	_response->setChunkedTransferEncoding(true);
-	_response->setContentType("application/json");
+	poco_assert_dbg(!_view.isNull());
 
-	_data->stringify(_response->send());
+	_view->render(_data, *_response);
 }
 
 

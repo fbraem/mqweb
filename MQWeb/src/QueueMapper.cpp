@@ -109,6 +109,9 @@ Poco::JSON::Array::Ptr QueueMapper::inquire(const Poco::JSON::Object::Ptr& filte
 			if ( (*it)->isExtendedResponse() ) // Skip extended response
 				continue;
 
+			if ( (*it)->getReasonCode() != MQRC_NONE )
+				continue;
+
 			if ( usage != -1 && (*it)->hasParameter(MQIA_USAGE) )
 			{
 				MQLONG queueUsage = (*it)->getParameterNum(MQIA_USAGE);
@@ -126,6 +129,7 @@ Poco::JSON::Array::Ptr QueueMapper::inquire(const Poco::JSON::Object::Ptr& filte
 			}
 
 			if ( excludeTemp
+				&& (*it)->hasParameter(MQIA_DEFINITION_TYPE)
 				&& (*it)->getParameterNum(MQIA_DEFINITION_TYPE) == MQQDT_TEMPORARY_DYNAMIC )
 			{
 				continue;

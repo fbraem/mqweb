@@ -27,9 +27,12 @@
 #include <Poco/URI.h>
 #include <Poco/Logger.h>
 #include <Poco/HexBinaryEncoder.h>
+#include <Poco/JSON/Query.h>
 
 #include <MQ/Web/MessageController.h>
-#include <MQ/Web/MQMapper.h>
+#include <MQ/Web/QueueMapper.h>
+#include <MQ/Web/TemplateView.h>
+#include <MQ/Web/JSONView.h>
 #include <MQ/MQException.h>
 #include <MQ/Message.h>
 #include <MQ/QueueManager.h>
@@ -281,7 +284,7 @@ void MessageController::list()
 	}
 
 	set("messages", jsonMessages);
-	render("messageList.tpl");
+	setView(new TemplateView("messageList.tpl"));
 }
 
 
@@ -431,7 +434,7 @@ void MessageController::view()
 	}
 
 	set("message", jsonMessage);
-	render("message.tpl");
+	setView(new TemplateView("message.tpl"));
 }
 
 
@@ -449,6 +452,16 @@ void MessageController::event()
 	set("events", jsonEvents);
 
 	std::string queueName = parameters[1];
+
+	QueueMapper qMapper(*commandServer());
+	Poco::JSON::Object::Ptr jsonFilter = new Poco::JSON::Object();
+	jsonFilter->set("name", queueName);
+	Poco::JSON::Array::Ptr jsonQueues = qMapper.inquire(jsonFilter);
+
+	set("queues", jsonQueues);
+	Poco::JSON::Query curdepthQuery(jsonQueues);
+	MQLONG curdepth = curdepthQuery.findValue<long>("queues[0].CurrentQDepth.value", 0);
+
 	Queue q(qmgr(), queueName);
 	q.open(MQOO_BROWSE);
 
@@ -523,12 +536,18 @@ void MessageController::event()
 		{
 			templateName = Poco::format("events/%s.tpl", reasonCodeStr);
 		}
-		render(templateName);
+		setView(new TemplateView(templateName));
 
 		return;
 	}
 	else // Get all event messages
 	{
+		int limit = -1;
+		if ( form().has("limit") )
+		{
+			Poco::NumberParser::tryParse(form().get("limit"), limit);
+		}
+
 		int count = 0;
 		while(1)
 		{
@@ -557,6 +576,7 @@ void MessageController::event()
 					throw;
 				}
 			}
+
 			message.buffer().resize(message.dataLength());
 			message.init();
 
@@ -577,10 +597,24 @@ void MessageController::event()
 			Poco::JSON::Object::Ptr jsonEventFields = new Poco::JSON::Object();
 			jsonEvent->set("fields", jsonEventFields);
 			MQMapper::mapToJSON(message, jsonEventFields);
+
+			count++;
+			if ( limit != -1 && count == limit )
+			{
+				break;
+			}
 		}
+		set("limited", limit != -1 && count < curdepth);
 	}
 
-	render("events.tpl");
+	if ( format().compare("html") == 0 )
+	{
+		setView(new TemplateView("events.tpl"));
+	}
+	else if ( format().compare("json") == 0 )
+	{
+		setView(new JSONView());
+	}
 }
 
 
