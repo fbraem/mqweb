@@ -1,7 +1,7 @@
 <div style="margin:10px;">
- <table id="queueTable" style="width:100%">
+ <table id="queueTable" class="zebra" style="width:100%;border-collapse:collapse">
   <tr>
-   <th></th><th>Type</th><th>Depth</th><th>Input</th><th>Output</th><th>Get Enabled</th><th>Put Enabled</th><th>Usage</th>
+   <th>Queue</th><th>Type</th><th>Depth</th><th>Input</th><th>Output</th><th>Get Enabled</th><th>Put Enabled</th><th>Usage</th>
   </tr>
   <? for queue queues ?>
     <tr class="detail">
@@ -51,9 +51,9 @@
      <td style="text-align:center">
       <? if queue.InhibitGet ?>
        <? if queue.InhibitGet.value ?>
-        <img src="/static/img/disabled.gif" />
+        <img src="/static/images/disabled.gif" />
        <? else ?>
-        <img src="/static/img/enabled.gif" />
+        <img src="/static/images/enabled.gif" />
        <? endif ?>
       <? else ?>
        -
@@ -62,9 +62,9 @@
      <td style="text-align:center">
       <? if queue.InhibitPut ?>
        <? if queue.InhibitPut.value ?>
-        <img src="/static/img/disabled.gif" />
+        <img src="/static/images/disabled.gif" />
        <? else ?>
-        <img src="/static/img/enabled.gif" />
+        <img src="/static/images/enabled.gif" />
        <? endif ?>
       <? else ?>
        -
