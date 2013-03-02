@@ -56,7 +56,8 @@ namespace MQ
   {
     MQCNO cno = { MQCNO_DEFAULT };
     cno.Version = MQCNO_VERSION_2;
-    cno.Options = MQCNO_HANDLE_SHARE_NO_BLOCK;
+    //cno.Options = MQCNO_HANDLE_SHARE_NO_BLOCK;
+    cno.Options = MQCNO_HANDLE_SHARE_NONE;
 
     MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
     _handle = mqSystem.functions().connx(_name, &cno);
@@ -68,7 +69,8 @@ namespace MQ
   {
     MQCNO cno = { MQCNO_DEFAULT };
     cno.Version = MQCNO_VERSION_2;
-    cno.Options = MQCNO_HANDLE_SHARE_NO_BLOCK;
+    //cno.Options = MQCNO_HANDLE_SHARE_NO_BLOCK;
+    cno.Options = MQCNO_HANDLE_SHARE_NONE;
 
     MQCD cd = { MQCD_CLIENT_CONN_DEFAULT };
     strncpy(cd.ChannelName, channel.c_str(), MQ_CHANNEL_NAME_LENGTH);
