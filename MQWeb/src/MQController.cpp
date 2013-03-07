@@ -100,8 +100,19 @@ void MQController::beforeAction()
 	jsonMQWeb->set("zos", _qmgr->zos());
 	jsonMQWeb->set("qmgrId", _qmgr->id());
 
-	//TODO: configure the model queue!
-	_commandServer = new CommandServer(_qmgr, "SYSTEM.MQEXPLORER.REPLY.MODEL");
+	std::string qmgrConfig = "mq.web.qmgr." + _qmgr->name();
+	std::string qmgrConfigModel = qmgrConfig + ".model";
+	
+	std::string modelQ;
+	if ( config.has(qmgrConfigModel) )
+	{
+		modelQ = config.getString(qmgrConfigModel);
+	}
+	else
+	{
+		modelQ = config.getString("mq.web.model", "SYSTEM.DEFAULT.MODEL.QUEUE");
+	}
+	_commandServer = new CommandServer(_qmgr, modelQ);
 }
 
 
