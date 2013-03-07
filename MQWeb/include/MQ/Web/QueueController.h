@@ -44,6 +44,9 @@ public:
 	std::string getDefaultAction() const;
 
 
+	void index();
+
+
 	void list();
 
 
@@ -57,6 +60,7 @@ inline const Controller::ActionMap& QueueController::getActions() const
 {
 	static Controller::ActionMap actions 
 		= MapInitializer<std::string, Controller::ActionFn>
+			("index", static_cast<ActionFn>(&QueueController::index))
 			("list", static_cast<ActionFn>(&QueueController::list))
 			("view", static_cast<ActionFn>(&QueueController::view));
 	return actions;
@@ -64,7 +68,7 @@ inline const Controller::ActionMap& QueueController::getActions() const
 
 inline std::string QueueController::getDefaultAction() const
 {
-	return "list";
+	return "index";
 }
 
 

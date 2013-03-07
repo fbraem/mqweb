@@ -250,7 +250,7 @@
 				<div id="navigation">
 					<ul>
 						<li><a title="Home"	href="/qmgr/view/<?= mqweb.qmgr ?>">Home</a></li>
-						<li><a title="Queues"	href="/queue/list/<?=	mqweb.qmgr	?>">Queues</a></li>
+						<li><a title="Queues"	href="/queue/index/<?=	mqweb.qmgr	?>">Queues</a></li>
 					</ul>
 					<div class="cl"></div>
 				</div>
