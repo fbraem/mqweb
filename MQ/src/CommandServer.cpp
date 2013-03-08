@@ -35,14 +35,13 @@
 namespace MQ
 {
 
-CommandServer::CommandServer(QueueManager::Ptr qmgr, 
-                             const std::string& modelQueue) 
-  : _qmgr(qmgr)
-  , _commandQ(qmgr, qmgr->commandQueue())
-  , _replyQ(qmgr, modelQueue)
+CommandServer::CommandServer(QueueManager::Ptr qmgr, const std::string& modelQueue) 
+	: _qmgr(qmgr)
+	, _commandQ(qmgr, qmgr->commandQueue())
+	, _replyQ(qmgr, modelQueue)
 {
-  _commandQ.open(MQOO_OUTPUT);
-  _replyQ.open(MQOO_INPUT_SHARED | MQOO_FAIL_IF_QUIESCING);
+	_commandQ.open(MQOO_OUTPUT);
+	_replyQ.open(MQOO_INPUT_SHARED | MQOO_FAIL_IF_QUIESCING);
 }
 
 
@@ -54,42 +53,44 @@ PCF::Ptr CommandServer::createCommand(MQLONG command) const
 // Throws MQException
 void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
 {
-  response.clear();
-  
-  command->setReplyToQueue(_replyQ.name());
-  _commandQ.put(*command, MQPMO_NO_SYNCPOINT);
-  
-  long wait = 600000;
-  PCF::Ptr msgResponse;
-  do
-  {
-    msgResponse = new PCF(_qmgr->zos());
-    msgResponse->buffer().resize(REPLY_MESSAGE_LEN, false);
+	response.clear();
 
-    try
-    {
-      _replyQ.get(*msgResponse.get(), MQGMO_CONVERT | MQGMO_NO_SYNCPOINT, wait);
-    }
-    catch(MQException& mqe)
-    {
-      if ( mqe.reason() == MQRC_TRUNCATED_MSG_FAILED )
-      {
-        msgResponse->buffer().resize(msgResponse->dataLength(), false);
-        msgResponse->clear();
-        _replyQ.get(*msgResponse.get(), MQGMO_CONVERT | MQGMO_NO_SYNCPOINT);
-      }
-      else
-      {
-        throw;
-      }
-    }
-    wait = 1000;
-    msgResponse->buffer().resize(msgResponse->dataLength());
-    msgResponse->init();
+	command->setReplyToQueue(_replyQ.name());
+	_commandQ.put(*command, MQPMO_NO_SYNCPOINT);
 
-    response.push_back(msgResponse);
-  }
-  while(! msgResponse->isLast());
+	long wait = 600000;
+	PCF::Ptr msgResponse;
+	do
+	{
+		msgResponse = new PCF(_qmgr->zos());
+		msgResponse->setCorrelationId(*command->getMessageId());
+		msgResponse->buffer().resize(REPLY_MESSAGE_LEN, false);
+
+		try
+		{
+			_replyQ.get(*msgResponse.get(), MQGMO_CONVERT | MQGMO_NO_SYNCPOINT, wait);
+		}
+		catch(MQException& mqe)
+		{
+			if ( mqe.reason() == MQRC_TRUNCATED_MSG_FAILED )
+			{
+				msgResponse->buffer().resize(msgResponse->dataLength(), false);
+				msgResponse->clear();
+				msgResponse->setCorrelationId(*command->getMessageId());
+				_replyQ.get(*msgResponse.get(), MQGMO_CONVERT | MQGMO_NO_SYNCPOINT);
+			}
+			else
+			{
+				throw;
+			}
+		}
+		wait = 1000;
+		msgResponse->buffer().resize(msgResponse->dataLength());
+		msgResponse->init();
+
+		response.push_back(msgResponse);
+	}
+	while(! msgResponse->isLast());
 }
 
 }
