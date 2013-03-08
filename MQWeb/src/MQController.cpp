@@ -101,7 +101,7 @@ void MQController::beforeAction()
 	jsonMQWeb->set("qmgrId", _qmgr->id());
 
 	std::string qmgrConfig = "mq.web.qmgr." + _qmgr->name();
-	std::string qmgrConfigModel = qmgrConfig + ".model";
+	std::string qmgrConfigModel = qmgrConfig + ".reply";
 	
 	std::string modelQ;
 	if ( config.has(qmgrConfigModel) )
@@ -110,7 +110,7 @@ void MQController::beforeAction()
 	}
 	else
 	{
-		modelQ = config.getString("mq.web.model", "SYSTEM.DEFAULT.MODEL.QUEUE");
+		modelQ = config.getString("mq.web.reply", "SYSTEM.DEFAULT.MODEL.QUEUE");
 	}
 	_commandServer = new CommandServer(_qmgr, modelQ);
 }
