@@ -93,6 +93,11 @@ namespace MQ
       gmo.MatchOptions |= MQMO_MATCH_MSG_ID;
     }
 
+	if ( ! msg.isEmptyCorrelationId() )
+	{
+		gmo.MatchOptions |= MQMO_MATCH_CORREL_ID;
+	}
+
     if ( wait == -1 )
     {
       gmo.Options |= MQGMO_WAIT;
