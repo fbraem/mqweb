@@ -34,7 +34,7 @@
 			beforeSend:	function() {
 				$("#localQueues").html($("#ajaxOverlay").html());
 			},
-			url: "/queue/list.json/<?= mqweb.qmgr ?>?queueDepth=1&queueType=Local&queueUsage=normal",
+			url: "/queue/list.json/<?= mqweb.qmgr ?>?queueDepth=1&queueType=Local&queueExcludeSystem=1&queueUsage=normal",
 			cache: false,
 			dataType:	"json",
 			success: function(data)
@@ -251,6 +251,7 @@
 					<ul>
 						<li><a title="Home"	href="/qmgr/view/<?= mqweb.qmgr ?>">Home</a></li>
 						<li><a title="Queues"	href="/queue/index/<?=	mqweb.qmgr	?>">Queues</a></li>
+						<li><a title="Channels" href="/channel/index/<?=  mqweb.qmgr  ?>">Channels</a></li>
 					</ul>
 					<div class="cl"></div>
 				</div>
