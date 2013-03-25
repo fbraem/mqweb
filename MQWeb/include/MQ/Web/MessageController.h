@@ -39,6 +39,9 @@ public:
 	virtual ~MessageController();
 
 
+	void index();
+
+
 	void view();
 
 
@@ -73,6 +76,7 @@ inline const Controller::ActionMap& MessageController::getActions() const
 {
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
+			("index", static_cast<ActionFn>(&MessageController::index))
 			("list", static_cast<ActionFn>(&MessageController::list))
 			("view", static_cast<ActionFn>(&MessageController::view))
 			("event", static_cast<ActionFn>(&MessageController::event))
@@ -82,7 +86,7 @@ inline const Controller::ActionMap& MessageController::getActions() const
 
 inline std::string MessageController::getDefaultAction() const
 {
-	return "list";
+	return "index";
 }
 
 

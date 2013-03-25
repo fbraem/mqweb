@@ -45,7 +45,7 @@ QueueController::~QueueController()
 
 void QueueController::index()
 {
-	setView(new TemplateView("queues.tpl"));
+	setView(new TemplateView("queue/index.tpl"));
 }
 
 
@@ -105,7 +105,7 @@ void QueueController::list()
 
 	if ( format().compare("html") == 0 )
 	{
-		setView(new TemplateView("queueList.tpl"));
+		setView(new TemplateView("queue/queues.tpl"));
 	}
 	else if ( format().compare("json") == 0 )
 	{
@@ -156,7 +156,7 @@ void QueueController::view()
 				}
 			}
 
-			setView(new TemplateView("queue.tpl"));
+			setView(new TemplateView("queue/queue.tpl"));
 
 			return;
 		}

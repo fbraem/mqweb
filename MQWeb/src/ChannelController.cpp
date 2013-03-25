@@ -44,23 +44,20 @@ ChannelController::~ChannelController()
 
 }
 
+void ChannelController::index()
+{
+	setView(new TemplateView("channel/index.tpl"));
+}
+
 
 void ChannelController::list()
 {
-	if ( !isPost() )
-	{
-		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
-		return;
-	}
-
 	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
 
-	Poco::Net::HTMLForm form(request(), request().stream());
-
-	std::string channelNameField = form.get("channelName", "*");
+	std::string channelNameField = form().get("channelName", "*");
 	filter->set("name", channelNameField.empty() ? "*" : channelNameField);
-	filter->set("type", form.get("channelType", "All"));
-	filter->set("excludeSystem", form.get("channelExcludeSystem", "0").compare("1") == 0);
+	filter->set("type", form().get("channelType", "All"));
+	filter->set("excludeSystem", form().get("channelExcludeSystem", "0").compare("1") == 0);
 
 	ChannelMapper channelMapper(*commandServer());
 	Poco::JSON::Array::Ptr jsonChannels = channelMapper.inquire(filter);
@@ -68,7 +65,7 @@ void ChannelController::list()
 	// A channel name is not unique. To make it possible to associate the status
 	// to the correct channel, we store all channels in a temporary JSON object
 	Poco::JSON::Object::Ptr jsonAllChannels = new Poco::JSON::Object();
-	for(Poco::JSON::Array::ValueVec::const_iterator it = jsonChannels->begin(); it != jsonChannels->end(); ++it)
+	for(Poco::JSON::Array::ValueVector::const_iterator it = jsonChannels->begin(); it != jsonChannels->end(); ++it)
 	{
 		if ( it->type() == typeid(Poco::JSON::Object::Ptr) )
 		{
@@ -88,12 +85,12 @@ void ChannelController::list()
 
 	filter = new Poco::JSON::Object();
 	filter->set("name", channelNameField.empty() ? "*" : channelNameField);
-	filter->set("type", form.get("channelType", "All"));
+	filter->set("type", form().get("channelType", "All"));
 	ChannelStatusMapper channelStatusMapper(*commandServer());
 	Poco::JSON::Array::Ptr statuses = channelStatusMapper.inquire(filter);
 
 	// Associate all status objects to their corresponding channel object
-	for(Poco::JSON::Array::ValueVec::const_iterator it = statuses->begin(); it != statuses->end(); ++it)
+	for(Poco::JSON::Array::ValueVector::const_iterator it = statuses->begin(); it != statuses->end(); ++it)
 	{
 	if ( it->type() == typeid(Poco::JSON::Object::Ptr) )
 	{
@@ -125,7 +122,7 @@ void ChannelController::list()
 
 	if ( format().compare("html") == 0 )
 	{
-		setView(new TemplateView("channelList.tpl"));
+		setView(new TemplateView("channel/channels.tpl"));
 	}
 	else if ( format().compare("json") == 0 )
 	{

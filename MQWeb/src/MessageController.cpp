@@ -198,14 +198,24 @@ MessageController::~MessageController()
 }
 
 
-void MessageController::list()
+void MessageController::index()
 {
-	if ( !isPost() )
+	std::vector<std::string> parameters = getParameters();
+	if ( parameters.size() < 2 )
 	{
 		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
 		return;
 	}
 
+	Poco::JSON::Object::Ptr jsonMQWeb = data().getObject("mqweb");
+	jsonMQWeb->set("queue", parameters[1]);
+
+	setView(new TemplateView("message/index.tpl"));
+}
+
+
+void MessageController::list()
+{
 	std::vector<std::string> parameters = getParameters();
 	// First parameter is queuemanager
 	// Second parameter is queuename
@@ -220,16 +230,14 @@ void MessageController::list()
 	jsonQueue->set("name", queueName);
 	set("queue", jsonQueue);
 
-	Poco::Net::HTMLForm form(request(), request().stream());
-
-	std::string limitField = form.get("limit", "");
+	std::string limitField = form().get("limit", "");
 	int limit = -1;
 	if ( ! limitField.empty() )
 	{
 		Poco::NumberParser::tryParse(limitField, limit);
 	}
 
-	std::string teaserField = form.get("teaser", "");
+	std::string teaserField = form().get("teaser", "");
 	int teaser = 0;
 	if ( ! teaserField.empty() )
 	{
@@ -284,7 +292,15 @@ void MessageController::list()
 	}
 
 	set("messages", jsonMessages);
-	setView(new TemplateView("messageList.tpl"));
+
+	if ( format().compare("html") == 0 )
+	{
+		setView(new TemplateView("message/messages.tpl"));
+	}
+	else if ( format().compare("json") == 0 )
+	{
+		setView(new JSONView());
+	}
 }
 
 
@@ -328,8 +344,7 @@ void MessageController::view()
 	}
 	message.buffer().resize(message.dataLength());
 
-	Poco::Net::HTMLForm form(request());
-	std::string type = form.get("type", "detail");
+	std::string type = form().get("type", "detail");
 
 	Poco::JSON::Object::Ptr jsonMessage = new Poco::JSON::Object();
 
@@ -434,7 +449,16 @@ void MessageController::view()
 	}
 
 	set("message", jsonMessage);
-	setView(new TemplateView("message.tpl"));
+
+	if ( format().compare("html") == 0 )
+	{
+		setView(new TemplateView("message/message.tpl"));
+	}
+	else if ( format().compare("json") == 0 )
+	{
+		setView(new JSONView());
+	}
+
 }
 
 
@@ -513,28 +537,28 @@ void MessageController::event()
 			{
 			case MQRQ_CONN_NOT_AUTHORIZED:
 			case MQRQ_SYS_CONN_NOT_AUTHORIZED:
-				templateName = Poco::format("events/%s-1.tpl", reasonCodeStr);
+				templateName = Poco::format("message/events/%s-1.tpl", reasonCodeStr);
 				break;
 			case MQRQ_OPEN_NOT_AUTHORIZED:
-				templateName = Poco::format("events/%s-2.tpl", reasonCodeStr);
+				templateName = Poco::format("message/events/%s-2.tpl", reasonCodeStr);
 				break;
 			case MQRQ_CLOSE_NOT_AUTHORIZED:
-				templateName = Poco::format("events/%s-3.tpl", reasonCodeStr);
+				templateName = Poco::format("message/events/%s-3.tpl", reasonCodeStr);
 				break;
 			case MQRQ_CMD_NOT_AUTHORIZED:
-				templateName = Poco::format("events/%s-4.tpl", reasonCodeStr);
+				templateName = Poco::format("message/events/%s-4.tpl", reasonCodeStr);
 				break;
 			case MQRQ_SUB_NOT_AUTHORIZED:
-				templateName = Poco::format("events/%s-5.tpl", reasonCodeStr);
+				templateName = Poco::format("message/events/%s-5.tpl", reasonCodeStr);
 				break;
 			case MQRQ_SUB_DEST_NOT_AUTHORIZED:
-				templateName = Poco::format("events/%s-6.tpl", reasonCodeStr);
+				templateName = Poco::format("message/events/%s-6.tpl", reasonCodeStr);
 				break;
 			}
 		}
 		else
 		{
-			templateName = Poco::format("events/%s.tpl", reasonCodeStr);
+			templateName = Poco::format("message/events/%s.tpl", reasonCodeStr);
 		}
 		setView(new TemplateView(templateName));
 
@@ -609,7 +633,7 @@ void MessageController::event()
 
 	if ( format().compare("html") == 0 )
 	{
-		setView(new TemplateView("events.tpl"));
+		setView(new TemplateView("message/events.tpl"));
 	}
 	else if ( format().compare("json") == 0 )
 	{

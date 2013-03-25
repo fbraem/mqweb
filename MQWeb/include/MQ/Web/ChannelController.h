@@ -40,6 +40,9 @@ public:
 		/// Destructor
 
 
+	void index();
+
+
 	void view();
 
 
@@ -60,6 +63,7 @@ inline const Controller::ActionMap& ChannelController::getActions() const
 {
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
+			("index", static_cast<ActionFn>(&ChannelController::index))
 			("list", static_cast<ActionFn>(&ChannelController::list))
 			("view", static_cast<ActionFn>(&ChannelController::view));
 	return actions;
@@ -67,7 +71,7 @@ inline const Controller::ActionMap& ChannelController::getActions() const
 
 inline std::string ChannelController::getDefaultAction() const
 {
-	return "list";
+	return "index";
 }
 
 
