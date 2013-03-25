@@ -112,7 +112,7 @@ a.read-more { padding-left: 6px; font-size: 11px; color: #0099d1; background: ur
   padding:.5em 0 .5em 15.625em;
 }
 
-
+/*
 .projects table, .col table
 {
 	font-size:0.8em;
@@ -135,3 +135,47 @@ td
 {
 	background-color:	#F5FAFA;
 }		
+*/
+
+/** Tables **/
+table {
+	border-right:0;
+/*	clear: both;*/
+	color: #333;
+	margin-bottom: 10px;
+	width: 100%;
+}
+th {
+	border:0;
+	border-bottom:2px solid #555;
+	text-align: left;
+	padding:4px;
+}
+th a {
+	display: block;
+	padding: 2px 4px;
+	text-decoration: none;
+}
+th a.asc:after {
+	content: ' ?';
+}
+th a.desc:after {
+	content: ' ?';
+}
+table tr td {
+	padding: 6px;
+	text-align: left;
+	vertical-align: top;
+	border-bottom:1px solid #ddd;
+}
+table tr:nth-child(even) {
+	background-color: #f9f9f9;
+}
+td.actions {
+	text-align: center;
+	white-space: nowrap;
+}
+table td.actions a {
+	margin: 0px 6px;
+	padding:2px 5px;
+}
