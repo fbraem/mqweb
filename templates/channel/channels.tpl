@@ -1,5 +1,5 @@
 <div style="margin:10px;">
- <table id="channelTable" style="width:100%">
+ <table id="channelTable" class="zebra" style="width:100%;border-collapse:collapse">
   <tr>
    <th></th><th>Type</th><th>Alteration Date</th><th>Status</th>
   </tr>

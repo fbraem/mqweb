@@ -16,7 +16,7 @@
      <td><?= message.putDate ?></td>
      <td><?= message.id ?></td>
      <td><?= message.format ?></a></td>
-     <td style="text-align:right"><a class="hex" href="/message/view/<?= qmgr.name ?>/<?= queue.name ?>/<?= message.id ?>?type=hex" title="Hex View"><?= message.length ?></a></td>
+     <td style="text-align:right"><a class="hex" href="/message/view/<?= mqweb.qmgr ?>/<?= queue.name ?>/<?= message.id ?>?type=hex" title="Hex View"><?= message.length ?></a></td>
      <td><?= message.user ?></td>
      <td><?= message.putApplication ?></td>
      <td><?= message.encoding ?></td>

@@ -1,19 +1,19 @@
 <div style="margin:10px;">
- <table id="queueTable" class="zebra" style="width:100%;border-collapse:collapse">
+ <table id="queueTable" style="width:100%;border-collapse:collapse">
   <tr>
    <th>Queue</th><th>Type</th><th>Depth</th><th>Input</th><th>Output</th><th>Get Enabled</th><th>Put Enabled</th><th>Usage</th>
   </tr>
   <? for queue queues ?>
     <tr class="detail">
-     <td><a href="/queue/view/<?= qmgr.name ?>/<?= queue.QName.value ?>"><?= queue.QName.value ?></a>
+     <td><a href="/queue/view/<?= mqweb.qmgr ?>/<?= queue.QName.value ?>"><?= queue.QName.value ?></a>
       <? if queue.BaseQName ?>
        <br />
-       <span style="padding:5px;font-size:0.8em">Target: <a href="/<?= qmgr.name ?>/Queues/<?= queue.BaseQName.value ?>"><?= queue.BaseQName.value ?></a></span>
+       <span style="padding:5px;font-size:0.8em">Target: <a href="/<?= mqweb.qmgr ?>/Queues/<?= queue.BaseQName.value ?>"><?= queue.BaseQName.value ?></a></span>
       <? endif ?>
       <? if queue.RemoteQName ?>
        <br />
        <span style="padding:5px;font-size:0.8em">Qmgr: <?= queue.RemoteQmgrName.value ?> Queue: <?= queue.RemoteQName.value ?></span><br />
-       <span style="padding:5px;font-size:0.8em">Transmission Queue: <a href="/<?= qmgr.name ?>/Queues/<?= queue.XmitQName.value ?>"><?= queue.XmitQName.value ?></a></span>
+       <span style="padding:5px;font-size:0.8em">Transmission Queue: <a href="/<?= mqweb.qmgr ?>/Queues/<?= queue.XmitQName.value ?>"><?= queue.XmitQName.value ?></a></span>
       <? endif ?>
       <? if queue.QDesc.value ?>
         <br /><em style="padding:5px;font-size:0.8em"><?= queue.QDesc.value ?></em>      

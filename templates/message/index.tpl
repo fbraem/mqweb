@@ -1,7 +1,7 @@
 <!DOCTYPE	html PUBLIC	"-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html	lang="en-US" xmlns="http://www.w3.org/1999/xhtml"	dir="ltr">
 <head>
-	<title>MQWeb - <?= mqweb.qmgr	?> - Queues</title>
+	<title>MQWeb - <?= mqweb.qmgr	?> - Messages</title>
 	<meta	http-equiv="Content-type"	content="text/html;	charset=utf-8" />
 	<link	rel="shortcut	icon"	href="/static/css/images/favicon.ico"	/>
 	<link	rel="stylesheet" href="/static/css/style.css"	type="text/css"	media="all"	/>
@@ -21,7 +21,7 @@
 			},
 			target: '#result'
 		};
-		$('#queueFilterForm').ajaxForm(options);
+		$('#messageFilterForm').ajaxForm(options);
 		
 		$("#filterSubmit").prop("disabled", false);
 	});
@@ -77,7 +77,8 @@
 				<div id="navigation">
 					<ul>
 						<li><a title="Home"	href="/qmgr/view/<?= mqweb.qmgr	?>">Home</a></li>
-						<li><a title="Queues"	href="/queue/list/<?=	mqweb.qmgr	?>">Queues</a></li>
+						<li><a title="Queues"	href="/queue/index/<?=	mqweb.qmgr	?>">Queues</a></li>
+						<li><a title="Channels" href="/channel/index/<?=  mqweb.qmgr  ?>">Channels</a></li>
 					</ul>
 					<div class="cl"></div>
 				</div>
@@ -87,43 +88,26 @@
 					<!-- Content -->
 					<div id="content">
 						<div class="post">
-							<h3><strong><?= mqweb.qmgr	?></strong>	-	Queues</h3>
-							<form	id="queueFilterForm" action="/queue/list/<?=mqweb.qmgr?>" method="POST">
-								<fieldset>
-									<legend>&nbsp;Filter&nbsp;</legend>
-									<div style="float:left;margin:5px;">
-										<div style="margin:5px;">
-											<div	style="margin:5px;">
-												<label for="queueName">Queue Name: </label><input	type="text"	id="queueName" name="queueName"	value="*"	/>
-											</div>
-											<div	style="margin:5px;">
-												<label	for="queueDepth">Queue Depth:	</label><input type="text" id="queueDepth" name="queueDepth" />
-											</div>
-											<div style="float:left;margin:5px;">
-												<input	type="checkbox"	name="queueExcludeSystem"	value="1"	/> Exclude System	Queues<br	/>
-												<input	type="checkbox"	name="queueExcludeTemp"	value="1"	/> Exclude Temporary Queues<br />
-											</div>
-										</div>
-									</div>
-									<fieldset	style="float:left;">
-										<legend>&nbsp;Queue	Type&nbsp;</legend>
-										<div style="float:left;margin:5px;">
-											<input type="radio"	name="queueType" value="All" />All<br	/>
-											<input type="radio"	name="queueType" value="Local" />Local<br	/>
-											<input type="radio"	name="queueType" value="Alias" />Alias
-										</div>
-										<div style="float:left;margin:5px;">
-											<input type="radio"	name="queueType" value="Cluster" />Cluster<br	/>
-											<input type="radio"	name="queueType" value="Model" />Model<br	/>
-											<input type="radio"	name="queueType" value="Remote"	/>Remote
-										</div>
-									</fieldset>
-									<div style="clear:both;" />
-									<div style="float:right;margin-right:10px;margin-top:-30px;">
-										<input	type="submit"	value="Filter	&gt;&gt;"	id="filterSubmit" disabled="disabled"	/>
-									</div>
-								</fieldset>
-							</form>
+							<h3><strong><?= mqweb.qmgr	?></strong>	-	Messages - <?= mqweb.queue ?></h3>
+							  <form id="messageFilterForm" action="/message/list/<?=mqweb.qmgr?>/<?=mqweb.queue?>" method="POST">
+							   <fieldset>
+							    <legend>&nbsp;Limits&nbsp;</legend>
+							    <div style="float:left;margin:5px;">
+							     <div style="float:left;margin:5px;">
+							      <label for="limit">Limit Messages: </label>
+							      <input type="text" id="limit" name="limit" value="" /> Max: <?= queue.curdepth ?> <br />
+							     </div>
+							     <div style="float:left;margin:5px;">
+ 							      <label for="teaser">Length Teaser: </label>
+							      <input type="text" id="teaser" name="teaser" value="" /> (Only for MQSTR messages)<br />
+							     </div>
+							     <div style="clear:both" />
+									 <div style="float:right;margin-right:10px;">
+											<input	type="submit"	value="Filter	&gt;&gt;"	id="filterSubmit" disabled="disabled"	/>
+									 </div>
+							    </div>
+							   </fieldset>
+							  </form>
 						</div>
 					</div>
 					<!-- END Content -->
