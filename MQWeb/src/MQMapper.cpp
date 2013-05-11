@@ -20,6 +20,8 @@
  */
 #include <MQ/Web/MQMapper.h>
 
+#include <Poco/JSON/Object.h>
+
 namespace MQ {
 namespace Web {
 

@@ -21,6 +21,8 @@
 #include <MQ/Web/QueueManagerMapper.h>
 #include <MQ/MQException.h>
 
+#include <Poco/JSON/Object.h>
+
 namespace MQ {
 namespace Web {
 
