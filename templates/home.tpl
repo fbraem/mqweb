@@ -4,221 +4,293 @@
 	<title>MQWeb - <?= mqweb.qmgr ?></title>
 	<meta	http-equiv="Content-type"	content="text/html;	charset=utf-8" />
 	<link	rel="shortcut	icon"	href="/static/css/images/favicon.ico"	/>
+	<link	rel="stylesheet" href="/static/css/jquery.qtip.css"	type="text/css"	media="all"	/>
 	<link	rel="stylesheet" href="/static/css/style.css"	type="text/css"	media="all"	/>
-	<style>
-		td {
-			border:	1px	solid	#C1DAD7;
-			background:	#fff;
-			padding: 3px 3px 3px 6px;
-		}
-		
-		td.alt {
-			background:	#F5FAFA;
-		}		
-	</style>
 	<script	src="/static/js/jquery-1.9.1.min.js" type="text/javascript"	charset="utf-8"></script>
-	<script	src="/static/js/jquery.formalize.legacy.min.js" type="text/javascript"	charset="utf-8"></script>
+	<script	src="/static/js/jquery.formalize.legacy.min.js" type="text/javascript" charset="utf-8"></script>
+	<script	src="/static/js/jquery.qtip.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/static/js/knockout-2.2.1.js" type="text/javascript" charset="utf-8"></script>
 	<script	type="text/javascript">
-	$(document).ready(function()
+	function Queue(data)
 	{
-		loadLocalQueues();
-		loadXmitQueues();
-		loadChannelStatus();
-		loadEventMessages();
-	});
-
-	function loadLocalQueues()
-	{	
-		$.ajax(
-		{
-			beforeSend:	function() {
-				$("#localQueues").html($("#ajaxOverlay").html());
-			},
-			url: "/queue/list.json/<?= mqweb.qmgr ?>?queueDepth=1&queueType=Local&queueExcludeSystem=1&queueUsage=normal",
-			cache: false,
-			dataType:	"json",
-			success: function(data)
-			{
-				if ( data.error	)
-				{
-					showError($("#localQueues"), data.error);
-					return;
-				}
-
-				var	i	=	1;
-				var	div	=	'<table	style="width:100%;border-spacing:0;border-collapse:collapse">';
-				$.each(data.queues,	function(key,	val)
-				{
-					var	cl = '';
-					if ( i++ % 2 ==	0	)
-					{
-						cl = 'class="alt"';
-					}
-					div	+= '<tr><td	'	+	cl +'>'	+	val.QName.value	+	'</th><td	'	+	cl +'	style="text-align:right;padding-right:6px;">'	+	val.CurrentQDepth.value	+	'</td></tr>';
-				});
-				div	+= '</table>';
-				$('#localQueues').html(div);
-			},
-			error: function	(request,	status,	error)
-			{
-				$("#localQueues").html("An error occurred	while	retrieving local queues: " + status	+	", " + error);
-			}
-		});
-	}	
-	
-	function loadXmitQueues()
-	{
-		$.ajax(
-		{
-			beforeSend:	function() {
-				$("#xmitQueues").html($("#ajaxOverlay").html());
-			},
-			url: "/queue/list.json/<?= mqweb.qmgr ?>?queueDepth=1&queueExcludeSystem=0&queueUsage=xmitq",
-			cache: false,
-			dataType:	"json",
-			success: function(data)
-			{
-				if ( data.error	)
-				{
-					showError($("#xmitQueues"),	data.error);
-					return;
-				}
-
-				var	i	=	1;
-				var	div	=	'<table	style="width:100%;border-spacing:0;border-collapse:collapse">';
-				$.each(data.queues,	function(key,	val)
-				{
-					var	cl = '';
-					if ( i++ % 2 ==	0	)
-					{
-						cl = 'class="alt"';
-					}
-					div	+= '<tr><td	'	+	cl +'>'	+	val.QName.value	+	'</th><td	'	+	cl +'	style="text-align:right;padding-right:6px;">'	+	val.CurrentQDepth.value	+	'</td></tr>';
-				});
-				div	+= '</table>';
-				$('#xmitQueues').html(div);
-			},
-			error: function	(request,	status,	error)
-			{
-				$("#xmitq").html("An error occurred	while	retrieving local queues: " + status	+	", " + error);
-			}
-		});
+		this.name = data.QName.value;
+		this.curdepth = data.CurrentQDepth.value;
+		this.url = '/queue/view/<?=mqweb.qmgr?>/' + this.name;
 	}
 	
-	function loadChannelStatus()
+	var LocalQueueModel = function()
 	{
-		$.ajax(
-		{
-			beforeSend:	function() {
-				$("#channelStatus").html($("#ajaxOverlay").html());
-			},
-			url: "/chs/list.json/<?= mqweb.qmgr ?>",
-			cache: false,
-			dataType:	"json",
-			success: function(data)
+		var self = this;
+		
+		self.queues = ko.observableArray([]);
+		self.loading = ko.observable(false);
+		self.error = ko.observable();
+		
+		this.load = function()
 			{
-				if ( data.error	)
+				$.ajax(
 				{
-					showError($("#channelStatus"), data.error);
-					return;
-				}
-
-				var	i	=	1;
-				var	div	=	'<table	style="width:100%;border-spacing:0;border-collapse:collapse">';
-				$.each(data.statuses,	function(key,	val)
-				{
-					var	cl = '';
-					if ( i++ % 2 ==	0	)
+					beforeSend:	function() {
+						self.queues.removeAll();
+						self.loading(true);
+					},
+					url: "/queue/list.json/<?= mqweb.qmgr ?>",
+					data : {
+						queueDepth : 1,
+						queueExcludeSystem: 1,
+						queueUsage : "normal"
+					},
+					cache: false,
+					dataType:	"json",
+					success: function(data) {
+						if ( data.error	)
+						{
+							self.loading(false);
+							alert("RC=" + data.error.reason);
+							return;
+						}
+		
+						var mappedQueues = $.map(data.queues, function(item) { return new Queue(item);});
+						self.queues(mappedQueues);
+						self.loading(false);
+					},
+					error: function	(request,	status,	error)
 					{
-						cl = 'class="alt"';
+						self.loading(false);
+						//TODO: $("#localQueues").html("An error occurred	while	retrieving local queues: " + status	+	", " + error);
 					}
-					div	+= '<tr><td	'	+	cl +'>'	+	val.ChannelName.value	+	'</th><td	'	+	cl +'	style="padding-right:6px;">' + val.ChannelStatus.display + '</td></tr>';
 				});
-				div	+= '</table>';
-				$('#channelStatus').html(div);
-			},
-			error: function	(request,	status,	error)
+			};
+	}
+	
+	var XmitQueueModel = function()
+	{
+		var self = this;
+		
+		self.loading = ko.observable(false);
+		self.queues = ko.observableArray([]);
+		
+		this.load = function()
 			{
-				$("#channelStatus").html("An error occurred	while	retrieving local queues: " + status	+	", " + error);
-			}
-		});
-	}	
+				$.ajax(
+				{
+					beforeSend:	function() {
+						self.queues.removeAll();
+						self.loading(true);
+					},
+					url: "/queue/list.json/<?= mqweb.qmgr ?>",
+					data : {
+						queueDepth : 1,
+						queueExcludeSystem: 0,
+						queueUsage : "xmitq"
+					},
+					cache: false,
+					dataType:	"json",
+					success: function(data) {
+						if ( data.error	)
+						{
+							alert("RC=" + data.error.reason);
+							return;
+						}
+		
+						var mappedQueues = $.map(data.queues, function(item) { return new Queue(item);});
+						self.queues(mappedQueues);
+						self.loading(false);
+					},
+					error: function	(request,	status,	error)
+					{
+						self.loading(false);
+						//TODO: $("#localQueues").html("An error occurred	while	retrieving local queues: " + status	+	", " + error);
+					}
+				});
+			};
+	}
 
-	function loadEventMessages()
+	function Channel(data)
+	{
+		this.name = data.ChannelName.value;
+		this.status = data.ChannelStatus.display;
+		
+		if ( this.status == 'Retrying' )
+		{
+			this.statusImage = '<img class="tip" src="/static/images/flag-red-icon.png" alt="The channel ' + this.name + ' has status Retrying." />';
+		}
+		else if ( this.status == 'Stopped' )
+		{
+			this.statusImage = '<img class="tip" src="/static/images/flag-black-icon.png" alt="The channel ' + this.name + ' has status Stopped." />';
+		}
+		else if ( this.status == 'Running' )
+		{
+			this.statusImage = '<img class="tip" src="/static/images/flag-green-icon.png" alt="The channel ' + this.name + ' has status Running." />';
+		}
+		else
+		{
+			this.statusImage = '<img class="tip" src="/static/images/flag-yellow-icon.png" alt="The channel ' + this.name + ' has status ' + this.status + '." />';
+		}
+	}
+
+	var ChannelModel = function()
+	{
+		var self = this;
+		
+		self.loading = ko.observable(false);
+		self.channels = ko.observableArray([]);
+
+		self.load = function()
+		{
+			$.ajax(
+			{
+				beforeSend:	function() {
+					self.channels.removeAll();
+					self.loading(true);
+				},
+				url: "/chs/list.json/<?= mqweb.qmgr ?>",
+				cache: false,
+				dataType:	"json",
+				success: function(data)
+				{
+					if ( data.error	)
+					{
+						alert("RC=" + data.error.reason);
+						return;
+					}
+	
+					var mappedChannels = $.map(data.statuses, function(item) { return new Channel(item);});
+					self.channels(mappedChannels);
+					self.loading(false);
+					
+					$(".tip").qtip({ 
+						content : { 
+							attr : 'alt' 
+						}
+					});
+					
+				},
+				error: function	(request,	status,	error)
+				{
+					self.loading(false);
+					//TODO: $("#channelStatus").html("An error occurred	while	retrieving channel status: " + status	+	", " + error);
+				}
+			});
+			$(".tip").qtip({ 
+				content : { 
+					attr : 'alt'
+				}
+			});
+		}
+	}
+
+	function Event(data)
+	{
+		this.putDate = data.putDate;
+		this.reason = data.reason;
+		this.desc = data.desc;
+	}
+	
+	function loadEvents(vm)
 	{
 		$.ajax(
 		{
-			beforeSend:	function() {
-				$("#eventMessages").html($("#ajaxOverlay").html());
+			beforeSend:	function() 
+			{
+				vm.events(null);
+				vm.error(null);
+				vm.loading(true);
 			},
 			url: "/message/event.json/<?=	mqweb.qmgr	?>/SYSTEM.ADMIN.QMGR.EVENT?limit=3",
 			cache: false,
 			dataType:	"json",
 			success: function(data)
 			{
-				if ( data.error	)
+				vm.loading(false);
+
+				if ( data.error )
 				{
-					showError($("#eventMessages"), data.error);
-					return;
+					vm.error(data.error);
+					vm.count(0);
+					vm.curdepth(0);
 				}
-
-				var	i	=	1;
-
-				var	div	=	'<table	style="border-spacing:0;border-collapse:collapse">';
-				div	+= '<thead>';
-				div	+= '<tr>';
-				div	+= '<th style="text-align:left;">Date</th>';
-				div	+= '<th style="text-align:left;">Reason</th>';
-				div	+= '</tr>';
-				div	+= '</thead>';
-				div	+= '<tbody>';
-
-				$.each(data.events,	function(key,	val)
+				else
 				{
-					var	cl = '';
-					if ( i++ % 2 ==	0	)
-					{
-						cl = 'class="alt"';
-					}
-					div	+= '<tr><td	'	+	cl +'>'	+	val.putDate	+	'</th><td	'	+	cl +'	style="padding-right:6px;">' + val.reason + ' - ' + val.desc + '</td></tr>';
-				});
-				div	+= '</tbody></table>';
-				div += '<p style="margin-top:5px;">';
-				div += 'Number of messages on this queue: <strong>' + data.queues[0].CurrentQDepth.value + '</strong><br />';
-				if ( data.limited )
-				{
-					div += 'Only the first <strong>' + data.events.length + '</strong> messages are shown. Use queue detail page to browse all messages.';
+					vm.events(data.events);
+					vm.count(data.events.length);
+					vm.curdepth(data.queues[0].CurrentQDepth.value);
 				}
-				div += '</p>';
-				$('#eventMessages').html(div);
 			},
 			error: function	(request,	status,	error)
 			{
-				$("#eventMessages").html("An error occurred	while	retrieving event messages from SYSTEM.ADMIN.QMGR.EVENT: " + status	+	", " + error);
+				vm.loading(false);
+				//TODO:$("#eventMessages").html("An error occurred	while	retrieving event messages from SYSTEM.ADMIN.QMGR.EVENT: " + status	+	", " + error);
 			}
 		});
 	}
 	
-	function showError(el, error)
+	var EventMessageModel = function()
 	{
-		var	html = '<div style="margin-top:5px;padding:10px;border:1px solid red;background-color:#FF9999;">';
-		html +=	'<img	style="float:left;display:block;"	src="/static/images/error.png" alt="error" />'
-		html +=	'<div	style="float:left;margin-left:20px;">';
-		html +=	'<strong>Object: </strong>'	+	error.object + '<br	/>';
-		html +=	'<strong>Function: </strong>'	+	error.fn + '<br	/>';
-		html +=	'<strong>Code: </strong>'	+	error.code	+	'<br />';
-		html +=	'<strong>Reason: </strong>'	+	error.reason;
-		html +=	'</div><div	class="cl">	</div>';
-		
-		el.html(html);
+		var self = this;
+
+		self.loading = ko.observable(false);
+		self.events = ko.observable(null);
+		self.error = ko.observable(null);
+		self.count = ko.observable(0);
+		self.curdepth = ko.observable(0);
+		self.partialView = ko.computed(function() { return (!self.loading()) && self.count() < self.curdepth(); }, self);
 	}
+
+	var viewModel = {
+		localQueueModel : new LocalQueueModel(),
+		xmitQueueModel : new XmitQueueModel(),
+		channelModel : new ChannelModel(),
+		eventMessageModel : new EventMessageModel()
+	};
+
+	$(document).ready(function()
+	{
+	  $(".tip").qtip({ 
+	  	content : { 
+	  		attr : 'alt' 
+	  	}
+	  });
+	  
+		ko.applyBindings(viewModel);
+
+		viewModel.localQueueModel.load();
+		viewModel.xmitQueueModel.load();
+		viewModel.channelModel.load();
+		loadEvents(viewModel.eventMessageModel);
+	});
 	</script>
 </head>
 <body>
-	<div id="ajaxOverlay"	style="display:none;">
-	 <div	id="ajaxSpinner" style="background:url('/static/images/ajaxSpinner.gif') no-repeat center	center transparent;	width:100%;height:40px;">
-	 </div>
-	</div>
+	<script type="text/html" id="mqErrorTemplate">    
+		<div style="margin-top:5px;padding:10px;border:1px solid red;background-color:#FF9999;">
+			<img	style="float:left;display:block;"	src="/static/images/error.png" alt="error" />
+			<div	style="float:left;margin-left:20px;">
+				<strong>Object: </strong><span data-bind:"text: object" /><br	/>
+				<strong>Function: </strong><span data-bind:"text: fn" /><br	/>
+				<strong>Code: </strong><span data-bind:"text: code" /><br />
+				<strong>Reason: </strong><span data-bind:"text: reason" />
+			</div>
+			<div	class="cl">	
+		</div>
+	</script>
+	<script type="text/html" id="mqEvents">
+		<table style="border-spacing:0;border-collapse:collapse">
+			<thead>
+				<tr>
+					<th style="text-align:left;">Date</th>
+					<th style="text-align:left;" colspan="2">Reason</th>
+				</tr>
+			</thead>
+			<tbody data-bind="foreach: $data">
+				<tr>
+					<td data-bind="text: putDate" />
+					<td data-bind="text: reason" />
+					<td data-bind="text: desc" />
+				</tr>
+			</tbody>
+		</table>
+	</script>
 	<!-- Wrapper -->
 	<div id="wrapper">
 		<div class="shell">
@@ -292,33 +364,97 @@
 					<div class="cl"></div>
 					<div class="widgets">
 						<div class="col	activities">
-							<h3>Local	Queues</h3>
-							<p style="margin-bottom:5px">This	is a list	with local queues	that contains	at least one message.</p>
 							<div id="localQueues">
-							</div>
-							<a title="Reload"	class="read-more"	href="#" onclick="loadLocalQueues();return false;">Reload</a>
-						</div>
+								<img class="tip" src="/static/images/tip-icon.png" style="float:right;padding-top:8px;" alt="This is a list	with local queues	that contains	at least one message." />
+								<a href="#" onclick="viewModel.localQueueModel.load();return false;"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
+								<h3>Local	Queues</h3>
+								<table data-bind="visible: localQueueModel.queues().length > 0" style="font-size:0.8em;border-collapse:collapse;display:none">
+									<thead>
+										<tr><th>Queue</th><th>Depth</th></tr>
+									</thead>
+									<tbody data-bind="foreach: localQueueModel.queues">
+										<tr>
+											<td><a data-bind="attr: {href: url}, text: name" />
+											<td data-bind="text: curdepth" />
+										</tr>
+									</tbody>
+								</table>
+								<div class="loader" data-bind="visible: localQueueModel.loading"></div>
+							</div> <!-- localQueues -->
+						</div> <!-- activities -->
 						<div class="col	activities">
-							<h3>Transmission Queues</h3>
-							<p style="margin-bottom:5px">This	is a list	with transmission	queues that	contains at	least	one	message. On	a	healthy	system,	this list	would	be empty ...</p>
 							<div id="xmitQueues">
-							</div>
-							<a title="Reload"	class="read-more"	href="#" onclick="loadXmitQueues();return	false;">Reload</a>
-						</div>
+								<img class="tip" src="/static/images/tip-icon.png" style="float:right;padding-top:8px;" alt="This	is a list	with transmission	queues that	contains at	least	one	message. On	a	healthy	system,	this list	would	be empty ..." />
+								<a href="#" onclick="viewModel.xmitQueueModel.load();return false;"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
+								<h3>Transmission Queues</h3>
+								<table data-bind="visible: xmitQueueModel.queues().length > 0" style="font-size:0.8em;border-collapse:collapse;display:none">
+									<thead>
+										<tr><th>Queue</th><th>Depth</th></tr>
+									</thead>
+									<tbody data-bind="foreach: xmitQueueModel.queues">
+										<tr>
+											<td data-bind="text: name" />
+											<td data-bind="text: curdepth" />
+										</tr>
+									</tbody>
+								</table>
+								<div class="loader" data-bind="visible: xmitQueueModel.loading"></div>
+							</div> <!-- xmitQueues -->
+						</div> <!-- activities -->
 						<div class="col	activities">
+							<img class="tip" src="/static/images/tip-icon.png" style="float:right;padding-top:8px;" alt="This	is a list	with channel statuses." />
+							<a title="Reload" href="#" onclick="viewModel.channelModel.load();return false;"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
 							<h3>Channel	Status</h3>
-							<p style="margin-bottom:5px;">This	is a list	with channel statuses.</p>
-							<div id="channelStatus">
-							</div>
-							<a title="Reload"	class="read-more"	href="#" onclick="loadChannelStatus();return false;">Reload</a>
-						</div>
+							<div id="channels">
+								<table data-bind="visible: channelModel.channels().length > 0" style="font-size:0.8em;border-collapse:collapse;display:none">
+									<thead>
+										<tr><th colspan="2">Channel</th><th>Status</th></tr>
+									</thead>
+									<tbody data-bind="foreach:channelModel.channels">
+										<tr>
+											<td data-bind="html: statusImage" />
+											<td data-bind="text: name" />
+											<td data-bind="text: status" />
+										</tr>
+									</tbody>
+								</table>
+								<div class="loader" data-bind="visible: channelModel.loading"></div>
+							</div> <!-- channels -->
+						</div> <!-- activities -->
 						<div class="cl"></div>
 					</div>
 					<div class="widgets">
 						<div class="projects">
+							<a title="Reload" href="#" onclick="loadEvents(viewModel.eventMessageModel);return false;"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
 							<h3>SYSTEM.ADMIN.QMGR.EVENT</h3>
 							<div id="eventMessages">
-							</div>
+								<div data-bind="if: eventMessageModel.events">
+									<table data-bind="visible: true" style="border-spacing:0;border-collapse:collapse;display:none">
+										<thead>
+											<tr>
+												<th style="text-align:left;">Date</th>
+												<th style="text-align:left;" colspan="2">Reason</th>
+											</tr>
+										</thead>
+										<tbody data-bind="foreach: eventMessageModel.events">
+											<tr>
+												<td data-bind="text: putDate" />
+												<td data-bind="text: reason" />
+												<td data-bind="text: desc" />
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								<p data-bind="visible: eventMessageModel.partialView" style="margin-top:5px;display:none">
+									Number of messages on this queue: <strong><span data-bind="text: eventMessageModel.curdepth" /></strong><br />
+									Only the first <strong><span data-bind="text: eventMessageModel.count"></strong> messages are shown. Use queue detail page to browse all messages.
+								</p>
+								<div class="loader" data-bind="visible: eventMessageModel.loading"></div>
+								<div data-bind="if: eventMessageModel.error">
+									<div data-bind="template: { name: 'mqErrorTemplate', data: eventMessageModel.error }">
+									</div>
+								</div>
+							</div> <!-- eventMessages -->
 							<div class="cl"></div>
 						</div>
 						<div class="col	contacts">
