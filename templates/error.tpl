@@ -17,7 +17,7 @@
    <img style="float:left;display:block;" src="/static/images/error.png" alt="error" />
    <div style="float:left;padding-left:10px;">
     Object: <?= error.object ?><br />
-    Function: <?= error.function ?><br />
+    Function: <?= error.fn ?><br />
     Code: <?= error.code ?><br />
     Reason: <?= error.reason ?>
    </div>
