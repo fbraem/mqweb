@@ -80,7 +80,15 @@ namespace MQ
     int size = msg.buffer().size();
 
     MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
-    mqSystem.functions().put(_qmgr->_handle, _handle, msg.md(), &pmo, size, size > 0 ? &msg.buffer()[0] : NULL);
+	try
+	{
+		mqSystem.functions().put(_qmgr->_handle, _handle, msg.md(), &pmo, size, size > 0 ? &msg.buffer()[0] : NULL);
+	}
+	catch(MQException& mqe)
+	{
+		mqe.object(_od.ObjectName);
+		throw;
+	}
   }
   
   
@@ -112,7 +120,15 @@ namespace MQ
 
     int size = msg.buffer().size();
     MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
-    mqSystem.functions().get(_qmgr->_handle, _handle, msg.md(), &gmo, size, size > 0 ? &(msg.buffer()[0]) : NULL, &msg._dataLength);
+	try
+	{
+		mqSystem.functions().get(_qmgr->_handle, _handle, msg.md(), &gmo, size, size > 0 ? &(msg.buffer()[0]) : NULL, &msg._dataLength);
+	}
+	catch(MQException& mqe)
+	{
+		mqe.object(_od.ObjectName);
+		throw;
+	}
   }
   
 }
