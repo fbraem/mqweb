@@ -29,122 +29,87 @@
 #include <Poco/SharedPtr.h>
 #include <Poco/DateTime.h>
 
-namespace MQ
+namespace MQ {
+
+class QueueManager
 {
-  class QueueManager
-  {
-  public:
-    typedef Poco::SharedPtr<QueueManager> Ptr;
+public:
+	typedef Poco::SharedPtr<QueueManager> Ptr;
 
-    QueueManager(const std::string& name = "");
-    
-    
-    virtual ~QueueManager();
-    
-    
-    void connect();
-    
-    
-    void connect(const std::string& channel, const std::string& server);
 
-    
-    void disconnect();
-    
-    
-    std::string name() const;
-    
-    
-    std::string id() const;
-    
-    
-    std::string description() const;
-    
-    
-    Poco::DateTime alterationDate() const;
-    
-    
-    Poco::DateTime creationDate() const;
-    
-    
-    std::string commandQueue() const;
+	QueueManager(const std::string& name = "");
+
+
+	virtual ~QueueManager();
+
+
+	void connect();
+
+
+	void connect(const std::string& channel, const std::string& server);
+
+
+	void disconnect();
+
+
+	std::string name() const;
+
+
+	std::string id() const;
+
+
+	std::string commandQueue() const;
 
 
 	bool zos() const;
 
 
-  private:
-    
-    
-    MQHCONN _handle;
-    
-    
-    std::string _name;
-    
-    
-    std::string _id;
-    
-    
-    std::string _description;
-    
-    
-    Poco::DateTime _alterationDate;
-    
-    
-    Poco::DateTime _creationDate;
+private:
+
+	MQHCONN _handle;
 
 
-    std::string _commandQueue;
+	std::string _name;
+
+
+	std::string _id;
+
+
+	std::string _commandQueue;
 
 
 	bool _zos;
-    
-  
-    void inquireQmgrAttrs();
-
-    
-    friend class Queue;
-  };
-  
-  
-  inline std::string QueueManager::name() const
-  {
-    return _name;
-  }
-  
-  
-  inline std::string QueueManager::id() const
-  {
-    return _id;
-  }
-  
-  
-  inline std::string QueueManager::description() const
-  {
-    return _description;
-  }
-  
-  
-  inline Poco::DateTime QueueManager::alterationDate() const
-  {
-    return _alterationDate;
-  }
 
 
-  inline Poco::DateTime QueueManager::creationDate() const
-  {
-    return _creationDate;
-  }
-  
-  
-  inline std::string QueueManager::commandQueue() const
-  {
-    return _commandQueue;
-  }
+	void inquireQmgrAttrs();
 
-  inline bool QueueManager::zos() const
-  {
-	  return _zos;
-  }
+
+	friend class Queue;
+};
+
+
+inline std::string QueueManager::name() const
+{
+	return _name;
 }
+
+
+inline std::string QueueManager::id() const
+{
+	return _id;
+}
+
+
+inline std::string QueueManager::commandQueue() const
+{
+	return _commandQueue;
+}
+
+inline bool QueueManager::zos() const
+{
+	return _zos;
+}
+
+} // Namespace MQ
 
 #endif // _MQ_QueueManager_h

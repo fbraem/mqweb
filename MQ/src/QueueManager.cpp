@@ -98,10 +98,10 @@ namespace MQ
     std::map<int, int> charSelectors;
     charSelectors[MQCA_Q_MGR_NAME] = MQ_Q_MGR_NAME_LENGTH;
     charSelectors[MQCA_Q_MGR_IDENTIFIER] = MQ_Q_MGR_IDENTIFIER_LENGTH;
-    charSelectors[MQCA_Q_MGR_DESC] = MQ_Q_MGR_DESC_LENGTH;
+    //charSelectors[MQCA_Q_MGR_DESC] = MQ_Q_MGR_DESC_LENGTH;
     charSelectors[MQCA_COMMAND_INPUT_Q_NAME] = MQ_Q_NAME_LENGTH;
-    charSelectors[MQCA_ALTERATION_DATE] = MQ_DATE_LENGTH;
-    charSelectors[MQCA_ALTERATION_TIME] = MQ_TIME_LENGTH;
+    //charSelectors[MQCA_ALTERATION_DATE] = MQ_DATE_LENGTH;
+    //charSelectors[MQCA_ALTERATION_TIME] = MQ_TIME_LENGTH;
     //charSelectors[MQCA_CREATION_DATE] = MQ_DATE_LENGTH;
     //charSelectors[MQCA_CREATION_TIME] = MQ_TIME_LENGTH;
 
@@ -112,14 +112,14 @@ namespace MQ
 	_zos = (intResult[MQIA_PLATFORM] == MQPL_ZOS);
 	_name = charResult[MQCA_Q_MGR_NAME];
     _id = charResult[MQCA_Q_MGR_IDENTIFIER];
-    _description = charResult[MQCA_Q_MGR_DESC];
+    //_description = charResult[MQCA_Q_MGR_DESC];
     _commandQueue = charResult[MQCA_COMMAND_INPUT_Q_NAME];
-    std::string date = charResult[MQCA_ALTERATION_DATE];
-    std::string time = charResult[MQCA_ALTERATION_TIME];
+    //std::string date = charResult[MQCA_ALTERATION_DATE];
+    //std::string time = charResult[MQCA_ALTERATION_TIME];
 
-    int timeZone;
-    date += time;
-    Poco::DateTimeParser::parse("%Y%n%e%H%M%S", date, _alterationDate, timeZone);
+    //int timeZone;
+    //date += time;
+    //Poco::DateTimeParser::parse("%Y%n%e%H%M%S", date, _alterationDate, timeZone);
     
     //date = charResult[MQCA_CREATION_DATE];
     //time = charResult[MQCA_CREATION_TIME];
