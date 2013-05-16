@@ -253,6 +253,8 @@ void MQFunctions::disc(PMQHCONN conn, PMQLONG cc, PMQLONG rc)
 
   //Poco::ScopedLock<Poco::Mutex> lock(_MQIMutex);
   _discFn(conn, cc, rc);
+
+  trace("", "MQDISC", cc, rc);
 }
 
 void MQFunctions::disc(PMQHCONN conn)
