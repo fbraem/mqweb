@@ -41,6 +41,12 @@ QueueManagerController::~QueueManagerController()
 }
 
 
+void QueueManagerController::index()
+{
+	setView(new TemplateView("index.tpl"));
+}
+
+
 void QueueManagerController::view()
 {
 	QueueManagerMapper queueManagerMapper(*commandServer());
@@ -51,13 +57,13 @@ void QueueManagerController::view()
 	if ( jsonQueueManagers->size() > 0 )
 	{
 		set("qmgr", jsonQueueManagers->get(0));
-		if ( format().compare("html") == 0 )
-		{
-			setView(new TemplateView("home.tpl"));
-		}
-		else if ( format().compare("json") == 0 )
+		if ( format().compare("json") == 0 )
 		{
 			setView(new JSONView());
+		}
+		else
+		{
+			//TODO: Not allowed ...
 		}
 	}
 }

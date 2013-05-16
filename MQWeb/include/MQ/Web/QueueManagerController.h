@@ -46,6 +46,9 @@ public:
 	std::string getDefaultAction() const;
 
 
+	void index();
+
+
 	void view();
 };
 
@@ -54,6 +57,7 @@ inline const Controller::ActionMap& QueueManagerController::getActions() const
 {
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
+			("index", static_cast<ActionFn>(&QueueManagerController::index))
 			("view", static_cast<ActionFn>(&QueueManagerController::view));
 	return actions;
 }
@@ -61,7 +65,7 @@ inline const Controller::ActionMap& QueueManagerController::getActions() const
 
 inline std::string QueueManagerController::getDefaultAction() const
 {
-	return "view";
+	return "index";
 }
 
 }} // Namespace MQ::Web
