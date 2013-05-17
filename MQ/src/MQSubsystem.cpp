@@ -43,6 +43,7 @@ void MQSubsystem::uninitialize()
 
 void MQSubsystem::load()
 {
+	static std::string windowsPrefix("Windows");
   std::string mode = Poco::Util::Application::instance().config().getString("mq.mode", "bindings");
   _connectionMode = mode.compare("bindings") == 0 ? BINDING_MODE : CLIENT_MODE;
 
@@ -51,9 +52,9 @@ void MQSubsystem::load()
 
   if ( binding() )
   {
-    if ( osName.compare("Linux") == 0 )
+	if ( osName.compare(0, windowsPrefix.size(), windowsPrefix) )
     {
-      library = "libmqm.so";
+      library = "libmqm_r.so";
     }
     else // We assume windows for now
     {
@@ -62,9 +63,9 @@ void MQSubsystem::load()
   }
   else
   {
-    if ( osName.compare("Linux") == 0 )
+	if ( osName.compare(0, windowsPrefix.size(), windowsPrefix) )
     {
-      library = "libmqic.so";
+      library = "libmqic_r.so";
     }
     else // We assume windows for now
     {
