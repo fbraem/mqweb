@@ -28,49 +28,50 @@
 namespace MQ
 {
 
-  MQException::MQException(const std::string& object,
-                           const std::string& function,
-                           long code, 
-                           long reason) : Poco::Exception(reason)
-                                        , _object(object)
-                                        , _function(function)
-                                        , _code(code)
-                                        , _reason(reason)
-  {
-    std::string msg;
+MQException::MQException(const std::string& object,
+	const std::string& function,
+	long code,
+	long reason)
+:	Poco::Exception(reason)
+	, _object(object)
+	, _function(function)
+	, _code(code)
+	, _reason(reason)
+{
+	std::string msg;
 
-    if ( ! _object.empty() )
-    {
-      msg.append(_object);
-      msg.append(" - ");
-    }
-    msg.append(_function);
-    msg.append(" : RC=");
+	if ( ! _object.empty() )
+	{
+		msg.append(_object);
+		msg.append(" - ");
+	}
+	msg.append(_function);
+	msg.append(" : RC=");
 
-    Poco::NumberFormatter::append(msg, _reason);
-    message(msg);
-  }
+	Poco::NumberFormatter::append(msg, _reason);
+	message(msg);
+}
 
-  void MQException::log(Poco::Logger& logger) const
-  {
-    if ( _code == MQCC_WARNING )
-    {
-      logger.warning(message());
-    }
-    else
-    {
-      logger.error(message());
-    }
-  }
+void MQException::log(Poco::Logger& logger) const
+{
+	if ( _code == MQCC_WARNING )
+	{
+		logger.warning(message());
+	}
+	else
+	{
+		logger.error(message());
+	}
+}
 
-  const char* MQException::name() const throw()
-  {
-    return "MQException";
-  }
+const char* MQException::name() const throw()
+{
+	return "MQException";
+}
 
-  const char* MQException::what() const throw()
-  {
-    return "MQException";
-  }
+const char* MQException::what() const throw()
+{
+	return "MQException";
+}
 
 }

@@ -34,18 +34,21 @@
 namespace MQ {
 
 class CommandServer
+	/// Class for sending PCF commands to a queuemanager
 {
 public:
 	CommandServer(QueueManager::Ptr qmgr, const std::string& modelQueue);
-
+		/// Constructor.
 
 	PCF::Ptr createCommand(MQLONG command) const;
-
+		/// Returns a shared pointer to a PCF object for the given command.
 
 	void sendCommand(PCF::Ptr& command, PCF::Vector& response);
-
+		/// Sends the command to the queuemanager. The response is returned
+		/// as a vector of PCF objects. Can throw a MQException.
 
 	const QueueManager& qmgr() const;
+		/// Returns the associated queuemanager
 
 
 	typedef Poco::SharedPtr<CommandServer> Ptr;
@@ -54,12 +57,9 @@ public:
 private:
 	QueueManager::Ptr _qmgr;
 
-
 	Queue _commandQ;
 
-
 	Queue _replyQ;
-	
 };
 
 

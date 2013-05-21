@@ -26,82 +26,83 @@
 
 namespace MQ
 {
-  
-  class MQSubsystem : public Poco::Util::Subsystem
-  {
-  public:
 
-    enum ConnectionMode
-    {
-        BINDING_MODE
-      , CLIENT_MODE
-    };
+class MQSubsystem : public Poco::Util::Subsystem
+	/// A POCO Subsystem for initializing Websphere MQ
+{
+public:
 
-    MQSubsystem();
-    
-    
-    virtual ~MQSubsystem();
-    
-    
-    virtual const char * name() const;
-    
-    
-    virtual void initialize(Poco::Util::Application& app);
-    
-    
-    virtual void uninitialize();
+	enum ConnectionMode
+	{
+		BINDING_MODE,
+		CLIENT_MODE
+	};
 
+	MQSubsystem();
+		/// Constructor
 
-    bool binding() const;
+	virtual ~MQSubsystem();
+		/// Destructor
 
+	virtual const char* name() const;
+		/// Returns the name
 
-    bool client() const;
+	virtual void initialize(Poco::Util::Application& app);
+		/// Initialize the subsystem
 
+	virtual void uninitialize();
+		/// Unitialize the subsystem
 
-    MQFunctions& functions();
+	bool binding() const;
+		/// Returns true when Websphere MQ is loaded in binding mode.
 
+	bool client() const;
+		/// Returns true when Websphere MQ is loaded in client mode.
 
-    ConnectionMode mode() const;
+	MQFunctions& functions();
+		/// Returns the associated MQFunctions object
 
+	ConnectionMode mode() const;
+		/// Returns the connection mode
 
-    void load();
+	void load();
+		/// Loads the correct library based on the connection mode.
 
+private:
+	MQFunctions _functions;
 
-  private:
-    MQFunctions _functions;
-
-    ConnectionMode _connectionMode;
-  };
-
-
-  inline const char * MQSubsystem::name() const
-  {
-    return "MQ";
-  }
+	ConnectionMode _connectionMode;
+};
 
 
-  inline MQFunctions& MQSubsystem::functions()
-  {
-    return _functions;
-  }
+inline const char * MQSubsystem::name() const
+{
+	return "MQ";
+}
 
 
-  inline bool MQSubsystem::binding() const
-  {
-    return _connectionMode == BINDING_MODE;
-  }
+inline MQFunctions& MQSubsystem::functions()
+{
+	return _functions;
+}
 
 
-  inline bool MQSubsystem::client() const
-  {
-    return _connectionMode == CLIENT_MODE;
-  }
+inline bool MQSubsystem::binding() const
+{
+	return _connectionMode == BINDING_MODE;
+}
 
 
-  inline MQSubsystem::ConnectionMode MQSubsystem::mode() const
-  {
-    return _connectionMode;
-  }
+inline bool MQSubsystem::client() const
+{
+	return _connectionMode == CLIENT_MODE;
+}
+
+
+inline MQSubsystem::ConnectionMode MQSubsystem::mode() const
+{
+	return _connectionMode;
+}
 
 } // Namespace MQ
 

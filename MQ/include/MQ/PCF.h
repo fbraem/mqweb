@@ -43,116 +43,90 @@ public:
 		/// Creates an empty PCF message
 		/// Use this constructor to get a PCF message from a queue.
 
-
 	explicit PCF(int cmd, bool zos = false);
 		/// Creates an empty PCF message for a command
 		/// Use this constructor to put a PFC on a queue.
 
-
 	virtual ~PCF();
 		/// Destructor.
-
 
 	void addParameter(MQLONG parameter, const std::string& value);
 		/// Add a string parameter.
 
-
 	void addParameter(MQLONG parameter, MQLONG value);
 		/// Add a numeric parameter.
-
 
 	void addParameterList(MQLONG parameter, MQLONG *values);
 		/// Add a numeric list parameter.
 
-
 	void addFilter(MQLONG parameter, MQLONG op, const std::string& value);
 		/// Add a filter with a string value.
-
 
 	void addFilter(MQLONG parameter, MQLONG op, MQLONG value);
 		/// Add a filter with a numeric value.
 
-
 	int getCommand() const;
 		/// Returns the command.
-
 
 	int getCompletionCode() const;
 		/// Returns the completion code.
 
-
 	int getReasonCode() const;
 		/// Returns the reason code.
-
 
 	bool isExtendedResponse() const;
 		/// Returns true when this is an extended response.
 
-
 	bool isNumber(MQLONG parameter) const;
 		/// Returns true when the value of the parameter is a numeric value.
-
 
 	bool isString(MQLONG parameter) const;
 		/// Returns true when the value of the parameter is a string value.
 
-
 	bool isLast() const;
 		/// Returns true when this PCF message is the last of a response.
-
 
 	Poco::DateTime getParameterDate(MQLONG dateParameter, MQLONG timeParameter) const;
 		/// Combines a date and time parameter and returns it as a DateTime object
 		/// When the date parameter doesn't exist, the current date is returned.
-
 
 	MQLONG getParameterNum(MQLONG parameter) const;
 		/// Returns the numeric value of a parameter.
 		/// Poco::NotFoundException will be thrown when the parameter isn't found.
 		/// Poco::BadCastException will be thrown when the parameter doesn't contain a numeric value.
 
-
 	std::string getParameterString(MQLONG parameter) const;
 		/// Returns the string value of a parameter.
 		/// Poco::NotFoundException will be thrown when the parameter isn't found.
 		/// Poco::BadCastException will be thrown when the parameter doesn't contain a string value.
-
 
 	std::vector<std::string> getParameterStringList(MQLONG parameter) const;
 		/// Returns a vector of strings of a parameter.
 		/// Poco::NotFoundException will be thrown when the parameter isn't found.
 		/// Poco::BadCastException will be thrown when the parameter doesn't contain a string list.
 
-
 	bool hasParameter(MQLONG parameter) const;
 		/// Returns true when the parameter is found in the PCF message.
 
-
 	std::vector<MQLONG> getParameters() const;
 		/// Returns a vector with all parameter ids.
-
-
 
 	void init();
 		/// Initializes the internal PCF structures. Call this when you retrieved
 		/// a PFC message from a queue and before you start retrieving information
 		/// from it.
 
-
 	MQLONG optParameterNum(MQLONG parameter, MQLONG def = 0) const;
 		/// Returns the numeric value of a parameter.
 		/// When the parameter isn't found or doesn't contain a numeric value,
 		/// def will be returned.
-
 
 	std::string optParameterString(MQLONG parameter, const std::string& def = "") const;
 		/// Returns the string value of a parameter.
 		/// When the parameter doesn't exist or is not a string, an empty
 		/// string is returned.
 
-
 	typedef Poco::SharedPtr<PCF> Ptr;
-
 
 	typedef std::vector<Ptr> Vector;
 

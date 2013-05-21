@@ -42,214 +42,161 @@ public:
 	Message(int size = 0);
 		/// Constructor. Creates a message with a buffer of the given size.
 	
-	
 	Buffer& buffer();
 		/// Returns the buffer used for storing the content of the message.
-	
 	
 	const Buffer& buffer() const;
 		/// Returns a const reference to the content of the message.
 	
-	
 	void clear();
 		/// Clears the content and the fields of the message.
-
 
 	BufferPtr getAccountingToken() const;
 		/// Gets the accounting token
 
-
 	std::string getAccountingTokenHex() const;
 		/// Gets the accounting token as hex
-
 
 	void setAccountingToken(const Buffer& buffer);
 		/// Sets the accounting token
 
-
 	std::string getApplIdentityData() const;
 		/// Gets the application data relating to identity
-
 
 	void setApplIdentityData(const std::string& applIdentity);
 		/// Sets the application data relating to identity
 
-
 	std::string getApplOriginData() const;
 		/// Gets the application data relating to origin
-
 
 	void setApplOriginData(const std::string& applOriginData);
 		/// Sets the application data relating to origin
 
-
 	MQLONG backoutCount() const;
 		// Returns the backout counter
-
 
 	BufferPtr getCorrelationId() const;
 		/// Returns a copy of the correlation id in a buffer
 
-
 	std::string getCorrelationIdHex() const;
 		/// Returns the correlation id in a hex format
-
 
 	void setCorrelationId(const Buffer& buffer);
 		/// Sets the correlation id with the content of the buffer
 
-
 	void setCorrelationId(const std::string& hex);
 		/// Sets the correlation id from a hex value
 
-	
 	bool isEmptyCorrelationId() const;
 		/// Returns true when the correlation id contains all 0 bytes
-
 
 	MQLONG getCodedCharSetId() const;
 		/// Returns the coded character set id
 
-
 	void setCodedCharSetId(MQLONG ccsid);
 		/// Sets the coded character set id
-
 
 	MQLONG dataLength() const;
 		/// Returns the data length of the message
 
-
 	MQLONG getEncoding() const;
 		/// Gets the encoding
 	
-	
 	void setEncoding(MQLONG encoding);
-		///.Sets the encoding
-	
+		/// Sets the encoding
 
 	MQLONG getExpiry() const;
 		/// Gets the message lifetime
 
-
 	void setExpiry(MQLONG expiry);
 		/// Sets the message lifetime
-
 
 	MQLONG getFeedback() const;
 		/// Get feedback or reason code
 
-
 	void setFeedback(MQLONG feedback);
 		/// Set feedback or reason code
 
-	
 	std::string getFormat() const;
 		/// Gets the format
-	
-	
+
 	void setFormat(const std::string& format);
 		/// Sets the format
-
 
 	BufferPtr getGroupId() const;
 		/// Returns the group identifier
 
-
 	std::string getGroupIdHex() const;
 		/// Returns the group identifier in hex format
-
 
 	bool isEmptyGroupId() const;
 		/// Returns true when the group identifier contains only 0-bytes.
 
-
 	void setGroupId(const Buffer& buffer);
 		/// Sets the group identifier from a buffer
-
 
 	void setGroupId(const std::string& hex);
 		/// Sets the group identifier from a hex string
 
-
 	MQLONG getMsgFlags() const;
 		/// Gets the message flags
-
 
 	void setMsgFlags(MQLONG flags);
 		/// Sets the message flags
 
-
 	BufferPtr getMessageId() const;
 		/// Returns a the message id as a Buffer
 
-
 	std::string getMessageIdHex() const;
 		/// Returns the message id in a hex format
-	
-	
+
 	bool isEmptyMessageId() const;
 		/// Returns true when the message id contains only 0-bytes
-	
-	
+
 	void setMessageId(const Buffer& buffer);
 		/// Sets the message id from a buffer
-
 
 	void setMessageId(const std::string& hex);
 		/// Sets the message id from a hex string
 
-
 	MQLONG getMsgSeqNumber() const;
 		/// Gets the sequence number of logical message within group
-
 
 	void setMsgSeqNumber(MQLONG seqNumber);
 		/// Sets the sequence number of logical message within group
 
-
 	MQLONG getMsgType() const;
 		/// Gets the message type
-
 
 	void setMsgType(MQLONG type);
 		/// Sets the message type
 
-
 	MQLONG getOffset() const;
 		/// Gets the offset of data in physical message from start of logical message
-
 
 	void setOffset(MQLONG offset);
 		/// Sets the offset of data in physical message from start of logical message
 
-
 	MQLONG getOriginalLength() const;
 		/// Gets length of original message
-
 
 	MQLONG getPersistence() const;
 		/// Returns the persistence flag
 
-
 	void setPersistence(MQLONG persistence);
 		/// Sets the persistence flag
-
 
 	MQLONG getPriority() const;
 		/// Returns the message priority
 
-
 	void setPriority(MQLONG prio);
 		/// Sets the message priority
-
 
 	std::string getPutApplName() const;
 		/// Returns the name of application that put the message
 
-
 	void setPutApplName(const std::string& app);
 		/// Sets the name of application that put the message
-
 
 	MQLONG getPutApplType() const;
 		/// Gets the type of application that put the message
@@ -257,77 +204,57 @@ public:
 	void setPutApplType(MQLONG appType);
 		/// Sets the type of application that put the message
 
-
 	Poco::DateTime getPutDate() const;
 		/// Returns the put datetime
-
 
 	std::string getReplyToQMgr() const;
 		/// Returns the name of the reply queue manager
 
-
 	void setReplyToQMgr(const std::string& qmgr);
 		/// Sets the name of reply queue manager
-
 
 	std::string getReplyToQueue() const;
 		/// Returns the name of the reply-to-queue
 
-
 	void setReplyToQueue(const std::string& queue);
 		/// Sets the name of the reply-to-queue
-
 
 	MQLONG getReport() const;
 		/// Get the report attribute
 
-
 	void setReport(MQLONG report);
 		/// Set the report attribute
-
 
 	MQLONG getType() const;
 		/// Returns the type of the message
 
-
 	void setType(MQLONG type);
 		/// Sets the type of the message
 
-
 	std::string getUser() const;
 		/// Returns the name of the user
-
 
 private:
 
 	Buffer _buffer;
 
-
 	MQMD _md;
-
 
 	// Contains the length of the message on the queue
 	// Only valid when the message is browsed or retrieved.
 	MQLONG _dataLength;
 
-
 	MQMD* md();
-
 
 	static MQMD _initialMD;
 
-
 	friend class Queue;
-
 
 	static void copyBuffer(MQBYTE* target, const Buffer& buffer, long maxSize);
 
-
 	static std::string getBufferAsHex(const MQBYTE* buffer, long size);
 
-
 	static bool isEmptyBuffer(const MQBYTE* buffer, long size);
-
 
 	static void setBufferFromHex(MQBYTE* buffer, long size, const std::string& hex);
 };

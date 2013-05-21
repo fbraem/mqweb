@@ -31,56 +31,53 @@
 
 namespace MQ
 {
-  class QueueManager;
-  class Message;
-  
-  class Queue
-  {
-  public:
-    Queue(Poco::SharedPtr<QueueManager> qmgr, const std::string& name);
-    
-    
-    virtual ~Queue();
-    
-    
-    std::string name() const;
-    
-    
-    void open(long options);
-    
-    
-    void close();
-    
-    
+class QueueManager;
+class Message;
+
+class Queue
+	/// Represents a Websphere MQ queue
+{
+public:
+	Queue(Poco::SharedPtr<QueueManager> qmgr, const std::string& name);
+		/// Constructor
+
+	virtual ~Queue();
+		/// Destructor. Closes the queue when it is still open.
+
+	std::string name() const;
+		/// Returns the name of the queue
+
+	void open(long options);
+		/// Open the queue with the given options. Can throw an MQException.
+
+	void close();
+		/// Close the queue. Can throw an MQException.
+
 	void put(Message& msg, MQLONG options = MQPMO_NONE);
-    
-    
+		/// Puts the given message on the queue. Can throw an MQException.
+
 	void get(Message& msg, MQLONG options = MQGMO_NONE, long wait = 0);
-    
-    
-  private:
+		/// Gets a message from the queue. Can throw an MQException.
 
-    Poco::SharedPtr<QueueManager> _qmgr;
+private:
 
-    
-    MQHOBJ _handle;
-    
+	Poco::SharedPtr<QueueManager> _qmgr;
 
-    MQOD _od;
-    
-    
-    static MQOD _initialOD;
+	MQHOBJ _handle;
 
-    
-    friend class QueueManager;
-  };
-  
-  inline std::string Queue::name() const
-  {
-    std::string s(_od.ObjectName, MQ_Q_NAME_LENGTH - 1);
-    s.erase(s.find_last_not_of(" \n\r\t")+1);
-    return s;
-  }
-  
+	MQOD _od;
+
+	static MQOD _initialOD;
+
+	friend class QueueManager;
+};
+
+inline std::string Queue::name() const
+{
+	std::string s(_od.ObjectName, MQ_Q_NAME_LENGTH - 1);
+	s.erase(s.find_last_not_of(" \n\r\t")+1);
+	return s;
+}
+
 }
 #endif // _MQ_Queue_H

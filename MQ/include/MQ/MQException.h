@@ -27,33 +27,35 @@
 #include <Poco/Logger.h>
 
 namespace MQ {
-  
+
 class MQException : public Poco::Exception
+	/// Exception thrown when there is a problem with Websphere MQ
 {
 public:
 	MQException(const std::string& object, const std::string& function, long code, long reason);
-	
+		/// Constructor
 
 	virtual ~MQException() throw() { }
-	
+		/// Destructor
 
 	void object(const std::string& object);
-
+		/// Sets the Websphere MQ object related with this exception.
 
 	std::string object() const;
-	
-	
+		/// If known, it returns the Websphere MQ object related with this exception.
+
 	std::string function() const;
-	
-	
+		/// Returns the Websphere MQ function that resulted in this exception (MQPUT, MQGET, ...)
+
 	long code() const;
-	
-	
+		/// Returns the completion code of the last executed Websphere MQ function.
+
 	long reason() const;
+		/// Returns the reason code of the last executed Websphere MQ function.
 	
 	
 	void log(Poco::Logger& logger) const;
-
+		/// Log this exception to the given logger
 
 	virtual const char* name() const throw();
 
@@ -63,12 +65,9 @@ public:
 private:
 	std::string _object;
 
-
 	std::string _function;
 
-
 	long _code;
-
 
 	long _reason;
 

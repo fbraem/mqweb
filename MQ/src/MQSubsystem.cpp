@@ -44,39 +44,39 @@ void MQSubsystem::uninitialize()
 void MQSubsystem::load()
 {
 	static std::string windowsPrefix("Windows");
-  std::string mode = Poco::Util::Application::instance().config().getString("mq.mode", "bindings");
-  _connectionMode = mode.compare("bindings") == 0 ? BINDING_MODE : CLIENT_MODE;
+	std::string mode = Poco::Util::Application::instance().config().getString("mq.mode", "bindings");
+	_connectionMode = mode.compare("bindings") == 0 ? BINDING_MODE : CLIENT_MODE;
 
-  std::string osName = Poco::Util::Application::instance().config().getString("system.osName");
-  std::string library;
+	std::string osName = Poco::Util::Application::instance().config().getString("system.osName");
+	std::string library;
 
-  if ( binding() )
-  {
-	if ( osName.compare(0, windowsPrefix.size(), windowsPrefix) )
-    {
-      library = "libmqm_r.so";
-    }
-    else // We assume windows for now
-    {
-      library = "MQM";
-    }
-  }
-  else
-  {
-	if ( osName.compare(0, windowsPrefix.size(), windowsPrefix) )
-    {
-      library = "libmqic_r.so";
-    }
-    else // We assume windows for now
-    {
-      library = "MQIC";
-    }
-  }
+	if ( binding() )
+	{
+		if ( osName.compare(0, windowsPrefix.size(), windowsPrefix) )
+		{
+			library = "libmqm_r.so";
+		}
+		else // We assume windows for now
+		{
+			library = "MQM";
+		}
+	}
+	else
+	{
+		if ( osName.compare(0, windowsPrefix.size(), windowsPrefix) )
+		{
+			library = "libmqic_r.so";
+		}
+		else // We assume windows for now
+		{
+			library = "MQIC";
+		}
+	}
 
-  Poco::Logger& logger = Poco::Logger::get("mq");
-  poco_information_f3(logger, "Running in %s mode on a %s OS. Trying to load %s", mode, osName, library);
-  _functions.loadLibrary(library);
-  poco_information_f1(logger, "Library %s loaded", library);
+	Poco::Logger& logger = Poco::Logger::get("mq");
+	poco_information_f3(logger, "Running in %s mode on a %s OS. Trying to load %s", mode, osName, library);
+	_functions.loadLibrary(library);
+	poco_information_f1(logger, "Library %s loaded", library);
 }
 
 } // Namespace MQWeb

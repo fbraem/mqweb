@@ -32,57 +32,57 @@
 namespace MQ {
 
 class QueueManager
+	/// Represents a Websphere MQ Queuemanager
 {
 public:
 	typedef Poco::SharedPtr<QueueManager> Ptr;
 
 
 	QueueManager(const std::string& name = "");
-
+		/// Constructor.
 
 	virtual ~QueueManager();
-
+		/// Destructor. Disconnects the queuemanager when it is still connected.
 
 	void connect();
-
+		/// Connects to the queuemanager. Can throw an MQException.
 
 	void connect(const std::string& channel, const std::string& server);
-
+		/// Connects to the queuemanager. Only use this method when the Websphere
+		/// MQ system is loaded in client mode. Can throw an MQException.
 
 	void disconnect();
-
+		/// Disconnects from the queuemanager. Can throw an MQException.
 
 	std::string name() const;
-
+		/// Returns the name of the queuemanager. The name is always inquired
+		/// from the queuemanager when the connection is made.
 
 	std::string id() const;
-
+		/// Returns the queuemanager id. The id is always inquired from the
+		/// queuemanager when the connection is made.
 
 	std::string commandQueue() const;
-
+		/// Returns the name of the command queue. The command queue is always
+		/// required from the queuemanager when the connection is made.
 
 	bool zos() const;
-
+		/// Returns true when the queuemanager is running on Z/OS. This is
+		/// detected by inquiring the platform property after the connection is made.
 
 private:
 
 	MQHCONN _handle;
 
-
 	std::string _name;
-
 
 	std::string _id;
 
-
 	std::string _commandQueue;
-
 
 	bool _zos;
 
-
 	void inquireQmgrAttrs();
-
 
 	friend class Queue;
 };

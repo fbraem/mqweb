@@ -31,55 +31,55 @@
 namespace MQ
 {
 
-  MQOD Queue::_initialOD = { MQOD_DEFAULT }; 
-  
-  Queue::Queue(Poco::SharedPtr<QueueManager> qmgr, const std::string& name) 
-    : _qmgr(qmgr)
-    , _handle(0)
-    , _od(_initialOD)
-  {
-    strncpy(_od.ObjectName, name.c_str(), MQ_Q_NAME_LENGTH);
-  }
-  
-  Queue::~Queue()
-  {
-    if ( _handle != 0 )
-    {
-      try
-      {
-        close();
-      }
-      catch(MQException&)
-      {
-        // Don't throw exceptions from a destructor
-        // See: http://www.parashift.com/c++-faq-lite/exceptions.html#faq-17.9
-      }
-    }
-  }
-  
-  void Queue::open(long options)
-  {
-    MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
-    _handle = mqSystem.functions().open(_qmgr->_handle, &_od, options);
-  }
-  
-  void Queue::close()
-  {
-    if ( _handle != 0 )
-    {
-      MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
-      mqSystem.functions().close(_qmgr->_handle, &_handle, MQCO_NONE);
-    }
-  }
-  
-  void Queue::put(Message& msg, MQLONG options)
-  {
-    MQPMO pmo = { MQPMO_DEFAULT };
+MQOD Queue::_initialOD = { MQOD_DEFAULT };
+
+Queue::Queue(Poco::SharedPtr<QueueManager> qmgr, const std::string& name)
+	: _qmgr(qmgr)
+	, _handle(0)
+	, _od(_initialOD)
+{
+	strncpy(_od.ObjectName, name.c_str(), MQ_Q_NAME_LENGTH);
+}
+
+Queue::~Queue()
+{
+	if ( _handle != 0 )
+	{
+		try
+		{
+			close();
+		}
+		catch(MQException&)
+		{
+			// Don't throw exceptions from a destructor
+			// See: http://www.parashift.com/c++-faq-lite/exceptions.html#faq-17.9
+		}
+	}
+}
+
+void Queue::open(long options)
+{
+	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
+	_handle = mqSystem.functions().open(_qmgr->_handle, &_od, options);
+}
+
+void Queue::close()
+{
+	if ( _handle != 0 )
+	{
+		MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
+		mqSystem.functions().close(_qmgr->_handle, &_handle, MQCO_NONE);
+	}
+}
+
+void Queue::put(Message& msg, MQLONG options)
+{
+	MQPMO pmo = { MQPMO_DEFAULT };
 	pmo.Options = options;
 
-    int size = msg.buffer().size();
+	int size = msg.buffer().size();
 
-    MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
+	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
 	try
 	{
 		mqSystem.functions().put(_qmgr->_handle, _handle, msg.md(), &pmo, size, size > 0 ? &msg.buffer()[0] : NULL);
@@ -89,37 +89,37 @@ namespace MQ
 		mqe.object(_od.ObjectName);
 		throw;
 	}
-  }
-  
-  
-  void Queue::get(Message& msg, MQLONG options, long wait)
-  {
-    MQGMO gmo = { MQGMO_DEFAULT };
+}
 
-    if ( ! msg.isEmptyMessageId() )
-    {
-      gmo.MatchOptions |= MQMO_MATCH_MSG_ID;
-    }
+
+void Queue::get(Message& msg, MQLONG options, long wait)
+{
+	MQGMO gmo = { MQGMO_DEFAULT };
+
+	if ( ! msg.isEmptyMessageId() )
+	{
+		gmo.MatchOptions |= MQMO_MATCH_MSG_ID;
+	}
 
 	if ( ! msg.isEmptyCorrelationId() )
 	{
 		gmo.MatchOptions |= MQMO_MATCH_CORREL_ID;
 	}
 
-    if ( wait == -1 )
-    {
-      gmo.Options |= MQGMO_WAIT;
-      gmo.WaitInterval = MQWI_UNLIMITED;
-    }
-    else if ( wait > 0 )
-    {
-      gmo.Options |= MQGMO_WAIT;
-      gmo.WaitInterval = wait;
-    }
-    gmo.Options |= options;
+	if ( wait == -1 )
+	{
+		gmo.Options |= MQGMO_WAIT;
+		gmo.WaitInterval = MQWI_UNLIMITED;
+	}
+	else if ( wait > 0 )
+	{
+		gmo.Options |= MQGMO_WAIT;
+		gmo.WaitInterval = wait;
+	}
+	gmo.Options |= options;
 
-    int size = msg.buffer().size();
-    MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
+	int size = msg.buffer().size();
+	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
 	try
 	{
 		mqSystem.functions().get(_qmgr->_handle, _handle, msg.md(), &gmo, size, size > 0 ? &(msg.buffer()[0]) : NULL, &msg._dataLength);
@@ -129,6 +129,6 @@ namespace MQ
 		mqe.object(_od.ObjectName);
 		throw;
 	}
-  }
-  
+}
+
 }
