@@ -32,24 +32,24 @@ class QueueMapper : public MQMapper
 public:
 
 	QueueMapper(CommandServer& commandServer);
-
+		/// Constructor
 
 	virtual ~QueueMapper();
-
+		/// Destructor
 
 	void change(const Poco::JSON::Object::Ptr&obj);
-
+		/// Implements the change queue command. Not implemented yet.
 
 	void create(const Poco::JSON::Object::Ptr& obj, bool replace = false);
-
+		/// Implements the create queue command. Not implemented yet.
 
 	void copy(const Poco::JSON::Object::Ptr& obj, bool replace = false);
-
+		/// Implements the copy queue command. Not implemented yet.
 
 	Poco::JSON::Array::Ptr inquire(const Poco::JSON::Object::Ptr& filter);
+		/// Implements the inquire queue command.
 
 private:
-
 
 	QueueMapper(const QueueMapper&);
 };

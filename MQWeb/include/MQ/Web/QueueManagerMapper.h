@@ -27,30 +27,29 @@ namespace MQ {
 namespace Web {
 
 class QueueManagerMapper : public MQMapper
-	/// Maps channel object to Websphere MQ
+	/// Maps the queuemanager object to Websphere MQ
 {
 public:
 
 	QueueManagerMapper(CommandServer& commandServer);
-
+		/// Constructor
 
 	virtual ~QueueManagerMapper();
-
+		/// Destructor
 
 	void change(const Poco::JSON::Object::Ptr&obj);
-
+		/// Implements the change queuemanager command. Not implemented yet.
 
 	void create(const Poco::JSON::Object::Ptr& obj, bool replace = false);
-
+		/// Not implemented.
 
 	void copy(const Poco::JSON::Object::Ptr& obj, bool replace = false);
-
+		/// Not implemented.
 
 	Poco::JSON::Array::Ptr inquire(const Poco::JSON::Object::Ptr& filter);
-
+		/// Implements the inquire queuemanager command.
 
 private:
-
 
 	QueueManagerMapper(const QueueManagerMapper&);
 

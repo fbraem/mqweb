@@ -32,17 +32,23 @@ namespace Web
 {
 
 class RequestHandlerFactory: public Poco::Net::HTTPRequestHandlerFactory
+	/// Our factory for creating a HTTPRequestHandler derived class
 {
 public:
 
 	RequestHandlerFactory();
-
+		/// Constructor
 
 	Poco::Net::HTTPRequestHandler* createRequestHandler(const Poco::Net::HTTPServerRequest& request);
-
+		/// Creates a HTTPRequestHandler
 private:
 
 	bool filter(const Poco::Net::HTTPServerRequest& request);
+		/// Checks if a connection is allowed based on the incoming IP address.
+		/// First all mq.web.allow properties are checked. When the IP is not allowed, the
+		/// DenyRequestHandler will be returned. Then all mq.web.deny properties are checked.
+		/// When the IP must be denied, the DenyRequestHandler is also returned.
+		/// By default the request is allowed and will try to create a HTTPRequestHandler.
 };
 
 } } // Namespace MQ::Web

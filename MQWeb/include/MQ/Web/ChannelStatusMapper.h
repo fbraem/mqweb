@@ -23,38 +23,41 @@
 
 #include <MQ/Web/MQMapper.h>
 
-namespace MQ {
-namespace Web {
+namespace MQ
+{
+namespace Web
+{
 
 class ChannelStatusMapper : public MQMapper
 	/// Maps channel status to Websphere MQ
 {
 public:
 
-  ChannelStatusMapper(CommandServer& commandServer);
+	ChannelStatusMapper(CommandServer& commandServer);
+		/// Constructor
 
+	virtual ~ChannelStatusMapper();
+		/// Destructor
 
-  virtual ~ChannelStatusMapper();
+	void change(const Poco::JSON::Object::Ptr&obj);
+		/// Not implemented.
 
+	void create(const Poco::JSON::Object::Ptr& obj, bool replace = false);
+		/// Not implemented
 
-  void change(const Poco::JSON::Object::Ptr&obj);
+	void copy(const Poco::JSON::Object::Ptr& obj, bool replace = false);
+		/// Not implemented
 
-
-  void create(const Poco::JSON::Object::Ptr& obj, bool replace = false);
-
-
-  void copy(const Poco::JSON::Object::Ptr& obj, bool replace = false);
-
-
-  Poco::JSON::Array::Ptr inquire(const Poco::JSON::Object::Ptr& filter);
-
+	Poco::JSON::Array::Ptr inquire(const Poco::JSON::Object::Ptr& filter);
+		/// Implements the inquire channel status command.
 
 private:
 
-  ChannelStatusMapper(const ChannelStatusMapper&);
+	ChannelStatusMapper(const ChannelStatusMapper&);
 };
 
 
-}} // Namespace MQ::Web
+}
+} // Namespace MQ::Web
 
 #endif // _MQWeb_ChannelStatusMapper_H

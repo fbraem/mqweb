@@ -31,31 +31,32 @@ namespace Web
 {
 
 class MessageController : public MQController
+	/// Controller for handling Websphere MQ messages.
 {
 public:
 	MessageController();
-
+		/// Constructor
 
 	virtual ~MessageController();
-
+		/// Destructor
 
 	void index();
-
+		/// Shows the index page
 
 	void view();
-
+		/// Shows a message
 
 	void list();
-
+		/// List messages from a queue
 
 	void event();
-
+		/// Shows an event message
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
-
+		/// Returns all available action
 
 	std::string getDefaultAction() const;
-
+		/// Return "index" as default action
 
 private:
 

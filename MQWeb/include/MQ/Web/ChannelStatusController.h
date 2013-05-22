@@ -1,7 +1,7 @@
 /*
  * Copyright 2010 MQWeb - Franky Braem
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they
+ * Licensed under the EUPL, Version 1.1 or Â– as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the
@@ -29,28 +29,28 @@ namespace MQ {
 namespace Web {
 
 class ChannelStatusController : public MQController
-  /// Controller that shows the status of a channel
+	/// Controller that shows the status of a channel
 {
 public:
 	ChannelStatusController();
 		/// Constructor
 
-
 	virtual ~ChannelStatusController();
 		/// Destructor
 
-
 	void view();
-
+		/// Action view. Returns the details of a channelstatus.
+		/// Only JSON format is supported.
 
 	void list();
-
+		/// Action list. Returns the details of all channelstatusses.
+		/// Only JSON format is supported.
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
-
+		/// Returns all actions.
 
 	std::string getDefaultAction() const;
-
+		/// Returns "list" as default action.
 
 private:
 };

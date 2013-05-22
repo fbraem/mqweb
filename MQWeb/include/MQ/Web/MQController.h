@@ -31,26 +31,28 @@ namespace MQ {
 namespace Web {
 
 class MQController : public Controller
+	/// Controller for Websphere MQ
 {
 public:
 
 	MQController();
-
+		/// Constructor
 
 	virtual ~MQController();
-
+		/// Destructor
 
 	QueueManager::Ptr qmgr();
-
+		/// Returns the associated queuemanager
 
 	CommandServer::Ptr commandServer();
-
+		/// Returns the associated command server
 
 	void handleException(const MQException& mqe);
-
+		/// Handles an MQException. Renders the error template or
+		/// returns an error as JSON object.
 
 	void beforeAction();
-
+		/// Connects to the queuemanager and command server
 
 protected:
 

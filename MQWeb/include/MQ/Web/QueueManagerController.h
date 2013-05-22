@@ -32,24 +32,26 @@ namespace Web
 
 
 class QueueManagerController : public MQController
+	/// Controller for a QueueManager object
 {
 public:
 	QueueManagerController();
-
+		/// Constructor
 
 	virtual ~QueueManagerController();
-
+		/// Destructor
 
 	const std::map<std::string, Controller::ActionFn>& getActions() const;
-
+		/// Returns all available actions
 
 	std::string getDefaultAction() const;
-
+		/// Returns "index" as default action
 
 	void index();
-
+		/// Returns the single page application (SPA) for a queuemanager
 
 	void view();
+		/// Returns the queuemanager object as JSON
 };
 
 

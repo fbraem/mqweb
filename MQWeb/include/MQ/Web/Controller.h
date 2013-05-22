@@ -39,74 +39,76 @@ namespace Web {
 
 
 class Controller : public Poco::Net::PartHandler
+	/// Base class for all controllers
 {
 public:
 
 	typedef void (Controller::*ActionFn)();
 
-	
 	typedef std::map<std::string, ActionFn> ActionMap;
 
-
 	Controller();
-
+		/// Constructor
 
 	virtual ~Controller();
-
+		/// Destructor
 
 	Poco::JSON::Object& data();
-
+		/// Returns the data.
 
 	Poco::Net::HTMLForm& form();
-
+		/// Returns the active form.
 
 	std::string getAction() const;
-
+		/// Returns the called action. The action is the second part of the URL path.
+		/// For example qmgr/view/PIGEON will return "view".
 
 	virtual void beforeAction();
-
+		/// Called before an action is executed.
 
 	virtual void afterAction();
-
+		/// Called after an action is executed.
 
 	virtual const ActionMap& getActions() const = 0;
-
+		/// Returns all actions.
 
 	std::string format() const;
-
+		/// Returns the format (html, json, ...) which is part of the action.
+		/// For example: action list.json will return the format "json". When no
+		/// suffix is found, "html" is returned by default.
 
 	virtual std::string getDefaultAction() const = 0;
-
+		/// Returns the default action.
 
 	const std::vector<std::string>& getParameters() const;
-
+		/// Returns all parameters
 
 	static std::string htmlize(const std::string &str);
-
+		/// Helper function for replacing some HTML specific characters: <, >, " and &.
 
 	bool isGet() const;
-
+		/// Returns true when the HTTP method GET is used.
 
 	bool isPost() const;
-
+		/// Returns true when the HTTP method POST is used.
 
 	void set(const std::string& name, const Poco::Dynamic::Var& var);
-
+		/// Sets a variable in data for use in a view
 
 	Poco::Net::HTTPServerRequest& request();
-
+		/// Returns the HTTP request
 
 	Poco::Net::HTTPServerResponse& response();
-
+		/// Returns the HTTP response
 
 	void setResponseStatus(Poco::Net::HTTPServerResponse::HTTPStatus status);
-
+		/// Sets the HTTP response
 
 	void render();
-
+		/// Renders the view
 
 	void setView(Poco::SharedPtr<View> v);
-
+		/// Set the view
 
 protected:
 

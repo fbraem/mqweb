@@ -30,6 +30,7 @@ namespace Web {
 
 template <typename T, typename U>
 class MapInitializer
+	/// Utility class for initializing a std::map
 {
 public:
 	MapInitializer(const T& key, const U& val)

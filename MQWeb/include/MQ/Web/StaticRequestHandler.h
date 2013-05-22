@@ -28,14 +28,18 @@ namespace MQ
 {
 namespace Web
 {
-  class StaticRequestHandler: public Poco::Net::HTTPRequestHandler
-	  /// Return a HTML document with the current date and time.
-  {
-  public:
-	  StaticRequestHandler();
 
-    void handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
-  };
+class StaticRequestHandler: public Poco::Net::HTTPRequestHandler
+	/// An HTTPRequestHandler which returns static content like images, html, css, ...
+	/// All static content is resolved against the mq.web.static property.
+{
+public:
+	StaticRequestHandler();
+		/// Constructor
+
+	void handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
+		/// Handles the request.
+};
 
 } } // Namespace MQ::Web
 

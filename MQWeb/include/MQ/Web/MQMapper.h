@@ -32,30 +32,32 @@ namespace Web {
 
 class MQMapper : public Mapper
 	/// Mapper for mapping objects to/from Websphere MQ
+	/// It uses the Dictionary class for holding all Websphere MQ fields/values.
 {
 public:
 	MQMapper(CommandServer& commandServer);
-
+		/// Constructor
 
 	virtual ~MQMapper();
-
+		/// Destructor
 
 	static void mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json);
+		/// Turns a PCF into a JSON object
+
+	//static void mapNumberToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter);
 
 
-	static void mapNumberToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter);
+	//static void mapStringToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter);
 
 
-	static void mapStringToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter);
-
-
-	static void mapDateToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int dateParameter, int timeParameter);
+	//static void mapDateToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int dateParameter, int timeParameter);
 
 
 	static std::string getReasonString(MQLONG reasonCode);
-
+		/// Translates a reason code into a string
 
 	static const DisplayMap& getDisplayMap(MQLONG id);
+		/// Returns the DisplayMap for the given Websphere MQ id
 
 protected:
 

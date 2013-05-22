@@ -27,30 +27,29 @@ namespace MQ {
 namespace Web {
 
 class ChannelMapper : public MQMapper
-	/// Maps channel object to Websphere MQ
+	/// Maps channel object to/from Websphere MQ
 {
 public:
 
 	ChannelMapper(CommandServer& commandServer);
-
+		/// Constructor
 
 	virtual ~ChannelMapper();
-
+		/// Destructor
 
 	void change(const Poco::JSON::Object::Ptr&obj);
-
+		/// Implements the change channel command. Not implemented yet.
 
 	void create(const Poco::JSON::Object::Ptr& obj, bool replace = false);
-
+		/// Implements the create channel command. Not implemented yet.
 
 	void copy(const Poco::JSON::Object::Ptr& obj, bool replace = false);
-
+		/// Implements the copy channel command. Not implemented yet.
 
 	Poco::JSON::Array::Ptr inquire(const Poco::JSON::Object::Ptr& filter);
-
+		/// Implements the inquire channel command.
 
 private:
-
 
 	ChannelMapper(const ChannelMapper&);
 

@@ -39,18 +39,19 @@ public:
 		/// Destructor
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
-
+		/// Returns all available actions
 
 	std::string getDefaultAction() const;
-
+		/// Returns index as default action
 
 	void index();
-
+		/// Action index. Returns a single page application (SPA) for queues
 
 	void list();
-
+		/// Action list. Returns a list of queues as JSON
 
 	void view();
+		/// Action view. Returns a queue as JSON
 
 private:
 };

@@ -32,12 +32,13 @@ namespace Web {
 
 class ControllerRequestHandler: public Poco::Net::HTTPRequestHandler
 {
+	/// Class for creating a controller based on the request.
 public:
 	void handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
-
+		/// Handles the request by creating the controller and calling the handle method.
 
 	static void registerControllers();
-
+		/// Register all available controllers.
 
 private:
 

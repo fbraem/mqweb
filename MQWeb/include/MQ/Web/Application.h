@@ -30,33 +30,35 @@
 #include <Poco/JSON/TemplateCache.h>
 
 class MQWebApplication : public Poco::Util::ServerApplication
+	/// The MQWeb server application
 {
 public:
 
 	MQWebApplication();
-
+		/// Constructor
 
 	~MQWebApplication();
+		/// Destructor
 
 protected:
 
 	void initialize(Application& self);
-
+		/// Initializes the MQWeb server
 
 	void uninitialize();
-
+		/// Uninitializes the MQWeb server
 
 	void defineOptions(Poco::Util::OptionSet& options);
-
+		/// Defines all startup options
 
 	void handleOption(const std::string& name, const std::string& value);
-
+		/// Handle options.
 
 	void displayHelp();
-
+		/// Display the help screen
 
 	int main(const std::vector<std::string>& args);
-
+		/// The main program
 
 private:
 	bool _helpRequested;

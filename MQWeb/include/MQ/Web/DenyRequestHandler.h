@@ -1,7 +1,7 @@
 /*
  * Copyright 2010 MQWeb - Franky Braem
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they
+ * Licensed under the EUPL, Version 1.1 or Â– as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the
@@ -27,12 +27,15 @@ namespace MQ {
 namespace Web {
 
 class DenyRequestHandler: public Poco::Net::HTTPRequestHandler
+	/// Implements a request handler that returns a HTTP FORBIDDEN status
 {
 public:
 
-  DenyRequestHandler();
+	DenyRequestHandler();
+		/// Constructor
 
 	void handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
+		/// Sets the HTTP FORBIDDEN status and logs the IP address that is denied.
 };
 
 } } // Namespace MQ::Web
