@@ -74,22 +74,20 @@
 			<img class="tip" src="/static/images/tip-icon.png" style="float:right;padding-top:8px;" alt="This is a list with local queues that contains at least one message." />
 			<a href="#" onclick="viewModel.localQueueModel.load();return false;"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
 			<h3>Local Queues</h3>
-			<div data-bind="visible:localQueueModel.queues" style="display:none">
-				<table data-bind="if:localQueueModel.queues && localQueueModel.queues.length > 0" style="font-size:0.8em;border-collapse:collapse;">
-					<thead>
-						<tr><th>Queue</th><th>Depth</th></tr>
-					</thead>
-					<tbody data-bind="foreach: localQueueModel.queues">
-						<tr>
-							<td><a data-bind="attr: {href: url}, text: QName.value" />
-							<td data-bind="text: CurrentQDepth.value" />
-						</tr>
-					</tbody>
-				</table>
-				<p data-bind="if:localQueueModel.queues && localQueueModel.queues.length == 0">
-					No queues found.
-				</p>
-			</div>
+			<table data-bind="if:localQueueModel.queues" style="font-size:0.8em;border-collapse:collapse;">
+				<thead>
+					<tr><th>Queue</th><th>Depth</th></tr>
+				</thead>
+				<tbody data-bind="foreach: localQueueModel.queues">
+					<tr>
+						<td><a data-bind="attr: {href: url}, text: QName.value" />
+						<td data-bind="text: CurrentQDepth.value" />
+					</tr>
+				</tbody>
+			</table>
+			<p data-bind="ifnot:localQueueModel.queues">
+				No queues found.
+			</p>
 			<div class="loader" data-bind="visible: localQueueModel.loading"></div>
 		</div> <!-- localQueues -->
 	</div> <!-- activities -->
@@ -98,22 +96,20 @@
 			<img class="tip" src="/static/images/tip-icon.png" style="float:right;padding-top:8px;" alt="This is a list with transmission queues that contains at least one message. On a healthy system, this list would be empty ..." />
 			<a href="#" onclick="viewModel.xmitQueueModel.load();return false;"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
 			<h3>Transmission Queues</h3>
-			<div data-bind="visible:xmitQueueModel.queues" style="display:none">
-				<table data-bind="if: xmitQueueModel.queues && xmitQueueModel.queues.length > 0" style="font-size:0.8em;border-collapse:collapse;">
-					<thead>
-						<tr><th>Queue</th><th>Depth</th></tr>
-					</thead>
-					<tbody data-bind="foreach: xmitQueueModel.queues">
-						<tr>
-							<td><a data-bind="attr: {href: url}, text: QName.value" />
-							<td data-bind="text: CurrentQDepth.value" />
-						</tr>
-					</tbody>
-				</table>
-				<p data-bind="if:xmitQueueModel.queues && xmitQueueModel.queues.length == 0">
-					No queues found.
-				</p>
-			</div>
+			<table data-bind="if: xmitQueueModel.queues" style="font-size:0.8em;border-collapse:collapse;">
+				<thead>
+					<tr><th>Queue</th><th>Depth</th></tr>
+				</thead>
+				<tbody data-bind="foreach: xmitQueueModel.queues">
+					<tr>
+						<td><a data-bind="attr: {href: url}, text: QName.value" />
+						<td data-bind="text: CurrentQDepth.value" />
+					</tr>
+				</tbody>
+			</table>
+			<p data-bind="ifnot:xmitQueueModel.queues">
+				No queues found.
+			</p>
 			<div class="loader" data-bind="visible: xmitQueueModel.loading"></div>
 		</div> <!-- xmitQueues -->
 	</div> <!-- activities -->
@@ -122,23 +118,21 @@
 		<a href="#" onclick="viewModel.channelModel.load();return false;"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
 		<h3>Channel Status</h3>
 		<div id="channels">
-			<div data-bind="visible: channelModel.channels" style="display:none">
-				<table data-bind="if: channelModel.channels && channelModel.channels.length > 0" style="font-size:0.8em;border-collapse:collapse;">
-					<thead>
-						<tr><th colspan="2">Channel</th><th>Status</th></tr>
-					</thead>
-					<tbody data-bind="foreach:channelModel.channels">
-						<tr>
-							<td data-bind="template: { name: statusImage }" />
-							<td data-bind="text: ChannelName.value" />
-							<td data-bind="text: ChannelStatus.display" />
-						</tr>
-					</tbody>
-				</table>
-				<p data-bind="if:channelModel.channels && channelModel.channels.length == 0">
-					No channel status found.
-				</p>
-			</div>
+			<table data-bind="if: channelModel.channels" style="font-size:0.8em;border-collapse:collapse;">
+				<thead>
+					<tr><th colspan="2">Channel</th><th>Status</th></tr>
+				</thead>
+				<tbody data-bind="foreach:channelModel.channels">
+					<tr>
+						<td data-bind="template: { name: statusImage }" />
+						<td data-bind="text: ChannelName.value" />
+						<td data-bind="text: ChannelStatus.display" />
+					</tr>
+				</tbody>
+			</table>
+			<p data-bind="ifnot:channelModel.channels">
+				No channel status found.
+			</p>
 			<div class="loader" data-bind="visible: channelModel.loading"></div>
 		</div> <!-- channels -->
 	</div> <!-- activities -->

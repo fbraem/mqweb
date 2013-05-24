@@ -74,11 +74,14 @@
 						}
 						else
 						{
-							for(q in data.queues)
+							if ( data.queues.length > 0 )
 							{
-								data.queues[q].url = '/queue/view/<?=mqweb.qmgr?>/' + data.queues[q].QName.value;
+								for(q in data.queues)
+								{
+									data.queues[q].url = '/queue/view/<?=mqweb.qmgr?>/' + data.queues[q].QName.value;
+								}
+								self.queues(data.queues);
 							}
-							self.queues(data.queues);
 						}
 					},
 					error: function (request, status, error)
@@ -126,11 +129,14 @@
 						}
 						else
 						{
-							for(q in data.queues)
+							if ( data.queues.length > 0 )
 							{
-								data.queues[q].url = '/queue/view/<?=mqweb.qmgr?>/' + data.queues[q].QName.value;
+								for(q in data.queues)
+								{
+									data.queues[q].url = '/queue/view/<?=mqweb.qmgr?>/' + data.queues[q].QName.value;
+								}
+								self.queues(data.queues);
 							}
-							self.queues(data.queues);
 						}
 					},
 					error: function (request, status, error)
@@ -187,14 +193,17 @@
 						self.error(data.error);
 					}
 					else
-					{ 
-						self.channels(data.statuses);
+					{
+						if ( data.statuses.length > 0 )
+						{
+							self.channels(data.statuses);
 						
-						$(".tip").qtip({ 
-							content : { 
-								attr : 'alt' 
-							}
-						});
+							$(".tip").qtip({ 
+								content : { 
+									attr : 'alt' 
+								}
+							});
+						}
 					}
 				},
 				error: function (request, status, error)
