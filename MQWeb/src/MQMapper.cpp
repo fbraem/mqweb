@@ -1167,6 +1167,7 @@ void MQMapper::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json)
 	}
 }
 
+/*
 void MQMapper::mapNumberToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter)
 {
 	if ( pcf.hasParameter(parameter) )
@@ -1194,7 +1195,7 @@ void MQMapper::mapDateToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, cons
 		json->set(name, Poco::DateTimeFormatter::format(dateTime, "%d-%m-%Y %H:%M:%S"));
 	}
 }
-
+*/
 
 std::string MQMapper::getReasonString(MQLONG reasonCode)
 {
