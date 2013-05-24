@@ -33,15 +33,17 @@ JSONView::~JSONView()
 {
 }
 
-
-void JSONView::render(Poco::JSON::Object::Ptr data, Poco::Net::HTTPServerResponse &response)
+void JSONView::initializeResponse(Poco::Net::HTTPServerResponse& response)
 {
 	response.setChunkedTransferEncoding(true);
 	response.setContentType("application/json");
+}
 
-	std::ostream& os = response.send();
+bool JSONView::render(Poco::JSON::Object::Ptr data, std::ostream& os)
+{
 	data->stringify(os);
 	os.flush();
+	return true;
 }
 
 

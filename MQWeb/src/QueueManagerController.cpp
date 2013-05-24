@@ -22,7 +22,7 @@
 
 #include <MQ/Web/QueueManagerController.h>
 #include <MQ/Web/QueueManagerMapper.h>
-#include <MQ/Web/TemplateView.h>
+#include <MQ/Web/MultiView.h>
 #include <MQ/Web/JSONView.h>
 
 namespace MQ
@@ -43,7 +43,10 @@ QueueManagerController::~QueueManagerController()
 
 void QueueManagerController::index()
 {
-	setView(new TemplateView("index.tpl"));
+	Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
+	multiView->add("head", new TemplateView("qmgr/head.tpl"));
+	multiView->add("main", new TemplateView("qmgr/index.tpl"));
+	setView(multiView);
 }
 
 

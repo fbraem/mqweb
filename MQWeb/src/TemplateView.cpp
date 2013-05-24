@@ -35,24 +35,8 @@ TemplateView::~TemplateView()
 {
 }
 
-
-void TemplateView::render(Poco::JSON::Object::Ptr data, Poco::Net::HTTPServerResponse &response)
+void TemplateView::initializeResponse(Poco::Net::HTTPServerResponse& response)
 {
-	Poco::JSON::Template::Ptr tpl;
-	try
-	{
-		tpl = Poco::JSON::TemplateCache::instance()->getTemplate(Poco::Path(_templateFile));
-	}
-	catch(Poco::FileNotFoundException&)
-	{
-		poco_error_f1(Poco::Logger::get("mq.web"), "Can't render template %s", _templateFile);
-		//TODO: redirect to an error page?
-		response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR, "Can't render template. Please check the MQWeb configuration.");
-		response.send();
-
-		return;
-	}
-		
 	response.setChunkedTransferEncoding(true);
 	response.setContentType("text/html");
 
@@ -60,10 +44,25 @@ void TemplateView::render(Poco::JSON::Object::Ptr data, Poco::Net::HTTPServerRes
 	response.set("Cache-Control", "no-cache,no-store,must-revalidate");
 	response.set("Pragma", "no-cache");
 	response.set("Expires", "0");
+}
 
-	std::ostream& os = response.send();
-	tpl->render(data, os);
-	os.flush();
+bool TemplateView::render(Poco::JSON::Object::Ptr data, std::ostream& os)
+{
+	bool ok = true;
+
+	Poco::JSON::Template::Ptr tpl;
+	try
+	{
+		tpl = Poco::JSON::TemplateCache::instance()->getTemplate(Poco::Path(_templateFile));
+		tpl->render(data, os);
+		os.flush();
+	}
+	catch(Poco::FileNotFoundException&)
+	{
+		poco_error_f1(Poco::Logger::get("mq.web"), "Can't render template %s", _templateFile);
+		ok = false;
+	}
+	return ok;
 }
 
 

@@ -38,8 +38,11 @@ public:
 	virtual ~View();
 		/// Destructor
 
-	virtual void render(Poco::JSON::Object::Ptr data, Poco::Net::HTTPServerResponse& response) = 0;
-		/// Renders a view
+	virtual void initializeResponse(Poco::Net::HTTPServerResponse& response) = 0;
+		/// Called before the main view is rendered. Set headers, ...
+
+	virtual bool render(Poco::JSON::Object::Ptr data, std::ostream& os) = 0;
+		/// Renders a view. Returns true on success, false on failure
 };
 
 } } // Namespace MQ::Web

@@ -115,7 +115,19 @@ void Controller::render()
 {
 	poco_assert_dbg(!_view.isNull());
 
-	_view->render(_data, *_response);
+	_view->initializeResponse(*_response);
+	
+	std::stringstream ss;
+	bool rendered = _view->render(_data, ss);
+	if ( rendered )
+	{
+		Poco::StreamCopier::copyStream(ss, _response->send());
+	}
+	else
+	{
+		//TODO: redirect to an error page?
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR);
+	}
 }
 
 

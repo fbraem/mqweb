@@ -37,8 +37,10 @@ public:
 
 	virtual ~JSONView();
 		/// Destructor
-	
-	void render(Poco::JSON::Object::Ptr data, Poco::Net::HTTPServerResponse& response);
+
+	void initializeResponse(Poco::Net::HTTPServerResponse& response);
+
+	bool render(Poco::JSON::Object::Ptr data, std::ostream& os);
 		/// Renders the JSON object
 };
 

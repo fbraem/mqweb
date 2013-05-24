@@ -24,7 +24,7 @@
 
 #include <MQ/Web/QueueController.h>
 #include <MQ/Web/QueueMapper.h>
-#include <MQ/Web/TemplateView.h>
+#include <MQ/Web/MultiView.h>
 #include <MQ/Web/JSONView.h>
 
 namespace MQ
@@ -45,7 +45,10 @@ QueueController::~QueueController()
 
 void QueueController::index()
 {
-	setView(new TemplateView("queue/index.tpl"));
+	Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
+	multiView->add("head", new TemplateView("queue/head.tpl"));
+	multiView->add("main", new TemplateView("queue/index.tpl"));
+	setView(multiView);
 }
 
 
