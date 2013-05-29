@@ -13,7 +13,7 @@ var QueuesModel = function()
 	self.toggle = function(item, event)
 	{
 		var context = ko.contextFor(event.target);
-		
+
 		var rows = $(event.target).parents("tr");
 		
 		rows.next().slideToggle({ 
@@ -35,7 +35,6 @@ var QueuesModel = function()
 	{
 		var context = ko.contextFor(event.target);
 		var newQ = { "QName" : { "value": "TESTNAME" }, "QType" : { "display" : "KNOCKOUT" }};
-		newQ.toggled = true;
 		queuesModel.queues.replace(queuesModel.queues()[context.$index()], newQ);
 		return false;
 	}	
@@ -63,10 +62,6 @@ $(document).ready(function() {
 			{
 				if ( data.queues.length > 0 )
 				{
-					for(var q in data.queues)
-					{
-						data.queues[q].toggled = false;
-					}
 					queuesModel.queues(data.queues);
 				}
 			}
