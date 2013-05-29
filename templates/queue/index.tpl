@@ -1,7 +1,7 @@
 <!-- Content -->
 <script type="text/html" id="queueDetail">
 	<div style="float:right;">
-		<a href="#" onclick="return false;"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
+		<a href="#" data-bind="click:$root.reload"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
 	</div>
 	<div class="details" style="width:70%;margin:auto">
 		<h2>Name:</h2>

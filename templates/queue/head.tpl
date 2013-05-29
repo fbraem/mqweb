@@ -12,8 +12,6 @@ var QueuesModel = function()
 	
 	self.toggle = function(item, event)
 	{
-		var context = ko.contextFor(event.target);
-
 		var rows = $(event.target).parents("tr");
 		
 		rows.next().slideToggle({ 
@@ -34,8 +32,32 @@ var QueuesModel = function()
 	self.reload = function(data, event)
 	{
 		var context = ko.contextFor(event.target);
-		var newQ = { "QName" : { "value": "TESTNAME" }, "QType" : { "display" : "KNOCKOUT" }};
-		queuesModel.queues.replace(queuesModel.queues()[context.$index()], newQ);
+		
+		$.ajax(
+		{
+			url: "/queue/list.json/<?= mqweb.qmgr ?>/" + context.$data.QName.value,
+			cache: false,
+			dataType: "json",
+			success: function(data) {
+				//self.loading(false);
+				if ( data.error )
+				{
+					//self.error(data.error);
+				}
+				else
+				{
+					alert(JSON.stringify(data.queues[0]));
+					queuesModel.queues.replace(queuesModel.queues()[context.$index()], data.queues[0]);
+				}
+			},
+			error: function (request, status, error)
+			{
+				alert(error);
+				//self.loading(false);
+				//TODO: Handle Error on page
+			}
+		});
+		
 		return false;
 	}	
 }
