@@ -7,8 +7,38 @@ var QueuesModel = function()
 	var self = this;
 	
 	self.loading = ko.observable(false);
-	self.queues = ko.observable(null);
+	self.queues = ko.observableArray(null);
 	self.error = ko.observable(null);
+	
+	self.toggle = function(item, event)
+	{
+		var context = ko.contextFor(event.target);
+		
+		var rows = $(event.target).parents("tr");
+		
+		rows.next().slideToggle({ 
+			complete: function() {
+				if ( rows.next().is(':hidden') )
+				{
+					rows.first().children("td").css("border-bottom-style", "solid");
+				}
+				else
+				{
+					rows.first().children("td").css("border-bottom-style", "none");
+				}
+			}
+		});
+		return false;
+	};
+	
+	self.reload = function(data, event)
+	{
+		var context = ko.contextFor(event.target);
+		var newQ = { "QName" : { "value": "TESTNAME" }, "QType" : { "display" : "KNOCKOUT" }};
+		newQ.toggled = true;
+		queuesModel.queues.replace(queuesModel.queues()[context.$index()], newQ);
+		return false;
+	}	
 }
 
 var queuesModel = new QueuesModel();
@@ -31,7 +61,14 @@ $(document).ready(function() {
 			}
 			else
 			{
-				queuesModel.queues(data.queues);
+				if ( data.queues.length > 0 )
+				{
+					for(var q in data.queues)
+					{
+						data.queues[q].toggled = false;
+					}
+					queuesModel.queues(data.queues);
+				}
 			}
 		}
 	};
@@ -40,3 +77,20 @@ $(document).ready(function() {
 	$("#filterSubmit").prop("disabled", false);
 });
 </script>
+<style>
+	table tr:nth-child(even)
+	{
+		background-color:white;
+	}
+	table tr:nth-child(odd) td
+	{
+	}
+	table tr:nth-child(4n+3)
+	{
+		background-color:#f9f9f9;
+	}
+	table tr:nth-child(4n+4)
+	{
+		background-color:#f9f9f9;
+	}
+</style>
