@@ -264,7 +264,7 @@
 						<span data-bind="if: queue.Usage"><span data-bind="text:queue.Usage.display"></span></span>
 					</td>
 				</tr>
-				<tr style="display:none">
+				<tr data-bind="visible:queue.toggle" style="display:none">
 					<td colspan="8">
 						<div data-bind="template: { name: 'queueDetail', data: queue }">
 						</div>

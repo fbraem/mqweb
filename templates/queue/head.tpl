@@ -12,20 +12,18 @@ var QueuesModel = function()
 	
 	self.toggle = function(item, event)
 	{
+		var context = ko.contextFor(event.target);
+		context.$data.toggle(!context.$data.toggle());
+
 		var rows = $(event.target).parents("tr");
-		
-		rows.next().slideToggle({ 
-			complete: function() {
-				if ( rows.next().is(':hidden') )
-				{
-					rows.first().children("td").css("border-bottom-style", "solid");
-				}
-				else
-				{
-					rows.first().children("td").css("border-bottom-style", "none");
-				}
-			}
-		});
+		if ( context.$data.toggle() )
+		{
+			rows.first().children("td").css("border-bottom-style", "none");
+		}
+		else
+		{
+			rows.first().children("td").css("border-bottom-style", "solid");
+		}
 		return false;
 	};
 	
@@ -35,7 +33,7 @@ var QueuesModel = function()
 		
 		$.ajax(
 		{
-			url: "/queue/list.json/<?= mqweb.qmgr ?>/" + context.$data.QName.value,
+			url: "/queue/list.json/<?= mqweb.qmgr ?>?queueName=" + context.$data.QName.value,
 			cache: false,
 			dataType: "json",
 			success: function(data) {
@@ -46,8 +44,11 @@ var QueuesModel = function()
 				}
 				else
 				{
-					alert(JSON.stringify(data.queues[0]));
+					data.queues[0].toggle = ko.observable(true);
 					queuesModel.queues.replace(queuesModel.queues()[context.$index()], data.queues[0]);
+
+					var rows = $(event.target).parents("tr");
+					rows.children("td").css("border-bottom-style", "none");
 				}
 			},
 			error: function (request, status, error)
@@ -84,6 +85,10 @@ $(document).ready(function() {
 			{
 				if ( data.queues.length > 0 )
 				{
+					for(q in data.queues)
+					{
+						data.queues[q].toggle = ko.observable(false);
+					}
 					queuesModel.queues(data.queues);
 				}
 			}
