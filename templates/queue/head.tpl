@@ -14,23 +14,13 @@ var QueuesModel = function()
 	{
 		var context = ko.contextFor(event.target);
 		context.$data.toggle(!context.$data.toggle());
-
-		var rows = $(event.target).parents("tr");
-		if ( context.$data.toggle() )
-		{
-			rows.first().children("td").css("border-bottom-style", "none");
-		}
-		else
-		{
-			rows.first().children("td").css("border-bottom-style", "solid");
-		}
 		return false;
 	};
 	
 	self.reload = function(data, event)
 	{
 		var context = ko.contextFor(event.target);
-		
+
 		$.ajax(
 		{
 			url: "/queue/list.json/<?= mqweb.qmgr ?>?queueName=" + context.$data.QName.value,
@@ -46,9 +36,6 @@ var QueuesModel = function()
 				{
 					data.queues[0].toggle = ko.observable(true);
 					queuesModel.queues.replace(queuesModel.queues()[context.$index()], data.queues[0]);
-
-					var rows = $(event.target).parents("tr");
-					rows.children("td").css("border-bottom-style", "none");
 				}
 			},
 			error: function (request, status, error)

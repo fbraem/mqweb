@@ -203,7 +203,7 @@
 			</thead>
 			<tbody data-bind="foreach: { data: queuesModel.queues, as: 'queue'}">
 				<tr>
-					<td>
+					<td data-bind="style: { borderBottomWidth: queue.toggle() ? '0px' : '1px' }">
 						<a data-bind="attr: { id: 'queueAnchor_' + queue.QName.value}, click: $parent.toggle"><span data-bind="text: queue.QName.value" /></a>
 						<span style="padding:5px;font-size:0.8em" data-bind="if: queue.BaseQName">
 							<br />Target: <a data-bind="attr: { href: '/queue/view/<?= mqweb.qmgr ?>/' + queue.BaseQName.value}, text: queue.BaseQName.value"></a>
@@ -217,7 +217,7 @@
 							<em style="padding:5px;font-size:0.8em" data-bind="text: queue.QDesc.value"></em>
 						</div>
 					</td>
-					<td data-bind="text: queue.QType.display" />
+					<td data-bind="text: queue.QType.display, style: { borderBottomWidth: queue.toggle() ? '0px' : '1px' }" />
 					<td style="text-align:right" data-bind="style: {backgroundColor: queue.CurrentQDepth && queue.CurrentQDepth.value > 0 ? '#FF9966' : ''}">
 						<div data-bind="if: queue.CurrentQDepth">
 							<span data-bind="text:queue.CurrentQDepth.value" />
@@ -226,7 +226,7 @@
 							-
 						</div>
 					</td>
-					<td style="text-align:right">
+					<td style="text-align:right" data-bind="style: { borderBottomWidth: queue.toggle() ? '0px' : '1px' }">
 						<div data-bind="if: queue.OpenInputCount">
 							<span data-bind="text:queue.OpenInputCount.value" />
 						</div>
@@ -234,7 +234,7 @@
 							-
 						</div>
 					</td>
-					<td style="text-align:right">
+					<td style="text-align:right" data-bind="style: { borderBottomWidth: queue.toggle() ? '0px' : '1px' }">
 						<div data-bind="if: queue.OpenOutputCount">
 							<span data-bind="text:queue.OpenOutputCount.value" />
 						</div>
@@ -242,7 +242,7 @@
 							-
 						</div>
 					</td>
-					<td style="text-align:center">
+					<td style="text-align:center" data-bind="style: { borderBottomWidth: queue.toggle() ? '0px' : '1px' }">
 						<div data-bind="if: queue.InhibitGet">
 							<img data-bind="visible: queue.InhibitGet.value == 0" src="/static/images/enabled.gif" />
 							<img data-bind="visible: queue.InhibitGet.value == 1" src="/static/images/disabled.gif" />
@@ -251,7 +251,7 @@
 							-
 						</div>
 					</td>
-					<td style="text-align:center">
+					<td style="text-align:center" data-bind="style: { borderBottomWidth: queue.toggle() ? '0px' : '1px' }">
 						<div data-bind="if: queue.InhibitPut">
 							<img data-bind="visible: queue.InhibitPut.value == 0" src="/static/images/enabled.gif" />
 							<img data-bind="visible: queue.InhibitPut.value == 1" src="/static/images/disabled.gif" />
@@ -260,7 +260,7 @@
 							-
 						</div>
 					</td>
-					<td>
+					<td data-bind="style: { borderBottomWidth: queue.toggle() ? '0px' : '1px' }">
 						<span data-bind="if: queue.Usage"><span data-bind="text:queue.Usage.display"></span></span>
 					</td>
 				</tr>
