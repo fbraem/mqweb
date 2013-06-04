@@ -108,7 +108,7 @@ void QueueController::list()
 
 	if ( format().compare("html") == 0 )
 	{
-		setView(new TemplateView("queue/queues.tpl"));
+		//setView(new TemplateView("queue/queues.tpl"));
 	}
 	else if ( format().compare("json") == 0 )
 	{
@@ -159,7 +159,7 @@ void QueueController::view()
 				}
 			}
 
-			setView(new TemplateView("queue/queue.tpl"));
+			setView(new TemplateView("queue/view.tpl"));
 
 			return;
 		}
