@@ -106,14 +106,7 @@ void QueueController::list()
 
 	set("queues", jsonQueues);
 
-	if ( format().compare("html") == 0 )
-	{
-		//setView(new TemplateView("queue/queues.tpl"));
-	}
-	else if ( format().compare("json") == 0 )
-	{
-		setView(new JSONView());
-	}
+	setView(new JSONView());
 }
 
 
