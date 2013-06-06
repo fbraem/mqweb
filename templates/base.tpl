@@ -9,6 +9,7 @@
 	<script src="/static/js/jquery-1.9.1.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/static/js/jquery.qtip.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/static/js/knockout-2.2.1.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/static/js/center.js" type="text/javascript" charset="utf-8"></script>
 	<?= mqweb.views.head ?>
 </head>
 <body>
