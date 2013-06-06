@@ -63,7 +63,7 @@
 		<table style="width:100%;border-collapse:collapse">
 			<thead>
 				<tr>
-					<th>Queue</th><th>Type</th><th>Depth</th><th>Input</th><th>Output</th><th>Get Enabled</th><th>Put Enabled</th><th>Usage</th>
+					<th>Queue</th><th>Type</th><th>Depth</th><th>Input</th><th>Output</th><th>Get Enabled</th><th>Put Enabled</th><th>Usage</th><th> </th>
 				</tr>
 			</thead>
 			<tbody data-bind="foreach: { data: queuesModel.queues, as: 'queue'}">
@@ -109,8 +109,8 @@
 					</td>
 					<td style="text-align:center" data-bind="style: { borderBottomWidth: queue.toggle() ? '0px' : '1px' }">
 						<div data-bind="if: queue.InhibitGet">
-							<img data-bind="visible: queue.InhibitGet.value == 0" src="/static/images/enabled.gif" />
-							<img data-bind="visible: queue.InhibitGet.value == 1" src="/static/images/disabled.gif" />
+							<img data-bind="visible: queue.InhibitGet.value == 0" src="/static/images/ok-icon.png" />
+							<img data-bind="visible: queue.InhibitGet.value == 1" src="/static/images/not-ok-icon.png" />
 						</div>
 						<div data-bind="ifnot: queue.InhibitGet">
 							-
@@ -118,8 +118,8 @@
 					</td>
 					<td style="text-align:center" data-bind="style: { borderBottomWidth: queue.toggle() ? '0px' : '1px' }">
 						<div data-bind="if: queue.InhibitPut">
-							<img data-bind="visible: queue.InhibitPut.value == 0" src="/static/images/enabled.gif" />
-							<img data-bind="visible: queue.InhibitPut.value == 1" src="/static/images/disabled.gif" />
+							<img data-bind="visible: queue.InhibitPut.value == 0" src="/static/images/ok-icon.png" />
+							<img data-bind="visible: queue.InhibitPut.value == 1" src="/static/images/not-ok-icon.png" />
 						</div>
 						<div data-bind="ifnot: queue.InhibitPut">
 							-
@@ -128,9 +128,12 @@
 					<td data-bind="style: { borderBottomWidth: queue.toggle() ? '0px' : '1px' }">
 						<span data-bind="if: queue.Usage"><span data-bind="text:queue.Usage.display"></span></span>
 					</td>
+					<td>
+						<a data-bind="attr: { href: '/queue/view/<?= mqweb.qmgr ?>/' + queue.QName.value }"><img src="/static/images/go-next-icon.png" /></a>
+					</td>
 				</tr>
 				<tr data-bind="visible:queue.toggle" style="display:none">
-					<td colspan="8">
+					<td colspan="9">
 						<div data-bind="template: { name: 'queueDetail', data: queue }">
 						</div>
 					</td>
