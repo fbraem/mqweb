@@ -113,7 +113,7 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 
 void Controller::render()
 {
-	poco_assert_dbg(!_view.isNull());
+	if ( _view.isNull() ) return; // No view set, don't do anything
 
 	_view->initializeResponse(*_response);
 	
