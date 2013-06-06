@@ -54,6 +54,12 @@ void QueueController::index()
 
 void QueueController::list()
 {
+	if ( format().compare("html") == 0 )
+	{
+		response().redirect("/queue/index/" + qmgr()->name());
+		return;
+	}
+
 	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
 
 	std::string queueNameField = form().get("queueName", "*");
@@ -106,7 +112,15 @@ void QueueController::list()
 
 	set("queues", jsonQueues);
 
-	setView(new JSONView());
+	if ( format().compare("html") == 0 )
+	{
+		//setView(new TemplateView("queue/queues.tpl"));
+		//TODO: redirect to index action
+	}
+	else if ( format().compare("json") == 0 )
+	{
+		setView(new JSONView());
+	}
 }
 
 
