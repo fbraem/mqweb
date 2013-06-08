@@ -111,16 +111,7 @@ void QueueController::list()
 	}
 
 	set("queues", jsonQueues);
-
-	if ( format().compare("html") == 0 )
-	{
-		//setView(new TemplateView("queue/queues.tpl"));
-		//TODO: redirect to index action
-	}
-	else if ( format().compare("json") == 0 )
-	{
-		setView(new JSONView());
-	}
+	setView(new JSONView());
 }
 
 
@@ -137,6 +128,16 @@ void QueueController::view()
 	}
 
 	std::string queueName = parameters[1];
+
+	if ( format().compare("html") == 0 )
+	{
+		set("queueName", queueName);
+		Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
+		multiView->add("head", new TemplateView("queue/view_head.tpl"));
+		multiView->add("main", new TemplateView("queue/view.tpl"));
+		setView(multiView);
+		return;
+	}
 
 	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
 	filter->set("name", queueName);
@@ -166,7 +167,7 @@ void QueueController::view()
 				}
 			}
 
-			setView(new TemplateView("queue/view.tpl"));
+			setView(new JSONView());
 
 			return;
 		}
