@@ -2,40 +2,40 @@
 <? include "queue.tpl" ?>
 <div id="content">
 	<div class="post">
-		<h3><strong><?= mqweb.qmgr	?></strong>	-	Queues</h3>
+		<h3><strong><?= mqweb.qmgr ?></strong> - Queues</h3>
 		<form	id="queueFilterForm" action="/queue/list.json/<?=mqweb.qmgr?>" method="POST">
 			<fieldset>
 				<legend>&nbsp;Filter&nbsp;</legend>
 				<div style="float:left;margin:5px;">
 					<div style="margin:5px;">
-						<div	style="margin:5px;">
-							<label for="queueName">Queue Name: </label><input	type="text"	id="queueName" name="queueName"	value="*"	/>
+						<div style="margin:5px;">
+							<label for="queueName">Queue Name: </label><input type="text" id="queueName" name="queueName" value="*" />
 						</div>
-						<div	style="margin:5px;">
-							<label	for="queueDepth">Queue Depth:	</label><input type="text" id="queueDepth" name="queueDepth" />
+						<div style="margin:5px;">
+							<label for="queueDepth">Queue Depth: </label><input type="text" id="queueDepth" name="queueDepth" />
 						</div>
 						<div style="float:left;margin:5px;">
-							<input	type="checkbox"	name="queueExcludeSystem"	value="1"	/> Exclude System	Queues<br	/>
-							<input	type="checkbox"	name="queueExcludeTemp"	value="1"	/> Exclude Temporary Queues<br />
+							<input type="checkbox" name="queueExcludeSystem" value="1" /> Exclude System Queues<br	/>
+							<input type="checkbox" name="queueExcludeTemp" value="1" /> Exclude Temporary Queues<br />
 						</div>
 					</div>
 				</div>
-				<fieldset	style="float:left;">
+				<fieldset style="float:left;">
 					<legend>&nbsp;Queue	Type&nbsp;</legend>
 					<div style="float:left;margin:5px;">
-						<input type="radio"	name="queueType" value="All" />All<br	/>
-						<input type="radio"	name="queueType" value="Local" />Local<br	/>
-						<input type="radio"	name="queueType" value="Alias" />Alias
+						<input type="radio" name="queueType" value="All" />All<br />
+						<input type="radio" name="queueType" value="Local" />Local<br />
+						<input type="radio" name="queueType" value="Alias" />Alias
 					</div>
 					<div style="float:left;margin:5px;">
-						<input type="radio"	name="queueType" value="Cluster" />Cluster<br	/>
-						<input type="radio"	name="queueType" value="Model" />Model<br	/>
-						<input type="radio"	name="queueType" value="Remote"	/>Remote
+						<input type="radio" name="queueType" value="Cluster" />Cluster<br />
+						<input type="radio" name="queueType" value="Model" />Model<br />
+						<input type="radio" name="queueType" value="Remote" />Remote
 					</div>
 				</fieldset>
 				<div style="clear:both;" />
 				<div style="float:right;margin-right:10px;margin-top:-30px;">
-					<input	type="submit"	value="Filter	&gt;&gt;"	id="filterSubmit" disabled="disabled"	/>
+					<input type="submit" value="Filter &gt;&gt;" id="filterSubmit" disabled="disabled" />
 				</div>
 			</fieldset>
 		</form>
@@ -45,13 +45,13 @@
 <!-- Sidebar -->
 <div id="sidebar">
 	<div class="box">
-		<h3>Our	Services</h3>
+		<h3>Our Services</h3>
 		<ul>
-			<li><a title="List Queues	Containing Messages" href="#">List Non-empty Queues</a></li>
-			<li><a title="Ipsum	is not simply" href="#">Ipsum	is not simply</a></li>
-			<li><a title="Dom	text roots"	href="#">Dom text	roots</a></li>
-			<li><a title="Popular	belief lorem"	href="#">Popular belief	lorem</a></li>
-			<li><a title="Ipsum	is not simply" href="#">Ipsum	is not simply</a></li>
+			<li><a title="List Queues Containing Messages" href="#">List Non-empty Queues</a></li>
+			<li><a title="Ipsum is not simply" href="#">Ipsum is not simply</a></li>
+			<li><a title="Dom text roots" href="#">Dom text roots</a></li>
+			<li><a title="Popular belief lorem" href="#">Popular belief lorem</a></li>
+			<li><a title="Ipsum is not simply" href="#">Ipsum is not simply</a></li>
 		</ul>
 	</div>
 </div>
