@@ -31,7 +31,7 @@
 
 #include <MQ/Web/MessageController.h>
 #include <MQ/Web/QueueMapper.h>
-#include <MQ/Web/TemplateView.h>
+#include <MQ/Web/MultiView.h>
 #include <MQ/Web/JSONView.h>
 #include <MQ/MQException.h>
 #include <MQ/Message.h>
@@ -197,7 +197,6 @@ MessageController::~MessageController()
 {
 }
 
-
 void MessageController::index()
 {
 	std::vector<std::string> parameters = getParameters();
@@ -209,10 +208,11 @@ void MessageController::index()
 
 	Poco::JSON::Object::Ptr jsonMQWeb = data().getObject("mqweb");
 	jsonMQWeb->set("queue", parameters[1]);
-
-	setView(new TemplateView("message/index.tpl"));
+	Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
+	multiView->add("head", new TemplateView("message/head.tpl"));
+	multiView->add("main", new TemplateView("message/index.tpl"));
+	setView(multiView);
 }
-
 
 void MessageController::list()
 {
