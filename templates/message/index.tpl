@@ -52,8 +52,8 @@
 					<td data-bind="text: message.PutDate" />
 					<td data-bind="text: message.MsgId" />
 					<td data-bind="text: message.Format" />
-					<td style="text-align:right">
-						<a class="hex" href="/message/view/<?= mqweb.qmgr ?>/<?= mqweb.queue ?>/<?= message.MsgId ?>?type=hex" title="Hex View"><?= message.length ?></a>
+					<td style="text-align:right" data-bind="text:message.Length">
+					<!--<a class="hex" href="/message/view/<?= mqweb.qmgr ?>/<?= mqweb.queue ?>/<?= message.MsgId ?>?type=hex" title="Hex View"><?= message.length ?></a>-->
 					</td>
 					<td data-bind="text: message.UserIdentifier" />
 					<td data-bind="text: message.PutApplName" />
