@@ -10,7 +10,8 @@
 		<div data-bind="if: $data.CurrentQDepth">
 			<h2>Depth:</h2>
 			<div class="detail">
-				<span data-bind="text:CurrentQDepth.value" />  / <span data-bind="text:MaxQDepth.value" />
+				<a data-bind="attr: {href: '/message/index/<?=mqweb.qmgr?>/' + QName.value}, text:CurrentQDepth.value" />
+				 / <span data-bind="text:MaxQDepth.value" />
 			</div> <!-- detail -->
 		</div>
 		<div data-bind="if: !$data.CurrentQDepth && $data.MaxQDepth">
