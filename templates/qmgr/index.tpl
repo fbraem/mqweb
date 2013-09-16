@@ -62,7 +62,7 @@
 		<h3>Our Services</h3>
 		<ul>
 			<li><a title="List Queues" href="/queue/index/<?= mqweb.qmgr ?>">List Queues</a></li>
-			<li><a title="List Channels" href="/channels/index/<?= mqweb.qmgr ?>">List Channels</a></li>
+			<li><a title="List Channels" href="/channel/index/<?= mqweb.qmgr ?>">List Channels</a></li>
 		</ul>
 	</div>
 </div>
