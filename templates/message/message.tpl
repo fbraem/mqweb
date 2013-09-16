@@ -1,9 +1,20 @@
+<script type="text/html" id="messageDetail">
+	<div class="details" style="width:70%;margin:auto">
+		<h2>Message ID:</h2>
+		<div class="detail" data-bind="text:MsgId" />
+		<h2>Correlation ID:</h2>
+		<div class="detail" data-bind="text:CorrelId" />
+		<h2>Put Date:</h2>
+		<div class="detail" data-bind="text:PutDate" />
+	</div>
+</script>
+<!--
 <script type="text/javascript"> 
-  	$(function() 
-  	{
+	$(function() 
+	{
 	  	$('#messageDumpTable > tbody > tr:odd').css('background-color', '#E2FEFE');
 	  	$('#messageDumpTable > tbody > tr:even').css('background-color', '#FDFDEB');
-	  	
+
 	  	$("a#ascii").button();
 	  	$("a#ascii").click(function(event)
 											   {
@@ -52,3 +63,4 @@
   <? endfor ?>
  </tbody>
 </table>
+-->
