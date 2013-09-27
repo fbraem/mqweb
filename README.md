@@ -9,10 +9,11 @@ Building MQWeb
 1. Get Poco 1.5 from http://pocoproject.org
    Build and install it
 2. Get premake4 from http://industriousone.com/premake and install it
-3. Unzip the mqweb archive and go to the root directory of mqweb
-4. Run premake4
-5. Build mqweb with the target you specified in step 4.
-6. Create mqweb.properties in the directory that contains the mqweb executable
+3. Unzip the mqweb archive and go to the root directory of mqweb.
+4. Open premake4.lua and see if you need to change the paths for the POCO and MQ include/lib folders
+5. Run premake4 with a target (vs2008, codelite, gmake, ...)
+6. Build mqweb with the target you specified in step 4.
+7. Create mqweb.properties in the directory that contains the mqweb executable
    and change the following properties:
 
 ```
@@ -55,3 +56,28 @@ Running MQWeb
    mq.web.defaultQmgr property. When this property doesn't exist, mqweb will 
    try to connect with "*" and hopes that a client channel definition table 
    is configured.
+
+Logging
+-------
+
+MQWeb uses 3 loggers: mq for all MQ actions, mq.web for all daemon information and mq.web.access to log all requested URI's.
+To configure these loggers look at the documentation of [Poco::Util::LoggingConfigurator](http://pocoproject.org/docs/Poco.Util.LoggingConfigurator.html).
+The following example will log everything (trace level) to mqweb.log in the application directory, except for the mq.web.access logger
+which will be written to the access.log file in the application directory.
+
+```
+# Logger configuration
+logging.loggers.root.level=trace
+logging.loggers.root.channel.class=FileChannel
+logging.loggers.root.channel.pattern=%Y-%m-%d %H:%M:%S %N %P-%I %q *** %t
+logging.loggers.root.channel.path=${application.dir}/mqweb.log
+
+logging.loggers.l1.name=mq
+
+logging.loggers.l2.name=mq.web
+
+logging.loggers.l3.name=mq.web.access
+logging.loggers.l3.channel.class=FileChannel
+logging.loggers.l3.channel.pattern=%Y-%m-%d %H:%M:%S *** %t
+logging.loggers.l3.channel.path=${application.dir}/access.log
+```
