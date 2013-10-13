@@ -1,24 +1,20 @@
 <!-- Content -->
-<? include "message.tpl" ?>
 <div id="content">
 	<div class="post">
 		<h3><strong><?= mqweb.qmgr ?></strong> - Messages - <?= mqweb.queue ?></h3>
 		<form id="messageFilterForm" action="/message/list.json/<?=mqweb.qmgr?>/<?=mqweb.queue?>" method="POST">
-			<fieldset>
+			<fieldset style="padding:5px;">
 				<legend>&nbsp;Limits&nbsp;</legend>
-				<div style="float:left;margin:5px;">
-				<div style="float:left;margin:5px;">
-					<label for="limit">Limit Messages: </label>
-					<input type="text" id="limit" name="limit" value="" /> Max: <?= queue.curdepth ?> <br />
+				<div style="margin:5px; width:100%">
+					<label style="position: absolute; text-align:right; width:130px;" for="limit">Limit Messages</label>
+					<input style="margin-left: 140px;" type="text" id="limit" name="limit" value="" />
 				</div>
-				<div style="float:left;margin:5px;">
-					<label for="teaser">Length Teaser: </label>
-					<input type="text" id="teaser" name="teaser" value="" /> (Only for MQSTR messages)<br />
+				<div style="margin:5px; width:100%">
+					<label style="position: absolute; text-align:right; width:130px;" for="teaser">Teaser Length</label>
+					<input style="margin-left: 140px;" type="text" id="teaser" name="teaser" value="80" /> <span style="font-size:0.8em">(Only for messages with format MQSTR)</span>
 				</div>
-				<div style="clear:both" />
-					<div style="float:right;margin-right:10px;">
-						<input	type="submit" value="Filter &gt;&gt;" id="filterSubmit" disabled="disabled" />
-					</div>
+				<div>
+					<input type="submit" value="Filter &gt;&gt;" id="filterSubmit" disabled="disabled" />
 				</div>
 			</fieldset>
 		</form>
@@ -42,7 +38,7 @@
 <div class="cl"></div>
 <div class="widgets">
 	<div class="result" id="result">
-		<table id="messageTable" data-bind="if: messagesModel.messages" style="width:100%;border-collapse:collapse">
+		<table id="messageTable" data-bind="if: messagesModel.messages" style="width:100%;border-collapse:collapse;font-size:0.85em;">
 			<thead>
 				<tr>
 					<th>Put Date</th><th>Id</th><th>Format</th><th>Length</th><th>User</th><th>Application</th><th>Encoding</th><th>CCSID</th>
@@ -51,30 +47,20 @@
 			<tbody data-bind="foreach: { data: messagesModel.messages, as: 'message'}">
 				<tr>
 					<td data-bind="text: message.PutDate" />
-					<td>
-						<a data-bind="click: $parent.toggle"><span data-bind="text: message.MsgId" /></a>
-					</td>
+					<td data-bind="text: message.MsgId" />
 					<td data-bind="text: message.Format" />
-					<td style="text-align:right" data-bind="text:message.Length">
-					<!--<a class="hex" href="/message/view/<?= mqweb.qmgr ?>/<?= mqweb.queue ?>/<?= message.MsgId ?>?type=hex" title="Hex View"><?= message.length ?></a>-->
+					<td style="text-align:right">
+						<a data-bind="attr: { href: '/message/dump/<?= mqweb.qmgr ?>/<?= mqweb.queue ?>/' + message.MsgId }"><span data-bind="text: message.Length" /></a>
 					</td>
 					<td data-bind="text: message.UserIdentifier" />
 					<td data-bind="text: message.PutApplName" />
 					<td data-bind="text: message.Encoding" />
 					<td data-bind="text: message.CodedCharSetId" />
 				</tr>
-				<tr data-bind="visible:message.toggle" style="display:none">
-					<td colspan="8">
-						<div data-bind="template: { name: 'messageDetail', data: message }">
-						</div>
-					</td>
-				</tr>
-<!--
 				<tr data-bind="if: message.data">
 					<td></td>
-					<td colspan="5" data-bind="text: message.data" />
+					<td colspan="7"><pre data-bind="text: message.data" /></td>
 				</tr>
--->
 			</tbody>
 		</table>
 	</div>

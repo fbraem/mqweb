@@ -9,12 +9,6 @@ var MessagesModel = function()
 	self.loading = ko.observable(false);
 	self.messages = ko.observableArray(null);
 	self.error = ko.observable(null);
-	self.toggle = function(item, event)
-	{
-		var context = ko.contextFor(event.target);
-		context.$data.toggle(!context.$data.toggle());
-		return false;
-	};
 }
 
 var messagesModel = new MessagesModel();
