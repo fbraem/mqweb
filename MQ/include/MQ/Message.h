@@ -410,7 +410,7 @@ inline void Message::setFeedback(MQLONG feedback)
 
 inline std::string Message::getFormat() const
 {
-	std::string s(_md.Format, MQ_FORMAT_LENGTH - 1);
+	std::string s(_md.Format, MQ_FORMAT_LENGTH);
 	return s;
 }
 
