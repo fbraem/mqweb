@@ -49,6 +49,9 @@ public:
 	void list();
 		/// List messages from a queue
 
+	void dump();
+		/// Shows the message in ascii / hex / ebcdic
+
 	void event();
 		/// Shows an event message
 
@@ -80,6 +83,7 @@ inline const Controller::ActionMap& MessageController::getActions() const
 			("index", static_cast<ActionFn>(&MessageController::index))
 			("list", static_cast<ActionFn>(&MessageController::list))
 			("view", static_cast<ActionFn>(&MessageController::view))
+			("dump", static_cast<ActionFn>(&MessageController::dump))
 			("event", static_cast<ActionFn>(&MessageController::event))
 		;
 	return actions;
