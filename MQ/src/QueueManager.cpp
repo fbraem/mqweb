@@ -31,7 +31,8 @@ namespace MQ
 {
 QueueManager::QueueManager(const std::string& name)
 :	 _handle(0),
-	_name(name)
+	_name(name),
+	_applicationType(0)
 {
 }
 
@@ -104,7 +105,7 @@ void QueueManager::inquireQmgrAttrs()
 	std::map<int, std::string> charResult;
 	mqSystem.functions().inq(_handle, qmgrObjectHandle, intSelectors, charSelectors, intResult, charResult);
 
-	_zos = (intResult[MQIA_PLATFORM] == MQPL_ZOS);
+	_applicationType = intResult[MQIA_PLATFORM];
 	_name = charResult[MQCA_Q_MGR_NAME];
 	_id = charResult[MQCA_Q_MGR_IDENTIFIER];
 	_commandQueue = charResult[MQCA_COMMAND_INPUT_Q_NAME];

@@ -80,7 +80,7 @@ private:
 
 	std::string _commandQueue;
 
-	bool _zos;
+	MQLONG _applicationType;
 
 	void inquireQmgrAttrs();
 
@@ -107,7 +107,7 @@ inline std::string QueueManager::commandQueue() const
 
 inline bool QueueManager::zos() const
 {
-	return _zos;
+	return _applicationType == MQPL_ZOS;
 }
 
 } // Namespace MQ
