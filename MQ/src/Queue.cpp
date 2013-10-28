@@ -131,4 +131,18 @@ void Queue::get(Message& msg, MQLONG options, long wait)
 	}
 }
 
+void Queue::inquire(const std::vector<int>& intSelectors, const std::map<int, int>& charSelectors, std::map<int, int>& intResult, std::map<int, std::string>& charResult)
+{
+	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
+	try
+	{
+		mqSystem.functions().inq(_qmgr->_handle, _handle, intSelectors, charSelectors, intResult, charResult);
+	}
+	catch(MQException& mqe)
+	{
+		mqe.object(_od.ObjectName);
+		throw;
+	}
+}
+
 }

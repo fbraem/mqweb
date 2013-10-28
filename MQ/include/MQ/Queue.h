@@ -25,9 +25,11 @@
 #include <cmqc.h>
 
 #include <Poco/SharedPtr.h>
+#include <Poco/String.h>
 
 #include <string>
-
+#include <vector>
+#include <map>
 
 namespace MQ
 {
@@ -59,6 +61,9 @@ public:
 	void get(Message& msg, MQLONG options = MQGMO_NONE, long wait = 0);
 		/// Gets a message from the queue. Can throw an MQException.
 
+	void inquire(const std::vector<int>& intSelectors, const std::map<int, int>& charSelectors, std::map<int, int>& intResult, std::map<int, std::string>& charResult);
+		/// Inquire
+
 private:
 
 	Poco::SharedPtr<QueueManager> _qmgr;
@@ -74,8 +79,15 @@ private:
 
 inline std::string Queue::name() const
 {
-	std::string s(_od.ObjectName, MQ_Q_NAME_LENGTH - 1);
-	s.erase(s.find_last_not_of(" \n\r\t")+1);
+	std::string s(_od.ObjectName, MQ_Q_NAME_LENGTH);
+
+	size_t zero = s.find_first_of('\0');
+	if ( zero != std::string::npos ) // MQ Strings can have only 0's
+	{
+		s = s.substr(0, zero);
+	}
+
+	Poco::trimRightInPlace(s);
 	return s;
 }
 
