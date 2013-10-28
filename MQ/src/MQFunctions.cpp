@@ -265,6 +265,8 @@ void MQFunctions::inq(MQHCONN conn, MQHOBJ obj, MQLONG selectorCount, PMQLONG se
 	poco_assert_dbg(_inqFn != NULL);
 
 	_inqFn(conn, obj, selectorCount, selectors, intAttrCount, intAttrs, charAttrLength, charAttrs, cc, rc);
+
+	trace("", "MQINQ", cc, rc);
 }
 
 void MQFunctions::inq(MQHCONN conn, MQHOBJ obj, MQLONG selectorCount, PMQLONG selectors, MQLONG intAttrCount, PMQLONG intAttrs, MQLONG charAttrLength, PMQCHAR charAttrs)
