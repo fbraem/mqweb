@@ -22,6 +22,8 @@
 #ifndef _MQWeb_MQController_h
 #define _MQWeb_MQController_h
 
+#include "Poco/Stopwatch.h"
+
 #include "MQ/QueueManager.h"
 #include "MQ/CommandServer.h"
 #include "MQ/MQException.h"
@@ -54,6 +56,14 @@ public:
 	void beforeAction();
 		/// Connects to the queuemanager and command server
 
+	void afterAction();
+		/// Stops the stopwatch and calls Controller::afterAction
+
+	Poco::JSON::Object& mqwebData();
+		/// Returns the JSON object for storing MQWeb data.
+		/// This object can be used to store common data like queuemanager name,
+		/// queue, elapsed time, ...
+
 protected:
 
 
@@ -69,6 +79,10 @@ private:
 	CommandServer::Ptr _commandServer;
 
 
+	Poco::JSON::Object::Ptr _mqwebData;
+
+
+	Poco::Stopwatch _stopwatch;
 };
 
 
@@ -81,6 +95,13 @@ inline QueueManager::Ptr MQController::qmgr()
 inline CommandServer::Ptr MQController::commandServer()
 {
 	return _commandServer;
+}
+
+inline Poco::JSON::Object& MQController::mqwebData()
+{
+	poco_assert_dbg(_mqwebData);
+
+	return *_mqwebData;
 }
 
 }} // Namespace MQ::Web

@@ -26,7 +26,7 @@
 #include <MQ/Web/ChannelStatusController.h>
 #include <MQ/Web/ChannelMapper.h>
 #include <MQ/Web/ChannelStatusMapper.h>
-#include <MQ/Web/TemplateView.h>
+#include <MQ/Web/MultiView.h>
 #include <MQ/Web/JSONView.h>
 
 namespace MQ
@@ -72,6 +72,35 @@ void ChannelStatusController::list()
 
 void ChannelStatusController::view()
 {
+	std::vector<std::string> parameters = getParameters();
+
+	// First parameter is the queuemanager name
+	// Second parameter is the queue name
+	if ( parameters.size() < 2 )
+	{
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+		return;
+	}
+
+	std::string channelName = parameters[1];
+
+	if ( format().compare("html") == 0 )
+	{
+		set("channelName", channelName);
+		Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
+		multiView->add("head", new TemplateView("chs/view_head.tpl"));
+		multiView->add("main", new TemplateView("chs/view.tpl"));
+		setView(multiView);
+		return;
+	}
+
+	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+	filter->set("name", channelName);
+
+	ChannelStatusMapper channelStatusMapper(*commandServer());
+	Poco::JSON::Array::Ptr jsonStatuses = channelStatusMapper.inquire(filter);
+	set("statuses", jsonStatuses);
+	setView(new JSONView());
 /*
 	std::vector<std::string> parameters = getParameters();
 

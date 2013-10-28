@@ -31,8 +31,9 @@ namespace MQ {
 namespace Web {
 
 
-MQController::MQController() : Controller()
+MQController::MQController() : Controller(), _mqwebData(new Poco::JSON::Object())
 {
+	set("mqweb", _mqwebData);
 }
 
 
@@ -43,14 +44,18 @@ MQController::~MQController()
 
 void MQController::beforeAction()
 {
+	_stopwatch.start();
+
 	MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQSubsystem>();
 	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
 
 	const std::vector<std::string>& parameters = getParameters();
 
+	_mqwebData->set("client", mqSystem.client());
+
 	if ( parameters.size() > 0 )
 	{
-	 _qmgr = new QueueManager(parameters[0]);
+		_qmgr = new QueueManager(parameters[0]);
 	}
 	else
 	{
@@ -93,12 +98,9 @@ void MQController::beforeAction()
 		}
 	}
 
-	Poco::JSON::Object::Ptr jsonMQWeb(new Poco::JSON::Object());
-	set("mqweb", jsonMQWeb);
-
-	jsonMQWeb->set("qmgr", _qmgr->name());
-	jsonMQWeb->set("zos", _qmgr->zos());
-	jsonMQWeb->set("qmgrId", _qmgr->id());
+	_mqwebData->set("qmgr", _qmgr->name());
+	_mqwebData->set("zos", _qmgr->zos());
+	_mqwebData->set("qmgrId", _qmgr->id());
 
 	std::string qmgrConfig = "mq.web.qmgr." + _qmgr->name();
 	std::string qmgrConfigModel = qmgrConfig + ".reply";
@@ -112,6 +114,9 @@ void MQController::beforeAction()
 	{
 		modelQ = config.getString("mq.web.reply", "SYSTEM.DEFAULT.MODEL.QUEUE");
 	}
+	_mqwebData->set("replyq", modelQ);
+	_mqwebData->set("cmdq", _qmgr->commandQueue());
+
 	_commandServer = new CommandServer(_qmgr, modelQ);
 }
 
@@ -139,6 +144,15 @@ void MQController::handleException(const MQException& mqe)
 	{
 		setView(new JSONView());
 	}
+}
+
+
+void MQController::afterAction()
+{
+	_stopwatch.stop();
+	_mqwebData->set("elapsed", (double) _stopwatch.elapsed() / 1000000 );
+	
+	Controller::afterAction();
 }
 
 

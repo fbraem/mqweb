@@ -9,10 +9,10 @@
 	<link rel="stylesheet" href="/static/css/ui-lightness/jquery-ui-1.10.3.custom.min.css" type="text/css" media="all" />
 	<script src="/static/js/jquery-1.9.1.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/static/js/jquery-ui-1.10.3.custom.min.js" type="text/javascript" charset="utf-8"></script>
-	<script src="/static/js/jquery.qtip.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/static/js/jquery.qtip.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/static/js/knockout-2.2.1.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/static/js/center.js" type="text/javascript" charset="utf-8"></script>
-	<?= mqweb.views.head ?>
+	<?= views.head ?>
 </head>
 <body>
 	<script type="text/html" id="mqErrorTemplate">    
@@ -34,14 +34,14 @@
 				<!-- HEADER -->
 				<div id="header">
 					<div id="logo">
-						<h1>MQWeb - <a href="/qmgr/view/<?= mqweb.qmgr  ?>" title="home"><?= mqweb.qmgr ?></a></h1>
+						<h1>MQWeb - <a href="/qmgr/index/<?= mqweb.qmgr  ?>" title="home"><?= mqweb.qmgr ?></a></h1>
 						<p class="slogan">Administrating Websphere MQ with a browser</p>
 					</div>
-					<div class="socials">
 					<a href="https://github.com/fbraem/mqweb"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+					<div class="socials">
+						<a style="margin-left:200px;" title="WebSphere MQ Support Twitter" href="http://twitter.com/IBM_WMQ"><img src="/static/css/images/twitter.png" /></a>
+						<a title="Facebook Websphere MQ" href="https://www.facebook.com/#!/pages/IBM-WebSphere-MQ/8304628654"><img src="/static/css/images/facebook.png" /></a>
 <!--
-						<a title="Facebook" class="facebook" href="#">facebook</a>
-						<a title="Twitter" class="twitter" href="#">twitter</a>
 						<a title="Digg" class="digg" href="#">digg</a>
 						<a title="Delicious" class="delicious" href="#">Delicious</a>
 						<a title="Stumble Upon" class="su" href="#">su</a>
@@ -62,8 +62,44 @@
 				</div>
 				<!-- END NAVIGATION -->
 				<!-- MAIN -->
+				<?if mqweb.client ?>
+					<img id="connectionTip" alt="Client Mode" title="Client Mode" src="/static/images/connection.png" style="float:right;padding:10px;" />
+					<script type="text/javascript">
+						$(document).ready(function()
+						{
+							$('#connectionTip').qtip({
+								content : {
+									title : 'Connection Mode',
+									text : 'MQWeb connects to queuemanager <strong><?= mqweb.qmgr ?></strong> in client mode.'
+									},
+								position: {
+									my: 'top center',
+									at: 'bottom center'
+									}
+								});
+						});
+					</script>
+				<?else ?>
+					<img alt="Binding Mode" src="/static/images/connection.png" style="float:right;padding:10px;" />
+					<script type="text/javascript">
+						$(document).ready(function()
+						{
+							$('#connectionTip').qtip({
+								content : {
+									title : 'Connection Mode',
+									text : 'MQWeb connects to queuemanager <strong><?= mqweb.qmgr ?></strong> in binding mode.'
+									},
+								position: {
+									my: 'top center',
+									at: 'bottom center'
+									}
+								});
+						});
+					</script>
+				<?endif ?>
 				<div id="main">
-					<?= mqweb.views.main ?>
+
+					<?= views.main ?>
 				</div>
 				<!-- END MAIN -->
 			</div>
@@ -71,6 +107,7 @@
 			<div id="wrapper-bottom"></div>
 			<!-- Footer -->
 			<div id="footer">
+				<a title="POCO" href="http://www.pocoproject.org"><img src="/static/images/poco.gif" alt="POCO" /></a>
 				<p class="copy">Copyright 2013<span>|</span><a href="http://www.zumuta.be">www.zumuta.be</a>. Design by <a title="CSS Free Templates with jQuery Slider" href="http://css-free-templates.com/">CSS-Free-Templates.com</a></p>
 			<!--  <p id="bottom-nav"><a title="Home" href="#">Home</a><span>|</span><a title="About" href="#">About</a><span>|</span><a title="Services" href="#">Services</a><span>|</span><a title="Projects" href="#">Projects</a><span>|</span><a title="Solutions" href="#">Solutions</a><span>|</span><a title="Jobs" href="#">Jobs</a><span>|</span><a title="Blog" href="#"> Blog</a><span>|</span><a title="Contacts" href="#">Contacts</a></p> -->
 				<div class="cl"></div>

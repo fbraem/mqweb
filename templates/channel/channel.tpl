@@ -44,6 +44,12 @@
       <span data-bind="text: number_format(MaxInstances.value, 0, ',', '.')" />
      </div> <!-- detail -->
     </div>
+		<div data-bind="if: $data.DataConversion">
+			<h2>Data Conversion:</h2>
+	    <div class="detail">
+				<span data-bind="text: $data.DataConversion.display" />
+			</div> <!-- detail -->
+		</div>
     <div data-bind="if: $data.MaxMsgLength">
      <h2>Maximum Message Length:</h2>
      <div class="detail">
@@ -54,6 +60,24 @@
      <h2>Channel Monitoring:</h2>
      <div class="detail">
       <span data-bind="text: ChannelMonitoring.display" />
+     </div> <!-- detail -->
+    </div>
+    <div data-bind="if: $data.DiscInterval">
+     <h2>Disconnect Interval:</h2>
+     <div class="detail">
+      <span data-bind="text: number_format(DiscInterval.value, 0, ',', '.')" /> seconds
+     </div> <!-- detail -->
+    </div>
+    <div data-bind="if: $data.MsgExit && $data.MsgExit.value">
+     <h2>Message Exit:</h2>
+     <div class="detail">
+      <span data-bind="text: MsgExit.value" />
+     </div> <!-- detail -->
+    </div>
+    <div data-bind="if: $data.MsgUserData && $data.MsgUserData.value">
+     <h2>Message User Data:</h2>
+     <div class="detail">
+      <span data-bind="text: ReceiveUserData.value" />
      </div> <!-- detail -->
     </div>
     <div data-bind="if: $data.ReceiveExit && $data.ReceiveExit.value">
@@ -78,6 +102,18 @@
      <h2>Security User Data:</h2>
      <div class="detail">
       <span data-bind="text: SecurityUserData.value" />
+     </div> <!-- detail -->
+    </div>
+    <div data-bind="if: $data.ShortRetryCount">
+     <h2>Short Retry:</h2>
+     <div class="detail">
+      Count: <span data-bind="text: number_format(ShortRetryCount.value, 0, ',', '.')" /><br />Interval: <span data-bind="text: number_format(ShortRetryInterval.value, 0, ',', '.')" />
+     </div> <!-- detail -->
+    </div>
+    <div data-bind="if: $data.LongRetryCount">
+     <h2>Long Retry:</h2>
+     <div class="detail">
+      Count: <span data-bind="text: number_format(LongRetryCount.value, 0, ',', '.')" /><br /> Interval: <span data-bind="text: number_format(LongRetryInterval.value, 0, ',', '.')" />
      </div> <!-- detail -->
     </div>
     <div data-bind="if: $data.TransportType && $data.TransportType.display">

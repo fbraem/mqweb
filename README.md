@@ -48,7 +48,8 @@ Running MQWeb
 ```
    Where &lt;qmgrName&gt; is the name of the queuemanager, &lt;host&gt; the server where
    the queuemanager is running. &lt;port&gt; is the port of the listener and
-   &lt;channelName&gt; is the name of the server connection channel.
+   &lt;channelName&gt; is the name of the server connection channel. When no channel
+   property is set, SYSTEM.DEFAULT.SVRCONN will be used as default.
    
 2. When no name is passed in the URL, mqweb will try to connect to the default
    queuemanager. In bindings mode this is done by connecting with a blank
@@ -56,6 +57,19 @@ Running MQWeb
    mq.web.defaultQmgr property. When this property doesn't exist, mqweb will 
    try to connect with "*" and hopes that a client channel definition table 
    is configured.
+   
+3. To get the replies from the command server, MQWeb needs a queue where the replies
+   are put. By default a temporary queue based on the model queue SYSTEM.DEFAULT.MODEL.QUEUE
+   is used, but this behaviour can be changed by setting the mq.web.reply property or the
+   reply property of a queuemanager.
+```
+    mq.web.reply=MQWEB.REPLY.Q01
+```
+	  or
+```
+    mq.web.qmgr.<qmgr>.reply=MQWEB.REPLY.Q01
+```
+    When you define your own local reply queue, make sure the queue is shareable.
 
 Logging
 -------
@@ -81,3 +95,17 @@ logging.loggers.l3.channel.class=FileChannel
 logging.loggers.l3.channel.pattern=%Y-%m-%d %H:%M:%S *** %t
 logging.loggers.l3.channel.path=${application.dir}/access.log
 ```
+
+Third Party Software
+--------------------
+
+To bring you a view on your queuemanager in your favorite browser, MQWeb uses the following software:
+
++ [POCO](http://pocoproject.org) is used to write the portable HTTP server in C++, the core of MQWeb.
++ [jQuery](http://jquery.org) is a fast, small and feature-rich JavaScript library. It eases the HTML document traversal and manipulation, JSON requests, ...
++ [jQuery UI](http://jqueryui.com) is a curated set of user interface interactions, effects, widgets, and themes built on top of the jQuery JavaScript Library.
++ [KnockoutJS](http://knockoutjs.com/) is used to render the JSON, received from the HTTP server, on the client. Rendering on the client makes it possible to write HTML pages without touching the core of MQWeb.
++ [qTip2](http://qtip2.com) is used to show tool tips on the HTML pages.
++ [jQuery Form Plugin](http://malsup.com/jquery/form) allows us to easily upgrade HTML forms to use AJAJ.
++ [Formalize](http://formalize.me) is used to teach our forms some manners ...
++ [CSS-Free-Templates](http://css-free-templates.com) has been used to select a CSS template.

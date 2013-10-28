@@ -31,14 +31,16 @@ textarea { overflow: auto; }
 #logo .slogan { padding-top: 5px; font-size: 10px; text-transform: uppercase; color: #135a75; }
 #logo a { color:white;}
 
-.socials { display: inline; float: right; }
-.socials a { display: block; width: 27px; height: 28px; float: left; padding-right: 7px; text-indent: -4000px; }
+/*
+.socials { display:inline; border:1px solid red;}
+.socials a { width: 27px; height: 28px; }
 .socials a.facebook { background: url(images/facebook.png) no-repeat 0 0; }
 .socials a.twitter { background: url(images/twitter.png) no-repeat 0 0; }
 .socials a.digg { background: url(images/digg.png) no-repeat 0 0; }
 .socials a.delicious { background: url(images/delicious.png) no-repeat 0 0; }
 .socials a.su { background: url(images/su.png) no-repeat 0 0; }
 .socials a.rss { background: url(images/rss.png) no-repeat 0 0; }
+*/
 
 #search { position: absolute; top: 53px; right: 23px; width: 236px; background: url(images/search.png) no-repeat 0 0; }
 #search .field { border: 0; background: none; padding: 13px 14px 11px; width: 208px; line-height: 15px; font-size: 11px; color: #5b6366; }
@@ -59,7 +61,8 @@ a.read-more { padding-left: 6px; font-size: 11px; color: #0099d1; background: ur
 .post p { padding-bottom: 18px; }
 
 #sidebar { display: inline; float: right; width: 312px; }
-.box ul { padding: 19px 0 0 15px; }
+.box h3 { padding: 0 0 25px 6px; }
+.box ul { padding-left: 19px }
 .box li { padding-left: 2px; font-size: 14px; line-height: 26px; color: #0099d1; }
 .box li a { color: #0099d1; }
 

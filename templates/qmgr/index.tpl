@@ -1,3 +1,54 @@
+<script src="/static/js/number_format.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/html" id="qmgrDetail">
+	<p>
+		<em><span data-bind="text: QMgrDesc.value" /></em>
+	</p>
+	<!-- DETAILS -->
+	<div class="details" style="float:left;width:70%">
+		<div>
+			<h2>QueueManager ID</h2>
+			<div class="detail" data-bind="text: QMgrIdentifier.value"> </div>
+		</div>
+		<div data-bind="if:$data.CreationDate">
+			<h2>Creation Date</h2>
+			<div class="detail">
+				<span data-bind="text: CreationDate.value"> </span>&nbsp;<span data-bind="text: CreationTime.value"> </span>
+			</div>
+		</div>
+		<div data-bind="if:$data.AlterationDate">
+			<h2>Alteration Date</h2>
+			<div class="detail">
+				<span data-bind="text: AlterationDate.value" /> </span>&nbsp;<span data-bind="text: AlterationTime.value"> </span>
+			</div>
+		</div>
+		<div data-bind="if:$data.Platform">
+			<h2>Platform</h2>
+			<div class="detail">
+				<span data-bind="text: Platform.display" />
+			</div>
+		</div>
+		<div data-bind="if:$data.CodedCharSetID">
+			<h2>Coded Characterset ID</h2>
+			<div class="detail">
+				<span data-bind="text: CodedCharSetID.value" />
+			</div>
+		</div>
+		<div data-bind="if:$data.DeadLetterQName && $data.DeadLetterQName.value">
+			<h2>Dead Letter Queue</h2>
+			<div class="detail">
+			  <a data-bind="attr: {href: '/queue/view/<?=mqweb.qmgr?>/' + DeadLetterQName.value}, text:DeadLetterQName.value" />
+			</div>
+		</div>
+		<div data-bind="ifnot:$data.DeadLetterQName.value">
+			<h2>Dead Letter Queue</h2>
+			<div class="detail">
+				<img style="float:left;" src="/static/images/warning-icon.png" alt="error" />
+				<em style="color:#FF6666">There is no dead letter queue defined. It's recommended to have one!</em>
+			</div>
+		</div>
+	</div>
+	<!-- END DETAILS -->
+</script>
 <script type="text/html" id="mqChannelStatusRetryingFlag">
 	<img data-bind="attr: { alt : 'The channel ' + ChannelName.value + ' has status Retrying' }" class="tip" src="/static/images/flag-red-icon.png" />
 </script>
@@ -13,47 +64,18 @@
 <div id="content">
 	<div class="post">
 		<h3>QueueManager <strong><?= mqweb.qmgr ?></strong></h3>
-		<img src="/static/css/images/briefcase.jpg" alt="briefcase" />
-		<div data-bind="with: qmgrModel.qmgr">
-			<!-- <span data-bind="text: ko.toJSON($data)" /> -->
-			<p>
-				<em><span data-bind="text: QMgrDesc.value" /></em>
-			</p>
-			<!-- DETAILS -->
-			<div class="details" style="float:left;width:70%">
-				<div>
-					<h2>QueueManager ID</h2>
-					<div class="detail" data-bind="text: QMgrIdentifier.value"> </div>
-				</div>
-				<div>
-					<h2>Creation Date</h2>
-					<div class="detail">
-						<span data-bind="text: CreationDate.value"> </span>&nbsp;<span data-bind="text: CreationTime.value"> </span>
-					</div>
-				</div>
-				<div>
-					<h2>Alteration Date</h2>
-					<div class="detail">
-						<span data-bind="text: AlterationDate.value" /> </span>&nbsp;<span data-bind="text: AlterationTime.value"> </span>
-					</div>
-				</div>
-				<div data-bind="if:DeadLetterQName.value">
-					<h2>Dead Letter Queue</h2>
-					<div class="detail">
-						<a href="/queue/view/<?= mqweb.qmgr ?>/TODO" data-bind="text: DeadLetterQName.value"> </a>
-					</div>
-				</div>
-				<div data-bind="ifnot:DeadLetterQName.value">
-					<h2>Dead Letter Queue</h2>
-					<div class="detail">
-						<img style="float:left;" src="/static/images/warning-icon.png" alt="error" />
-						<em style="color:#FF6666">There is no dead letter queue defined. It's recommended to have one!</em>
-					</div>
-				</div>
+		<!-- ko with: qmgrModel.mqweb -->
+	   <img data-bind="visible: !zos" src="/static/css/images/briefcase.jpg" alt="briefcase" />
+	   <img data-bind="visible: zos" src="/static/images/zos-icon.png" alt="z/OS" title="z/OS" />
+	  <!-- /ko -->
+		<div data-bind="if: qmgrModel.qmgr">
+			<div data-bind="template: { name: 'qmgrDetail', data: qmgrModel.qmgr }">
 			</div>
-			<!-- END DETAILS -->
 		</div>
 		<div class="loader" data-bind="visible: qmgrModel.loading"> </div>
+		<div data-bind="with: qmgrModel.mqweb" style="font-size:0.7em;clear:both;">
+		 It took <span data-bind="text: number_format(elapsed, 2, ',', '.')"> </span> seconds to create this output.
+	  </div>
 	</div>
 </div> <!-- content -->
 <!-- Sidebar -->
@@ -64,6 +86,11 @@
 			<li><a title="List Queues" href="/queue/index/<?= mqweb.qmgr ?>">List Queues</a></li>
 			<li><a title="List Channels" href="/channel/index/<?= mqweb.qmgr ?>">List Channels</a></li>
 		</ul>
+		<h3 style="margin-top:15px">WebSphere MQ</h3>
+		<ul>
+		 <li><a title="Information Center" target="_blank" href="http://pic.dhe.ibm.com/infocenter/wmqv7/v7r1/index.jsp">Information Center</a></li>
+		 <li><a title="MQSeries.net" target="_blank" href="http://www.mqseries.net/phpBB2">MQSeries.net Forum</a></li>
+		</ul>
 	</div>
 </div>
 <!-- END Sidebar -->
@@ -71,9 +98,8 @@
 <div class="widgets">
 	<div class="col activities">
 		<div id="localQueues">
-			<img class="tip" src="/static/images/tip-icon.png" style="float:right;padding-top:8px;" alt="This is a list with local queues that contains at least one message." />
-			<a href="#" onclick="viewModel.localQueueModel.load();return false;"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
-			<h3>Local Queues</h3>
+			<a href="#" onclick="viewModel.localQueueModel.load();return false;"><img class="imgtip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
+			<h3 qtip-content="This is a list with local queues that contains at least one message.<br /><br />System queues and transmission queues are omitted.">Local Queues</h3>
 			<table data-bind="if:localQueueModel.queues" style="font-size:0.8em;border-collapse:collapse;">
 				<thead>
 					<tr><th>Queue</th><th>Depth</th></tr>
@@ -86,16 +112,16 @@
 				</tbody>
 			</table>
 			<p data-bind="ifnot:localQueueModel.queues">
-				No queues found.
+				There are no local queues which contains messages.
+				System queues were discarded in this view.
 			</p>
 			<div class="loader" data-bind="visible: localQueueModel.loading"></div>
 		</div> <!-- localQueues -->
 	</div> <!-- activities -->
 	<div class="col activities">
 		<div id="xmitQueues">
-			<img class="tip" src="/static/images/tip-icon.png" style="float:right;padding-top:8px;" alt="This is a list with transmission queues that contains at least one message. On a healthy system, this list would be empty ..." />
-			<a href="#" onclick="viewModel.xmitQueueModel.load();return false;"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
-			<h3>Transmission Queues</h3>
+			<a href="#" onclick="viewModel.xmitQueueModel.load();return false;"><img class="imgtip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
+			<h3 qtip-content="This is a list with transmission queues (USAGE=XMITQ) that contains at least one message.<br /><br />Normally, this list is empty when no channels has problems.">Transmission Queues</h3>
 			<table data-bind="if: xmitQueueModel.queues" style="font-size:0.8em;border-collapse:collapse;">
 				<thead>
 					<tr><th>Queue</th><th>Depth</th></tr>
@@ -108,15 +134,14 @@
 				</tbody>
 			</table>
 			<p data-bind="ifnot:xmitQueueModel.queues">
-				No queues found.
+				All transmission queues are empty.
 			</p>
 			<div class="loader" data-bind="visible: xmitQueueModel.loading"></div>
 		</div> <!-- xmitQueues -->
 	</div> <!-- activities -->
 	<div class="col activities">
-		<img class="tip" src="/static/images/tip-icon.png" style="float:right;padding-top:8px;" alt="This is a list with channel statuses." />
-		<a href="#" onclick="viewModel.channelModel.load();return false;"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
-		<h3>Channel Status</h3>
+		<a href="#" onclick="viewModel.channelModel.load();return false;"><img class="imgtip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
+		<h3 qtip-content="This is a list with active channel statuses.">Channel Status</h3>
 		<div id="channels">
 			<table data-bind="if: channelModel.channels" style="font-size:0.8em;border-collapse:collapse;">
 				<thead>
@@ -125,14 +150,16 @@
 				<tbody data-bind="foreach:channelModel.channels">
 					<tr>
 						<td data-bind="template: { name: statusImage }" />
-						<td data-bind="text: ChannelName.value" />
+						<td><a data-bind="attr: {href: '/channel/view/<?= mqweb.qmgr ?>/' + ChannelName.value + '/' + ChannelType.display}, text: ChannelName.value" /></td>
 						<td data-bind="text: ChannelStatus.display" />
 					</tr>
 				</tbody>
 			</table>
-			<p data-bind="ifnot:channelModel.channels">
-				No channel status found.
-			</p>
+			<div data-bind="visible: !channelModel.loading">
+			 <p data-bind="ifnot:channelModel.channels">
+				 No channel status found.
+			 </p>
+			</div>
 			<div class="loader" data-bind="visible: channelModel.loading"></div>
 		</div> <!-- channels -->
 	</div> <!-- activities -->
@@ -140,7 +167,7 @@
 </div>
 <div class="widgets">
 	<div class="projects">
-		<a href="#" onclick="viewModel.eventMessageModel.load();return false;"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
+		<a href="#" onclick="viewModel.eventMessageModel.load();return false;"><img class="imgtip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
 		<h3>SYSTEM.ADMIN.QMGR.EVENT</h3>
 		<div id="eventMessages">
 			<div data-bind="visible: eventMessageModel.events" style="display:none">

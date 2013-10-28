@@ -3,15 +3,17 @@
 	{
 		var self = this;
 		
+		self.mqweb = ko.observable(null);
 		self.qmgr = ko.observable(null);
-		self.loading = ko.observable(false);
 		self.error = ko.observable(null);
+		self.loading = ko.observable(false);
 		
 		this.load = function()
 			{
 				$.ajax(
 				{
 					beforeSend: function() {
+						self.mqweb(null);
 						self.qmgr(null);
 						self.error(null);
 						self.loading(true);
@@ -21,20 +23,13 @@
 					dataType: "json",
 					success: function(data) {
 						self.loading(false);
-						if ( data.error )
-						{
-							self.error(data.error);
-						}
-						else
-						{
-							self.qmgr(data.qmgr);
-						}
+						self.mqweb(data.mqweb);
+						self.qmgr(data.qmgr);
+						self.error(data.error);
 					},
 					error: function (request, status, error)
 					{
 						self.loading(false);
-						self.error(null);
-						self.qmgr(null);
 						//TODO: Handle Error on page
 					}
 				});
@@ -62,7 +57,8 @@
 					data : {
 						queueDepth : 1,
 						queueExcludeSystem: 1,
-						queueUsage : "normal"
+						queueUsage : "normal",
+						queueExcludeTemp : 1
 					},
 					cache: false,
 					dataType: "json",
@@ -196,13 +192,27 @@
 					{
 						if ( data.statuses.length > 0 )
 						{
-							self.channels(data.statuses);
-						
+							// Only keep unique channel statuses
+							var statuses = new Array();
+						  var channels = new Array();
+
+							for(status in data.statuses)
+							{
+							  if ( $.inArray(data.statuses[status].ChannelName.value, channels) == -1 )
+							  {
+							  	channels.push(data.statuses[status].ChannelName.value);
+							  	statuses.push(data.statuses[status]);
+							  }
+							}
+							
+							self.channels(statuses);
+/*						
 							$(".tip").qtip({ 
 								content : { 
 									attr : 'alt' 
 								}
 							});
+*/							
 						}
 					}
 				},
@@ -210,11 +220,6 @@
 				{
 					self.loading(false);
 					//TODO: $("#channelStatus").html("An error occurred while retrieving channel status: " + status + ", " + error);
-				}
-			});
-			$(".tip").qtip({ 
-				content : { 
-					attr : 'alt'
 				}
 			});
 		}
@@ -240,6 +245,8 @@
 					self.events(null);
 					self.error(null);
 					self.loading(true);
+					self.count(0);
+					self.curdepth(0);
 				},
 				url: "/message/event.json/<?= mqweb.qmgr  ?>/SYSTEM.ADMIN.QMGR.EVENT?limit=3",
 				cache: false,
@@ -251,19 +258,17 @@
 					if ( data.error )
 					{
 						self.error(data.error);
-						self.count(0);
-						self.curdepth(0);
 					}
 					else
 					{
 						self.events(data.events);
 						self.count(data.events.length);
-						self.curdepth(data.queues[0].CurrentQDepth.value);
+						self.curdepth(data.queue.curdepth);
 					}
 				},
 				error: function (request, status, error)
 				{
-					vm.loading(false);
+					self.loading(false);
 					//TODO:$("#eventMessages").html("An error occurred  while retrieving event messages from SYSTEM.ADMIN.QMGR.EVENT: " + status  + ", " + error);
 				}
 			});
@@ -280,9 +285,25 @@
 
 	$(document).ready(function()
 	{
-		$(".tip").qtip({ 
+		$("[qtip-content").qtip({ 
 			content : { 
-				attr : 'alt' 
+				text: function(event, api) 
+					{
+          	return $(this).attr('qtip-content');
+        	},
+        title: function(event, api) 
+					{
+          	return $(this).text();
+        	}
+			},
+			position: {
+				my: 'bottom center',
+				at: 'top center'
+			}
+		});
+		$(".imgtip").qtip({ 
+			content : { 
+				attr: 'alt'
 			}
 		});
 		

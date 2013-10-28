@@ -38,14 +38,11 @@ MultiView::~MultiView()
 
 bool MultiView::render(Poco::JSON::Object::Ptr data, std::ostream& os)
 {
-	Poco::JSON::Object::Ptr jsonMQWeb = data->getObject("mqweb");
-	poco_check_ptr(jsonMQWeb);
-
-	Poco::JSON::Object::Ptr jsonViews = jsonMQWeb->getObject("views");
+	Poco::JSON::Object::Ptr jsonViews = data->getObject("views");
 	if ( jsonViews.isNull() )
 	{
 		jsonViews = new Poco::JSON::Object();
-		jsonMQWeb->set("views", jsonViews);
+		data->set("views", jsonViews);
 	}
 
 	for(ViewMap::iterator it = _views.begin(); it != _views.end(); ++it)

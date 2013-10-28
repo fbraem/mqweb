@@ -503,17 +503,21 @@ void MessageController::event()
 
 	std::string queueName = parameters[1];
 
-	QueueMapper qMapper(*commandServer());
-	Poco::JSON::Object::Ptr jsonFilter = new Poco::JSON::Object();
-	jsonFilter->set("name", queueName);
-	Poco::JSON::Array::Ptr jsonQueues = qMapper.inquire(jsonFilter);
-
-	set("queues", jsonQueues);
-	Poco::JSON::Query curdepthQuery(jsonQueues);
-	MQLONG curdepth = curdepthQuery.findValue<long>("queues[0].CurrentQDepth.value", 0);
-
 	Queue q(qmgr(), queueName);
-	q.open(MQOO_BROWSE);
+	q.open(MQOO_INQUIRE | MQOO_BROWSE | MQBND_BIND_ON_OPEN);
+
+	std::vector<int> intSelectors;
+	intSelectors.push_back(MQIA_CURRENT_Q_DEPTH);
+	std::map<int, int> charSelectors;
+	std::map<int, int> intResult;
+	std::map<int, std::string> charResult;
+	q.inquire(intSelectors, charSelectors, intResult, charResult);
+
+	MQLONG curdepth = intResult[MQIA_CURRENT_Q_DEPTH];
+	Poco::JSON::Object::Ptr jsonQueue = new Poco::JSON::Object();
+	set("queue", jsonQueue);
+	jsonQueue->set("name", q.name());
+	jsonQueue->set("curdepth", curdepth);
 
 	std::string messageId;
 	if ( parameters.size() > 2 )
@@ -654,7 +658,6 @@ void MessageController::event()
 				break;
 			}
 		}
-		set("limited", limit != -1 && count < curdepth);
 	}
 
 	if ( format().compare("html") == 0 )

@@ -23,6 +23,12 @@ $(document).ready(function() {
 				messagesModel.error(null);
 				return true;
 			},
+			error: function (request, status, error)
+			{
+				alert(status);
+				//self.loading(false);
+				//TODO: Handle Error on page
+			},
 		success: function(data) {
 			messagesModel.loading(false);
 			if ( data.error )
