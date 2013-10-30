@@ -6,13 +6,20 @@ MQWeb - Administer Websphere MQ with a browser
 Building MQWeb
 --------------
 
-1. Get Poco 1.5 from http://pocoproject.org
-   Build and install it
-2. Get premake4 from http://industriousone.com/premake and install it
+1. Get [Poco 1.5.2](http://pocoproject.org/releases/poco-1.5.2). 
+   Poco 1.5.2 is still a development release but it is stable to run
+   with MQWeb. Build Poco. You can install the libraries, but it's no
+   requirement (see 4).
+   
+   **Remark:** Please apply this [patch](https://github.com/fbraem/poco/commit/1cb2823d2241005ecc53bbff33932916bf669f38) to correct the handle of 
+   unicode characters in JSON.
+   
+2. Get premake4 from http://industriousone.com/premake and install it.
 3. Unzip the mqweb archive and go to the root directory of mqweb.
-4. Open premake4.lua and see if you need to change the paths for the POCO and MQ include/lib folders
-5. Run premake4 with a target (vs2008, codelite, gmake, ...)
-6. Build mqweb with the target you specified in step 4.
+4. Open premake4.lua and see if you need to change the paths for the POCO and 
+   MQ include/lib folders.
+5. Run premake4 with a target (vs2008, codelite, gmake, ...).
+6. Build mqweb with the target you specified in step 5.
 7. Create mqweb.properties in the directory that contains the mqweb executable
    and change the following properties:
 
@@ -21,7 +28,6 @@ Building MQWeb
     mq.web.templates=<full path to folder where the mqweb templates are stored>
     mq.web.port=<port number>
 ```
-
 
    When mq.web.port is omitted, 8081 will be used.
 
@@ -95,6 +101,24 @@ logging.loggers.l3.channel.class=FileChannel
 logging.loggers.l3.channel.pattern=%Y-%m-%d %H:%M:%S *** %t
 logging.loggers.l3.channel.path=${application.dir}/access.log
 ```
+
+Protecting MQWeb
+----------------
+
+MQWeb can be configured to allow or deny incoming requests. First the incoming
+IP address is checked against all mq.web.allow addresses. Next when the IP
+address is allowed, the IP address is checked against all configured mq.web.deny
+addresses. When nothing is configured, MQWeb will allow all incoming requests.
+
+This example allows access from IP-addresses starting with 10 or 11. But denies
+all IP addresses starting with 10.192.
+
+```
+  mq.web.allow.ip1=10*
+  mq.web.allow.ip2=11*
+  mq.web.deny.ip1=10\.192*
+```
+The value of the property must be a valid regular expression.
 
 Third Party Software
 --------------------
