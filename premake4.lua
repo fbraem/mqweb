@@ -11,11 +11,11 @@ end
 -- Where is POCO?
 
 -- only set this when you didn't install POCO (you didn't run 'install make')
---poco_dir = "/home/bronx/Development/PocoTrunk"
+--poco_dir = "/home/bronx/Development/poco"
 --poco_lib_dir = poco_dir .. "/shared/lib/Linux/i686"
 
-poco_dir = "c:\\development\\poco-1.5.2-release"
-poco_lib_dir = poco_dir .. "\\lib"
+--poco_dir = "c:\\development\\poco-1.5.2-release"
+--poco_lib_dir = poco_dir .. "\\lib"
 
 -- Try to find POCO ourselves when the directory is not set
 if not poco_dir or #poco_dir == 0 then
