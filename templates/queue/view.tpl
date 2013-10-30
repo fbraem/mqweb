@@ -15,6 +15,7 @@
 <!-- Sidebar -->
 <div id="sidebar">
 	<div class="box">
+	<!--
 		<h3>Our	Services</h3>
 		<ul>
 			<li><a title="List Queues	Containing Messages" href="#">List Non-empty Queues</a></li>
@@ -23,6 +24,7 @@
 			<li><a title="Popular	belief lorem"	href="#">Popular belief	lorem</a></li>
 			<li><a title="Ipsum	is not simply" href="#">Ipsum	is not simply</a></li>
 		</ul>
+	-->
 	</div>
 </div>
 <!-- END Sidebar -->
