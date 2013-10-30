@@ -498,11 +498,7 @@ void MessageController::event()
 		return;
 	}
 
-	Poco::JSON::Array::Ptr jsonEvents = new Poco::JSON::Array();
-	set("events", jsonEvents);
-
 	std::string queueName = parameters[1];
-
 	Queue q(qmgr(), queueName);
 	q.open(MQOO_INQUIRE | MQOO_BROWSE | MQBND_BIND_ON_OPEN);
 
@@ -602,6 +598,9 @@ void MessageController::event()
 			Poco::NumberParser::tryParse(form().get("limit"), limit);
 		}
 
+		Poco::JSON::Array::Ptr jsonEvents = new Poco::JSON::Array();
+		set("events", jsonEvents);
+
 		int count = 0;
 		while(1)
 		{
@@ -634,23 +633,18 @@ void MessageController::event()
 			message.buffer().resize(message.dataLength());
 			message.init();
 
-			Poco::JSON::Object::Ptr jsonEvent = new Poco::JSON::Object();
-			jsonEvents->add(jsonEvent);
+			Poco::JSON::Object::Ptr jsonEventMessage = new Poco::JSON::Object();
+			jsonEvents->add(jsonEventMessage);
+			
+			Poco::JSON::Object::Ptr jsonMessage = new Poco::JSON::Object();
+			jsonEventMessage->set("message", jsonMessage);
+			mapMessageToJSON(message, *jsonMessage);
 
+			Poco::JSON::Object::Ptr jsonEvent = new Poco::JSON::Object();
+			jsonEventMessage->set("event", jsonEvent);
 			jsonEvent->set("reason", message.getReasonCode());
 			jsonEvent->set("desc", MQMapper::getReasonString(message.getReasonCode()));
-			jsonEvent->set("putDate", Poco::DateTimeFormatter::format(message.getPutDate(), "%d-%m-%Y %H:%M:%S"));
-			BufferPtr id = message.getMessageId();
-			std::stringstream hexId;
-			for(int i = 0; i < id->size(); ++i)
-			{
-				hexId << std::setw(2) << std::setfill('0') << std::hex << std::uppercase << (int) (*id)[i];
-			}
-			jsonEvent->set("id", hexId.str());
-
-			Poco::JSON::Object::Ptr jsonEventFields = new Poco::JSON::Object();
-			jsonEvent->set("fields", jsonEventFields);
-			MQMapper::mapToJSON(message, jsonEventFields);
+			MQMapper::mapToJSON(message, jsonEvent);
 
 			count++;
 			if ( limit != -1 && count == limit )
