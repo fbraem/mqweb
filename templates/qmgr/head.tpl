@@ -264,6 +264,8 @@
 						self.events(data.events);
 						self.count(data.events.length);
 						self.curdepth(data.queue.curdepth);
+						
+						eventTips();
 					}
 				},
 				error: function (request, status, error)
@@ -285,11 +287,11 @@
 
 	$(document).ready(function()
 	{
-		$("[qtip-content").qtip({ 
+		$("[data-qtip]").qtip({ 
 			content : { 
 				text: function(event, api) 
 					{
-          	return $(this).attr('qtip-content');
+          	return $(this).attr('data-qtip');
         	},
         title: function(event, api) 
 					{
@@ -315,4 +317,28 @@
 		viewModel.channelModel.load();
 		viewModel.eventMessageModel.load();
 	});
+</script>
+<script type="text/javascript">
+function eventTips()
+{
+	$('[data-url]').qtip({
+	    content: {
+	        text: function(event, api) {
+	            $.ajax({
+	                url: $(this).data('url') // Use data-url attribute for the URL
+	            })
+	            .then(function(content) {
+	                // Set the tooltip content upon successful retrieval
+	                api.set('content.text', content);
+	            }, function(xhr, status, error) {
+	                // Upon failure... set the tooltip content to the status and error value
+	                api.set('content.text', status + ': ' + error);
+	            });
+	
+	            return 'Loading...'; // Set some initial text
+	        },
+	        title: "SYSTEM.ADMIN.QMGR.EVENT"
+	    }
+	});
+}
 </script>

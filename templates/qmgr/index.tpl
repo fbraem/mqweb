@@ -99,7 +99,7 @@
 	<div class="col activities">
 		<div id="localQueues">
 			<a href="#" onclick="viewModel.localQueueModel.load();return false;"><img class="imgtip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
-			<h3 qtip-content="This is a list with local queues that contains at least one message.<br /><br />System queues and transmission queues are omitted.">Local Queues</h3>
+			<h3 data-qtip="This is a list with local queues that contains at least one message.<br /><br />System queues and transmission queues are omitted.">Local Queues</h3>
 			<table data-bind="if:localQueueModel.queues" style="font-size:0.8em;border-collapse:collapse;">
 				<thead>
 					<tr><th>Queue</th><th>Depth</th></tr>
@@ -121,7 +121,7 @@
 	<div class="col activities">
 		<div id="xmitQueues">
 			<a href="#" onclick="viewModel.xmitQueueModel.load();return false;"><img class="imgtip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
-			<h3 qtip-content="This is a list with transmission queues (USAGE=XMITQ) that contains at least one message.<br /><br />Normally, this list is empty when no channels has problems.">Transmission Queues</h3>
+			<h3 data-qtip="This is a list with transmission queues (USAGE=XMITQ) that contains at least one message.<br /><br />Normally, this list is empty when no channels has problems.">Transmission Queues</h3>
 			<table data-bind="if: xmitQueueModel.queues" style="font-size:0.8em;border-collapse:collapse;">
 				<thead>
 					<tr><th>Queue</th><th>Depth</th></tr>
@@ -141,7 +141,7 @@
 	</div> <!-- activities -->
 	<div class="col activities">
 		<a href="#" onclick="viewModel.channelModel.load();return false;"><img class="imgtip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
-		<h3 qtip-content="This is a list with active channel statuses.">Channel Status</h3>
+		<h3 data-qtip="This is a list with active channel statuses.">Channel Status</h3>
 		<div id="channels">
 			<table data-bind="if: channelModel.channels" style="font-size:0.8em;border-collapse:collapse;">
 				<thead>
@@ -180,9 +180,9 @@
 					</thead>
 					<tbody data-bind="foreach: eventMessageModel.events">
 						<tr>
-							<td data-bind="text: putDate" />
-							<td data-bind="text: reason" />
-							<td data-bind="text: desc" />
+							<td data-bind="text: message.PutDate" />
+							<td data-bind="text: event.reason" />
+							<td><span data-bind="attr: {'data-url': '/message/event/<?=mqweb.qmgr ?>/SYSTEM.ADMIN.QMGR.EVENT/' + message.MsgId }, text: event.desc" />
 						</tr>
 					</tbody>
 				</table>
