@@ -329,15 +329,23 @@ function eventTips()
 	            })
 	            .then(function(content) {
 	                // Set the tooltip content upon successful retrieval
-	                api.set('content.text', content);
+	                var contentDOM = $(content);
+	                // When a title id is found, use it as qtip title and make
+	                // the title invisible.
+	                var titleElement = contentDOM.find("#eventTitle");
+	                if ( titleElement )
+	                {
+	                	titleElement.hide();
+	                	api.set('content.title', titleElement.text());
+	                }
+	                api.set('content.text', contentDOM.html());
 	            }, function(xhr, status, error) {
 	                // Upon failure... set the tooltip content to the status and error value
 	                api.set('content.text', status + ': ' + error);
 	            });
 	
 	            return 'Loading...'; // Set some initial text
-	        },
-	        title: "SYSTEM.ADMIN.QMGR.EVENT"
+	        }
 	    }
 	});
 }
