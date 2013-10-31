@@ -181,8 +181,8 @@
 					<tbody data-bind="foreach: eventMessageModel.events">
 						<tr>
 							<td data-bind="text: message.PutDate" />
-							<td data-bind="text: event.reason" />
-							<td><span data-bind="attr: {'data-url': '/message/event/<?=mqweb.qmgr ?>/SYSTEM.ADMIN.QMGR.EVENT/' + message.MsgId }, text: event.desc" />
+							<td data-bind="text: reason.code" />
+							<td><span data-bind="attr: {'data-url': '/message/event/<?=mqweb.qmgr ?>/SYSTEM.ADMIN.QMGR.EVENT/' + message.MsgId }, text: reason.desc" />
 						</tr>
 					</tbody>
 				</table>
