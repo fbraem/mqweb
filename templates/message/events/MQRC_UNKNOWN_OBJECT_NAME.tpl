@@ -4,8 +4,10 @@
   <ul style="margin-left:30px;margin-bottom:10px">
    <li>Blank</li>
    <li>The name of the local queue manager</li>
-   <li>The name of a local definition of a remote queue (a queue-manager alias) in which the RemoteQMgrName attribute is the name of the local queue manager. However, the ObjectName in the object descriptor is not recognized for the specified object type.</li>
-  </ul>
+   <li>The name of a local definition of a remote queue (a queue-manager alias) in which the RemoteQMgrName attribute is the name of the local queue manager.</li>
+   </ul>
+   <p style="margin-bottom:10px;">However, the ObjectName in the object descriptor is not recognized for the specified object type.
+   </p>
  <div class="details">
   <h2>Put DateTime:</h2>
   <div class="detail"><?= message.PutDate ?></div>
