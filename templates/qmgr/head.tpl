@@ -2,12 +2,12 @@
 	var QmgrModel = function()
 	{
 		var self = this;
-		
+
 		self.mqweb = ko.observable(null);
 		self.qmgr = ko.observable(null);
 		self.error = ko.observable(null);
 		self.loading = ko.observable(false);
-		
+
 		this.load = function()
 			{
 				$.ajax(
@@ -35,15 +35,15 @@
 				});
 			};
 	}
-	
+
 	var LocalQueueModel = function()
 	{
 		var self = this;
-		
+
 		self.queues = ko.observable(null);
 		self.loading = ko.observable(false);
 		self.error = ko.observable(null);
-		
+
 		this.load = function()
 			{
 				$.ajax(
@@ -91,15 +91,15 @@
 			};
 
 	}
-	
+
 	var XmitQueueModel = function()
 	{
 		var self = this;
-		
+
 		self.loading = ko.observable(false);
 		self.queues = ko.observable(null);
 		self.error = ko.observable(null);
-		
+
 		this.load = function()
 			{
 				$.ajax(
@@ -164,11 +164,11 @@
 	var ChannelModel = function()
 	{
 		var self = this;
-		
+
 		self.loading = ko.observable(false);
 		self.channels = ko.observable(null);
 		self.error = ko.observable(null);
-		
+
 		self.load = function()
 		{
 			$.ajax(
@@ -194,25 +194,18 @@
 						{
 							// Only keep unique channel statuses
 							var statuses = new Array();
-						  var channels = new Array();
+							var channels = new Array();
 
 							for(status in data.statuses)
 							{
-							  if ( $.inArray(data.statuses[status].ChannelName.value, channels) == -1 )
-							  {
-							  	channels.push(data.statuses[status].ChannelName.value);
-							  	statuses.push(data.statuses[status]);
-							  }
+							if ( $.inArray(data.statuses[status].ChannelName.value, channels) == -1 )
+							{
+								channels.push(data.statuses[status].ChannelName.value);
+								statuses.push(data.statuses[status]);
 							}
-							
+							}
+
 							self.channels(statuses);
-/*						
-							$(".tip").qtip({ 
-								content : { 
-									attr : 'alt' 
-								}
-							});
-*/							
 						}
 					}
 				},
@@ -235,12 +228,12 @@
 		self.count = ko.observable(0);
 		self.curdepth = ko.observable(0);
 		self.partialView = ko.computed(function() { return (!self.loading()) && self.count() < self.curdepth(); }, self);
-		
+
 		self.load = function()
 		{
 			$.ajax(
 			{
-				beforeSend: function() 
+				beforeSend: function()
 				{
 					self.events(null);
 					self.error(null);
@@ -254,7 +247,7 @@
 				success: function(data)
 				{
 					self.loading(false);
-	
+
 					if ( data.error )
 					{
 						self.error(data.error);
@@ -264,7 +257,7 @@
 						self.events(data.events);
 						self.count(data.events.length);
 						self.curdepth(data.queue.curdepth);
-						
+
 						eventTips();
 					}
 				},
@@ -287,28 +280,28 @@
 
 	$(document).ready(function()
 	{
-		$("[data-qtip]").qtip({ 
-			content : { 
-				text: function(event, api) 
+		$("[data-qtip]").qtip({
+			content : {
+				text: function(event, api)
 					{
-          	return $(this).attr('data-qtip');
-        	},
-        title: function(event, api) 
+			return $(this).attr('data-qtip');
+			},
+		title: function(event, api)
 					{
-          	return $(this).text();
-        	}
+			return $(this).text();
+			}
 			},
 			position: {
 				my: 'bottom center',
 				at: 'top center'
 			}
 		});
-		$(".imgtip").qtip({ 
-			content : { 
+		$(".imgtip").qtip({
+			content : {
 				attr: 'alt'
 			}
 		});
-		
+
 		ko.applyBindings(viewModel);
 
 		viewModel.qmgrModel.load();
@@ -322,23 +315,35 @@
 function eventTips()
 {
 	$('[data-url]').qtip({
-	    content: {
-	        text: function(event, api) {
-	            $.ajax({
-	                url: $(this).data('url') // Use data-url attribute for the URL
-	            })
-	            .then(function(content) {
-	                // Set the tooltip content upon successful retrieval
-	                api.set('content.text', content);
-	            }, function(xhr, status, error) {
-	                // Upon failure... set the tooltip content to the status and error value
-	                api.set('content.text', status + ': ' + error);
-	            });
-	
-	            return 'Loading...'; // Set some initial text
-	        },
-	        title: "SYSTEM.ADMIN.QMGR.EVENT"
-	    }
+		position: {
+			my: 'bottom left',
+			at: 'top right'
+		},
+		content: {
+			text: function(event, api) {
+				$.ajax({
+					url: $(this).data('url') // Use data-url attribute for the URL
+				})
+				.then(function(content) {
+					// Set the tooltip content upon successful retrieval
+					var contentDOM = $(content);
+					// When a title id is found, use it as qtip title and make
+					// the title invisible.
+					var titleElement = contentDOM.find("#eventTitle");
+					if ( titleElement )
+					{
+						titleElement.hide();
+						api.set('content.title', titleElement.text());
+					}
+					api.set('content.text', contentDOM.html());
+				}, function(xhr, status, error) {
+					// Upon failure... set the tooltip content to the status and error value
+					api.set('content.text', status + ': ' + error);
+				});
+
+				return 'Loading...'; // Set some initial text
+			}
+		}
 	});
 }
 </script>

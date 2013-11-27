@@ -50,10 +50,10 @@
 				<a href="/queue/view/<?= mqweb.qmgr ?>/<?= queue.BackoutRequeueName.value ?>" data-bind="text: BackoutRequeueName.value" /> - Threshold: <span data-bind="text: BackoutThreshold.value" /> - Harden: <span data-bind="text:HardenGetBackout.display" />
 			</div> <!-- detail -->
 		</div>
-		<div data-bind="if: $data.BaseQName">
+		<div data-bind="if: $data.BaseObjectName">
 			<h2>Target Queue:</h2>
 			<div class="detail">
-				<a href="/queue/view/<?= mqweb.qmgr ?>/<?= queue.BaseQName.value ?>" data-bind="text: BaseQName.value" />
+				<a href="/queue/view/<?= mqweb.qmgr ?>/<?= queue.BaseObjectName.value ?>" data-bind="text: BaseObjectName.value" />
 			</div> <!-- detail -->
 		</div>
 		<div data-bind="if: $data.DefBind">

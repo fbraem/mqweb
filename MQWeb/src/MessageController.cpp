@@ -545,16 +545,19 @@ void MessageController::event()
 		message.buffer().resize(message.dataLength());
 		message.init();
 
+		Poco::JSON::Object::Ptr jsonMessage = new Poco::JSON::Object();
+		set("message", jsonMessage);
+		mapMessageToJSON(message, *jsonMessage);
+
+		Poco::JSON::Object::Ptr jsonEvent = new Poco::JSON::Object();
+		set("event", jsonEvent);
+		MQMapper::mapToJSON(message, jsonEvent);
+
 		Poco::JSON::Object::Ptr jsonReason = new Poco::JSON::Object();
 		set("reason", jsonReason);
 		jsonReason->set("code", message.getReasonCode());
 		std::string reasonCodeStr = MQMapper::getReasonString(message.getReasonCode());
 		jsonReason->set("desc", reasonCodeStr);
-
-		Poco::JSON::Object::Ptr jsonEvent = new Poco::JSON::Object();
-		set("event", jsonEvent);
-		jsonEvent->set("putDate", Poco::DateTimeFormatter::format(message.getPutDate(), "%d-%m-%Y %H:%M:%S"));
-		MQMapper::mapToJSON(message, jsonEvent);
 
 		std::string templateName;
 		if ( message.getReasonCode() == MQRC_NOT_AUTHORIZED )
@@ -635,16 +638,19 @@ void MessageController::event()
 
 			Poco::JSON::Object::Ptr jsonEventMessage = new Poco::JSON::Object();
 			jsonEvents->add(jsonEventMessage);
-			
+
 			Poco::JSON::Object::Ptr jsonMessage = new Poco::JSON::Object();
 			jsonEventMessage->set("message", jsonMessage);
 			mapMessageToJSON(message, *jsonMessage);
 
 			Poco::JSON::Object::Ptr jsonEvent = new Poco::JSON::Object();
 			jsonEventMessage->set("event", jsonEvent);
-			jsonEvent->set("reason", message.getReasonCode());
-			jsonEvent->set("desc", MQMapper::getReasonString(message.getReasonCode()));
 			MQMapper::mapToJSON(message, jsonEvent);
+
+			Poco::JSON::Object::Ptr jsonReason = new Poco::JSON::Object();
+			jsonEventMessage->set("reason", jsonReason);
+			jsonReason->set("code", message.getReasonCode());
+			jsonReason->set("desc", MQMapper::getReasonString(message.getReasonCode()));
 
 			count++;
 			if ( limit != -1 && count == limit )

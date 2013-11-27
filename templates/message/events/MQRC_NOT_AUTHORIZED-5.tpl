@@ -1,8 +1,8 @@
 <div style="padding:5px;">
  <h2 id="eventTitle" style="margin-bottom:10px;">MQRC_NOT_AUTHORIZED</h2>
- <h3>Not Authorized (type 2)</h3>
+ <h3>Not Authorized (type 5)</h3>
  <p style="margin-bottom:10px;">
-  On an MQOPEN or MQPUT1 call, the user is not authorized to open the object for the options specified.
+  On an MQSUB call, the user is not authorized to subscribe to the specified topic.
  </p>
  <div class="details">
   <h2>Put DateTime:</h2>
@@ -15,9 +15,17 @@
   <div class="detail">
    <?= event.QMgrName.value ?>
   </div>
-  <h2>Queue Name:</h2>
+  <h2>Options:</h2>
   <div class="detail">
-   <?= event.QName.value ?>
+   <?= event.Options.value" ?>
+  </div>
+  <h2>Topic:</h2>
+  <div class="detail">
+   <?= event.TopicString.value ?>
+  </div>
+  <h2>Topic Administration Objects:</h2>
+  <div class="detail">
+   <?= event.AdminTopicNames.value ?>
   </div>
   <h2>User</h2>
   <div class="detail">

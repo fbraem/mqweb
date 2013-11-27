@@ -1,8 +1,9 @@
 <div style="padding:5px;">
- <h2 id="eventTitle" style="margin-bottom:10px;">MQRC_NOT_AUTHORIZED</h2>
- <h3>Not Authorized (type 2)</h3>
+ <h2 id="eventTitle" style="margin-bottom:10px;">MQRC_ALIAS_BASE_Q_TYPE_ERROR</h2>
  <p style="margin-bottom:10px;">
-  On an MQOPEN or MQPUT1 call, the user is not authorized to open the object for the options specified.
+  An MQOPEN or MQPUT1 call was issued specifying an alias queue as the destination, but 
+  the BaseObjectName in the alias queue definition resolves to a queue that is not a local 
+  queue, or local definition of a remote queue. 
  </p>
  <div class="details">
   <h2>Put DateTime:</h2>
@@ -19,9 +20,13 @@
   <div class="detail">
    <?= event.QName.value ?>
   </div>
-  <h2>User</h2>
+  <h2>Base Object Name:</h2>
   <div class="detail">
-   <?= event.UserIdentifier.value ?>
+   <?= event.BaseObjectName.value ?>
+  </div>
+  <h2>Queue Type:</h2>
+  <div class="detail">
+   <?= event.QType.display ?>
   </div>
   <h2>Application Type</h2>
   <div class="detail">
