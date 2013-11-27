@@ -3,6 +3,7 @@
 <head>
 	<title>MQWeb - <?= mqweb.qmgr ?></title>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE" />
 	<link rel="shortcut icon" href="/static/css/images/favicon.ico" />
 	<link rel="stylesheet" href="/static/css/style.css" type="text/css" media="all" />
 	<link rel="stylesheet" href="/static/css/jquery.qtip.css" type="text/css" media="all" />
