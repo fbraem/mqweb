@@ -59,7 +59,7 @@
 	<img data-bind="attr: { alt : 'The channel ' + ChannelName.value + ' has status Running' }" class="tip" src="/static/images/flag-green-icon.png" />
 </script>
 <script type="text/html" id="mqChannelStatusOtherFlag">
-	<img data-bind="attr: { alt : 'The channel ' + ChannelName.value + ' has status ' + ChannelStatus.display }" class="tip" src="/static/images/flag-red-yellow.png" />
+	<img data-bind="attr: { alt : 'The channel ' + ChannelName.value + ' has status ' + ChannelStatus.display }" class="tip" src="/static/images/flag-yellow-icon.png" />
 </script>
 <div id="content">
 	<div class="post">
