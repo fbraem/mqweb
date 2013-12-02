@@ -126,7 +126,7 @@ Customize MQWeb
 You can change the templates which come with MQWeb to get another view, but
 you can also use MQWeb as a proxy to WebSphere MQ. All controllers and actions
 can return JSON which can be handled in your favourite servers-side language.
-URL's to the MQWeb controllers / actions has allows the same structure:
+URL's to the MQWeb controllers / actions has allways the same structure:
 
 ```
   http://<host:8081>/<controller>/<action>/<param1>/<param2> ...
