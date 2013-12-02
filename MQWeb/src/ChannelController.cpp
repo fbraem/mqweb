@@ -18,16 +18,16 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <Poco/DateTimeFormatter.h>
-#include <Poco/Net/HTMLForm.h>
-#include <Poco/URI.h>
+#include "Poco/DateTimeFormatter.h"
+#include "Poco/Net/HTMLForm.h"
+#include "Poco/URI.h"
 
-#include <MQ/Web/MQController.h>
-#include <MQ/Web/ChannelController.h>
-#include <MQ/Web/ChannelMapper.h>
-#include <MQ/Web/ChannelStatusMapper.h>
-#include <MQ/Web/MultiView.h>
-#include <MQ/Web/JSONView.h>
+#include "MQ/Web/MQController.h"
+#include "MQ/Web/ChannelController.h"
+#include "MQ/Web/ChannelMapper.h"
+#include "MQ/Web/ChannelStatusMapper.h"
+#include "MQ/Web/MultiView.h"
+#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -44,7 +44,12 @@ ChannelController::~ChannelController()
 
 }
 
-
+/**
+ * URL: channel/index/<qmgrName>
+ *
+ * Returns an HTML page with a form for inquiring channels.
+ * No JSON action available.
+ */
 void ChannelController::index()
 {
 	Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
@@ -53,7 +58,20 @@ void ChannelController::index()
 	setView(multiView);
 }
 
-
+/**
+ * URL: channel/list/<qmgrName>
+ * Query string parameters:
+ *   + channelName: Name of the channel (* by default)
+ *   + channelType: The type of the channel (All by default)
+ *        Possible values: All, Sender, Server, Receiver, Requester,
+ *        Server-connection, Client-connection, Cluster-receiver,
+ *        Cluster-sender.
+ *   + channelExcludeSystem: 0 includes, 1 excludes the system channels from the list.
+ *
+ * List all channels with their current state.
+ *
+ * When the format is HTML, a redirect occurs to the index action.
+ */
 void ChannelController::list()
 {
 	if ( format().compare("html") == 0 )
@@ -133,6 +151,16 @@ void ChannelController::list()
 }
 
 
+/**
+ * URL: channel/view/<qmgrName>/<channelName>/<channelType>
+ *   Possible values for channelType: Sender, Server, Receiver, Requester,
+ *   Server-connection, Client-connection, Cluster-receiver, Cluster-sender.
+ *
+ * Get all details for a channel.
+ *
+ * When the format is HTML, an HTML page will be returned which calls this
+ * action again to get the data in JSON format.
+ */
 void ChannelController::view()
 {
 	std::vector<std::string> parameters = getParameters();
