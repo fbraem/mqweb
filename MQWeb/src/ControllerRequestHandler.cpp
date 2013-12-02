@@ -55,12 +55,20 @@ void ControllerRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& reque
 	}
 
 	poco_trace_f1(Poco::Logger::get("mq.web"), "MQ Controller: %s", controllerName);
-	Poco::SharedPtr<Controller> controller = _controllerFactory.createInstance(controllerName);
-	if ( controller.isNull() )
+	try
 	{
-		//TODO: redirect to error page!
+		Poco::SharedPtr<Controller> controller = _controllerFactory.createInstance(controllerName);
+		if ( controller.isNull() )
+		{
+			//TODO: redirect to error page!
+		}
+		controller->handle(paths, request, response);
 	}
-	controller->handle(paths, request, response);
+	catch(Poco::NotFoundException&)
+	{
+		response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_NOT_FOUND, "Unknown controller");
+		response.send();
+	}
 }
 
 
