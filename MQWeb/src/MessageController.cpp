@@ -22,22 +22,22 @@
 #include <sstream>
 #include <iomanip>
 
-#include <Poco/DateTimeFormatter.h>
-#include <Poco/Net/HTMLForm.h>
-#include <Poco/URI.h>
-#include <Poco/Logger.h>
-#include <Poco/HexBinaryEncoder.h>
-#include <Poco/JSON/Query.h>
+#include "Poco/DateTimeFormatter.h"
+#include "Poco/Net/HTMLForm.h"
+#include "Poco/URI.h"
+#include "Poco/Logger.h"
+#include "Poco/HexBinaryEncoder.h"
+#include "Poco/JSON/Query.h"
 
-#include <MQ/Web/MessageController.h>
-#include <MQ/Web/QueueMapper.h>
-#include <MQ/Web/MultiView.h>
-#include <MQ/Web/JSONView.h>
-#include <MQ/MQException.h>
-#include <MQ/Message.h>
-#include <MQ/QueueManager.h>
-#include <MQ/Queue.h>
-#include <MQ/Buffer.h>
+#include "MQ/Web/MessageController.h"
+#include "MQ/Web/QueueMapper.h"
+#include "MQ/Web/MultiView.h"
+#include "MQ/Web/JSONView.h"
+#include "MQ/MQException.h"
+#include "MQ/Message.h"
+#include "MQ/QueueManager.h"
+#include "MQ/Queue.h"
+#include "MQ/Buffer.h"
 
 static unsigned char EBCDIC_translate_ASCII[256] =
 {
@@ -175,6 +175,12 @@ MessageController::~MessageController()
 {
 }
 
+/**
+ * URL: message/index/<qmgrName>/<queueName>
+ *
+ * Shows a HTML form for browsing messages from a queue.
+ * There is no JSON format available.
+ */
 void MessageController::index()
 {
 	std::vector<std::string> parameters = getParameters();
@@ -192,6 +198,12 @@ void MessageController::index()
 	setView(multiView);
 }
 
+/**
+ * URL: message/list/<qmgrName>/<queueName>
+ *
+ * Returns all messages. When HTML format is requested, the request
+ * will be redirected to the index action.
+ */
 void MessageController::list()
 {
 	std::vector<std::string> parameters = getParameters();

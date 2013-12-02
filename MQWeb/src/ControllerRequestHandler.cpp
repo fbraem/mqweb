@@ -18,14 +18,14 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <MQ/Web/ControllerRequestHandler.h>
-#include <MQ/Web/QueueController.h>
-#include <MQ/Web/QueueManagerController.h>
-#include <MQ/Web/ChannelController.h>
-#include <MQ/Web/ChannelStatusController.h>
-#include <MQ/Web/MessageController.h>
+#include "MQ/Web/ControllerRequestHandler.h"
+#include "MQ/Web/QueueController.h"
+#include "MQ/Web/QueueManagerController.h"
+#include "MQ/Web/ChannelController.h"
+#include "MQ/Web/ChannelStatusController.h"
+#include "MQ/Web/MessageController.h"
 
-#include <Poco/URI.h>
+#include "Poco/URI.h"
 
 namespace MQ {
 namespace Web {

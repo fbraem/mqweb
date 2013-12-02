@@ -1,7 +1,7 @@
 /*
  * Copyright 2010 MQWeb - Franky Braem
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they
+ * Licensed under the EUPL, Version 1.1 or Â– as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the
@@ -18,16 +18,16 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <Poco/DateTimeFormatter.h>
-#include <Poco/Net/HTMLForm.h>
-#include <Poco/URI.h>
+#include "Poco/DateTimeFormatter.h"
+#include "Poco/Net/HTMLForm.h"
+#include "Poco/URI.h"
 
-#include <MQ/Web/MQController.h>
-#include <MQ/Web/ChannelStatusController.h>
-#include <MQ/Web/ChannelMapper.h>
-#include <MQ/Web/ChannelStatusMapper.h>
-#include <MQ/Web/MultiView.h>
-#include <MQ/Web/JSONView.h>
+#include "MQ/Web/MQController.h"
+#include "MQ/Web/ChannelStatusController.h"
+#include "MQ/Web/ChannelMapper.h"
+#include "MQ/Web/ChannelStatusMapper.h"
+#include "MQ/Web/MultiView.h"
+#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -44,7 +44,18 @@ ChannelStatusController::~ChannelStatusController()
 
 }
 
-
+/**
+ * URL: chs/list/<qmgrName>
+ *
+ * Extra query string parameters:
+ *   + channelName
+ *   + channelType: The type of the channel (All by default)
+ *        Possible values: All, Sender, Server, Receiver, Requester,
+ *        Server-connection, Client-connection, Cluster-receiver,
+ *        Cluster-sender.
+ *
+ * Returns a list of channel statuses.
+ */
 void ChannelStatusController::list()
 {
 	Poco::Net::HTMLForm form(request(), request().stream());

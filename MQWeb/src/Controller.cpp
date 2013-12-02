@@ -20,15 +20,15 @@
  */
 #include <sstream>
 
-#include <MQ/Web/Controller.h>
-#include <MQ/MQSubsystem.h>
+#include "MQ/Web/Controller.h"
+#include "MQ/MQSubsystem.h"
 
-#include <Poco/Util/Application.h>
-#include <Poco/NullStream.h>
-#include <Poco/StreamCopier.h>
-#include <Poco/URI.h>
+#include "Poco/Util/Application.h"
+#include "Poco/NullStream.h"
+#include "Poco/StreamCopier.h"
+#include "Poco/URI.h"
 
-#include <Poco/JSON/TemplateCache.h>
+#include "Poco/JSON/TemplateCache.h"
 
 namespace MQ
 {

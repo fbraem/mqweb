@@ -18,18 +18,18 @@
 * See the Licence for the specific language governing
 * permissions and limitations under the Licence.
 */
-#include <MQ/MQSubsystem.h>
-#include <MQ/Web/Application.h>
-#include <MQ/Web/RequestHandlerFactory.h>
+#include "MQ/MQSubsystem.h"
+#include "MQ/Web/Application.h"
+#include "MQ/Web/RequestHandlerFactory.h"
 
-#include <Poco/Net/HTTPServer.h>
-#include <Poco/Net/HTTPServerParams.h>
-#include <Poco/Net/HTTPServerRequest.h>
-#include <Poco/Net/HTTPServerResponse.h>
-#include <Poco/Net/HTTPServerParams.h>
+#include "Poco/Net/HTTPServer.h"
+#include "Poco/Net/HTTPServerParams.h"
+#include "Poco/Net/HTTPServerRequest.h"
+#include "Poco/Net/HTTPServerResponse.h"
+#include "Poco/Net/HTTPServerParams.h"
 
-#include <Poco/Logger.h>
-#include <Poco/File.h>
+#include "Poco/Logger.h"
+#include "Poco/File.h"
 
 #include <iostream>
 
