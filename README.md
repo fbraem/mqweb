@@ -120,12 +120,40 @@ all IP addresses starting with 10.192.
 ```
 The value of the property must be a valid regular expression.
 
+Customize MQWeb
+---------------
+
+You can change the templates which come with MQWeb to get another view, but
+you can also use MQWeb as a proxy to WebSphere MQ. All controllers and actions
+can return JSON which can be handled in your favourite servers-side language.
+URL's to the MQWeb controllers / actions has allows the same structure:
+
+```
+  http://<host:8081>/<controller>/<action>/<param1>/<param2> ...
+```
+
+By default MQWeb will return the build-in HTML, but when you use .json as 
+suffix for <action>, MQWeb will return the data as JSON. The following example
+will return queue details for TEST.Q01 on queuemanager PIGEON:
+
+```
+  http://localhost:8081/queue/view.json/PIGEON/TEST.Q01
+```
+
+When the controller/action is not yet available, you can open an issue request 
+on https://github.com/fbraem/mqweb or implement it yourself and create a pull
+request.
+
 Third Party Software
 --------------------
 
-To bring you a view on your queuemanager in your favorite browser, MQWeb uses the following software:
+To bring you a view on your queuemanager in your favorite browser, MQWeb uses 
+the following software:
 
+The mqweb process:
 + [POCO](http://pocoproject.org) is used to write the portable HTTP server in C++, the core of MQWeb.
+
+The build-in HTML pages
 + [jQuery](http://jquery.org) is a fast, small and feature-rich JavaScript library. It eases the HTML document traversal and manipulation, JSON requests, ...
 + [jQuery UI](http://jqueryui.com) is a curated set of user interface interactions, effects, widgets, and themes built on top of the jQuery JavaScript Library.
 + [KnockoutJS](http://knockoutjs.com/) is used to render the JSON, received from the HTTP server, on the client. Rendering on the client makes it possible to write HTML pages without touching the core of MQWeb.
