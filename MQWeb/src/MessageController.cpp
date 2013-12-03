@@ -295,6 +295,13 @@ void MessageController::list()
 }
 
 
+/**
+ * URL: message/view/<qmgrName>/<queueName>/<msgId>
+ *
+ * Browse the message.
+ * When the format is HTML, an HTML page will be returned which calls this
+ * action again to get the data in JSON format.
+ */
 void MessageController::view()
 {
 	std::vector<std::string> parameters = getParameters();
@@ -350,6 +357,15 @@ void MessageController::view()
 }
 
 
+/**
+ * URL: message/dump/<qmgrName>/<queueName>/<msgId>
+ *
+ * Browse the message and returns the data in hex, ASCII and EBCDIC format.
+ * When the format is HTML, an HTML page will be returned which calls this
+ * action again to get the data in JSON format.
+ *
+ * Currently the message size is restricted to 16K.
+ */
 void MessageController::dump()
 {
 	std::vector<std::string> parameters = getParameters();
@@ -518,6 +534,13 @@ void MessageController::dump()
 }
 
 
+/**
+ * URL: message/event/<qmgrName>/<queueName>[/<msgId>]
+ *
+ * List all event messages (when <msgId> is omitted) or
+ * browses one event message. A JSON and HTML response is
+ * supported.
+ */
 void MessageController::event()
 {
 	std::vector<std::string> parameters = getParameters();
@@ -585,6 +608,12 @@ void MessageController::event()
 		set("event", jsonEvent);
 		jsonEvent->set("putDate", Poco::DateTimeFormatter::format(message.getPutDate(), "%d-%m-%Y %H:%M:%S"));
 		MQMapper::mapToJSON(message, jsonEvent);
+
+		if ( format().compare("json") == 0 )
+		{
+			setView(new JSONView());
+			return;
+		}
 
 		std::string templateName;
 		if ( message.getReasonCode() == MQRC_NOT_AUTHORIZED )
