@@ -21,8 +21,8 @@
 #ifndef _MQ_MQSubsystem_h
 #define _MQ_MQSubsystem_h
 
-#include <Poco/Util/Subsystem.h>
-#include <MQ/MQFunctions.h>
+#include "Poco/Util/Subsystem.h"
+#include "MQ/MQFunctions.h"
 
 namespace MQ
 {

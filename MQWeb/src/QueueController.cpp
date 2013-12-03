@@ -18,14 +18,14 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <Poco/DateTimeFormatter.h>
-#include <Poco/URI.h>
-#include <Poco/Net/HTMLForm.h>
+#include "Poco/DateTimeFormatter.h"
+#include "Poco/URI.h"
+#include "Poco/Net/HTMLForm.h"
 
-#include <MQ/Web/QueueController.h>
-#include <MQ/Web/QueueMapper.h>
-#include <MQ/Web/MultiView.h>
-#include <MQ/Web/JSONView.h>
+#include "MQ/Web/QueueController.h"
+#include "MQ/Web/QueueMapper.h"
+#include "MQ/Web/MultiView.h"
+#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -42,7 +42,12 @@ QueueController::~QueueController()
 {
 }
 
-
+/**
+ * URL: queue/index/<qmgrName>
+ *
+ * Shows a form for displaying queues.
+ * Only HTML format is supported.
+ */
 void QueueController::index()
 {
 	Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
@@ -51,7 +56,18 @@ void QueueController::index()
 	setView(multiView);
 }
 
-
+/**
+ * URL: queue/list/<qmgrName>
+ *
+ * Query Parameters:
+ *   + queueName: Name of the queue (* is default).
+ *   + queueDepth: Only select queues which has at least queueDepth messages.
+ *   + queueUsage: xmitq or normal (default is normal)
+ *   + type: queue type. Possible values: All, Local, Alias, Cluster, Model or Remote (default is All)
+ *
+ * List all queues. When HTML format is requested the
+ * request is redirect to the index action.
+ */
 void QueueController::list()
 {
 	if ( format().compare("html") == 0 )
@@ -115,6 +131,11 @@ void QueueController::list()
 }
 
 
+/**
+ * URL: queue/view/<qmgrName>/<queueName>
+ *
+ * Get details of the given queue.
+ */
 void QueueController::view()
 {
 	std::vector<std::string> parameters = getParameters();

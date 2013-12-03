@@ -18,9 +18,9 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <MQ/Web/MQMapper.h>
+#include "MQ/Web/MQMapper.h"
 
-#include <Poco/JSON/Object.h>
+#include "Poco/JSON/Object.h"
 
 namespace MQ {
 namespace Web {

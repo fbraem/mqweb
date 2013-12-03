@@ -28,9 +28,9 @@
 #include <map>
 #include <vector>
 
-#include <Poco/DateTime.h>
+#include "Poco/DateTime.h"
 
-#include <MQ/Message.h>
+#include "MQ/Message.h"
 
 namespace MQ {
 

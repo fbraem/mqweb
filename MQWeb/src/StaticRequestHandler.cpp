@@ -19,19 +19,19 @@
  * permissions and limitations under the Licence.
  */
 
-#include <MQ/Web/StaticRequestHandler.h>
+#include "MQ/Web/StaticRequestHandler.h"
 
-#include <Poco/Net/HTTPRequestHandlerFactory.h>
-#include <Poco/Net/HTTPServerRequest.h>
-#include <Poco/Net/HTTPServerResponse.h>
-#include <Poco/DateTimeFormat.h>
-#include <Poco/DateTimeParser.h>
+#include "Poco/Net/HTTPRequestHandlerFactory.h"
+#include "Poco/Net/HTTPServerRequest.h"
+#include "Poco/Net/HTTPServerResponse.h"
+#include "Poco/DateTimeFormat.h"
+#include "Poco/DateTimeParser.h"
 
-#include <Poco/Util/Application.h>
+#include "Poco/Util/Application.h"
 
-#include <Poco/URI.h>
-#include <Poco/Path.h>
-#include <Poco/File.h>
+#include "Poco/URI.h"
+#include "Poco/Path.h"
+#include "Poco/File.h"
 
 namespace MQ
 {

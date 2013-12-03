@@ -26,11 +26,11 @@
 
 #include <string.h>
 
-#include <Poco/String.h>
-#include <Poco/SharedPtr.h>
-#include <Poco/Buffer.h>
+#include "Poco/String.h"
+#include "Poco/SharedPtr.h"
+#include "Poco/Buffer.h"
 
-#include <MQ/Buffer.h>
+#include "MQ/Buffer.h"
 
 namespace MQ {
 

@@ -18,9 +18,9 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <MQ/Web/QueueMapper.h>
-#include <MQ/Web/Dictionary.h>
-#include <MQ/MQException.h>
+#include "MQ/Web/QueueMapper.h"
+#include "MQ/Web/Dictionary.h"
+#include "MQ/MQException.h"
 
 namespace MQ {
 namespace Web {

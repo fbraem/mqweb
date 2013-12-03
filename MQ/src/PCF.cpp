@@ -19,9 +19,11 @@
  * permissions and limitations under the Licence.
  */
 #include <string.h> // For memcpy
-#include <Poco/DateTimeParser.h>
 #include <cmqc.h>
-#include <MQ/PCF.h>
+
+#include "Poco/DateTimeParser.h"
+#include "MQ/PCF.h"
+
 namespace MQ
 {
 

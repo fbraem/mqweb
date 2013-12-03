@@ -18,12 +18,10 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <sstream>
-
-#include <MQ/Web/QueueManagerController.h>
-#include <MQ/Web/QueueManagerMapper.h>
-#include <MQ/Web/MultiView.h>
-#include <MQ/Web/JSONView.h>
+#include "MQ/Web/QueueManagerController.h"
+#include "MQ/Web/QueueManagerMapper.h"
+#include "MQ/Web/MultiView.h"
+#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -41,6 +39,11 @@ QueueManagerController::~QueueManagerController()
 }
 
 
+/**
+ * URL: qmgr/index/<qmgrName>
+ *
+ * Returns HTML page for queuemanager details.
+ */
 void QueueManagerController::index()
 {
 	Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
@@ -48,8 +51,11 @@ void QueueManagerController::index()
 	multiView->add("main", new TemplateView("qmgr/index.tpl"));
 	setView(multiView);
 }
-
-
+/**
+ * URL: qmgr/view/<qmgrName>
+ *
+ * Get details of the given queuemanager in JSON format.
+ */
 void QueueManagerController::view()
 {
 	QueueManagerMapper queueManagerMapper(*commandServer());

@@ -18,10 +18,10 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <MQ/Web/QueueManagerMapper.h>
-#include <MQ/MQException.h>
+#include "MQ/Web/QueueManagerMapper.h"
+#include "MQ/MQException.h"
 
-#include <Poco/JSON/Object.h>
+#include "Poco/JSON/Object.h"
 
 namespace MQ {
 namespace Web {

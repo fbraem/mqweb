@@ -21,10 +21,10 @@
 #ifndef _MQWeb_MQMapper_H
 #define _MQWeb_MQMapper_H
 
-#include <MQ/Web/Mapper.h>
-#include <MQ/Web/Dictionary.h>
+#include "MQ/Web/Mapper.h"
+#include "MQ/Web/Dictionary.h"
 
-#include <MQ/CommandServer.h>
+#include "MQ/CommandServer.h"
 
 namespace MQ {
 namespace Web {

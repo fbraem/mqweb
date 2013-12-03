@@ -18,14 +18,14 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <Poco/Util/Application.h>
-#include <Poco/JSON/Object.h>
+#include "Poco/Util/Application.h"
+#include "Poco/JSON/Object.h"
 
-#include <MQ/Web/MQController.h>
-#include <MQ/MQSubsystem.h>
-#include <MQ/MQException.h>
-#include <MQ/Web/TemplateView.h>
-#include <MQ/Web/JSONView.h>
+#include "MQ/Web/MQController.h"
+#include "MQ/MQSubsystem.h"
+#include "MQ/MQException.h"
+#include "MQ/Web/TemplateView.h"
+#include "MQ/Web/JSONView.h"
 
 namespace MQ {
 namespace Web {

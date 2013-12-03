@@ -21,7 +21,7 @@
 #ifndef _MQWeb_QueueManagerMapper_H
 #define _MQWeb_QueueManagerMapper_H
 
-#include <MQ/Web/MQMapper.h>
+#include "MQ/Web/MQMapper.h"
 
 namespace MQ {
 namespace Web {

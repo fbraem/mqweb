@@ -22,8 +22,8 @@
 #ifndef _MQWeb_ChannelStatusController_h
 #define _MQWeb_ChannelStatusController_h
 
-#include <MQ/Web/MQController.h>
-#include <MQ/Web/MapInitializer.h>
+#include "MQ/Web/MQController.h"
+#include "MQ/Web/MapInitializer.h"
 
 namespace MQ {
 namespace Web {

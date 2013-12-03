@@ -22,12 +22,12 @@
 #ifndef _MQWeb_Application_H
 #define _MQWeb_Application_H
 
-#include <Poco/Util/ServerApplication.h>
-#include <Poco/Util/Option.h>
-#include <Poco/Util/OptionSet.h>
-#include <Poco/Util/HelpFormatter.h>
+#include "Poco/Util/ServerApplication.h"
+#include "Poco/Util/Option.h"
+#include "Poco/Util/OptionSet.h"
+#include "Poco/Util/HelpFormatter.h"
 
-#include <Poco/JSON/TemplateCache.h>
+#include "Poco/JSON/TemplateCache.h"
 
 class MQWebApplication : public Poco::Util::ServerApplication
 	/// The MQWeb server application

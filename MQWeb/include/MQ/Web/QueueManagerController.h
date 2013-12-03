@@ -22,8 +22,8 @@
 #ifndef _MQWeb_QueueManagerController_h
 #define _MQWeb_QueueManagerController_h
 
-#include <MQ/Web/MQController.h>
-#include <MQ/Web/MapInitializer.h>
+#include "MQ/Web/MQController.h"
+#include "MQ/Web/MapInitializer.h"
 
 namespace MQ
 {

@@ -21,12 +21,12 @@
 
 #include <iostream>
 
-#include <MQ/Queue.h>
-#include <MQ/QueueManager.h>
-#include <MQ/MQException.h>
-#include <MQ/CommandServer.h>
-#include <MQ/Message.h>
-#include <MQ/PCF.h>
+#include "MQ/Queue.h"
+#include "MQ/QueueManager.h"
+#include "MQ/MQException.h"
+#include "MQ/CommandServer.h"
+#include "MQ/Message.h"
+#include "MQ/PCF.h"
 
 // For now we do this, in the future we solve this
 // by rebrowsing the message when we get a MQRC_TRUNCATE...

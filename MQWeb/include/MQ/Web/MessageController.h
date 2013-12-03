@@ -22,8 +22,8 @@
 #ifndef _MQWeb_MessageController_h
 #define _MQWeb_MessageController_h
 
-#include <MQ/Web/MQController.h>
-#include <MQ/Web/Dictionary.h>
+#include "MQ/Web/MQController.h"
+#include "MQ/Web/Dictionary.h"
 
 namespace MQ
 {

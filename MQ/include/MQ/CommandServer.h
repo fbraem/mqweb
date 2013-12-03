@@ -25,11 +25,11 @@
 #include <cmqc.h>
 #include <vector>
 
-#include <MQ/QueueManager.h>
-#include <MQ/Queue.h>
-#include <MQ/PCF.h>
+#include "MQ/QueueManager.h"
+#include "MQ/Queue.h"
+#include "MQ/PCF.h"
 
-#include <Poco/SharedPtr.h>
+#include "Poco/SharedPtr.h"
 
 namespace MQ {
 

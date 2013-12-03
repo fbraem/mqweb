@@ -18,9 +18,10 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <MQ/MQSubsystem.h>
-#include <Poco/Util/Application.h>
 #include <iostream>
+
+#include "MQ/MQSubsystem.h"
+#include "Poco/Util/Application.h"
 
 namespace MQ
 {
