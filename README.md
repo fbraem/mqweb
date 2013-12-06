@@ -49,14 +49,14 @@ Running MQWeb
    move the configuration file mqweb.properties to this directory.
    
    On Unix platforms, MQWeb can be optionally run as a daemon by giving the 
-   —daemon command line option. A daemon, when launched, immediately forks off 
+   --daemon command line option. A daemon, when launched, immediately forks off 
    a background process that does the actual work. After launching the 
    background process, the foreground process exits. The current working 
    directory for the daemon process is changed to the root directory ("/"), as 
    it is common practice for daemon processes. Therefore, be careful when 
    configuring the paths for logfiles. When MQWeb doesn't run in the background
    it probably means the logfiles can't be accessed. When running as a daemon, 
-   specifying the —pidfile option (e.g., —pidfile=/var/run/mqweb.pid) may be 
+   specifying the —pidfile option (e.g.,--pidfile=/var/run/mqweb.pid) may be 
    useful to record the process ID of the daemon in a file. The PID file will 
    be removed when the daemon process terminates (but not, if it crashes).
 
