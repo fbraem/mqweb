@@ -34,7 +34,33 @@ Building MQWeb
 Running MQWeb
 -------------
 
-1. By default mqweb connects in bindings mode. This can be changed by 
+1. On Windows platforms MQWeb can run as a Windows service. To register MQWeb
+   with the  Windows Service Control Manager (SCM). Start MQWeb from the command 
+   line, with the /registerService option specified. This causes the application 
+   to register itself with the SCM, and then exit. Similarly, an application 
+   registered as a service can be unregistered, by specifying the 
+   /unregisterService option. The file name of the application executable 
+   (excluding the .exe suffix) is used as the service name. Additionally, a more 
+   user-friendly name can be specified, using the /displayName option (e.g., 
+   /displayName="MQWeb Service") and a service description can be added with the 
+   /description option. The startup mode (automatic or manual) for the service 
+   can be specified with the /startup option. Note that the working directory 
+   for an application running as a service is the Windows system directory. So
+   move the configuration file mqweb.properties to this directory.
+   
+   On Unix platforms, MQWeb can be optionally run as a daemon by giving the 
+   —daemon command line option. A daemon, when launched, immediately forks off 
+   a background process that does the actual work. After launching the 
+   background process, the foreground process exits. The current working 
+   directory for the daemon process is changed to the root directory ("/"), as 
+   it is common practice for daemon processes. Therefore, be careful when 
+   configuring the paths for logfiles. When MQWeb doesn't run in the background
+   it probably means the logfiles can't be accessed. When running as a daemon, 
+   specifying the —pidfile option (e.g., —pidfile=/var/run/mqweb.pid) may be 
+   useful to record the process ID of the daemon in a file. The PID file will 
+   be removed when the daemon process terminates (but not, if it crashes).
+
+2. By default mqweb connects in bindings mode. This can be changed by 
    setting the mq.mode property to 'client' and to configure Websphere MQ 
    client or mqweb. 
    
@@ -57,14 +83,14 @@ Running MQWeb
    &lt;channelName&gt; is the name of the server connection channel. When no channel
    property is set, SYSTEM.DEFAULT.SVRCONN will be used as default.
    
-2. When no name is passed in the URL, mqweb will try to connect to the default
+3. When no name is passed in the URL, mqweb will try to connect to the default
    queuemanager. In bindings mode this is done by connecting with a blank
    queuemanager name. In client mode this can be configured by setting
    mq.web.defaultQmgr property. When this property doesn't exist, mqweb will 
    try to connect with "*" and hopes that a client channel definition table 
    is configured.
    
-3. To get the replies from the command server, MQWeb needs a queue where the replies
+4. To get the replies from the command server, MQWeb needs a queue where the replies
    are put. By default a temporary queue based on the model queue SYSTEM.DEFAULT.MODEL.QUEUE
    is used, but this behaviour can be changed by setting the mq.web.reply property or the
    reply property of a queuemanager.
