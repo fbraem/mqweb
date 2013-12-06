@@ -1,3 +1,7 @@
+0.0.9
+  - Limit browse of messages to 16K
+  - To ease installation, switched to statically linked POCO
+
 0.0.8
   - Solve bug #4 Chars shift on messagecontroller.
   - Show EBCDIC/ASCII in message hex view

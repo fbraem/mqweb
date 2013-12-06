@@ -58,19 +58,19 @@ project "MQWeb"
   configuration "Debug"
     links { 
               "mqd"
-            , "PocoJSONd"
             , "PocoNetd" 
             , "PocoUtild"
+            , "PocoJSONd"
             , "PocoXMLd" 
-            , "PocoFoundationd" 
+            , "PocoFoundationd"
           }
   
   configuration "Release"
     links { 
               "mq"
-            , "PocoJSON"
             , "PocoNet" 
             , "PocoUtil"
+            , "PocoJSON"
             , "PocoXML" 
             , "PocoFoundation"
           }
@@ -88,5 +88,11 @@ project "MQWeb"
             , "user32"
             , "wsock32" 
             , "iphlpapi"
+          }
+
+  configuration "linux"
+    links {
+              "pthread"
+            , "dl"
           }
 
