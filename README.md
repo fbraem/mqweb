@@ -60,6 +60,22 @@ Running MQWeb
    useful to record the process ID of the daemon in a file. The PID file will 
    be removed when the daemon process terminates (but not, if it crashes).
 
+   It's also possible to use a Websphere MQ service object to start MQWeb
+   automatically when a queuemanager is started. The following sample defines
+   a MQWEB service:
+```
+   DEFINE SERVICE(MQWEB) DESCR('MQWeb Daemon') CONTROL(STARTONLY) +
+   SERVTYPE(SERVER) STARTCMD('/opt/mqweb/mqweb') +
+   STARTARG('--daemon --qmgr PIGEON')
+```
+   When the queuemanager PIGEON is started, the MQWeb daemon will also start.
+   When you have multiple queuemanagers, use the --port argument to specify
+   a unique port for the MQWeb HTTP listener. This sample doesn't include a way
+   to stop the MQWeb daemon. On Unix you can use the --pidfile argument and
+   use the pidfile for knowing which process to kill. When MQWeb is not stopped,
+   another run will immediately end because it will get a "Net Exception:
+   Address already in use".
+
 2. By default mqweb connects in bindings mode. This can be changed by 
    setting the mq.mode property to 'client' and to configure Websphere MQ 
    client or mqweb. 

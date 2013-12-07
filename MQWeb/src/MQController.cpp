@@ -53,19 +53,29 @@ void MQController::beforeAction()
 
 	_mqwebData->set("client", mqSystem.client());
 
-	if ( parameters.size() > 0 )
+	if ( config.hasProperty("mq.web.qmgr") )
 	{
-		_qmgr = new QueueManager(parameters[0]);
+		// When a queuemanager is passed on the command line, we always
+		// connect to this queuemanager. When the user specified another
+		// queuemanager on the URL, it will be ignored.
+		_qmgr = new QueueManager(config.getString("mqweb.options.qmgr"));
 	}
 	else
 	{
-		if ( mqSystem.client() )
+		if ( parameters.size() > 0 )
 		{
-			_qmgr = new QueueManager(config.getString("mq.web.defaultQmgr", "*"));
+			_qmgr = new QueueManager(parameters[0]);
 		}
-		else // In bindings mode we can connect to the default queuemanager
+		else
 		{
-			_qmgr = new QueueManager();
+			if ( mqSystem.client() )
+			{
+				_qmgr = new QueueManager(config.getString("mq.web.defaultQmgr", "*"));
+			}
+			else // In bindings mode we can connect to the default queuemanager
+			{
+				_qmgr = new QueueManager();
+			}
 		}
 	}
 
