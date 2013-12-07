@@ -63,13 +63,11 @@ Running MQWeb
    It's also possible to use a Websphere MQ service object to start MQWeb
    automatically when a queuemanager is started. The following sample defines
    a MQWEB service:
-   
 ```
    DEFINE SERVICE(MQWEB) DESCR('MQWeb Daemon') CONTROL(STARTONLY) +
    SERVTYPE(SERVER) STARTCMD('/opt/mqweb/mqweb') +
    STARTARG('--daemon --qmgr PIGEON')
 ```
-
    When the queuemanager PIGEON is started, the MQWeb daemon will also start.
    When you have multiple queuemanagers, use the --port argument to specify
    a unique port for the MQWeb HTTP listener. This sample doesn't include a way
