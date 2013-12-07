@@ -55,7 +55,7 @@ void MQWebApplication::initialize(Application& self)
 	}
 	catch(Poco::NotFoundException& nfe)
 	{
-	// We can get here when some log configuration is not available
+		// We can get here when some log configuration is not available
 		std::cout << "Please check your logger configuration because we got a NotFoundException for " << nfe.message() << std::endl;
 	}
 }
@@ -75,6 +75,20 @@ void MQWebApplication::defineOptions(Poco::Util::OptionSet& options)
 	Option("help", "h", "display help information on command line arguments")
 		.required(false)
 		.repeatable(false));
+
+	options.addOption(
+	Option("qmgr", "m", "connect only to this queuemanager")
+		.required(false)
+		.repeatable(false)
+		.binding("mq.web.qmgr")
+		.argument("name"));
+
+	options.addOption(
+	Option("port", "p", "Port for HTTP listener")
+		.required(false)
+		.repeatable(false)
+		.binding("mq.web.port")
+		.argument("port"));
 }
 
 void MQWebApplication::handleOption(const std::string& name, const std::string& value)
