@@ -6,10 +6,9 @@ MQWeb - Administer Websphere MQ with a browser
 Building MQWeb
 --------------
 
-1. Get [Poco 1.5.2](http://pocoproject.org/releases/poco-1.5.2). 
-   Poco 1.5.2 is still a development release but it is stable to run
-   with MQWeb. Build Poco. You can install the libraries, but it's no
-   requirement (see 4).
+1. Get [POCO 1.5.2](http://pocoproject.org/releases/poco-1.5.2). 
+   POCO 1.5.2 is still a development release but it is stable to run
+   with MQWeb. Build the POCO static libraries. 
    
    **Remark:** Please apply this [patch](https://github.com/fbraem/poco/commit/1cb2823d2241005ecc53bbff33932916bf669f38) to correct the handle of 
    unicode characters in JSON.
