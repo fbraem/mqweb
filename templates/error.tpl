@@ -3,7 +3,7 @@
 <head>
  <title>MQWeb - ERROR</title>
  <link href="/static/css/style.css" rel="stylesheet" type="text/css"/>
- <script src="/static/js/jquery-1.9.1.min.js" type="text/javascript"> </script>
+ <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
  <script src="/static/js/center.js" type="text/javascript"> </script>
  <script type="text/javascript">
   jQuery(document).ready(function()
