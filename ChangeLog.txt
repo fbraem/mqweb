@@ -1,6 +1,8 @@
 0.0.9
   - Limit browse of messages to 16K
   - To ease installation, switched to statically linked POCO
+  - DEFINE SERVICE(MQWEB) is now possible using the new --qmgr and --port
+    command line arguments.
 
 0.0.8
   - Solve bug #4 Chars shift on messagecontroller.
