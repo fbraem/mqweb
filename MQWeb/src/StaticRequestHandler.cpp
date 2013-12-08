@@ -117,7 +117,7 @@ void StaticRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, 
       }
       else if ( staticPath.getExtension().compare("js") == 0 )
       {
-        mimeType = "text/plain";
+        mimeType = "text/javascript";
       }
       else if ( staticPath.getExtension().compare("png") == 0 )
       {
