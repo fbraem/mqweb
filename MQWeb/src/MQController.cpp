@@ -58,7 +58,7 @@ void MQController::beforeAction()
 		// When a queuemanager is passed on the command line, we always
 		// connect to this queuemanager. When the user specified another
 		// queuemanager on the URL, it will be ignored.
-		_qmgr = new QueueManager(config.getString("mqweb.options.qmgr"));
+		_qmgr = new QueueManager(config.getString("mq.web.qmgr"));
 	}
 	else
 	{
