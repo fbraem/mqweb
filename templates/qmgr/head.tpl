@@ -1,149 +1,107 @@
 <script type="text/javascript">
-	var QmgrModel = function()
-	{
-		var self = this;
 
-		self.mqweb = ko.observable(null);
-		self.qmgr = ko.observable(null);
-		self.error = ko.observable(null);
-		self.loading = ko.observable(false);
+var mqWebApp = angular.module('mqWebApp',[]);
+  
+mqWebApp.controller('QmgrController', ['$scope', '$http', function($scope, $http) {
+	$scope.loading = false;
+	$scope.mqweb = null;
+	$scope.qmgr = null;
+	$scope.error = null;
 
-		this.load = function()
-			{
-				$.ajax(
-				{
-					beforeSend: function() {
-						self.mqweb(null);
-						self.qmgr(null);
-						self.error(null);
-						self.loading(true);
-					},
-					url: "/qmgr/view.json/<?= mqweb.qmgr ?>",
-					cache: false,
-					dataType: "json",
-					success: function(data) {
-						self.loading(false);
-						self.mqweb(data.mqweb);
-						self.qmgr(data.qmgr);
-						self.error(data.error);
-					},
-					error: function (request, status, error)
-					{
-						self.loading(false);
-						//TODO: Handle Error on page
-					}
-				});
-			};
-	}
+	$scope.load = function() {
+		$scope.loading = true;
+		$http.get('/qmgr/view.json/<?= mqweb.qmgr ?>') 
+			.success(function(data, status) {
+				$scope.loading = false;
+				$scope.mqweb = data.mqweb;
+				$scope.qmgr = data.qmgr;
+				$scope.error = data.error;
+			}).error(function(data, status) {
+				$scope.loading = false;
+		});
+	};
+	
+	$scope.load();
+}]);
 
-	var LocalQueueModel = function()
-	{
-		var self = this;
+mqWebApp.controller('LocalQueueController', ['$scope', '$http', function($scope, $http) {
+	$scope.loading = false;
+	$scope.mqweb = null;
+	$scope.queues = null;
+	$scope.error = null;
 
-		self.queues = ko.observable(null);
-		self.loading = ko.observable(false);
-		self.error = ko.observable(null);
+	$scope.load = function() {
+		$scope.loading = true;
+		$http.get('/queue/list.json/<?= mqweb.qmgr ?>', {
+			data : {
+				queueDepth : 1,
+				queueExcludeSystem: 1,
+				queueUsage : "normal",
+				queueExcludeTemp : 1
+			}
+		}).success(function(data, status) {
+			$scope.loading = false;
+			$scope.mqweb = data.mqweb;
+			$scope.queues = data.queues;
+			$scope.error = data.error;
+		}).error(function(data, status) {
+			$scope.loading = false;
+		});
+	};
+	
+	$scope.load();
+}]);
 
-		this.load = function()
-			{
-				$.ajax(
-				{
-					beforeSend: function() {
-						self.queues(null);
-						self.error(null);
-						self.loading(true);
-					},
-					url: "/queue/list.json/<?= mqweb.qmgr ?>",
-					data : {
-						queueDepth : 1,
-						queueExcludeSystem: 1,
-						queueUsage : "normal",
-						queueExcludeTemp : 1
-					},
-					cache: false,
-					dataType: "json",
-					success: function(data) {
-						self.loading(false);
-						if ( data.error )
-						{
-							self.error(data.error);
-						}
-						else
-						{
-							if ( data.queues.length > 0 )
-							{
-								for(q in data.queues)
-								{
-									data.queues[q].url = '/queue/view/<?=mqweb.qmgr?>/' + data.queues[q].QName.value;
-								}
-								self.queues(data.queues);
-							}
-						}
-					},
-					error: function (request, status, error)
-					{
-						self.loading(false);
-						self.error(null);
-						self.queues(null);
-						//TODO: $("#localQueues").html("An error occurred while retrieving local queues: " + status + ", " + error);
-					}
-				});
-			};
+mqWebApp.controller('XmitQueueController', ['$scope', '$http', function($scope, $http) {
+	$scope.loading = false;
+	$scope.mqweb = null;
+	$scope.queues = null;
+	$scope.error = null;
 
-	}
+	$scope.load = function() {
+		$scope.loading = true;
+		$http.get('/queue/list.json/<?= mqweb.qmgr ?>', {
+			data : {
+				queueDepth : 1,
+				queueExcludeSystem: 0,
+				queueUsage : "xmitq"
+			}
+		}).success(function(data, status) {
+			$scope.loading = false;
+			$scope.mqweb = data.mqweb;
+			$scope.queues = data.queues;
+			$scope.error = data.error;
+		}).error(function(data, status) {
+			$scope.loading = false;
+		});
+	};
+	
+	$scope.load();
+}]);
 
-	var XmitQueueModel = function()
-	{
-		var self = this;
+mqWebApp.controller('ChannelStatusController', ['$scope', '$http', function($scope, $http) {
+	$scope.loading = false;
+	$scope.mqweb = null;
+	$scope.channels = null;
+	$scope.error = null;
 
-		self.loading = ko.observable(false);
-		self.queues = ko.observable(null);
-		self.error = ko.observable(null);
+	$scope.load = function() {
+		$scope.loading = true;
+		$http.get('/chs/list.json/<?= mqweb.qmgr ?>')
+			.success(function(data, status) {
+				$scope.loading = false;
+				$scope.mqweb = data.mqweb;
+				$scope.channels = data.channels;
+				$scope.error = data.error;
+				})
+			.error(function(data, status) {
+				$scope.loading = false;
+			});
+		};
+	$scope.load();
+}]);
 
-		this.load = function()
-			{
-				$.ajax(
-				{
-					beforeSend: function() {
-						self.queues(null);
-						self.error(null);
-						self.loading(true);
-					},
-					url: "/queue/list.json/<?= mqweb.qmgr ?>",
-					data : {
-						queueDepth : 1,
-						queueExcludeSystem: 0,
-						queueUsage : "xmitq"
-					},
-					cache: false,
-					dataType: "json",
-					success: function(data) {
-						self.loading(false);
-						if ( data.error )
-						{
-							self.error(data.error);
-						}
-						else
-						{
-							if ( data.queues.length > 0 )
-							{
-								for(q in data.queues)
-								{
-									data.queues[q].url = '/queue/view/<?=mqweb.qmgr?>/' + data.queues[q].QName.value;
-								}
-								self.queues(data.queues);
-							}
-						}
-					},
-					error: function (request, status, error)
-					{
-						self.loading(false);
-						//TODO: $("#localQueues").html("An error occurred while retrieving local queues: " + status + ", " + error);
-					}
-				});
-			};
-	}
-
+/*
 	function statusImage(status)
 	{
 		if ( status.ChannelStatus.display == 'Retrying' )
@@ -159,63 +117,6 @@
 			return "mqChannelStatusRunningFlag";
 		}
 		return "mqChannelStatusOtherFlag";
-	}
-
-	var ChannelModel = function()
-	{
-		var self = this;
-
-		self.loading = ko.observable(false);
-		self.channels = ko.observable(null);
-		self.error = ko.observable(null);
-
-		self.load = function()
-		{
-			$.ajax(
-			{
-				beforeSend: function() {
-					self.channels(null);
-					self.error(null);
-					self.loading(true);
-				},
-				url: "/chs/list.json/<?= mqweb.qmgr ?>",
-				cache: false,
-				dataType: "json",
-				success: function(data)
-				{
-					self.loading(false);
-					if ( data.error )
-					{
-						self.error(data.error);
-					}
-					else
-					{
-						if ( data.statuses.length > 0 )
-						{
-							// Only keep unique channel statuses
-							var statuses = new Array();
-							var channels = new Array();
-
-							for(status in data.statuses)
-							{
-							if ( $.inArray(data.statuses[status].ChannelName.value, channels) == -1 )
-							{
-								channels.push(data.statuses[status].ChannelName.value);
-								statuses.push(data.statuses[status]);
-							}
-							}
-
-							self.channels(statuses);
-						}
-					}
-				},
-				error: function (request, status, error)
-				{
-					self.loading(false);
-					//TODO: $("#channelStatus").html("An error occurred while retrieving channel status: " + status + ", " + error);
-				}
-			});
-		}
 	}
 
 	var EventMessageModel = function()
@@ -269,15 +170,7 @@
 			});
 		}
 	}
-
-	var viewModel = {
-		qmgrModel : new QmgrModel(),
-		localQueueModel : new LocalQueueModel(),
-		xmitQueueModel : new XmitQueueModel(),
-		channelModel : new ChannelModel(),
-		eventMessageModel : new EventMessageModel()
-	};
-
+*/
 	$(document).ready(function()
 	{
 		$("[data-qtip]").qtip({
@@ -302,13 +195,6 @@
 			}
 		});
 
-		ko.applyBindings(viewModel);
-
-		viewModel.qmgrModel.load();
-		viewModel.localQueueModel.load();
-		viewModel.xmitQueueModel.load();
-		viewModel.channelModel.load();
-		viewModel.eventMessageModel.load();
 	});
 </script>
 <script type="text/javascript">

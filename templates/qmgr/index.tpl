@@ -1,26 +1,45 @@
 <script src="/static/js/number_format.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/html" id="qmgrDetail">
-	<p>
-		<em><span data-bind="text: QMgrDesc.value" /></em>
-	</p>
-	<!-- DETAILS -->
-	<div class="details" style="float:left;width:70%">
-		<div>
-			<h2>QueueManager ID</h2>
-			<div class="detail" data-bind="text: QMgrIdentifier.value"> </div>
-		</div>
-		<div data-bind="if:$data.CreationDate">
-			<h2>Creation Date</h2>
-			<div class="detail">
-				<span data-bind="text: CreationDate.value"> </span>&nbsp;<span data-bind="text: CreationTime.value"> </span>
-			</div>
-		</div>
-		<div data-bind="if:$data.AlterationDate">
-			<h2>Alteration Date</h2>
-			<div class="detail">
-				<span data-bind="text: AlterationDate.value" /> </span>&nbsp;<span data-bind="text: AlterationTime.value"> </span>
-			</div>
-		</div>
+</script>
+<script type="text/html" id="mqChannelStatusRetryingFlag">
+	<img data-bind="attr: { alt : 'The channel ' + ChannelName.value + ' has status Retrying' }" class="tip" src="/static/images/flag-red-icon.png" />
+</script>
+<script type="text/html" id="mqChannelStatusStoppedFlag">
+	<img data-bind="attr: { alt : 'The channel ' + ChannelName.value + ' has status Stopped' }" class="tip" src="/static/images/flag-black-icon.png" />
+</script>
+<script type="text/html" id="mqChannelStatusRunningFlag">
+	<img data-bind="attr: { alt : 'The channel ' + ChannelName.value + ' has status Running' }" class="tip" src="/static/images/flag-green-icon.png" />
+</script>
+<script type="text/html" id="mqChannelStatusOtherFlag">
+	<img data-bind="attr: { alt : 'The channel ' + ChannelName.value + ' has status ' + ChannelStatus.display }" class="tip" src="/static/images/flag-yellow-icon.png" />
+</script>
+<div id="content">
+	<div ng-controller="QmgrController" class="post">
+		<h3>QueueManager <strong><?= mqweb.qmgr ?></strong></h3>
+		<img ng-if="!mqweb.zos" src="/static/css/images/briefcase.jpg" alt="briefcase" />
+		<img ng-if="mqweb.zos" src="/static/images/zos-icon.png" alt="z/OS" title="z/OS" />
+		<div ng-show="qmgr != null">
+			<p>
+				<em><span>{{qmgr.QMgrDesc.value}}</span></em>
+			</p>
+			<!-- DETAILS -->
+			<div class="details" style="float:left;width:70%">
+				<div>
+					<h2>QueueManager ID</h2>
+					<div class="detail">{{qmgr.QMgrIdentifier.value}}</div>
+				</div>
+				<div ng-if="qmgr.CreationDate != null">
+					<h2>Creation Date</h2>
+					<div class="detail">
+						{{qmgr.CreationDate.value}}&nbsp;{{qmgr.CreationTime.value}}
+					</div>
+				</div>
+				<div ng-if="qmgr.AlterationDate != null">
+					<h2>Alteration Date</h2>
+					<div class="detail">
+						{{qmgr.AlterationDate.value}}&nbsp;{{qmgr.AlterationTime.value}}
+					</div>
+				</div>
 		<div data-bind="if:$data.Platform">
 			<h2>Platform</h2>
 			<div class="detail">
@@ -48,31 +67,8 @@
 		</div>
 	</div>
 	<!-- END DETAILS -->
-</script>
-<script type="text/html" id="mqChannelStatusRetryingFlag">
-	<img data-bind="attr: { alt : 'The channel ' + ChannelName.value + ' has status Retrying' }" class="tip" src="/static/images/flag-red-icon.png" />
-</script>
-<script type="text/html" id="mqChannelStatusStoppedFlag">
-	<img data-bind="attr: { alt : 'The channel ' + ChannelName.value + ' has status Stopped' }" class="tip" src="/static/images/flag-black-icon.png" />
-</script>
-<script type="text/html" id="mqChannelStatusRunningFlag">
-	<img data-bind="attr: { alt : 'The channel ' + ChannelName.value + ' has status Running' }" class="tip" src="/static/images/flag-green-icon.png" />
-</script>
-<script type="text/html" id="mqChannelStatusOtherFlag">
-	<img data-bind="attr: { alt : 'The channel ' + ChannelName.value + ' has status ' + ChannelStatus.display }" class="tip" src="/static/images/flag-yellow-icon.png" />
-</script>
-<div id="content">
-	<div class="post">
-		<h3>QueueManager <strong><?= mqweb.qmgr ?></strong></h3>
-		<!-- ko with: qmgrModel.mqweb -->
-	   <img data-bind="visible: !zos" src="/static/css/images/briefcase.jpg" alt="briefcase" />
-	   <img data-bind="visible: zos" src="/static/images/zos-icon.png" alt="z/OS" title="z/OS" />
-	  <!-- /ko -->
-		<div data-bind="if: qmgrModel.qmgr">
-			<div data-bind="template: { name: 'qmgrDetail', data: qmgrModel.qmgr }">
-			</div>
 		</div>
-		<div class="loader" data-bind="visible: qmgrModel.loading"> </div>
+		<div ng-show="loading" class="loader"> </div>
 		<div data-bind="with: qmgrModel.mqweb" style="font-size:0.7em;clear:both;">
 		 It took <span data-bind="text: number_format(elapsed, 2, ',', '.')"> </span> seconds to create this output.
 	  </div>

@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html lang="en-US" xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
+<html ng-app="mqWebApp" lang="en-US" xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
 <head>
 	<title>MQWeb - <?= mqweb.qmgr ?></title>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
@@ -8,22 +8,22 @@
 	<link rel="stylesheet" href="/static/css/style.css" type="text/css" media="all" />
 	<link rel="stylesheet" href="/static/css/jquery.qtip.css" type="text/css" media="all" />
 	<link rel="stylesheet" href="/static/css/ui-lightness/jquery-ui-1.10.3.custom.min.css" type="text/css" media="all" />
-	<script src="/static/js/jquery-1.9.1.min.js" type="text/javascript" charset="utf-8"></script>
-	<script src="/static/js/jquery-ui-1.10.3.custom.min.js" type="text/javascript" charset="utf-8"></script>
-	<script src="/static/js/jquery.qtip.min.js" type="text/javascript" charset="utf-8"></script>
-	<script src="/static/js/knockout-2.2.1.js" type="text/javascript" charset="utf-8"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>	
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 	<script src="/static/js/center.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/static/js/jquery.qtip.min.js" type="text/javascript" charset="utf-8"></script>
 	<?= views.head ?>
 </head>
 <body>
-	<script type="text/html" id="mqErrorTemplate">    
+	<script type="text/ng-template" id="mqErrorTemplate">    
 		<div style="width:380px;margin: 0 auto;padding:10px;border:1px solid red;background-color:#FF9999;">
 			<img  style="float:left;display:block;" src="/static/images/error.png" alt="error" />
 			<div  style="float:left;margin-left:20px;">
-				<strong>Object: </strong><span data-bind="text: object" /><br />
-				<strong>Function: </strong><span data-bind="text: fn" /><br />
-				<strong>Code: </strong><span data-bind="text: code" /><br />
-				<strong>Reason: </strong><span data-bind="text: reason" />
+				<strong>Object: </strong>{{ error.object }}<br />
+				<strong>Function: </strong>{{ error.fn }}<br />
+				<strong>Code: </strong>{{ error.code }}<br />
+				<strong>Reason: </strong>{{ error.reason }}
 			</div>
 			<div  class="cl"> 
 		</div>
