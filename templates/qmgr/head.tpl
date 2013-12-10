@@ -2,7 +2,7 @@
 
 var mqWebApp = angular.module('mqWebApp',[]);
   
-mqWebApp.controller('QmgrController', ['$scope', '$http', function($scope, $http) {
+mqWebApp.controller('QmgrController', function($scope, $http) {
 	$scope.loading = false;
 	$scope.mqweb = null;
 	$scope.qmgr = null;
@@ -22,9 +22,9 @@ mqWebApp.controller('QmgrController', ['$scope', '$http', function($scope, $http
 	};
 	
 	$scope.load();
-}]);
+});
 
-mqWebApp.controller('LocalQueueController', ['$scope', '$http', function($scope, $http) {
+mqWebApp.controller('LocalQueueController', function($scope, $http) {
 	$scope.loading = false;
 	$scope.mqweb = null;
 	$scope.queues = null;
@@ -33,7 +33,7 @@ mqWebApp.controller('LocalQueueController', ['$scope', '$http', function($scope,
 	$scope.load = function() {
 		$scope.loading = true;
 		$http.get('/queue/list.json/<?= mqweb.qmgr ?>', {
-			data : {
+			params : {
 				queueDepth : 1,
 				queueExcludeSystem: 1,
 				queueUsage : "normal",
@@ -50,9 +50,9 @@ mqWebApp.controller('LocalQueueController', ['$scope', '$http', function($scope,
 	};
 	
 	$scope.load();
-}]);
+});
 
-mqWebApp.controller('XmitQueueController', ['$scope', '$http', function($scope, $http) {
+mqWebApp.controller('XmitQueueController', function($scope, $http) {
 	$scope.loading = false;
 	$scope.mqweb = null;
 	$scope.queues = null;
@@ -61,7 +61,7 @@ mqWebApp.controller('XmitQueueController', ['$scope', '$http', function($scope, 
 	$scope.load = function() {
 		$scope.loading = true;
 		$http.get('/queue/list.json/<?= mqweb.qmgr ?>', {
-			data : {
+			params : {
 				queueDepth : 1,
 				queueExcludeSystem: 0,
 				queueUsage : "xmitq"
@@ -77,9 +77,9 @@ mqWebApp.controller('XmitQueueController', ['$scope', '$http', function($scope, 
 	};
 	
 	$scope.load();
-}]);
+});
 
-mqWebApp.controller('ChannelStatusController', ['$scope', '$http', function($scope, $http) {
+mqWebApp.controller('ChannelStatusController', function($scope, $http) {
 	$scope.loading = false;
 	$scope.mqweb = null;
 	$scope.channels = null;
@@ -99,103 +99,55 @@ mqWebApp.controller('ChannelStatusController', ['$scope', '$http', function($sco
 			});
 		};
 	$scope.load();
-}]);
+});
 
-/*
-	function statusImage(status)
-	{
-		if ( status.ChannelStatus.display == 'Retrying' )
-		{
-			return "mqChannelStatusRetryingFlag";
-		}
-		else if ( status.ChannelStatus.display == 'Stopped' )
-		{
-			return "mqChannelStatusStoppedFlag";
-		}
-		else if ( status.ChannelStatus.display == 'Running' )
-		{
-			return "mqChannelStatusRunningFlag";
-		}
-		return "mqChannelStatusOtherFlag";
-	}
+mqWebApp.controller('EventMessageController', function($scope, $http) {
 
-	var EventMessageModel = function()
-	{
-		var self = this;
+	$scope.loading = false;
+	$scope.events = null;
+	$scope.error = null;
+	$scope.curdepth = 0;
 
-		self.loading = ko.observable(false);
-		self.events = ko.observable(null);
-		self.error = ko.observable(null);
-		self.count = ko.observable(0);
-		self.curdepth = ko.observable(0);
-		self.partialView = ko.computed(function() { return (!self.loading()) && self.count() < self.curdepth(); }, self);
-
-		self.load = function()
-		{
-			$.ajax(
-			{
-				beforeSend: function()
-				{
-					self.events(null);
-					self.error(null);
-					self.loading(true);
-					self.count(0);
-					self.curdepth(0);
-				},
-				url: "/message/event.json/<?= mqweb.qmgr  ?>/SYSTEM.ADMIN.QMGR.EVENT?limit=3",
-				cache: false,
-				dataType: "json",
-				success: function(data)
-				{
-					self.loading(false);
-
-					if ( data.error )
-					{
-						self.error(data.error);
-					}
-					else
-					{
-						self.events(data.events);
-						self.count(data.events.length);
-						self.curdepth(data.queue.curdepth);
-
-						eventTips();
-					}
-				},
-				error: function (request, status, error)
-				{
-					self.loading(false);
-					//TODO:$("#eventMessages").html("An error occurred  while retrieving event messages from SYSTEM.ADMIN.QMGR.EVENT: " + status  + ", " + error);
-				}
+	$scope.load = function() {
+		$scope.loading = true;
+		$http.get("/message/event.json/<?= mqweb.qmgr  ?>/SYSTEM.ADMIN.QMGR.EVENT?limit=3")
+			.success(function(data, status) {
+				$scope.loading = false;
+				$scope.error = data.error;
+				$scope.events = data.events;
+				$scope.curdepth = data.queue.curdepth;
+				//eventTips();
+			})
+			.error(function(data, error) {
+				$scope.loading = false;
+				//TODO:$("#eventMessages").html("An error occurred  while retrieving event messages from SYSTEM.ADMIN.QMGR.EVENT: " + status  + ", " + error);
 			});
-		}
-	}
-*/
-	$(document).ready(function()
-	{
-		$("[data-qtip]").qtip({
-			content : {
-				text: function(event, api)
-					{
-			return $(this).attr('data-qtip');
-			},
-		title: function(event, api)
-					{
-			return $(this).text();
-			}
-			},
-			position: {
-				my: 'bottom center',
-				at: 'top center'
-			}
-		});
-		$(".imgtip").qtip({
-			content : {
-				attr: 'alt'
-			}
-		});
+		};
+	$scope.load();
+});
 
+$(document).ready(function()
+{
+	$("[data-qtip]").qtip({
+		content : {
+			text: function(event, api) {
+				return $(this).attr('data-qtip');
+			},
+			title: function(event, api) {
+				return $(this).text();
+			}
+		},
+		position: {
+			my: 'bottom center',
+			at: 'top center'
+		}
 	});
+	$(".imgtip").qtip({
+		content : {
+			attr: 'alt'
+		}
+	});
+});
 </script>
 <script type="text/javascript">
 function eventTips()
