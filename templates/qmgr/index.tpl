@@ -52,7 +52,8 @@
 				</div>
 			</div> <!-- END DETAILS -->
 		</div>
-		<div ng-show="loading" class="loader"> </div>
+		<div ng-show="loading" class="loader"></div>
+		<div ng-if="error != null" ng-include="'/static/html/error.html'"></div>
 		<div style="font-size:0.7em;clear:both;">
 			It took {{mqweb.elapsed}} seconds to create this output.
 		</div>
@@ -83,17 +84,18 @@
 				<thead>
 					<tr><th>Queue</th><th>Depth</th></tr>
 				</thead>
-				<tbody ng-repeat="queue in queues">
-					<tr>
+				<tbody>
+					<tr ng-repeat="queue in queues">
 						<td><a ng-href="/queue/view/<?=mqweb.qmgr?>/{{queue.QName.value}}">{{queue.QName.value}}</a></td>
 						<td>{{queue.CurrentQDepth.value | number}}</td>
 					</tr>
 				</tbody>
 			</table>
-			<p ng-if="queues == null || queues.length == 0">
+			<p ng-if="error == null && (queues == null || queues.length == 0)">
 				There are no local queues which contains messages. System queues were discarded in this view.
 			</p>
 			<div ng-if="loading" class="loader"></div>
+			<div ng-if="error != null" ng-include="'/static/html/error.html'"></div>
 		</div> <!-- localQueues -->
 	</div> <!-- activities -->
 	<div class="col activities">
@@ -104,17 +106,18 @@
 				<thead>
 					<tr><th>Queue</th><th>Depth</th></tr>
 				</thead>
-				<tbody ng-repeat="queue in queues">
-					<tr>
+				<tbody>
+					<tr ng-repeat="queue in queues">
 						<td><a ng-href="/queue/view/<?=mqweb.qmgr?>/{{queue.QName.value}}">{{queue.QName.value}}</a></td>
 						<td>{{queue.CurrentQDepth.value | number}}</td>
 					</tr>
 				</tbody>
 			</table>
-			<p ng-if="queues == null || queues.length == 0">
+			<p ng-if="error == null && (queues == null || queues.length == 0)">
 				All transmission queues are empty.
 			</p>
 			<div ng-if="loading" class="loader"></div>
+			<div ng-if="error != null" ng-include="'/static/html/error.html'"></div>
 		</div> <!-- xmitQueues -->
 	</div> <!-- activities -->
 	<div class="col activities">
@@ -125,8 +128,8 @@
 				<thead>
 					<tr><th colspan="2">Channel</th><th>Status</th></tr>
 				</thead>
-				<tbody ng-repeat="channel in Channels">
-					<tr>
+				<tbody>
+					<tr ng-repeat="channel in Channels">
 						<td ng-switch="ChannelStatus.display">
 							<img ng-switch-when="Retrying" alt="The channel {{ChannelName.value}} has status Retrying" class="tip" src="/static/images/flag-red-icon.png" />
 							<img ng-switch-when="Stopped" alt="The channel {{ChannelName.value}} has status Stopped' }" class="tip" src="/static/images/flag-black-icon.png" />
@@ -139,12 +142,11 @@
 					</tr>
 				</tbody>
 			</table>
-			<div ng-if="channels == null || channels.length == 0">
-			 <p>
+			<p ng-if="error == null && (channels == null || channels.length == 0)">
 				No channel status found.
-			 </p>
-			</div>
+			</p>
 			<div ng-if="loading" class="loader"></div>
+			<div ng-if="error != null" ng-include="'/static/html/error.html'"></div>
 		</div> <!-- channels -->
 	</div> <!-- activities -->
 	<div class="cl"></div>
@@ -161,15 +163,15 @@
 						<th style="text-align:left;" colspan="2">Reason</th>
 					</tr>
 				</thead>
-				<tbody ng-repeat="item in events">
-					<tr>
+				<tbody >
+					<tr ng-repeat="item in events">
 						<td>{{item.message.PutDate}}</td>
 						<td>{{item.event.reason}}</td>
-						<td><span data-url="/message/event/<?=mqweb.qmgr ?>/SYSTEM.ADMIN.QMGR.EVENT/'{{item.message.MsgId}}">{{item.event.desc}}</span>
+						<td mq-event-qtip="/message/event/<?=mqweb.qmgr ?>/SYSTEM.ADMIN.QMGR.EVENT/'{{item.message.MsgId}}">{{item.event.desc}}</td>
 					</tr>
 				</tbody>
 			</table>
-			<p ng-if="events == null || events.length == 0">
+			<p ng-if="error == null && (events == null || events.length == 0)">
 				No event messages found.
 			</p>
 			<p ng-if="events != null && events.length < curdepth" style="margin-top:5px;display:none">
@@ -177,10 +179,7 @@
 				Only the first <strong>{{events.length}}</strong> messages are shown. Use <a href="/queue/view/<?=mqweb.qmgr?>/SYSTEM.ADMIN.QMGR.EVENT">queue detail</a> page to browse all messages.
 			</p>
 			<div ng-if="loading" class="loader"></div>
-			<div>
-				<div data-bind="template: { if: eventMessageModel.error, name: 'mqErrorTemplate', data: eventMessageModel.error }">
-				</div>
-			</div>
+			<div ng-if="error != null" ng-include="'/static/html/error.html'"></div>
 		</div> <!-- eventMessages -->
 		<div class="cl"></div>
 	</div>

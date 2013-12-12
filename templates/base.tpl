@@ -16,18 +16,6 @@
 	<?= views.head ?>
 </head>
 <body>
-	<script type="text/ng-template" id="mqErrorTemplate">    
-		<div style="width:380px;margin: 0 auto;padding:10px;border:1px solid red;background-color:#FF9999;">
-			<img  style="float:left;display:block;" src="/static/images/error.png" alt="error" />
-			<div  style="float:left;margin-left:20px;">
-				<strong>Object: </strong>{{ error.object }}<br />
-				<strong>Function: </strong>{{ error.fn }}<br />
-				<strong>Code: </strong>{{ error.code }}<br />
-				<strong>Reason: </strong>{{ error.reason }}
-			</div>
-			<div  class="cl"> 
-		</div>
-	</script>
 	<div id="wrapper">
 		<div class="shell">
 			<div id="wrapper-top"></div>

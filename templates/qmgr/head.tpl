@@ -1,6 +1,46 @@
 <script type="text/javascript">
 
 var mqWebApp = angular.module('mqWebApp',[]);
+
+mqWebApp.directive('mqEventQtip', function($http, $compile, $templateCache) {
+	return {
+		restrict: 'A',
+		scope : {
+			mqWebURL : '@mqEventQtip'
+		},
+		link : function(scope, element, attrs) {
+			$(element).qtip({
+				position: {
+					my: 'bottom left',
+					at: 'top right'
+				},
+				content: {
+					text: function(event, api) {
+						$http.get(scope.mqWebURL)
+						.success(function(content, status) {
+							// Set the tooltip content upon successful retrieval
+							var contentDOM = $(content);
+							// When a title id is found, use it as qtip title and make
+							// the title invisible.
+							var titleElement = contentDOM.find("#eventTitle");
+							if ( titleElement )
+							{
+								titleElement.hide();
+								api.set('content.title', titleElement.text());
+							}
+							api.set('content.text', contentDOM.html());
+						}).error(function(xhr, status, error) {
+							// Upon failure... set the tooltip content to the status and error value
+							api.set('content.text', status + ': ' + error);
+						});
+		
+						return 'Loading...'; // Set some initial text
+					}
+				}
+			});
+		}
+	}
+});
   
 mqWebApp.controller('QmgrController', function($scope, $http) {
 	$scope.loading = false;
