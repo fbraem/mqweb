@@ -16,7 +16,7 @@ mqWebApp.directive('mqEventQtip', function($http, $compile, $templateCache) {
 				},
 				content: {
 					text: function(event, api) {
-						$http.get(scope.mqWebURL)
+						$http.get(scope.mqWebURL, { cache: false })
 						.success(function(content, status) {
 							// Set the tooltip content upon successful retrieval
 							var contentDOM = $(content);
@@ -50,7 +50,7 @@ mqWebApp.controller('QmgrController', function($scope, $http) {
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get('/qmgr/view.json/<?= mqweb.qmgr ?>') 
+		$http.get('/qmgr/view.json/<?= mqweb.qmgr ?>', { cache: false }) 
 			.success(function(data, status) {
 				$scope.loading = false;
 				$scope.mqweb = data.mqweb;
@@ -73,6 +73,7 @@ mqWebApp.controller('LocalQueueController', function($scope, $http) {
 	$scope.load = function() {
 		$scope.loading = true;
 		$http.get('/queue/list.json/<?= mqweb.qmgr ?>', {
+			cache: false,
 			params : {
 				queueDepth : 1,
 				queueExcludeSystem: 1,
@@ -101,6 +102,7 @@ mqWebApp.controller('XmitQueueController', function($scope, $http) {
 	$scope.load = function() {
 		$scope.loading = true;
 		$http.get('/queue/list.json/<?= mqweb.qmgr ?>', {
+			cache : false,
 			params : {
 				queueDepth : 1,
 				queueExcludeSystem: 0,
@@ -127,7 +129,7 @@ mqWebApp.controller('ChannelStatusController', function($scope, $http) {
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get('/chs/list.json/<?= mqweb.qmgr ?>')
+		$http.get('/chs/list.json/<?= mqweb.qmgr ?>', { cache: false })
 			.success(function(data, status) {
 				$scope.loading = false;
 				$scope.mqweb = data.mqweb;
@@ -150,7 +152,7 @@ mqWebApp.controller('EventMessageController', function($scope, $http) {
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get("/message/event.json/<?= mqweb.qmgr  ?>/SYSTEM.ADMIN.QMGR.EVENT?limit=3")
+		$http.get("/message/event.json/<?= mqweb.qmgr  ?>/SYSTEM.ADMIN.QMGR.EVENT?limit=3", { cache: false })
 			.success(function(data, status) {
 				$scope.loading = false;
 				$scope.error = data.error;
@@ -188,40 +190,4 @@ $(document).ready(function()
 		}
 	});
 });
-</script>
-<script type="text/javascript">
-function eventTips()
-{
-	$('[data-url]').qtip({
-		position: {
-			my: 'bottom left',
-			at: 'top right'
-		},
-		content: {
-			text: function(event, api) {
-				$.ajax({
-					url: $(this).data('url') // Use data-url attribute for the URL
-				})
-				.then(function(content) {
-					// Set the tooltip content upon successful retrieval
-					var contentDOM = $(content);
-					// When a title id is found, use it as qtip title and make
-					// the title invisible.
-					var titleElement = contentDOM.find("#eventTitle");
-					if ( titleElement )
-					{
-						titleElement.hide();
-						api.set('content.title', titleElement.text());
-					}
-					api.set('content.text', contentDOM.html());
-				}, function(xhr, status, error) {
-					// Upon failure... set the tooltip content to the status and error value
-					api.set('content.text', status + ': ' + error);
-				});
-
-				return 'Loading...'; // Set some initial text
-			}
-		}
-	});
-}
 </script>
