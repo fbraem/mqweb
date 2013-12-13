@@ -167,7 +167,7 @@
 					<tr ng-repeat="item in events">
 						<td>{{item.message.PutDate}}</td>
 						<td>{{item.event.reason}}</td>
-						<td mq-event-qtip="/message/event/<?=mqweb.qmgr ?>/SYSTEM.ADMIN.QMGR.EVENT/'{{item.message.MsgId}}">{{item.event.desc}}</td>
+						<td mq-event-qtip="/message/event/<?=mqweb.qmgr ?>/SYSTEM.ADMIN.QMGR.EVENT/{{item.message.MsgId}}">{{item.event.desc}}</td>
 					</tr>
 				</tbody>
 			</table>
