@@ -37,6 +37,9 @@ void JSONView::initializeResponse(Poco::Net::HTTPServerResponse& response)
 {
 	response.setChunkedTransferEncoding(true);
 	response.setContentType("application/json");
+	response.set("Cache-Controle", "no-cache,no-store,must-revalidate"); // HTTP 1.1
+	response.set("Pragma", "no-cache"); // HTTP 1.0
+	response.set("Expires", "0"); // Proxies
 }
 
 bool JSONView::render(Poco::JSON::Object::Ptr data, std::ostream& os)
