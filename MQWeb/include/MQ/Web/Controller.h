@@ -102,7 +102,10 @@ public:
 		/// Returns the HTTP response
 
 	void setResponseStatus(Poco::Net::HTTPServerResponse::HTTPStatus status);
-		/// Sets the HTTP response
+		/// Sets the HTTP response status. This will send the response to the client.
+
+	void setResponseStatus(Poco::Net::HTTPServerResponse::HTTPStatus status, const std::string& reason);
+		/// Sets the HTTP response status and reason. This will send the response to the client.
 
 	void render();
 		/// Renders the view
@@ -224,6 +227,14 @@ inline void Controller::setResponseStatus(Poco::Net::HTTPServerResponse::HTTPSta
 	_response->setStatus(status);
 	_response->send();
 }
+
+
+inline void Controller::setResponseStatus(Poco::Net::HTTPServerResponse::HTTPStatus status, const std::string &reason)
+{
+	_response->setStatusAndReason(status, reason);
+	_response->send();
+}
+
 
 inline Poco::Net::HTTPServerRequest& Controller::request()
 {
