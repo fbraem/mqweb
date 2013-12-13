@@ -59,6 +59,7 @@ static unsigned char EBCDIC_translate_ASCII[256] =
 	0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x2E, 0x2E, 0x2E, 0x2E, 0x2E, 0x2E 
 };
 
+#define DEFAULT_EVENT_MESSAGE_SIZE 512
 
 namespace MQ {
 namespace Web {
@@ -327,7 +328,16 @@ void MessageController::view()
 	}
 
 	Message message;
-	message.setMessageId(messageId);
+	try
+	{
+		message.setMessageId(messageId);
+	}
+	catch(Poco::DataFormatException&)
+	{
+		//An invalid message id is passed (No valid HEX character)
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "An invalid message id is passed (No valid HEX character)");
+		return;
+	}
 
 	Queue q(qmgr(), queueName);
 	q.open(MQOO_BROWSE);
@@ -391,7 +401,17 @@ void MessageController::dump()
 	}
 
 	Message message;
-	message.setMessageId(messageId);
+
+	try
+	{
+		message.setMessageId(messageId);
+	}
+	catch(Poco::DataFormatException&)
+	{
+		//An invalid message id is passed (No valid HEX character)
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "An invalid message id is passed (No valid HEX character)");
+		return;
+	}
 
 	Queue q(qmgr(), queueName);
 	q.open(MQOO_BROWSE);
@@ -574,7 +594,18 @@ void MessageController::event()
 		messageId = parameters[2];
 
 		PCF message(qmgr()->zos());
-		message.setMessageId(messageId);
+		message.buffer().resize(DEFAULT_EVENT_MESSAGE_SIZE);
+
+		try
+		{
+			message.setMessageId(messageId);
+		}
+		catch(Poco::DataFormatException&)
+		{
+			//An invalid message id is passed (No valid HEX character)
+			setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "An invalid message id is passed (No valid HEX character)");
+			return;
+		}
 
 		try
 		{
@@ -604,9 +635,12 @@ void MessageController::event()
 		std::string reasonCodeStr = MQMapper::getReasonString(message.getReasonCode());
 		jsonReason->set("desc", reasonCodeStr);
 
+		Poco::JSON::Object::Ptr jsonMessage = new Poco::JSON::Object();
+		set("message", jsonMessage);
+		mapMessageToJSON(message, *jsonMessage);
+
 		Poco::JSON::Object::Ptr jsonEvent = new Poco::JSON::Object();
 		set("event", jsonEvent);
-		jsonEvent->set("putDate", Poco::DateTimeFormatter::format(message.getPutDate(), "%d-%m-%Y %H:%M:%S"));
 		MQMapper::mapToJSON(message, jsonEvent);
 
 		if ( format().compare("json") == 0 )
@@ -664,7 +698,7 @@ void MessageController::event()
 		while(1)
 		{
 			PCF message(qmgr()->zos());
-			message.buffer().resize(1000, false);
+			message.buffer().resize(DEFAULT_EVENT_MESSAGE_SIZE, false);
 			try
 			{
 				q.get(message, MQGMO_BROWSE_NEXT | MQGMO_CONVERT);
