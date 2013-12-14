@@ -42,7 +42,7 @@ mqWebApp.directive('mqEventQtip', function($http, $compile, $templateCache) {
 	}
 });
   
-mqWebApp.controller('QmgrController', function($scope, $http) {
+mqWebApp.controller('QmgrController', ['$scope', '$http', 'MQWEB_APP_QMGR_NAME', function($scope, $http, qmgrName) {
 	$scope.loading = false;
 	$scope.mqweb = null;
 	$scope.qmgr = null;
@@ -50,7 +50,7 @@ mqWebApp.controller('QmgrController', function($scope, $http) {
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get('/qmgr/view.json/<?= mqweb.qmgr ?>', { cache: false }) 
+		$http.get('/qmgr/view.json/' + qmgrName, { cache: false }) 
 			.success(function(data, status) {
 				$scope.loading = false;
 				$scope.mqweb = data.mqweb;
@@ -62,7 +62,7 @@ mqWebApp.controller('QmgrController', function($scope, $http) {
 	};
 	
 	$scope.load();
-});
+}]);
 
 mqWebApp.controller('LocalQueueController', function($scope, $http) {
 	$scope.loading = false;
