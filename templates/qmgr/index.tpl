@@ -1,6 +1,3 @@
-<script type="text/javascript">
-	mqWebApp.constant('MQWEB_APP_QMGR_NAME', '<?=mqweb.qmgr ?>');
-</script>
 <div id="content">
 	<div ng-controller="QmgrController" class="post">
 		<h3>QueueManager <strong><?= mqweb.qmgr ?></strong></h3>
