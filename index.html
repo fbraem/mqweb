@@ -1,0 +1,190 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>MQWeb by fbraem</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">MQWeb</h1>
+        <p class="header">MQWeb - Administer Websphere MQ with a browser</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/fbraem/mqweb/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/fbraem/mqweb/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/fbraem/mqweb">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/fbraem">fbraem</a></p>
+
+
+      </header>
+      <section>
+        <h1>
+<a name="mqweb" class="anchor" href="#mqweb"><span class="octicon octicon-link"></span></a>MQWeb</h1>
+
+<p>MQWeb - Administer Websphere MQ with a browser</p>
+
+<h2>
+<a name="building-mqweb" class="anchor" href="#building-mqweb"><span class="octicon octicon-link"></span></a>Building MQWeb</h2>
+
+<ol>
+<li>
+<p>Get <a href="http://pocoproject.org/releases/poco-1.5.2">Poco 1.5.2</a>. 
+Poco 1.5.2 is still a development release but it is stable to run
+with MQWeb. Build Poco. You can install the libraries, but it's no
+requirement (see 4).</p>
+
+<p><strong>Remark:</strong> Please apply this <a href="https://github.com/fbraem/poco/commit/1cb2823d2241005ecc53bbff33932916bf669f38">patch</a> to correct the handle of 
+unicode characters in JSON.</p>
+</li>
+<li><p>Get premake4 from <a href="http://industriousone.com/premake">http://industriousone.com/premake</a> and install it.</p></li>
+<li>Unzip the mqweb archive and go to the root directory of mqweb.</li>
+<li>Open premake4.lua and see if you need to change the paths for the POCO and 
+MQ include/lib folders.</li>
+<li>Run premake4 with a target (vs2008, codelite, gmake, ...).</li>
+<li>Build mqweb with the target you specified in step 5.</li>
+<li>Create mqweb.properties in the directory that contains the mqweb executable
+and change the following properties:</li>
+</ol><pre><code>    mq.web.static=&lt;full path to folder where the mqweb static files are stored&gt;
+    mq.web.templates=&lt;full path to folder where the mqweb templates are stored&gt;
+    mq.web.port=&lt;port number&gt;
+</code></pre>
+
+<p>When mq.web.port is omitted, 8081 will be used.</p>
+
+<h2>
+<a name="running-mqweb" class="anchor" href="#running-mqweb"><span class="octicon octicon-link"></span></a>Running MQWeb</h2>
+
+<ol>
+<li>
+<p>By default mqweb connects in bindings mode. This can be changed by 
+setting the mq.mode property to 'client' and to configure Websphere MQ 
+client or mqweb. </p>
+
+<p>a) Configure Websphere MQ Client: 
+To connect to a queuemanager use a client channel definition table and 
+set the environment variables MQCHLLIB and MQCHLTAB, or use mqclient.ini 
+and set ChannelDefinitionFile and ChannelDefinitionDirectory (Note: on 
+Windows the environment variable MQCLNTCF must point to mqclient.ini). 
+When only one queuemanager is used MQSERVER can be used.</p>
+
+<p>b) Configure mqweb:
+Add mq.web.qmgr properties as follows:</p>
+
+<pre><code>mq.mode=client
+mq.web.qmgr.&lt;qmgrName&gt;.connection=&lt;host&gt;(&lt;port&gt;)
+mq.web.qmgr.&lt;qmgrName&gt;.channel=&lt;channelName&gt;
+</code></pre>
+
+<p>Where &lt;qmgrName&gt; is the name of the queuemanager, &lt;host&gt; the server where
+the queuemanager is running. &lt;port&gt; is the port of the listener and
+&lt;channelName&gt; is the name of the server connection channel. When no channel
+property is set, SYSTEM.DEFAULT.SVRCONN will be used as default.</p>
+</li>
+<li><p>When no name is passed in the URL, mqweb will try to connect to the default
+queuemanager. In bindings mode this is done by connecting with a blank
+queuemanager name. In client mode this can be configured by setting
+mq.web.defaultQmgr property. When this property doesn't exist, mqweb will 
+try to connect with "*" and hopes that a client channel definition table 
+is configured.</p></li>
+<li>
+<p>To get the replies from the command server, MQWeb needs a queue where the replies
+are put. By default a temporary queue based on the model queue SYSTEM.DEFAULT.MODEL.QUEUE
+is used, but this behaviour can be changed by setting the mq.web.reply property or the
+reply property of a queuemanager.</p>
+
+<pre><code>mq.web.reply=MQWEB.REPLY.Q01
+</code></pre>
+
+<p>or</p>
+
+<pre><code>mq.web.qmgr.&lt;qmgr&gt;.reply=MQWEB.REPLY.Q01
+</code></pre>
+
+<p>When you define your own local reply queue, make sure the queue is shareable.</p>
+</li>
+</ol><h2>
+<a name="logging" class="anchor" href="#logging"><span class="octicon octicon-link"></span></a>Logging</h2>
+
+<p>MQWeb uses 3 loggers: mq for all MQ actions, mq.web for all daemon information and mq.web.access to log all requested URI's.
+To configure these loggers look at the documentation of <a href="http://pocoproject.org/docs/Poco.Util.LoggingConfigurator.html">Poco::Util::LoggingConfigurator</a>.
+The following example will log everything (trace level) to mqweb.log in the application directory, except for the mq.web.access logger
+which will be written to the access.log file in the application directory.</p>
+
+<pre><code># Logger configuration
+logging.loggers.root.level=trace
+logging.loggers.root.channel.class=FileChannel
+logging.loggers.root.channel.pattern=%Y-%m-%d %H:%M:%S %N %P-%I %q *** %t
+logging.loggers.root.channel.path=${application.dir}/mqweb.log
+
+logging.loggers.l1.name=mq
+
+logging.loggers.l2.name=mq.web
+
+logging.loggers.l3.name=mq.web.access
+logging.loggers.l3.channel.class=FileChannel
+logging.loggers.l3.channel.pattern=%Y-%m-%d %H:%M:%S *** %t
+logging.loggers.l3.channel.path=${application.dir}/access.log
+</code></pre>
+
+<h2>
+<a name="protecting-mqweb" class="anchor" href="#protecting-mqweb"><span class="octicon octicon-link"></span></a>Protecting MQWeb</h2>
+
+<p>MQWeb can be configured to allow or deny incoming requests. First the incoming
+IP address is checked against all mq.web.allow addresses. Next when the IP
+address is allowed, the IP address is checked against all configured mq.web.deny
+addresses. When nothing is configured, MQWeb will allow all incoming requests.</p>
+
+<p>This example allows access from IP-addresses starting with 10 or 11. But denies
+all IP addresses starting with 10.192.</p>
+
+<pre><code>  mq.web.allow.ip1=10*
+  mq.web.allow.ip2=11*
+  mq.web.deny.ip1=10\.192*
+</code></pre>
+
+<p>The value of the property must be a valid regular expression.</p>
+
+<h2>
+<a name="third-party-software" class="anchor" href="#third-party-software"><span class="octicon octicon-link"></span></a>Third Party Software</h2>
+
+<p>To bring you a view on your queuemanager in your favorite browser, MQWeb uses the following software:</p>
+
+<ul>
+<li>
+<a href="http://pocoproject.org">POCO</a> is used to write the portable HTTP server in C++, the core of MQWeb.</li>
+<li>
+<a href="http://jquery.org">jQuery</a> is a fast, small and feature-rich JavaScript library. It eases the HTML document traversal and manipulation, JSON requests, ...</li>
+<li>
+<a href="http://jqueryui.com">jQuery UI</a> is a curated set of user interface interactions, effects, widgets, and themes built on top of the jQuery JavaScript Library.</li>
+<li>
+<a href="http://knockoutjs.com/">KnockoutJS</a> is used to render the JSON, received from the HTTP server, on the client. Rendering on the client makes it possible to write HTML pages without touching the core of MQWeb.</li>
+<li>
+<a href="http://qtip2.com">qTip2</a> is used to show tool tips on the HTML pages.</li>
+<li>
+<a href="http://malsup.com/jquery/form">jQuery Form Plugin</a> allows us to easily upgrade HTML forms to use AJAJ.</li>
+<li>
+<a href="http://formalize.me">Formalize</a> is used to teach our forms some manners ...</li>
+<li>
+<a href="http://css-free-templates.com">CSS-Free-Templates</a> has been used to select a CSS template.</li>
+</ul>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
