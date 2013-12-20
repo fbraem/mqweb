@@ -1,0 +1,40 @@
+<div id="header">
+ <div style="float:right;margin:10px;">
+  <p>
+   Proudly hosted by
+   <a href="https://github.com">
+    <img style="width:100px;height:30px" src="{{ site.url }}/img/footer-logo.png" alt="GitHub &bull; Social coding">
+   </a>
+  </p>
+ </div>
+      <div id="logo">
+        <div id="logo_text">
+          <!-- class="logo_colour", allows you to change the colour of the text -->
+          <h1><a href="index.html">MQ<span class="logo_colour">Web</span></a></h1>
+          <h2>Administrating WebSphere MQ with your browser.</h2>
+        </div>
+      </div>
+      <div id="menubar">
+		<ul id="menu">
+  			<li class="{% if page.overview %}selected{% endif %}">
+    		 <a href="{{ site.url }}/">Home</a>
+    		</li>
+  			<li class="{% if page.features %}selected{% endif %}">
+    		 <a href="{{ site.url }}/features.html">Features</a>
+    		</li>
+  			<li class="{% if page.security %}selected{% endif %}">
+    		 <a href="{{ site.url }}/security.html">Security</a>
+    		</li>
+            <li class="{% if page.news %}select{% endif %}">
+             <a href="{{ site.url }}/news.html">News</a>
+            </li>
+  			<li class="{% if page.contact %}selected{% endif %}">
+    		 <a href="{{ site.url }}/contact.html">Contact</a>
+    		</li>
+            <li class="">
+             <a href="{{ site.repository }}"><span class="hide-on-mobiles">View on </span>GitHub</a>
+            </li>
+         </ul>
+      </div>
+    </div>
+
