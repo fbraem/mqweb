@@ -1,2 +1,3 @@
 paginate: 5
 baseurl: /mqweb
+repository: https://github.com/fbraem/mqweb
