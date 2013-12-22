@@ -295,5 +295,7 @@ table tr td
   border-top: 1px solid #FFF;}
   
 pre {
-  font-size: 1em;
+  font-size: 1.2em;
+  background-color: lightskyblue;
+  border:1px solid blue;
 }
