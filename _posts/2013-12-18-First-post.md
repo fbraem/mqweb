@@ -1,8 +1,9 @@
 ---
 layout: default
-excerpt: Our first post
+excerpt: MQWeb.org launched
 ---
-Post 1
-======
+MQWeb.org
+=========
 
-This is our first post.
+Today [www.mqweb.org](http://www.mqweb.org) is launched. This website is hosted as project website on
+github and redirected to the [mqweb.org](http://www.mqweb.org) domain.
