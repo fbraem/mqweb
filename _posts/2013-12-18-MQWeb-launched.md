@@ -1,5 +1,6 @@
 ---
 layout: default
+title: mqweb.org launched 
 excerpt: MQWeb.org launched
 ---
 MQWeb.org
