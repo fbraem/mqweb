@@ -293,3 +293,7 @@ table tr td
 { background: #F0EFE2;
   color: #47433F;
   border-top: 1px solid #FFF;}
+  
+pre {
+  font-size: 1em;
+}
