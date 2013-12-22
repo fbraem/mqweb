@@ -163,7 +163,8 @@ ul#menu li a:hover, ul#menu li.selected a, ul#menu li.selected a:hover
 .sidebar
 { float: right;
   width: 190px;
-  padding: 0 15px 20px 15px;}
+  padding: 0 15px 20px 15px;
+  background: beige;}
 
 .sidebar ul
 { width: 178px; 
@@ -185,7 +186,7 @@ ul#menu li a:hover, ul#menu li.selected a, ul#menu li.selected a:hover
 
 #content
 { text-align: left;
-  width: 595px;
+/*  width: 595px; */
   padding: 0;}
 
 #content ul
@@ -293,9 +294,13 @@ table tr td
 { background: #F0EFE2;
   color: #47433F;
   border-top: 1px solid #FFF;}
-  
-pre {
+
+pre
+{
+  padding-top: 15px;
   font-size: 1.2em;
   background-color: lightskyblue;
-  border:1px solid blue;
+  border:1px solid #1293EE;
+  width: 100%;
 }
+

@@ -23,9 +23,9 @@ security: true
    When MQWeb connects in client mode, you have to secure the channel.
    Create a channel and use the username in the MCAUSER attribute.
   </p>
-  <pre><code>
+  <pre>
     DEFINE CHANNEL(CL.MQWEB) CHLTYPE(SVRCONN) MCAUSER('mqweb')
-  </code></pre>
+  </pre>
   <h2>Queuemanager Security</h2>
   <p>
    The user needs permissions to connect to the queuemanager. MQWeb also
@@ -33,18 +33,18 @@ security: true
    When MQWeb is used to display attributes of the queuemanager you also need 
    to add the DISPLAY authorisation. Use the following SET AUTHREC statement:
   </p>
-  <pre><code>
+  <pre>
     SET AUTHREC GROUP('mqweb') OBJTYPE(QMGR) AUTHADD(CONNECT,INQ,DSP)
-  </code></pre>
+  </pre>
   <h2>Command Server Queues Security</h2>
   <p>
    MQWeb puts PCF messages on the command queue. The name of the command queue
    is inquired from the queuemanager. By default the name is 
    SYSTEM.ADMIN.COMMAND.QUEUE. 
   </p>
-  <pre><code>
+  <pre>
     SET AUTHREC PROFILE(SYSTEM.ADMIN.COMMAND.QUEUE) GROUP('mqweb') OBJTYPE(QUEUE) AUTHADD(PUT)
-  </code></pre>
+  </pre>
   <h2>Reply Queue</h2>
   <p>
    The command server will put the reply of the PCF message on a queue.
@@ -58,9 +58,9 @@ security: true
    When temporary queues are used for returning the reply messages, apply the
    following SET AUTHREC statements:
   </p>
-  <pre><code>
+  <pre>
     SET AUTHREC PROFILE(SYSTEM.DEFAULT.MODEL.QUEUE) GROUP('mqweb') OBJTYPE(QUEUE) AUTHADD(PUT)
-  </code></pre>
+  </pre>
   <h2>Queues</h2>
   <p>
    MQWeb needs permission to display queue attributes. Only give permissions
@@ -68,17 +68,17 @@ security: true
    allowed to view will return a 2035 reason code and will be skipped. The
    BROWSE authority is also required when MQWeb is used to browse queues.
   </p> 
-  <pre><code>
+  <pre>
     SET AUTHREC PROFILE(**) GROUP('mqweb') OBJTYPE(QUEUE) AUTHADD(DSP)
-  </code></pre>
-  <p>
+  </pre>
+  <p style="margin-top:10px">
    The following statement shows how to allow the event action on 
    SYSTEM.ADMIN.QMGR.EVENT . It adds BROWSE and INQ authorisations. INQ
    is needed because the event action inquires the current depth of the queue.
   </p>
-  <pre><code>
+  <pre>
     SET AUTHREC PROFILE(SYSTEM.ADMIN.QMGR.EVENT) GROUP('mqweb') OBJTYPE(QUEUE) AUTHADD(BROWSE, INQ)
-  </code></pre>
+  </pre>
   <h2>Channels</h2>
   <p>
   </p>
