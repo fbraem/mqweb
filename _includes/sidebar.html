@@ -1,9 +1,13 @@
 <div class="sidebar">
- <h3>Latest News</h3>
- {% for post in site.posts %}
-  <h4><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h4>
-  <h5>{{ post.date | date: "%-d %B %Y" }}</h5>
-  <p>{{ post.excerpt }}</p>
- {% endfor %} 
+  <h3>Latest News</h3>
+  {% for post in site.posts %}
+   <h4><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h4>
+   <h5>{{ post.date | date: "%-d %B %Y" }}</h5>
+   <p>{{ post.excerpt }}</p>
+  {% endfor %} 
+  <div style="margin-left:45px;">
+   <a style="float:left;" href="http://www.pocoproject.org">
+    <img src="{{ site.baseurl }}/img/poco.gif" />
+   </a>
+ </div>
 </div>
-
