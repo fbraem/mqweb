@@ -113,8 +113,15 @@ Poco::JSON::Array::Ptr ChannelMapper::inquire(const Poco::JSON::Object::Ptr& fil
 
 		for(; it != commandResponse.end(); it++)
 		{
+			MQLONG rc =(*it)->getReasonCode();
+
+			// We didn't find an object ...
 			if ( (*it)->getReasonCode() == MQRC_UNKNOWN_OBJECT_NAME )
 				break;
+
+			// We are not allowed to view this ...
+			if ( (*it)->getReasonCode() == MQRC_NOT_AUTHORIZED )
+				continue;
 
 			if ( (*it)->isExtendedResponse() ) // Skip extended response
 				continue;
