@@ -1,3 +1,5 @@
+var mqWebApp = angular.module('mqWebApp');
+
 mqWebApp.directive('mqEventQtip', function($http, $compile, $templateCache) {
 	return {
 		restrict: 'A',
@@ -38,7 +40,7 @@ mqWebApp.directive('mqEventQtip', function($http, $compile, $templateCache) {
 	}
 });
   
-mqWebApp.controller('QmgrController', ['$scope', '$http', 'MQWEB_APP_QMGR_NAME', function($scope, $http, qmgrName) {
+mqWebApp.controller('QmgrController', ['$scope', '$http', 'MQWEB_CONFIG', function($scope, $http, config) {
 	$scope.loading = false;
 	$scope.mqweb = null;
 	$scope.qmgr = null;
@@ -46,7 +48,7 @@ mqWebApp.controller('QmgrController', ['$scope', '$http', 'MQWEB_APP_QMGR_NAME',
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get('/qmgr/view.json/' + qmgrName, { cache: false }) 
+		$http.get('/qmgr/view.json/' + config.qmgrName, { cache: false }) 
 			.success(function(data, status) {
 				$scope.loading = false;
 				$scope.mqweb = data.mqweb;
@@ -60,7 +62,7 @@ mqWebApp.controller('QmgrController', ['$scope', '$http', 'MQWEB_APP_QMGR_NAME',
 	$scope.load();
 }]);
 
-mqWebApp.controller('LocalQueueController', ['$scope', '$http', 'MQWEB_APP_QMGR_NAME', function($scope, $http, qmgrName) {
+mqWebApp.controller('LocalQueueController', ['$scope', '$http', 'MQWEB_CONFIG', function($scope, $http, config) {
 	$scope.loading = false;
 	$scope.mqweb = null;
 	$scope.queues = null;
@@ -68,7 +70,7 @@ mqWebApp.controller('LocalQueueController', ['$scope', '$http', 'MQWEB_APP_QMGR_
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get('/queue/list.json/' + qmgrName, {
+		$http.get('/queue/list.json/' + config.qmgrName, {
 			cache: false,
 			params : {
 				queueDepth : 1,
@@ -89,7 +91,7 @@ mqWebApp.controller('LocalQueueController', ['$scope', '$http', 'MQWEB_APP_QMGR_
 	$scope.load();
 }]);
 
-mqWebApp.controller('XmitQueueController', ['$scope', '$http', 'MQWEB_APP_QMGR_NAME', function($scope, $http, qmgrName) {
+mqWebApp.controller('XmitQueueController', ['$scope', '$http', 'MQWEB_CONFIG', function($scope, $http, config) {
 	$scope.loading = false;
 	$scope.mqweb = null;
 	$scope.queues = null;
@@ -97,7 +99,7 @@ mqWebApp.controller('XmitQueueController', ['$scope', '$http', 'MQWEB_APP_QMGR_N
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get('/queue/list.json/' + qmgrName, {
+		$http.get('/queue/list.json/' + config.qmgrName, {
 			cache : false,
 			params : {
 				queueDepth : 1,
@@ -117,7 +119,7 @@ mqWebApp.controller('XmitQueueController', ['$scope', '$http', 'MQWEB_APP_QMGR_N
 	$scope.load();
 }]);
 
-mqWebApp.controller('ChannelStatusController', ['$scope', '$http', 'MQWEB_APP_QMGR_NAME', function($scope, $http, qmgrName) {
+mqWebApp.controller('ChannelStatusController', ['$scope', '$http', 'MQWEB_CONFIG', function($scope, $http, config) {
 	$scope.loading = false;
 	$scope.mqweb = null;
 	$scope.channels = null;
@@ -125,7 +127,7 @@ mqWebApp.controller('ChannelStatusController', ['$scope', '$http', 'MQWEB_APP_QM
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get('/chs/list.json/' + qmgrName, { cache: false })
+		$http.get('/chs/list.json/' + config.qmgrName, { cache: false })
 			.success(function(data, status) {
 				$scope.loading = false;
 				$scope.mqweb = data.mqweb;
@@ -139,7 +141,7 @@ mqWebApp.controller('ChannelStatusController', ['$scope', '$http', 'MQWEB_APP_QM
 	$scope.load();
 }]);
 
-mqWebApp.controller('EventMessageController', ['$scope', '$http', 'MQWEB_APP_QMGR_NAME', function($scope, $http, qmgrName) {
+mqWebApp.controller('EventMessageController', ['$scope', '$http', 'MQWEB_CONFIG', function($scope, $http, config) {
 
 	$scope.loading = false;
 	$scope.events = null;
@@ -148,7 +150,7 @@ mqWebApp.controller('EventMessageController', ['$scope', '$http', 'MQWEB_APP_QMG
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get("/message/event.json/" + qmgrName + "/SYSTEM.ADMIN.QMGR.EVENT", { 
+		$http.get("/message/event.json/" + config.qmgrName + "/SYSTEM.ADMIN.QMGR.EVENT", { 
 			cache: false,
 			params : {
 				limit : 3
