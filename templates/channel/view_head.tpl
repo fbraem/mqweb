@@ -4,6 +4,7 @@
 		qmgrName : '<?=mqweb.qmgr ?>',
 		channelName : '<?=channelName ?>',
 		channelType : '<?=channelType ?>',
+		html: 'channel/channel.html',
 		autoload : true
 	});
 </script>
