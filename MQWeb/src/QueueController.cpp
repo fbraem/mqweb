@@ -98,8 +98,8 @@ void QueueController::list()
 	}
 
 	filter->set("type", form().get("queueType", "All"));
-	filter->set("excludeSystem", form().get("queueExcludeSystem", "0").compare("1") == 0);
-	filter->set("excludeTemp", form().get("queueExcludeTemp", "0").compare("1") == 0);
+	filter->set("excludeSystem", form().get("queueExcludeSystem", "false").compare("true") == 0);
+	filter->set("excludeTemp", form().get("queueExcludeTemp", "false").compare("true") == 0);
 
 	QueueMapper queueMapper(*commandServer());
 	Poco::JSON::Array::Ptr jsonQueues = queueMapper.inquire(filter);
