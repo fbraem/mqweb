@@ -1,0 +1,127 @@
+<div style="float:right;">
+	<a href="#" ng-click="reload(channel)"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
+</div>
+<div class="details" style="width:70%;margin:auto">
+	<h2>Name:</h2>
+	<div class="detail">
+		{{ channel.data.ChannelName.value }}
+	</div>
+	<h2>Type:</h2>
+	<div class="detail">
+		{{ channel.data.ChannelType.display }}
+	</div>
+	<div ng-if="channel.data.ChannelDesc && channel.data.ChannelDesc.value">
+		<h2>Description:</h2>
+		<div class="detail">
+			{{ channel.data.ChannelDesc.value }}
+		</div>
+	</div>
+	<div ng-if="channel.data.AlterationDate">
+		<h2>Alteration Date:</h2>
+		<div class="detail">
+			{{ channel.data.AlterationDate.value }} {{ channel.data.AlterationTime.value }}
+	  </div>
+	</div>
+	<div ng-if="channel.data.ConnectionName && channel.data.ConnectionName.value">
+		<h2>Connection Name:</h2>
+		<div class="detail">
+			{{ channel.data.ConnectionName.value }}
+		</div>
+	</div>
+	<div ng-if="channel.data.MCAUserIdentifier && channel.data.MCAUserIdentifier.value">
+		<h2>MCA User:</h2>
+		<div class="detail">
+			{{ channel.data.MCAUserIdentifier.value }}
+		</div>
+	</div>
+	<div ng-if="channel.data.MaxInstances">
+		<h2>Maximum Instances:</h2>
+		<div class="detail">
+			{{ channel.data.MaxInstances.value | number: 0 }}
+		</div>
+	</div>
+	<div ng-if="channel.data.DataConversion">
+		<h2>Data Conversion:</h2>
+		<div class="detail">
+			{{ channel.data.DataConversion.display }}
+		</div>
+	</div>
+	<div ng-if="channel.data.MaxMsgLength">
+		<h2>Maximum Message Length:</h2>
+		<div class="detail">
+			{{ channel.data.MaxMsgLength.value | number: 0 }} bytes
+		</div>
+	</div>
+	<div ng-if="channel.data.ChannelMonitoring && channel.data.ChannelMonitoring.value">
+		<h2>Channel Monitoring:</h2>
+		<div class="detail">
+			{{ channel.data.ChannelMonitoring.display }}
+	</div>
+	</div>
+	<div ng-if="channel.data.DiscInterval">
+		<h2>Disconnect Interval:</h2>
+		<div class="detail">
+			{{ channel.data.DiscInterval.value | number: 0 }} seconds
+	 </div>
+	</div>
+	<div ng-if="channel.data.MsgExit && channel.data.MsgExit.value">
+		<h2>Message Exit:</h2>
+		<div class="detail">
+		{{ channel.data.MsgExit.value }}
+		</div>
+	</div>
+	<div ng-if="channel.data.MsgUserData && channel.data.MsgUserData.value">
+		<h2>Message User Data:</h2>
+		<div class="detail">
+		 {{ channel.data.ReceiveUserData.value }}
+		</div>
+	</div>
+	<div ng-if="channel.data.ReceiveExit && channel.data.ReceiveExit.value">
+		<h2>Receive Exit:</h2>
+		<div class="detail">
+			{{ channel.data.ReceiveExit.value }}
+		</div>
+	</div>
+	<div ng-if="channel.data.ReceiveUserData && channel.data.ReceiveUserData.value">
+		<h2>Receive User Data:</h2>
+		<div class="detail">
+			{{ channel.data.ReceiveUserData.value }}
+		</div>
+	</div>
+	<div ng-if="channel.data.SecurityExit && channel.data.SecurityExit.value">
+		<h2>Security Exit:</h2>
+		<div class="detail">
+			{{ channel.data.SecurityExit.value }}
+		</div>
+	</div>
+	<div ng-if="channel.data.SecurityUserData && channel.data.SecurityUserData.value">
+		<h2>Security User Data:</h2>
+		<div class="detail">
+			{{ channel.data.SecurityUserData.value }}
+		</div>
+	</div>
+	<div ng-if="channel.data.ShortRetryCount">
+		<h2>Short Retry:</h2>
+		<div class="detail">
+			Count: {{ channel.data.ShortRetryCount.value | number: 0 }}<br />Interval: {{ channel.data.ShortRetryInterval.value | number: 0 }}
+		</div>
+	</div>
+	<div ng-if="channel.data.LongRetryCount">
+		<h2>Long Retry:</h2>
+		<div class="detail">
+			Count: {{ channel.data.LongRetryCount.value | number: 0 }}<br /> Interval: {{ channel.data.LongRetryInterval.value | number: 0 }}
+		</div>
+	</div>
+	<div ng-if="channel.data.TransportType && channel.data.TransportType.display">
+		<h2>Transport Type:</h2>
+		<div class="detail">
+			{{ channel.data.TransportType.display }}
+		</div>
+	</div>
+	<div ng-if="channel.data.XmitQName && channel.data.XmitQName.value">
+		<h2>Transmission Queue:</h2>
+		<div class="detail">
+			<a href="/queue/view/{{ mqweb.qmgr }}/{{ channel.data.XmitQName.value }}">{{channel.data.XmitQName.value}}</a>
+		</div>
+	</div>
+</div> <!-- details -->

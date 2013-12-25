@@ -1,16 +1,13 @@
 <!-- Content -->
-<!-- <pre><code data-bind="html:ko.toJSON($data, null, 2)"> </code></pre> -->
-<div id="content">
+<div id="content" ng-controller="ChannelsController">
 	<div class="post">
 		<h3><strong><?= mqweb.qmgr	?></strong>	- Channel - <?= channelName ?></h3>
 	</div>
-	<div data-bind="if: viewModel.channelModel.channel">
-		<div data-bind="template: { name: 'channelDetail', data: viewModel.channelModel.channel }">
-		</div>
+	<div ng-repeat="channel in channels | limitTo: 1">
+		<div ng-include="'/static/html/channel.html'"></div>
 	</div>
-	<div class="loader" data-bind="visible: channelModel.loading"></div>
-	<div data-bind="template: { if: viewModel.channelModel.error, name: 'mqErrorTemplate', data: channelModel.error }">
-	</div>
+	<div ng-if="loading" class="loader"></div>
+	<div ng-if="error != null" ng-include="'/static/html/error.html'"></div>
 </div>
 <!-- END Content -->
 <!-- Sidebar -->
