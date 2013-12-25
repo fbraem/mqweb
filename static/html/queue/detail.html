@@ -1,0 +1,150 @@
+<div style="float:right;">
+	<a href="#" ng-click="reload(queue)"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
+</div>
+<div class="details" style="width:70%;margin:auto">
+	<h2>Name:</h2>
+	<div class="detail">{{ queue.data.QName.value }}</div>
+	<h2>Type:</h2>
+	<div class="detail">{{ queue.data.QType.display }}</div>
+	<div ng-if="queue.data.CurrentQDepth">
+		<h2>Depth:</h2>
+		<div class="detail">
+			<a href="/message/index/{{ mqweb.qmgr }}/{{ queue.data.QName.value }}">{{ queue.data.CurrentQDepth.value | number : 0 }}</a>
+			 / {{ queue.data.MaxQDepth.value | number : 0 }}
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="!queue.data.CurrentQDepth && queue.data.MaxQDepth">
+		<h2>Depth:</h2>
+		<div class="detail">
+			 - / {{ queue.data.MaxQDepth.value }}
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.OpenInputCount">
+		<h2>MQOPEN:</h2>
+		<div class="detail">
+			{{ queue.data.OpenInputCount.value | number : 0 }} for Input, {{ queue.data.OpenOutputCount.value | number : 0 }} for Output
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.InhibitGet">
+		<h2>Operations:</h2>
+		<div class="detail">
+			Get {{ queue.data.InhibitGet.display }} - Put {{ queue.data.InhibitPut.display }}
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.CreationDate">
+		<h2>Creation Date:</h2>
+		<div class="detail">
+			{{ queue.data.CreationDate.value }} {{ queue.data.CreationTime.value }}
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.AlterationDate">
+		<h2>Alteration Date:</h2>
+		<div class="detail">
+			{{ queue.data.AlterationDate.value }} {{ queue.data.AlterationTime.value }}
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.BackoutRequeueName && queue.data.BackoutRequeueName.value">
+		<h2>Backout:</h2>
+		<div class="detail">
+			<a href="/queue/view/{{ mqweb.qmgr }}/{{ queue.data.BackoutRequeueName.value }}">{{ queue.data.BackoutRequeueName.value }}</a> - Threshold: {{ queue.data.BackoutThreshold.value }} - Harden: {{ queue.data.HardenGetBackout.display }}
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.BaseObjectName">
+		<h2>Target Queue:</h2>
+		<div class="detail">
+			<a href="/queue/view/{{ mqweb.qmgr }}/{{ queue.data.BaseObjectName.value }}">{{ queue.data.BaseObjectName.value }}</a>
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.DefBind">
+		<h2>Default Binding:</h2>
+		<div class="detail">
+			{{ queue.data.DefBind.display }}
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.DefInputOpenOption">
+		<h2>Default Input Open:</h2>
+		<div class="detail">
+			{{ queue.data.DefInputOpenOption.display }}
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.DistLists">
+		<h2>Distribution List:</h2>
+		<div class="detail">
+			{{ queue.data.DistLists.display }}
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.DefPersistence">
+		<h2>Default Persistence:</h2>
+		<div class="detail">
+			{{ queue.data.DefPersistence.display }}
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.DefPriority">
+		<h2>Default Priority:</h2>
+		<div class="detail">
+			{{ queue.data.DefPriority.value }}
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.DefReadAhead">
+		<h2>Default Read Ahead:</h2>
+		<div class="detail">
+			{{ queue.data.DefReadAhead.display }}
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.DefaultPutResponse">
+		<h2>Default Put Response Type:</h2>
+		<div class="detail">
+			{{ queue.data.DefaultPutResponse.display }}
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.QDepthHighEvent">
+		<h2>Depth Hight Event:</h2>
+		<div class="detail">
+			{{ queue.data.QDepthHighEvent.display }} - Limit: {{ queue.data.QDepthHighLimit.value | number : 0}}
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.QDepthLowEvent">
+		<h2>Depth Low Event:</h2>
+		<div class="detail">
+			{{ queue.data.QDepthLowEvent.display }} - Limit: {{ queue.data.QDepthLowLimit.value | number : 0}}
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.QDepthMaxEvent">
+		<h2>Depth Max Event:</h2>
+		<div class="detail">
+			{{ queue.data.QDepthMaxEvent.display }}
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.InitiationQName && queue.data.InitiationQName.value">
+		<h2>Initiation Queue:</h2>
+		<div class="detail">
+			<a href="/queue/view/{{ mqweb.qmgr }}/{{ queue.data.InitiationQName.value }}">{{ queue.data.InitiationQName.value }}</a>
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.MaxMsgLength">
+		<h2>Maximum Message Length:</h2>
+		<div class="detail">
+			{{ queue.data.MaxMsgLength.value | number : 0 }}
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.MsgDeliverySequence">
+		<h2>Message Delivery:</h2>
+		<div class="detail">
+			{{ queue.data.MsgDeliverySequence.display }}
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.ProcessName && queue.data.ProcessName.value">
+		<h2>Process:</h2>
+		<div class="detail">
+			{{ queue.data.ProcessName.value }}
+		</div> <!-- detail -->
+	</div>
+	<div ng-if="queue.data.TriggerControl">
+		<h2>Trigger:</h2>
+		<div class="detail">
+			{{ queue.data.TriggerControl.display }} - Type: {{ queue.data.TriggerType.display }}<br />
+			Depth: {{ queue.data.TriggerDepth.value | number : 0 }} - Message Priority: {{ queue.data.TriggerMsgPriority.value | number : 0 }}<br />
+			Data: {{ queue.data.TriggerData.value }}
+		</div> <!-- detail -->
+	</div>
+</div> <!-- details -->
