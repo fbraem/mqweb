@@ -13,6 +13,7 @@
 	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 	<script src="/static/js/center.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/static/js/jquery.qtip.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/static/js/app/mqwebapp.js" type="text/javascript" charset="utf-8"></script>
 	<?= views.head ?>
 </head>
 <body>
