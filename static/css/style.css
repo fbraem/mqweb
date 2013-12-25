@@ -170,9 +170,11 @@ table tr td {
 	vertical-align: top;
 	border-bottom:1px solid #ddd;
 }
+
 table tr:nth-child(even) {
 	background-color: #f9f9f9;
 }
+
 td.actions {
 	text-align: center;
 	white-space: nowrap;
@@ -180,6 +182,33 @@ td.actions {
 table td.actions a {
 	margin: 0px 6px;
 	padding:2px 5px;
+}
+
+/* Overview table is a table that shows details in 2 rows:
+ * First row: used to toggle the second second row
+ * Second row: toggled view by clicking on first row 
+ */
+table.overview tr:nth-child(4n), table.overview tr:nth-child(4n-1) {
+	background-color: #fff;
+}
+
+table.overview tr:nth-child(4n-2), table.overview tr:nth-child(4n-3) {
+	background-color: #f9f9f9;
+}
+
+table.overview td {
+	border-bottom: 0px;
+}
+table.overview tr:nth-child(4n-1) td {
+	border-top: 1px solid #ddd;
+}
+
+table.overview tr:nth-child(4n-3) td {
+	border-top: 1px solid #ddd;
+}
+
+table.overview tbody {
+	border-bottom: 2px solid black;
 }
 
 /** Loader **/
