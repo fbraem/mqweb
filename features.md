@@ -3,8 +3,6 @@ layout: default
 title: MQWeb &bull; Administrating WebSphere MQ with your favorite browser
 features: true
 ---
-<div id="content">
-  <h1>Features</h1>
-  <p>
-  </p>
-</div>
+Features
+========
+

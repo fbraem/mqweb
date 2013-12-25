@@ -295,12 +295,14 @@ table tr td
   color: #47433F;
   border-top: 1px solid #FFF;}
 
-pre
-{
-  padding-top: 15px;
+pre {
+  padding: 10px;
   font-size: 1.2em;
-  background-color: lightskyblue;
-  border:1px solid #1293EE;
-  width: 100%;
+  background-color: lightgray;
+  border:1px solid gray;
+  margin-bottom: 15px;
 }
 
+code { 
+  font-size: .80em;
+}
