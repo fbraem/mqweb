@@ -1,79 +1,81 @@
-<div id="content">
-	<div ng-controller="QmgrController" class="post">
-		<h3>QueueManager <strong><?= mqweb.qmgr ?></strong></h3>
-		<img ng-if="!mqweb.zos" src="/static/css/images/briefcase.jpg" alt="briefcase" />
-		<img ng-if="mqweb.zos" src="/static/images/zos-icon.png" alt="z/OS" title="z/OS" />
-		<div ng-show="qmgr != null">
-			<p>
-				<em><span>{{qmgr.QMgrDesc.value}}</span></em>
-			</p>
-			<!-- DETAILS -->
-			<div class="details" style="float:left;width:70%">
-				<div>
-					<h2>QueueManager ID</h2>
-					<div class="detail">{{qmgr.QMgrIdentifier.value}}</div>
-				</div>
-				<div ng-if="qmgr.CreationDate != null">
-					<h2>Creation Date</h2>
-					<div class="detail">
-						{{qmgr.CreationDate.value}}&nbsp;{{qmgr.CreationTime.value}}
+<div ng-controller="QmgrController">
+	<div id="content">
+		<div class="post">
+			<h3>QueueManager <strong><mq-config name="qmgrName" /></strong></h3>
+			<img ng-if="!mqweb.zos" src="/static/css/images/briefcase.jpg" alt="briefcase" />
+			<img ng-if="mqweb.zos" src="/static/images/zos-icon.png" alt="z/OS" title="z/OS" />
+			<div ng-show="qmgr != null">
+				<p>
+					<em><span>{{qmgr.QMgrDesc.value}}</span></em>
+				</p>
+				<!-- DETAILS -->
+				<div class="details" style="float:left;width:70%">
+					<div>
+						<h2>QueueManager ID</h2>
+						<div class="detail">{{qmgr.QMgrIdentifier.value}}</div>
 					</div>
-				</div>
-				<div ng-if="qmgr.AlterationDate != null">
-					<h2>Alteration Date</h2>
-					<div class="detail">
-						{{qmgr.AlterationDate.value}}&nbsp;{{qmgr.AlterationTime.value}}
+					<div ng-if="qmgr.CreationDate != null">
+						<h2>Creation Date</h2>
+						<div class="detail">
+							{{qmgr.CreationDate.value}}&nbsp;{{qmgr.CreationTime.value}}
+						</div>
 					</div>
-				</div>
-				<div ng-if="qmgr.Platform">
-					<h2>Platform</h2>
-					<div class="detail">
-						{{qmgr.Platform.display}}
+					<div ng-if="qmgr.AlterationDate != null">
+						<h2>Alteration Date</h2>
+						<div class="detail">
+							{{qmgr.AlterationDate.value}}&nbsp;{{qmgr.AlterationTime.value}}
+						</div>
 					</div>
-				</div>
-				<div ng-if="qmgr.CodedCharSetID">
-					<h2>Coded Characterset ID</h2>
-					<div class="detail">
-						{{qmgr.CodedCharSetID.value}}
+					<div ng-if="qmgr.Platform">
+						<h2>Platform</h2>
+						<div class="detail">
+							{{qmgr.Platform.display}}
+						</div>
 					</div>
-				</div>
-				<div ng-if="qmgr.DeadLetterQName && qmgr.DeadLetterQName.value">
-					<h2>Dead Letter Queue</h2>
-					<div class="detail">
-						<a ng-href="/queue/view/<?=mqweb.qmgr?>/{{qmgr.DeadLetterQName.value}}">{{qmgr.DeadLetterQName.value}}</a>
+					<div ng-if="qmgr.CodedCharSetID">
+						<h2>Coded Characterset ID</h2>
+						<div class="detail">
+							{{qmgr.CodedCharSetID.value}}
+						</div>
 					</div>
-				</div>
-				<div ng-if="!qmgr.DeadLetterQName || !qmgr.DeadLetterQName.value">
-					<h2>Dead Letter Queue</h2>
-					<div class="detail">
-						<img style="float:left;" src="/static/images/warning-icon.png" alt="error" />
-						<em style="color:#FF6666">There is no dead letter queue defined. It's recommended to have one!</em>
+					<div ng-if="qmgr.DeadLetterQName && qmgr.DeadLetterQName.value">
+						<h2>Dead Letter Queue</h2>
+						<div class="detail">
+							<a ng-href="/queue/view/{{ mqweb.qmgr }}/{{qmgr.DeadLetterQName.value}}">{{qmgr.DeadLetterQName.value}}</a>
+						</div>
 					</div>
-				</div>
-			</div> <!-- END DETAILS -->
+					<div ng-if="!qmgr.DeadLetterQName || !qmgr.DeadLetterQName.value">
+						<h2>Dead Letter Queue</h2>
+						<div class="detail">
+							<img style="float:left;" src="/static/images/warning-icon.png" alt="error" />
+							<em style="color:#FF6666">There is no dead letter queue defined. It's recommended to have one!</em>
+						</div>
+					</div>
+				</div> <!-- END DETAILS -->
+			</div>
+			<div ng-show="loading" class="loader"></div>
+			<div ng-if="error != null" ng-include="'/static/html/error.html'"></div>
+			<div style="font-size:0.7em;clear:both;">
+				It took {{mqweb.elapsed}} seconds to create this output.
+			</div>
+		</div> <!-- post -->
+	</div> <!-- content -->
+	<!-- Sidebar -->
+	<div id="sidebar">
+		<div class="box">
+			<h3>Our Services</h3>
+			<ul>
+				<li><a title="List Queues" href="/queue/index/{{ mqweb.qmgr }}">List Queues</a></li>
+				<li><a title="List Channels" href="/channel/index/{{ mqweb.qmgr }}">List Channels</a></li>
+			</ul>
+			<h3 style="margin-top:15px">WebSphere MQ</h3>
+			<ul>
+				<li><a title="Information Center" target="_blank" href="http://pic.dhe.ibm.com/infocenter/wmqv7/v7r1/index.jsp">Information Center</a></li>
+				<li><a title="MQSeries.net" target="_blank" href="http://www.mqseries.net/phpBB2">MQSeries.net Forum</a></li>
+			</ul>
 		</div>
-		<div ng-show="loading" class="loader"></div>
-		<div ng-if="error != null" ng-include="'/static/html/error.html'"></div>
-		<div style="font-size:0.7em;clear:both;">
-			It took {{mqweb.elapsed}} seconds to create this output.
-		</div>
-	</div> <!-- post -->
-</div> <!-- content -->
-<!-- Sidebar -->
-<div id="sidebar">
-	<div class="box">
-		<h3>Our Services</h3>
-		<ul>
-			<li><a title="List Queues" href="/queue/index/<?= mqweb.qmgr ?>">List Queues</a></li>
-			<li><a title="List Channels" href="/channel/index/<?= mqweb.qmgr ?>">List Channels</a></li>
-		</ul>
-		<h3 style="margin-top:15px">WebSphere MQ</h3>
-		<ul>
-			<li><a title="Information Center" target="_blank" href="http://pic.dhe.ibm.com/infocenter/wmqv7/v7r1/index.jsp">Information Center</a></li>
-			<li><a title="MQSeries.net" target="_blank" href="http://www.mqseries.net/phpBB2">MQSeries.net Forum</a></li>
-		</ul>
-	</div>
-</div> <!-- END Sidebar -->
+	</div> <!-- END Sidebar -->
+</div> <!-- controller -->
 <div class="cl"></div>
 <div class="widgets">
 	<div class="col activities">
@@ -86,8 +88,8 @@
 				</thead>
 				<tbody>
 					<tr ng-repeat="queue in queues">
-						<td><a ng-href="/queue/view/<?=mqweb.qmgr?>/{{queue.QName.value}}">{{queue.QName.value}}</a></td>
-						<td>{{queue.CurrentQDepth.value | number}}</td>
+						<td><a ng-href="/queue/view/{{ mqweb.qmgr }}/{{ queue.QName.value }}">{{ queue.QName.value }}</a></td>
+						<td>{{ queue.CurrentQDepth.value | number }}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -108,8 +110,8 @@
 				</thead>
 				<tbody>
 					<tr ng-repeat="queue in queues">
-						<td><a ng-href="/queue/view/<?=mqweb.qmgr?>/{{queue.QName.value}}">{{queue.QName.value}}</a></td>
-						<td>{{queue.CurrentQDepth.value | number}}</td>
+						<td><a ng-href="/queue/view/{{ mqweb.qmgr }}/{{ queue.QName.value }}">{{ queue.QName.value }}</a></td>
+						<td>{{ queue.CurrentQDepth.value | number : 0 }}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -137,8 +139,8 @@
 							<img ng-switch-default alt="The channel {{ChannelName.value}} has status {{ChannelStatus.display}}" class="tip" src="/static/images/flag-yellow-icon.png" />
 						</td>
 						<td data-bind="template: { name: statusImage }" />
-						<td><a ng-href='/channel/view/<?= mqweb.qmgr ?>{{ChannelName.value}}/{{ChannelType.display}}'>{{ChannelName.value}}</a></td>
-						<td>{{ChannelStatus.display}}</td>
+						<td><a ng-href='/channel/view/{{ mqweb.qmgr }}/{{ ChannelName.value }}/{{ ChannelType.display }}'>{{ChannelName.value}}</a></td>
+						<td>{{ ChannelStatus.display }}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -167,7 +169,7 @@
 					<tr ng-repeat="item in events">
 						<td>{{item.message.PutDate}}</td>
 						<td>{{item.event.reason}}</td>
-						<td mq-event-qtip="/message/event/<?=mqweb.qmgr ?>/SYSTEM.ADMIN.QMGR.EVENT/{{item.message.MsgId}}">{{item.event.desc}}</td>
+						<td mq-event-qtip="/message/event/{{ mqweb.qmgr }}/SYSTEM.ADMIN.QMGR.EVENT/{{ item.message.MsgId }}">{{item.event.desc}}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -175,8 +177,8 @@
 				No event messages found.
 			</p>
 			<p ng-if="events != null && events.length < curdepth" style="margin-top:5px;display:none">
-				Number of messages on this queue: <strong>{{curdepth}}</strong><br />
-				Only the first <strong>{{events.length}}</strong> messages are shown. Use <a href="/queue/view/<?=mqweb.qmgr?>/SYSTEM.ADMIN.QMGR.EVENT">queue detail</a> page to browse all messages.
+				Number of messages on this queue: <strong>{{ curdepth }}</strong><br />
+				Only the first <strong>{{ events.length }}</strong> messages are shown. Use <a href="/queue/view/{{ mqweb.qmgr }}/SYSTEM.ADMIN.QMGR.EVENT">queue detail</a> page to browse all messages.
 			</p>
 			<div ng-if="loading" class="loader"></div>
 			<div ng-if="error != null" ng-include="'/static/html/error.html'"></div>
