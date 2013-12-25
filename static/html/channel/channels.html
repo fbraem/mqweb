@@ -2,13 +2,13 @@
 <div ng-controller="ChannelsController">
 	<div id="content">
 		<div class="post">
-			<h3><strong><mq-config name="qmgrName"/></strong> - Channels</h3>
+			<h3><strong><mq-config name="qmgrName" /></strong> - Channels</h3>
 			<form id="channelFilterForm">
 				<fieldset>
 					<legend>&nbsp;Filter&nbsp;</legend>
 						<div style="float:left;margin:5px;">
-							<div	style="margin:5px;">
-								<label for="channelName">Channel Name: </label><input	type="text"	id="channelName" ng-model="formData.channelName" />
+							<div style="margin:5px;">
+								<label for="channelName">Channel Name: </label><input type="text" id="channelName" ng-model="formData.channelName" />
 							</div>
 							<div style="margin:5px;">
 							 <input type="checkbox" ng-model="formData.channelExcludeSystem" /> Exclude System Channels
