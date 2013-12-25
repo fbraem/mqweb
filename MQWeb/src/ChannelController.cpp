@@ -85,7 +85,7 @@ void ChannelController::list()
 	std::string channelNameField = form().get("channelName", "*");
 	filter->set("name", channelNameField.empty() ? "*" : channelNameField);
 	filter->set("type", form().get("channelType", "All"));
-	filter->set("excludeSystem", form().get("channelExcludeSystem", "0").compare("1") == 0);
+	filter->set("excludeSystem", form().get("channelExcludeSystem", "false").compare("true") == 0);
 
 	ChannelMapper channelMapper(*commandServer());
 	Poco::JSON::Array::Ptr jsonChannels = channelMapper.inquire(filter);
