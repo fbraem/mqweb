@@ -164,6 +164,7 @@ ul#menu li a:hover, ul#menu li.selected a, ul#menu li.selected a:hover
 { float: right;
   width: 190px;
   padding: 0 15px 20px 15px;
+  margin-left: 5px;
   background: beige;}
 
 .sidebar ul
@@ -297,12 +298,15 @@ table tr td
 
 pre {
   padding: 10px;
-  font-size: 1.2em;
   background-color: lightgray;
   border:1px solid gray;
   margin-bottom: 15px;
 }
 
 code { 
-  font-size: .80em;
+  font-size: 1.20em;
+}
+
+pre code {
+  font-size: 1m;
 }

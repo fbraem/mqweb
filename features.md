@@ -1,8 +1,10 @@
 ---
 layout: default
-title: MQWeb &bull; Administrating WebSphere MQ with your favorite browser
+title: MQWeb &bull; Features
 features: true
 ---
 Features
 ========
+
+TODO ...
 
