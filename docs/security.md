@@ -4,7 +4,7 @@ title: MQWeb &bull; Security
 security: true
 ---
 
-** This page is still a work in progress ... **
+**This page is still a work in progress ...**
 
 Security
 ========
