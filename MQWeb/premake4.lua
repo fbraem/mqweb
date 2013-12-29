@@ -90,9 +90,10 @@ project "MQWeb"
             , "iphlpapi"
           }
 
+if ( poco_static ) then
   configuration "linux"
     links {
               "pthread"
             , "dl"
           }
-
+end
