@@ -45,13 +45,13 @@ public:
 		/// Returns index as default action
 
 	void index();
-		/// Action index. Returns a single page application (SPA) for queues
+		/// Action index. Returns a single page application (SPA) for queues.
 
-	void list();
-		/// Action list. Returns a list of queues as JSON
+	void inquire();
+		/// Action list. Inquire queues and returns all data in JSON format.
 
 	void view();
-		/// Action view. Returns a queue as JSON
+		/// Action view. Shows details of a queue.
 
 private:
 };
@@ -62,7 +62,7 @@ inline const Controller::ActionMap& QueueController::getActions() const
 	static Controller::ActionMap actions 
 		= MapInitializer<std::string, Controller::ActionFn>
 			("index", static_cast<ActionFn>(&QueueController::index))
-			("list", static_cast<ActionFn>(&QueueController::list))
+			("inquire", static_cast<ActionFn>(&QueueController::inquire))
 			("view", static_cast<ActionFn>(&QueueController::view));
 	return actions;
 }

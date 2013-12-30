@@ -15,7 +15,7 @@ mqWebApp.controller('QueuesController', ['$scope', '$http', 'MQWEB_CONFIG', func
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get('/queue/list.json/' + config.qmgrName, {
+		$http.get('/queue/inquire/' + config.qmgrName, {
 					cache: false,
 					params : $scope.formData
 					})
@@ -40,7 +40,7 @@ mqWebApp.controller('QueuesController', ['$scope', '$http', 'MQWEB_CONFIG', func
 	$scope.reload = function(queue)
 	{
 		queue.loading = true;
-		$http.get('/queue/list.json/' + config.qmgrName,
+		$http.get('/queue/inquire/' + config.qmgrName,
 			{	cache : false,
 				params: {
 					queueName: queue.data.QName.value,

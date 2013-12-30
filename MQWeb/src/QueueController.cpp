@@ -57,7 +57,7 @@ void QueueController::index()
 }
 
 /**
- * URL: queue/list/<qmgrName>
+ * URL: queue/inquire/<qmgrName>
  *
  * Query Parameters:
  *   + queueName: Name of the queue (* is default).
@@ -65,17 +65,10 @@ void QueueController::index()
  *   + queueUsage: xmitq or normal (default is normal)
  *   + type: queue type. Possible values: All, Local, Alias, Cluster, Model or Remote (default is All)
  *
- * List all queues. When HTML format is requested the
- * request is redirect to the index action.
+ * Inquire queues. Only JSON format is available.
  */
-void QueueController::list()
+void QueueController::inquire()
 {
-	if ( format().compare("html") == 0 )
-	{
-		response().redirect("/queue/index/" + qmgr()->name());
-		return;
-	}
-
 	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
 
 	std::string queueNameField = form().get("queueName", "*");
@@ -134,7 +127,7 @@ void QueueController::list()
 /**
  * URL: queue/view/<qmgrName>/<queueName>
  *
- * Get details of the given queue.
+ * Returns HTML to view details of the given queue
  */
 void QueueController::view()
 {
@@ -150,51 +143,12 @@ void QueueController::view()
 
 	std::string queueName = parameters[1];
 
-	if ( format().compare("html") == 0 )
-	{
-		set("queueName", queueName);
-		Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
-		multiView->add("head", new TemplateView("queue/view_head.tpl"));
-		multiView->add("main", new TemplateView("queue/view.tpl"));
-		setView(multiView);
-		return;
-	}
-
-	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
-	filter->set("name", queueName);
-
-	QueueMapper queueMapper(*commandServer());
-	Poco::JSON::Array::Ptr jsonQueues = queueMapper.inquire(filter);
-
-	if ( jsonQueues->size() > 0 )
-	{
-		Poco::JSON::Object::Ptr jsonQueue = jsonQueues->getObject(0);
-		if ( ! jsonQueue.isNull() )
-		{
-			set("queue", jsonQueues->getObject(0));
-
-			Poco::JSON::Object::Ptr jsonType = jsonQueue->getObject("QType");
-			if ( !jsonType.isNull() )
-			{
-				// Add a property with the type as propertyname and true as value
-				// to help a view to check which type of queue we have. For example:
-				// {
-				//   "QType" : { "value" : 1, "display" : "Local", "Local" : true }
-				// }
-				std::string display = jsonType->optValue<std::string>("display", "");
-				if ( ! display.empty() )
-				{
-					jsonType->set(display, true);
-				}
-			}
-
-			setView(new JSONView());
-
-			return;
-		}
-	}
-
-	setResponseStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
+	set("queueName", queueName);
+	Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
+	multiView->add("head", new TemplateView("queue/view_head.tpl"));
+	multiView->add("main", new TemplateView("queue/view.tpl"));
+	setView(multiView);
+	return;
 }
 
 
