@@ -4,7 +4,9 @@ title: MQWeb &bull; Security
 security: true
 ---
 
-**This page is still a work in progress ...**
+> This page is still a work in progress ... 
+> If you find a problem or an error please let it know
+> by entering an [issue](https://github.com/fbraem/mqweb/issues)
 
 Security
 ========
@@ -18,12 +20,25 @@ the mqweb group.
 
 This page is currently only for Windows / Unix platforms.
 
-Channel
--------
-When MQWeb connects in client mode, you have to secure the channel. Create a 
-channel and use the username in the MCAUSER attribute.
+Websphere MQ Client Security
+----------------------------
+When MQWeb connects in client mode, you have to secure the client channel. Set 
+the MCAUSER to NOACCESS.
 
-    DEFINE CHANNEL(CL.MQWEB) CHLTYPE(SVRCONN) MCAUSER('mqweb')
+    DEFINE CHANNEL(CL.MQWEB) CHLTYPE(SVRCONN) MCAUSER(NOACCESS)
+
+By setting MCAUSER to NOACCESS, nobody can abuse channel CL.MQWEB. 
+Now you have to add a channel authentication record:
+
+    SET CHLAUTH(CL.MQWEB) TYPE(USERMAP) +
+    CLNTUSER('mqweb') USERSRC(MAP) +
+    MCAUSER('mqweb') ACTION(ADD)
+
+The above rule tells the queuemanager "when you see a connection from the mqweb
+ID on CL.MQWEB then set MCAUSER to mqweb and allow the connection".
+
+Channel authentication records are available in WebSphere MQ since version 7.1.
+In prior versions, you will need to use a security exit like BlockIP2.
 
 Queuemanager Security
 ---------------------
