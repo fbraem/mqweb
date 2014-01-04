@@ -46,8 +46,8 @@ public:
 	void view();
 		/// Shows a message
 
-	void list();
-		/// List messages from a queue
+	void browse();
+		/// Browse messages from a queue
 
 	void dump();
 		/// Shows the message in ascii / hex / ebcdic
@@ -81,7 +81,7 @@ inline const Controller::ActionMap& MessageController::getActions() const
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
 			("index", static_cast<ActionFn>(&MessageController::index))
-			("list", static_cast<ActionFn>(&MessageController::list))
+			("browse", static_cast<ActionFn>(&MessageController::browse))
 			("view", static_cast<ActionFn>(&MessageController::view))
 			("dump", static_cast<ActionFn>(&MessageController::dump))
 			("event", static_cast<ActionFn>(&MessageController::event))
