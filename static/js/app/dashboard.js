@@ -67,16 +67,17 @@ mqWebApp.controller('LocalQueueController', ['$scope', '$http', 'MQWEB_CONFIG', 
 	$scope.mqweb = null;
 	$scope.queues = null;
 	$scope.error = null;
+	$scope.http_rc = 0;
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get('/queue/list.json/' + config.qmgrName, {
+		$http.get('/queue/inquire/' + config.qmgrName, {
 			cache: false,
 			params : {
 				queueDepth : 1,
-				queueExcludeSystem: 1,
+				queueExcludeSystem: 'true',
 				queueUsage : "normal",
-				queueExcludeTemp : 1
+				queueExcludeTemp : 'true'
 			}
 		}).success(function(data, status) {
 			$scope.loading = false;
@@ -85,6 +86,7 @@ mqWebApp.controller('LocalQueueController', ['$scope', '$http', 'MQWEB_CONFIG', 
 			$scope.error = data.error;
 		}).error(function(data, status) {
 			$scope.loading = false;
+			$scope.http_rc = status;
 		});
 	};
 	
@@ -96,14 +98,15 @@ mqWebApp.controller('XmitQueueController', ['$scope', '$http', 'MQWEB_CONFIG', f
 	$scope.mqweb = null;
 	$scope.queues = null;
 	$scope.error = null;
+	$scope.http_rc = 0;
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get('/queue/list.json/' + config.qmgrName, {
+		$http.get('/queue/inquire/' + config.qmgrName, {
 			cache : false,
 			params : {
 				queueDepth : 1,
-				queueExcludeSystem: 0,
+				queueExcludeSystem: 'false',
 				queueUsage : "xmitq"
 			}
 		}).success(function(data, status) {
@@ -113,6 +116,7 @@ mqWebApp.controller('XmitQueueController', ['$scope', '$http', 'MQWEB_CONFIG', f
 			$scope.error = data.error;
 		}).error(function(data, status) {
 			$scope.loading = false;
+			$scope.http_rc = status;
 		});
 	};
 	
@@ -124,6 +128,7 @@ mqWebApp.controller('ChannelStatusController', ['$scope', '$http', 'MQWEB_CONFIG
 	$scope.mqweb = null;
 	$scope.channels = null;
 	$scope.error = null;
+	$scope.http_rc = 0;
 
 	$scope.load = function() {
 		$scope.loading = true;
@@ -136,6 +141,7 @@ mqWebApp.controller('ChannelStatusController', ['$scope', '$http', 'MQWEB_CONFIG
 				})
 			.error(function(data, status) {
 				$scope.loading = false;
+				$scope.http_rc = status;
 			});
 		};
 	$scope.load();
@@ -147,6 +153,7 @@ mqWebApp.controller('EventMessageController', ['$scope', '$http', 'MQWEB_CONFIG'
 	$scope.events = null;
 	$scope.error = null;
 	$scope.curdepth = 0;
+	$scope.http_rc = 0;
 
 	$scope.load = function() {
 		$scope.loading = true;
@@ -160,9 +167,9 @@ mqWebApp.controller('EventMessageController', ['$scope', '$http', 'MQWEB_CONFIG'
 				$scope.error = data.error;
 				$scope.events = data.events;
 				$scope.curdepth = data.queue.curdepth;
-			}).error(function(data, error) {
+			}).error(function(data, status) {
 				$scope.loading = false;
-				//TODO:$("#eventMessages").html("An error occurred  while retrieving event messages from SYSTEM.ADMIN.QMGR.EVENT: " + status  + ", " + error);
+				$scope.http_rc = status;
 			});
 		};
 	$scope.load();
