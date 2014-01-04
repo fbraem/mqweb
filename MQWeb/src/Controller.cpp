@@ -102,11 +102,14 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 
 	const ActionMap& actions = getActions();
 	ActionMap::const_iterator it = actions.find(_action);
-	if ( it != actions.end() )
+	if ( it == actions.end() )
 	{
-		ActionFn action = it->second;
-		(this->*action)();
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND, "Invalid action '" + _action + "' specified.");
+		return;
 	}
+
+	ActionFn action = it->second;
+	(this->*action)();
 
 	afterAction();
 }
