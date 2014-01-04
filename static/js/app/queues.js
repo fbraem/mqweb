@@ -9,8 +9,8 @@ mqWebApp.controller('QueuesController', ['$scope', '$http', 'MQWEB_CONFIG', func
 	$scope.formData = {
 		queueName : config.queueName ? config.queueName : "*",
 		queueType : config.queueType ? config.queueType : "All",
-		queueExcludeSystem : false,
-		queueExcludeTemp : false
+		queueExcludeSystem : true,
+		queueExcludeTemp : true
 	};
 
 	$scope.load = function() {
