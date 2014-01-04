@@ -191,8 +191,7 @@ void MessageController::index()
 		return;
 	}
 
-	Poco::JSON::Object::Ptr jsonMQWeb = data().getObject("mqweb");
-	jsonMQWeb->set("queue", parameters[1]);
+	mqwebData().set("queue", parameters[1]);
 	Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
 	multiView->add("head", new TemplateView("message/head.tpl"));
 	multiView->add("main", new TemplateView("message/index.tpl"));
@@ -200,12 +199,12 @@ void MessageController::index()
 }
 
 /**
- * URL: message/list/<qmgrName>/<queueName>
+ * URL: message/browse/<qmgrName>/<queueName>
  *
  * Returns all messages. When HTML format is requested, the request
  * will be redirected to the index action.
  */
-void MessageController::list()
+void MessageController::browse()
 {
 	std::vector<std::string> parameters = getParameters();
 	// First parameter is queuemanager
@@ -217,16 +216,7 @@ void MessageController::list()
 	}
 
 	std::string queueName = parameters[1];
-
-	if ( format().compare("html") == 0 )
-	{
-		response().redirect("/message/index/" + qmgr()->name() + '/' + queueName);
-		return;
-	}
-
-	Poco::JSON::Object::Ptr jsonQueue = new Poco::JSON::Object();
-	jsonQueue->set("name", queueName);
-	set("queue", jsonQueue);
+	mqwebData().set("queue", queueName);
 
 	std::string limitField = form().get("limit", "");
 	int limit = -1;
