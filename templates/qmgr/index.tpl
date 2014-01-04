@@ -93,9 +93,10 @@
 					</tr>
 				</tbody>
 			</table>
-			<p ng-if="error == null && (queues == null || queues.length == 0)">
+			<p ng-if="error == null && http_rc == 0 && (queues == null || queues.length == 0)">
 				There are no local queues which contains messages. System queues were discarded in this view.
 			</p>
+			<p ng-if="http_rc != 0" ng-include="'/static/html/httprc.html'"></p>
 			<div ng-if="loading" class="loader"></div>
 			<div ng-if="error != null" ng-include="'/static/html/error.html'"></div>
 		</div> <!-- localQueues -->
@@ -115,10 +116,11 @@
 					</tr>
 				</tbody>
 			</table>
-			<p ng-if="error == null && (queues == null || queues.length == 0)">
+			<p ng-if="error == null && http_rc == 0 && (queues == null || queues.length == 0)">
 				All transmission queues are empty.
 			</p>
 			<div ng-if="loading" class="loader"></div>
+			<p ng-if="http_rc != 0" ng-include="'/static/html/httprc.html'"></p>
 			<div ng-if="error != null" ng-include="'/static/html/error.html'"></div>
 		</div> <!-- xmitQueues -->
 	</div> <!-- activities -->
@@ -144,10 +146,11 @@
 					</tr>
 				</tbody>
 			</table>
-			<p ng-if="error == null && (channels == null || channels.length == 0)">
+			<p ng-if="error == null && http_rc == 0 && (channels == null || channels.length == 0)">
 				No channel status found.
 			</p>
 			<div ng-if="loading" class="loader"></div>
+			<p ng-if="http_rc != 0" ng-include="'/static/html/httprc.html'"></p>
 			<div ng-if="error != null" ng-include="'/static/html/error.html'"></div>
 		</div> <!-- channels -->
 	</div> <!-- activities -->
