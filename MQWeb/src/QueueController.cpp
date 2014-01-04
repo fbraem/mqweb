@@ -79,7 +79,7 @@ void QueueController::inquire()
 	filter->set("name", queueNameField);
 
 	std::string queueDepthField = form().get("queueDepth", "");
-	int queueDepth;
+	int queueDepth = 0;
 	if ( Poco::NumberParser::tryParse(queueDepthField, queueDepth) )
 	{
 		filter->set("qdepth", queueDepth);
@@ -96,29 +96,6 @@ void QueueController::inquire()
 
 	QueueMapper queueMapper(*commandServer());
 	Poco::JSON::Array::Ptr jsonQueues = queueMapper.inquire(filter);
-
-	for(int i = 0; i < jsonQueues->size(); ++i)
-	{
-		Poco::JSON::Object::Ptr jsonQueue = jsonQueues->getObject(i);
-		if ( ! jsonQueue.isNull() )
-		{
-			Poco::JSON::Object::Ptr jsonType = jsonQueue->getObject("QType");
-			if ( !jsonType.isNull() )
-			{
-				// Add a property with the type as propertyname and true as value
-				// to help a view to check which type of queue we have. For example:
-				// {
-				//   "QType" : { "value" : 1, "display" : "Local", "Local" : true }
-				// }
-				std::string display = jsonType->optValue<std::string>("display", "");
-				if ( ! display.empty() )
-				{
-					jsonType->set(display, true);
-				}
-			}
-		}
-	}
-
 	set("queues", jsonQueues);
 	setView(new JSONView());
 }
