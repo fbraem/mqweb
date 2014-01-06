@@ -48,7 +48,15 @@ MQWebApplication::~MQWebApplication()
 
 void MQWebApplication::initialize(Application& self)
 {
-	int count = loadConfiguration(); // load default configuration files, if present
+	try
+	{
+		loadConfiguration(); // load default configuration files, if present
+	}
+	catch(Poco::FileException& fe)
+	{
+		std::cout << "Caught a file exception when loading configuration file: " << fe.message() << std::endl;
+	}
+
 	try
 	{
 		ServerApplication::initialize(self);
