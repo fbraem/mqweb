@@ -192,6 +192,13 @@ void MessageController::index()
 	}
 
 	mqwebData().set("queue", parameters[1]);
+	std::string messageId;
+	if ( parameters.size() > 2 )
+	{
+		messageId = parameters[2];
+		mqwebData().set("messageId", messageId);
+	}
+
 	Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
 	multiView->add("head", new TemplateView("message/head.tpl"));
 	multiView->add("main", new TemplateView("message/index.tpl"));
@@ -199,10 +206,8 @@ void MessageController::index()
 }
 
 /**
- * URL: message/browse/<qmgrName>/<queueName>
- *
- * Returns all messages. When HTML format is requested, the request
- * will be redirected to the index action.
+ * URL: message/browse/<qmgrName>/<queueName>?limit=n&teaser=n
+ *      message/browse/<qmgrName>/<queueName>/<msgId>
  */
 void MessageController::browse()
 {
@@ -217,6 +222,13 @@ void MessageController::browse()
 
 	std::string queueName = parameters[1];
 	mqwebData().set("queue", queueName);
+
+	std::string messageId;
+	if ( parameters.size() > 2 )
+	{
+		messageId = parameters[2];
+		mqwebData().set("messageId", messageId);
+	}
 
 	std::string limitField = form().get("limit", "");
 	int limit = -1;
@@ -241,6 +253,11 @@ void MessageController::browse()
 	while(limit == -1 || count < limit)
 	{
 		Message msg(teaser);
+		if ( ! messageId.empty() )
+		{
+			msg.setMessageId(messageId);
+		}
+
 		try
 		{
 			q.get(msg, MQGMO_BROWSE_NEXT + MQGMO_ACCEPT_TRUNCATED_MSG, 0);
@@ -249,6 +266,7 @@ void MessageController::browse()
 		{
 			if ( mqe.reason() == MQRC_NO_MSG_AVAILABLE )
 			{
+				if ( !messageId.empty() ) throw;
 				break;
 			}
 			if ( mqe.reason() != MQRC_TRUNCATED_MSG_ACCEPTED )
@@ -377,12 +395,13 @@ void MessageController::dump()
 	}
 
 	std::string queueName = parameters[1];
+	mqwebData().set("queue", queueName);
+
 	std::string messageId = parameters[2];
+	mqwebData().set("messageId", messageId);
 
 	if ( format().compare("html") == 0 )
 	{
-		set("queueName", queueName);
-		set("messageId", messageId);
 		Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
 		multiView->add("head", new TemplateView("message/dump_head.tpl"));
 		multiView->add("main", new TemplateView("message/dump.tpl"));
