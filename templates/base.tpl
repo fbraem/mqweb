@@ -39,8 +39,7 @@
 -->
 					</div>
 					<div class="cl"></div>
-				</div> 
-				<!-- END HEADER -->
+				</div> 	<!-- END HEADER -->
 				<!-- NAVIGATION -->
 				<div id="navigation">
 					<ul>
@@ -49,8 +48,7 @@
 						<li><a title="Channels" href="/channel/index/<?= mqweb.qmgr ?>">Channels</a></li>
 					</ul>
 					<div class="cl"></div>
-				</div>
-				<!-- END NAVIGATION -->
+				</div>	<!-- END NAVIGATION -->
 				<!-- MAIN -->
 				<?if mqweb.client ?>
 					<img id="connectionTip" alt="Client Mode" title="Client Mode" src="/static/images/connection.png" style="float:right;padding:10px;" />
@@ -88,12 +86,9 @@
 					</script>
 				<?endif ?>
 				<div id="main">
-
 					<?= views.main ?>
-				</div>
-				<!-- END MAIN -->
-			</div>
-			<!-- END Wrapper Middle -->
+				</div> <!-- END MAIN -->
+			</div>	<!-- END Wrapper Middle -->
 			<div id="wrapper-bottom"></div>
 			<!-- Footer -->
 			<div id="footer">
@@ -101,8 +96,7 @@
 				<p class="copy">Copyright 2013<span>|</span><a href="http://www.zumuta.be">www.zumuta.be</a>. Design by <a title="CSS Free Templates with jQuery Slider" href="http://css-free-templates.com/">CSS-Free-Templates.com</a></p>
 			<!--  <p id="bottom-nav"><a title="Home" href="#">Home</a><span>|</span><a title="About" href="#">About</a><span>|</span><a title="Services" href="#">Services</a><span>|</span><a title="Projects" href="#">Projects</a><span>|</span><a title="Solutions" href="#">Solutions</a><span>|</span><a title="Jobs" href="#">Jobs</a><span>|</span><a title="Blog" href="#"> Blog</a><span>|</span><a title="Contacts" href="#">Contacts</a></p> -->
 				<div class="cl"></div>
-			</div>
-			<!-- END Footer -->
+			</div>	<!-- END Footer -->
 		</div>
 	</div>
 	<!-- END Wrapper -->
