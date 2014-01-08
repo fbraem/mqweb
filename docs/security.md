@@ -92,6 +92,7 @@ following SET AUTHREC statement to the model queue:
 ###Configured queue
 When a reply queue is configured in the mqweb properties file, MQWeb needs
 permissions to use this queue. This sample uses *MQWEB.REPLY.Q01*:
+
     SET AUTHREC PROFILE(MQWEB.REPLY.Q01) +
     GROUP('mqweb') +
     OBJTYPE(QUEUE) +
