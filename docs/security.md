@@ -18,8 +18,6 @@ MQWeb.
 In the examples below we assume that the user has the name mqweb and is part of 
 the mqweb group.
 
->This page is currently only for Windows / Unix platforms.
-
 Websphere MQ Client Security
 ----------------------------
 When MQWeb connects in client mode, you have to secure the client channel. Set 
