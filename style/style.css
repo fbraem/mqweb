@@ -6,7 +6,7 @@ html
   padding: 0;}
 
 body
-{ font: normal .80em 'trebuchet ms', arial, sans-serif;
+{ font: normal 80% 'trebuchet ms', arial, sans-serif;
   background: #F0EFE2 url(background.png) repeat;
   color: #777;}
 
@@ -18,28 +18,39 @@ img
 { border: 0;}
 
 h1, h2, h3, h4, h5, h6 
-{ font: normal 175% 'century gothic', arial, sans-serif;
+{ font-family: 'century gothic', arial, sans-serif;
+  font-weight: normal;
   color: #43423F;
   margin: 0 0 15px 0;
   padding: 15px 0 5px 0;}
 
-h2
-{ font: normal 175% 'century gothic', arial, sans-serif;
+h1
+{ font-size: 175%;
   color: #1293EE;}
 
-h4, h5, h6
+h2
+{ font-size: 160%;}
+
+h3
+{ font-size: 120%;}
+
+h4
 { margin: 0;
   padding: 0 0 5px 0;
   font: normal 120% arial, sans-serif;
   color: #1293EE;}
 
-h5, h6
-{ font: italic 95% arial, sans-serif;
+h5
+{ 
+  margin: 0;
+  font: italic 95% arial, sans-serif;
   padding: 0 0 15px 0;
   color: #000;}
 
 h6
-{ color: #362C20;}
+{ margin: 0;
+  font: italic 90% arial, sans-serif;
+  color: #362C20;}
 
 a, a:hover
 { outline: none;
