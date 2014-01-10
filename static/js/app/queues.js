@@ -1,6 +1,6 @@
 var mqWebApp = angular.module('mqWebApp');
 
-mqWebApp.controller('QueuesController', ['$scope', '$http', '$rootScope', 'MQWEB_CONFIG', function($scope, $http, $rootScope, config) {
+function QueuesController($scope, $http, $rootScope, config) {
 	if ( ! $rootScope.queues )
 	{
 		$rootScope.queues = null;
@@ -77,7 +77,9 @@ mqWebApp.controller('QueuesController', ['$scope', '$http', '$rootScope', 'MQWEB
 	{
 		$scope.load();
 	}
-}]);
+};
+
+QueuesController.$inject= ['$scope', '$http', '$rootScope', 'MQWEB_CONFIG'];
 
 mqWebApp.controller('QueueController', ['$scope', '$http', '$rootScope', '$routeParams', 'MQWEB_CONFIG', function($scope, $http, $rootScope, $routeParams, config) {
 	$scope.loading = true;
