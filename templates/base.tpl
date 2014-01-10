@@ -8,9 +8,12 @@
 	<link rel="stylesheet" href="/static/css/style.css" type="text/css" media="all" />
 	<link rel="stylesheet" href="/static/css/jquery.qtip.css" type="text/css" media="all" />
 	<link rel="stylesheet" href="/static/css/ui-lightness/jquery-ui-1.10.3.custom.min.css" type="text/css" media="all" />
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>
+	<link rel="stylesheet" href="/static/css/formalize.css" type="text/css" media="all" />
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>	
 	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular-route.min.js"></script>
+	<script src="/static/js/jquery.formalize.legacy.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/static/js/center.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/static/js/jquery.qtip.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/static/js/app/mqwebapp.js" type="text/javascript" charset="utf-8"></script>
