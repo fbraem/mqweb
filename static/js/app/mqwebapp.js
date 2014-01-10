@@ -1,4 +1,4 @@
-var mqWebApp = angular.module('mqWebApp',[]);
+var mqWebApp = angular.module('mqWebApp', ['ngRoute']);
 
 mqWebApp.directive('mqConfig', ['MQWEB_CONFIG', function(config) {
 	return {
@@ -23,11 +23,11 @@ mqWebApp.directive('mqTemplate',
 				};
 }]);
 
-mqWebApp.filter('default', function () {   
-	return function (input, value) { 
-		if (input !== null && input !== undefined && (input !== '' || angular.isNumber(input))) { 
-			return input; 
-		}     
-		return value || '';   
-	}; 
+mqWebApp.filter('default', function () {  
+	return function (input, value) {
+		if (input !== null && input !== undefined && (input !== '' || angular.isNumber(input))) {
+			return input;
+		}    
+		return value || '';  
+	};
 });
