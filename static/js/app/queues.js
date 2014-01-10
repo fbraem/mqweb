@@ -1,9 +1,18 @@
 var mqWebApp = angular.module('mqWebApp');
 
-mqWebApp.controller('QueuesController', ['$scope', '$http', 'MQWEB_CONFIG', function($scope, $http, config) {
+mqWebApp.controller('QueuesController', ['$scope', '$http', '$rootScope', 'MQWEB_CONFIG', function($scope, $http, $rootScope, config) {
+	if ( ! $rootScope.queues )
+	{
+		$rootScope.queues = null;
+	}
+	
+	if ( ! $rootScope.queue )
+	{
+		$rootScope.queue = null; // Selected queue
+	}
+
 	$scope.loading = false;
 	$scope.mqweb = null;
-	$scope.queues = null;
 	$scope.error = null;
 	
 	$scope.formData = {
@@ -22,10 +31,10 @@ mqWebApp.controller('QueuesController', ['$scope', '$http', 'MQWEB_CONFIG', func
 			.success(function(data, status) {
 				$scope.loading = false;
 				$scope.mqweb = data.mqweb;
-				$scope.queues = [];
+				$rootScope.queues = [];
 				for(q in data.queues)
 				{
-					$scope.queues.push({
+					$rootScope.queues.push({
 						loading: false,
 						toggle: false,
 						data: data.queues[q]
@@ -36,6 +45,12 @@ mqWebApp.controller('QueuesController', ['$scope', '$http', 'MQWEB_CONFIG', func
 				$scope.loading = false;
 		});
 	};
+
+  $scope.toggle = function(queue)
+  {
+  	queue.toggle = ! queue.toggle;
+  	$rootScope.queue = queue;
+  }
 	
 	$scope.reload = function(queue)
 	{
@@ -62,4 +77,33 @@ mqWebApp.controller('QueuesController', ['$scope', '$http', 'MQWEB_CONFIG', func
 	{
 		$scope.load();
 	}
+}]);
+
+mqWebApp.controller('QueueController', ['$scope', '$http', '$rootScope', '$routeParams', 'MQWEB_CONFIG', function($scope, $http, $rootScope, $routeParams, config) {
+	$scope.loading = true;
+	$scope.mqweb = null;
+	$scope.error = null;
+	
+	$http.get('/queue/inquire/' + config.qmgrName, {
+					cache: false,
+					params : { queueName : $routeParams.queueName }
+					})
+			.success(function(data, status) {
+				$scope.loading = false;
+				$scope.mqweb = data.mqweb;
+				if ( data.queues.length > 0 )
+				{
+					if ( $rootScope.queue == null )
+					{
+						$rootScope.queue = { 'data' : data.queues[0] };
+					}
+					else
+					{
+						$rootScope.queue.data = data.queues[0];
+					}
+				}
+				$scope.error = data.error;
+			}).error(function(data, status) {
+				$scope.loading = false;
+		});
 }]);

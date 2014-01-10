@@ -1,12 +1,10 @@
-<div ng-controller="QueuesController">
+<div>
 	<!-- Content -->
 	<div id="content">
 		<div class="post">
-			<h3><strong><mq-config name="qmgrName" /></strong> - Queue - <mq-config name="queueName" /></h3>
+			<h3><strong><mq-config name="qmgrName" /></strong> - Queue - {{ queue.data.QName.value }}</h3>
 		</div>
-		<div ng-repeat="queue in queues | limitTo: 1">
-			<div ng-include="'/static/html/queue/detail.html'"></div>
-		</div>
+		<div ng-include="'/static/html/queue/detail.html'"></div>
 		<div ng-if="loading" class="loader"></div>
 		<div ng-if="error != null" ng-include="'/static/html/error.html'"></div>
 	</div>

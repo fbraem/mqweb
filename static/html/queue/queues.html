@@ -1,4 +1,4 @@
-<div ng-controller="QueuesController">
+<div>
 	<!-- Content -->
 	<div id="content">
 		<div class="post">
@@ -71,7 +71,7 @@
 				<tbody>
 					<tr ng-repeat-start="queue in queues">
 						<td>
-							<a ng-click="queue.toggle=!queue.toggle">{{ queue.data.QName.value }}</a>
+							<a ng-click="toggle(queue)">{{ queue.data.QName.value }}</a>
 							<span style="font-size:0.8em" ng-if="queue.data.BaseObjectName">
 								<br />Target: <a href="/queue/view/{{ mqweb.qmgr }}/ {{ queue.data.BaseObjectName.value }}">{{ queue.data.BaseObjectName.value }}</a>
 							</span>
@@ -134,7 +134,7 @@
 							</div>
 						</td>
 						<td>
-							<a href="/queue/view/{{ mqweb.qmgr }}/{{ queue.data.QName.value }}"><img src="/static/images/go-next-icon.png" /></a>
+							<a href="#/queue/{{ queue.data.QName.value }}"><img src="/static/images/go-next-icon.png" /></a>
 						</td>
 					</tr>
 					<tr ng-repeat-end ng-show="queue.toggle">
