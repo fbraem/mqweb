@@ -10,8 +10,9 @@ Features
 > This page is still a work in progress ...
 
 MQWeb uses the MVC pattern. Models are JSON objects that represents queues,
-channels, messages, ... When the build-in HTML pages are used, AngularJS will 
-be used to transform the JSON model objects into a view in the browser. 
+channels, messages and other WebSphere MQ objects. When the build-in HTML pages 
+are used, [AngularJS](http://angularjs.org) is used to transform the JSON model 
+objects into a view in the browser. 
 
 MQWeb uses the HTTPServer class from [POCO](http://www.pocoproject.org). 
 This class uses request handlers to handle incoming requests. MQWeb has three 
@@ -39,24 +40,56 @@ handlers:
   WebSphere MQ object to use. The first parameter is always the name of the 
   queuemanager. Other parameters depends on the called action and are documented
   on this page. For example: `/queue/inquire/PIGEON` will return all queues
-  from the queuemanager PIGEON.
+  from the queuemanager PIGEON. Properties of WebSphere MQ objects are returned
+  with the name as documented in the WebSphere MQ information center. For
+  example: The property of the current queue depth of a queue will have the
+  name `CurrentQDepth`.
 
 ##Queuemanager
 
-The URI must start with `qmgr` to call the QueueManagerController.
+The first part of the URI must be `qmgr` to call the QueueManagerController.
 
-| URL | Type | Parameters | Description |
-| --- | ---- | ---------- | ----------- |
-| qmgr/index/&lt;qmgrName&gt; | HTML | | Shows a dashboard page for a queuemanager |
+###Actions
+
+####index
+
+**Name:** index  
+**Type:** HTML  
+**Parameters:**  
+queueManager : The name of the queuemanager  
+**Example:** `/qmgr/index/PIGEON`
+
+Shows a dashboard page for a queuemanager
 
 ##Queue
 
-The controller for a queue is *queue*
+The first part of the URI must be `queue` to call the QueueController.
 
-| URL | Type | Parameters | Description |
-| --- | ---- | ---------- | ----------- |
-| queue/index/&lt;qmgrName&gt; | HTML | | Shows a form for inquiring queues |
-| queue/index/&lt;qmgrName&gt;/&lt;queueName&gt; | HTML | | Shows a detail page for a queue |
-| queue/inquire/&lt;qmgrName&gt;|JSON| |Inquires the queues |
+###Actions
 
+####index
 
+**Name:** index  
+**Type:** HTML  
+**Parameters:**  
+queueManager: The name of the queuemanager  
+**Example:** `/queue/index/PIGEON`
+
+Shows a form to inquire a queuelist. It's possible to directly go to the detail 
+page of a queue. MQWeb uses the AngularJS 
+[ngRoute](http://docs.angularjs.org/api/ngRoute) module for this:
+`/queue/index/PIGEON/#queue/MQWEB.TEST.Q01` will show the detail page of queue
+`MQWEB.TEST.Q01`.
+
+####inquire
+
+**Name:** inquire  
+**Type:** JSON  
+**Parameters:**  
+queueManager: The name of the queuemanager  
+**Example:** `queue/index/PIGEON`
+
+Returns a JSON object with all queues matching the filter. This JSON object
+will have a `mqweb` object and a `queues` array. When a WebSphere MQ error
+occurred there will be no `queues` array, but instead an `error` object is
+returned.
