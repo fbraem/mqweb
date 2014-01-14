@@ -73,12 +73,12 @@
 						<td>
 							<a ng-click="toggle(queue)">{{ queue.data.QName.value }}</a>
 							<span style="font-size:0.8em" ng-if="queue.data.BaseObjectName">
-								<br />Target: <a href="/queue/view/{{ mqweb.qmgr }}/ {{ queue.data.BaseObjectName.value }}">{{ queue.data.BaseObjectName.value }}</a>
+								<br />Target: <a href="#{{ queue.data.BaseObjectName.value }}">{{ queue.data.BaseObjectName.value }}</a>
 							</span>
 							<div style="font-size:0.8em" ng-if="queue.data.RemoteQName && queue.data.RemoteQName.value">
 								<br />
 								Qmgr: {{ queue.data.RemoteQmgrName.value }} Queue: {{ queue.data.RemoteQName.value }}<br />
-								Transmission Queue: <a href="/queue/view/{{ mqweb.qmgr }}/{{ queue.data.XmitQName.value }}"></a>
+								Transmission Queue: <a href="#{{ queue.data.XmitQName.value }}"></a>
 							</div>
 							<div ng-if="queue.data.QDesc && queue.data.QDesc.value.length > 0">
 								<em style="padding:5px;font-size:0.8em">{{ queue.data.QDesc.value }}</em>
@@ -134,7 +134,7 @@
 							</div>
 						</td>
 						<td>
-							<a href="#/queue/{{ queue.data.QName.value }}"><img src="/static/images/go-next-icon.png" /></a>
+							<a href="#{{ queue.data.QName.value }}"><img src="/static/images/go-next-icon.png" /></a>
 						</td>
 					</tr>
 					<tr ng-repeat-end ng-show="queue.toggle">

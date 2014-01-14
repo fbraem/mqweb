@@ -8,7 +8,7 @@
 			$routeProvider.when('/', {
 				templateUrl : '/static/html/queue/queues.html',
 				controller : 'QueuesController'
-			}).when('/queue/:queueName', {
+			}).when('/:queueName', {
 				templateUrl : '/static/html/queue/queue.html',
 				controller : 'QueueController'
 			}).otherwise({
