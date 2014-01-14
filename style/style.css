@@ -6,7 +6,8 @@ html
   padding: 0;}
 
 body
-{ font: normal 80% 'trebuchet ms', arial, sans-serif;
+{ font-family:sans-serif;
+  font-size:85%;
   background: #F0EFE2 url(background.png) repeat;
   color: #777;}
 
@@ -18,7 +19,7 @@ img
 { border: 0;}
 
 h1, h2, h3, h4, h5, h6 
-{ font-family: 'century gothic', arial, sans-serif;
+{ font-family: sans-serif;
   font-weight: normal;
   color: #43423F;
   margin: 0 0 15px 0;
@@ -37,19 +38,19 @@ h3
 h4
 { margin: 0;
   padding: 0 0 5px 0;
-  font: normal 120% arial, sans-serif;
+/*  font: normal 120% arial, sans-serif; */
   color: #1293EE;}
 
 h5
 { 
   margin: 0;
-  font: italic 95% arial, sans-serif;
+/*  font: italic 95% arial, sans-serif;*/
   padding: 0 0 15px 0;
   color: #000;}
 
 h6
 { margin: 0;
-  font: italic 90% arial, sans-serif;
+/*  font: italic 90% arial, sans-serif; */
   color: #362C20;}
 
 a, a:hover
@@ -80,7 +81,7 @@ blockquote
   margin: 1em 3em;
   padding: 10px 20px 0 20px;
   border-left: 5px solid #fce27c;
-  background-color:#f6ebc1;
+  background-color: #f6ebc1;
   overflow:auto;}
 
 ul
@@ -323,3 +324,34 @@ code {
 pre code {
   font-size: 1m;
 }
+
+dl { 
+  background-color:beige; 
+  width:75%; 
+  border-radius:15px;
+  margin:auto;
+  margin-bottom:15px;
+} 
+
+dt { 
+  font-weight:bold; 
+  background-color:#1293EE;
+  color:#FFF; 
+  padding:3px;
+  padding-left:15px; 
+} 
+
+dt:first-child {
+  border-top-left-radius:15px;
+  border-top-right-radius:15px;
+}
+
+dd { 
+  padding: 3px;
+  margin-left: 40px; 
+} 
+                  
+dd dl dt { 
+  background-color:#C2EBFF; 
+}
+ 
