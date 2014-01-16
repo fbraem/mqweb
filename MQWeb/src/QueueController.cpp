@@ -101,32 +101,4 @@ void QueueController::inquire()
 }
 
 
-/**
- * URL: queue/view/<qmgrName>/<queueName>
- *
- * Returns HTML to view details of the given queue
- */
-void QueueController::view()
-{
-	std::vector<std::string> parameters = getParameters();
-
-	// First parameter is the queuemanager name
-	// Second parameter is the queue name
-	if ( parameters.size() < 2 )
-	{
-		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
-		return;
-	}
-
-	std::string queueName = parameters[1];
-
-	set("queueName", queueName);
-	Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
-	multiView->add("head", new TemplateView("queue/view_head.tpl"));
-	multiView->add("main", new TemplateView("queue/view.tpl"));
-	setView(multiView);
-	return;
-}
-
-
 } } // Namespace MQ::Web
