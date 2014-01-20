@@ -1,16 +1,24 @@
 var mqWebApp = angular.module('mqWebApp');
 
-function QueuesController($scope, $http, $rootScope, config) {
-	if ( ! $rootScope.queues )
-	{
-		$rootScope.queues = null;
-	}
-	
-	if ( ! $rootScope.queue )
-	{
-		$rootScope.queue = null; // Selected queue
-	}
+mqWebApp.factory('QueueService', function($http) {
+  return {
+  	inquire: function(qmgr, name) {
+		return $http.get('/queue/inquire/' + qmgr,
+			{	cache : false,
+				params: {
+					queueName: name
+				}
+			})
+    }
+  };
+});
 
+mqWebApp.run(function ($rootScope) {
+    $rootScope.queues = null; // All queues
+    $rootScope.queue = null; // Selected queue
+});
+
+function QueuesController($scope, $http, $rootScope, config, queueService) {
 	$scope.loading = false;
 	$scope.mqweb = null;
 	$scope.error = null;
@@ -46,22 +54,15 @@ function QueuesController($scope, $http, $rootScope, config) {
 		});
 	};
 
-  $scope.toggle = function(queue)
-  {
-  	queue.toggle = ! queue.toggle;
-  	$rootScope.queue = queue;
-  }
+	$scope.toggle = function(queue)
+	{
+		queue.toggle = ! queue.toggle;
+		$rootScope.queue = queue;
+	}
 	
 	$scope.reload = function(queue)
 	{
-		queue.loading = true;
-		$http.get('/queue/inquire/' + config.qmgrName,
-			{	cache : false,
-				params: {
-					queueName: queue.data.QName.value,
-					queueType: queue.data.QType.display
-				}
-			})
+		queueService.inquire(config.qmgrName, queue.data.QName.value)
 			.success(function(data, status) {
 				queue.loading = false;
 				if ( data.queues.length > 0 )
@@ -79,33 +80,60 @@ function QueuesController($scope, $http, $rootScope, config) {
 	}
 };
 
-QueuesController.$inject= ['$scope', '$http', '$rootScope', 'MQWEB_CONFIG'];
+QueuesController.$inject = [
+	'$scope', 
+	'$http',
+	'$rootScope', 
+	'MQWEB_CONFIG',
+	'QueueService'
+];
 
-mqWebApp.controller('QueueController', ['$scope', '$http', '$rootScope', '$routeParams', 'MQWEB_CONFIG', function($scope, $http, $rootScope, $routeParams, config) {
+function QueueController($scope, $rootScope, $routeParams, config, queueService) {
 	$scope.loading = true;
 	$scope.mqweb = null;
 	$scope.error = null;
 	
-	$http.get('/queue/inquire/' + config.qmgrName, {
-					cache: false,
-					params : { queueName : $routeParams.queueName }
-					})
+	queueService.inquire(config.qmgrName, $routeParams.queueName)
+		.success(function(data, status) {
+			$scope.loading = false;
+			$scope.mqweb = data.mqweb;
+			if ( data.queues.length > 0 )
+			{
+				if ( $rootScope.queue == null )
+				{
+					$rootScope.queue = { 'data' : data.queues[0] };
+				}
+				else
+				{
+					$rootScope.queue.data = data.queues[0];
+				}
+			}
+			$scope.error = data.error;
+		}).error(function(data, status) {
+			$scope.loading = false;
+	});
+		
+	$scope.reload = function(queue)
+	{
+		$scope.loading = true;
+		queueService.inquire(config.qmgrName, queue.data.QName.value)
 			.success(function(data, status) {
 				$scope.loading = false;
-				$scope.mqweb = data.mqweb;
 				if ( data.queues.length > 0 )
 				{
-					if ( $rootScope.queue == null )
-					{
-						$rootScope.queue = { 'data' : data.queues[0] };
-					}
-					else
-					{
-						$rootScope.queue.data = data.queues[0];
-					}
+					queue.data = data.queues[0];
 				}
-				$scope.error = data.error;
 			}).error(function(data, status) {
 				$scope.loading = false;
-		});
-}]);
+			});
+	}
+
+}
+
+QueueController.$inject = [
+	'$scope', 
+	'$rootScope', 
+	'$routeParams',
+	'MQWEB_CONFIG',
+	'QueueService'
+]; 
