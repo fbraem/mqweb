@@ -1,5 +1,11 @@
+<script type="text/javascript" src="/static/js/app/queueProvider.js"></script>
 <script type="text/javascript">
 	var mqWebApp = angular.module('mqWebApp');
+
+	mqWebApp.config(function(queueProvider) {
+    	queueProvider.setQueueManager('<?= mqweb.qmgr ?>');
+	});
+	
 	mqWebApp.constant('MQWEB_CONFIG', {
 		qmgrName : '<?= mqweb.qmgr ?>'});
 		
