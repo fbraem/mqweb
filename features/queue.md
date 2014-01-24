@@ -21,7 +21,8 @@ Type
 : HTML
 
 Parameters
-: **queueManager:** The name of the queuemanager
+: + **queueManager** 
+    The name of the queuemanager
 
 Example
 : `/queue/index/PIGEON`
@@ -41,20 +42,35 @@ Type
 : JSON
 
 Parameters
-: **queueManager:** The name of the queuemanager
+: + **queueManager** 
+    The name of the queuemanager
+  + **queueName** (optional)
+    The name of a queue
 
 Query Parameters
-: + **queueDepth** 
+: + **queueDepth** (optional)
     Only return queues which have at least *queueDepth* messages.
-  + **queueName** 
+  + **queueName** (optional)
     Only return queues with a name that matches *queueName*. By 
     default * is used which matches all queues.
+  + **queueUsage** (optional)
+    Only return queues with the given usage type. Use `normal` or `xmitq`. When
+    this parameter is not set, all queues will be returned.
+  + **excludeSystem** (optional)
+    When value is `true`, all queues starting with SYSTEM. will be discarded.
+  + **excludeTemp** (optional)
+    When value is `true`, all temporary queues will be discarded.
 
 Example
-: `queue/index/PIGEON`
+: `queue/inquire/PIGEON/MQWEB.TEST.Q1`  
+  `queue/inquire/PIGEON/*`  
+  `queue/inquire/PIGEON?queueName=*&queueDepth=1`
 
-Returns a JSON object with all queues matching the filter. The filter is created
-based on the values passed in the query parameters. The returend JSON object
-will have a `mqweb` object and a `queues` array. When a WebSphere MQ error
-occurred there will be no `queues` array, but instead an `error` object is
-returned.
+When a queuename parameter is passed in the URI path only the attributes of the
+queues which matches the given name will be returned. Query parameters are
+discarded.
+
+A filter will be created based on the query parameters when no queuename parameter is passed in the URI path.
+
+The returned JSON object will have a `mqweb` object and a `queues` array. 
+When a WebSphere MQ error occurred there will be no `queues` array, but instead an `error` object is returned.

@@ -45,6 +45,8 @@ Properties of WebSphere MQ objects are returned with the name as documented
 in the WebSphere MQ information center. For example: The property of the 
 current queue depth of a queue will have the name `CurrentQDepth`.
 
+Query parameters are handled for GET or POST methods.
+
 The following table lists all available controllers.
 
 |Controller|URI path|
