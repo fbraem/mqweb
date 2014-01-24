@@ -58,6 +58,7 @@ void QueueController::index()
 
 /**
  * URL: queue/inquire/<qmgrName>
+ * URL: queue/inquire/<qmgrName>/<queueName>
  *
  * Query Parameters:
  *   + queueName: Name of the queue (* is default).
@@ -65,34 +66,53 @@ void QueueController::index()
  *   + queueUsage: xmitq or normal (default is normal)
  *   + type: queue type. Possible values: All, Local, Alias, Cluster, Model or Remote (default is All)
  *
- * Inquire queues. Only JSON format is available.
+ * Inquire queues. It will always return JSON.
+ * Query parameters are ignored when a queueName is passed in the URI path.
+ *
+ * The returned JSON object can contain following properties:
+ *   mqweb : An object with information about the MQWeb application and request.
+ *   queues : An array with all matching queues. This is always an array (even when a queuename is passed in the URI path).
+ *            When an MQ error occurs there will be no queues property.
+ *   error: An object describing the MQ error.
  */
 void QueueController::inquire()
 {
 	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
 
-	std::string queueNameField = form().get("queueName", "*");
-	if ( queueNameField.empty() )
+	std::vector<std::string> parameters = getParameters();
+	// First parameter is queuemanager
+	// Second parameter can be a queuename and will result in inquiring 
+	// only that queue and ignores all query parameters.
+	if ( parameters.size() > 1 )
 	{
-		queueNameField = "*";
+		filter->set("name", parameters[1]);
 	}
-	filter->set("name", queueNameField);
-
-	std::string queueDepthField = form().get("queueDepth", "");
-	int queueDepth = 0;
-	if ( Poco::NumberParser::tryParse(queueDepthField, queueDepth) )
+	else
 	{
-		filter->set("qdepth", queueDepth);
-	}
+		// Handle query parameters
+		std::string queueNameField = form().get("queueName", "*");
+		if ( queueNameField.empty() )
+		{
+			queueNameField = "*";
+		}
+		filter->set("name", queueNameField);
 
-	if ( form().has("queueUsage") )
-	{
-		filter->set("usage", form().get("queueUsage"));
-	}
+		std::string queueDepthField = form().get("queueDepth", "");
+		int queueDepth = 0;
+		if ( Poco::NumberParser::tryParse(queueDepthField, queueDepth) )
+		{
+			filter->set("qdepth", queueDepth);
+		}
 
-	filter->set("type", form().get("queueType", "All"));
-	filter->set("excludeSystem", form().get("queueExcludeSystem", "false").compare("true") == 0);
-	filter->set("excludeTemp", form().get("queueExcludeTemp", "false").compare("true") == 0);
+		if ( form().has("queueUsage") )
+		{
+			filter->set("usage", form().get("queueUsage"));
+		}
+
+		filter->set("type", form().get("queueType", "All"));
+		filter->set("excludeSystem", form().get("queueExcludeSystem", "false").compare("true") == 0);
+		filter->set("excludeTemp", form().get("queueExcludeTemp", "false").compare("true") == 0);
+	}
 
 	QueueMapper queueMapper(*commandServer());
 	Poco::JSON::Array::Ptr jsonQueues = queueMapper.inquire(filter);
