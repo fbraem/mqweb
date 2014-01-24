@@ -1,5 +1,5 @@
 <div style="float:right;">
-	<img ng-click="reload(queue)" class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" />
+	<img ng-click="reload(queue)" class="tip" style="cursor: pointer;" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" />
 </div>
 <div class="details" style="width:70%;margin:auto">
 	<h2>Name:</h2>
@@ -46,13 +46,13 @@
 	<div ng-if="queue.data.BackoutRequeueName && queue.data.BackoutRequeueName.value">
 		<h2>Backout:</h2>
 		<div class="detail">
-			<a href="/queue/view/{{ mqweb.qmgr }}/{{ queue.data.BackoutRequeueName.value }}">{{ queue.data.BackoutRequeueName.value }}</a> - Threshold: {{ queue.data.BackoutThreshold.value }} - Harden: {{ queue.data.HardenGetBackout.display }}
+			<a href="#{{ queue.data.BackoutRequeueName.value }}" ng-click="queue = getQueue(queue.data.BackoutRequeueName);" >{{ queue.data.BackoutRequeueName.value }}</a> - Threshold: {{ queue.data.BackoutThreshold.value }} - Harden: {{ queue.data.HardenGetBackout.display }}
 		</div> <!-- detail -->
 	</div>
 	<div ng-if="queue.data.BaseObjectName">
 		<h2>Target Queue:</h2>
 		<div class="detail">
-			<a href="/queue/view/{{ mqweb.qmgr }}/{{ queue.data.BaseObjectName.value }}">{{ queue.data.BaseObjectName.value }}</a>
+			<a href="#{{ queue.data.BaseObjectName.value }}">{{ queue.data.BaseObjectName.value }}</a>
 		</div> <!-- detail -->
 	</div>
 	<div ng-if="queue.data.DefBind">
@@ -118,7 +118,7 @@
 	<div ng-if="queue.data.InitiationQName && queue.data.InitiationQName.value">
 		<h2>Initiation Queue:</h2>
 		<div class="detail">
-			<a href="/queue/view/{{ mqweb.qmgr }}/{{ queue.data.InitiationQName.value }}">{{ queue.data.InitiationQName.value }}</a>
+			<a href="#{{ queue.data.InitiationQName.value }}">{{ queue.data.InitiationQName.value }}</a>
 		</div> <!-- detail -->
 	</div>
 	<div ng-if="queue.data.MaxMsgLength">

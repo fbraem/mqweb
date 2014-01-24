@@ -1,15 +1,10 @@
-<script type="text/javascript" src="/static/js/app/queueProvider.js"></script>
+<script type="text/javascript" src="/static/js/app/queue/provider.js"></script>
 <script type="text/javascript">
-	var mqWebApp = angular.module('mqWebApp');
-
-	mqWebApp.config(function(queueProvider) {
-    	queueProvider.setQueueManager('<?= mqweb.qmgr ?>');
+	angular.module('mqWebApp').config(function(mqWebQueueProvider) {
+    	mqWebQueueProvider.setQueueManager('<?= mqweb.qmgr ?>');
 	});
 	
-	mqWebApp.constant('MQWEB_CONFIG', {
-		qmgrName : '<?= mqweb.qmgr ?>'});
-		
-	mqWebApp.config(['$routeProvider',
+	angular.module('mqWebApp').config(['$routeProvider',
 		function($routeProvider) {
 			$routeProvider.when('/', {
 				templateUrl : '/static/html/queue/queues.html',
@@ -22,4 +17,4 @@
 			});
 		}]);
 </script>
-<script type="text/javascript" src="/static/js/app/queues.js"></script>
+<script type="text/javascript" src="/static/js/app/queue/queue.js"></script>

@@ -1,55 +1,73 @@
 var mqWebApp = angular.module('mqWebApp');
 
 mqWebApp.run(function ($rootScope) {
-    $rootScope.queues = null; // All queues
-    $rootScope.queue = null; // Selected queue
+	$rootScope.qmgr = '';
+	$rootScope.queues = null; // All queues
+	
+	// Call this when a queue has been reloaded on the detail page. 
+	// So we see new values also on the overview page.
+	$rootScope.updateQueue = function(queue)
+	{
+		if ( $rootScope.queues != null )
+		{
+			for(q in $rootScope.queues)
+			{
+				if ( $rootScope.queues[q].data.QName.value == queue.data.QName.value )
+				{
+					$rootScope.queues[q].data = queue.data;
+					break;
+				}
+			}
+		}
+	}
 });
 
-mqWebApp.controller('QueuesController', ['$scope', '$http', '$rootScope', 'MQWEB_CONFIG', 'queue', function($scope, $http, $rootScope, config, queueProvider) {
+mqWebApp.controller('QueuesController', ['$scope', '$rootScope', 'mqWebQueue', function($scope, $rootScope, mqWebQueue) {
+	$rootScope.qmgr = mqWebQueue.getQueueManager();
+
 	$scope.loading = false;
 	$scope.mqweb = null;
 	$scope.error = null;
+	$scope.queue = null; // Queue used for repeat
 	
 	$scope.formData = {
-		queueName : config.queueName ? config.queueName : "*",
-		queueType : config.queueType ? config.queueType : "All",
+		queueName : "*",
+		queueType : "All",
 		queueExcludeSystem : true,
 		queueExcludeTemp : true
 	};
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get('/queue/inquire/' + config.qmgrName, {
-					cache: false,
-					params : $scope.formData
-					})
+		mqWebQueue.inquire($scope.formData)
 			.success(function(data, status) {
 				$scope.loading = false;
 				$scope.mqweb = data.mqweb;
+
 				$rootScope.queues = [];
-				for(q in data.queues)
-				{
+				data.queues.forEach(function(q) {
 					$rootScope.queues.push({
 						loading: false,
 						toggle: false,
-						data: data.queues[q]
+						data: q
 					});
-				}
+				});
+				
 				$scope.error = data.error;
 			}).error(function(data, status) {
 				$scope.loading = false;
 		});
 	};
 
-	$scope.toggle = function(queue)
+	$scope.toggle = function(q)
 	{
-		queue.toggle = ! queue.toggle;
-		$rootScope.queue = queue;
+		q.toggle = ! q.toggle;
+		//$scope.queue = q;
 	}
 	
 	$scope.reload = function(queue)
 	{
-		queueProvider.inquire(queue.data.QName.value)
+		mqWebQueue.inquire(queue.data.QName.value)
 			.success(function(data, status) {
 				queue.loading = false;
 				if ( data.queues.length > 0 )
@@ -60,31 +78,29 @@ mqWebApp.controller('QueuesController', ['$scope', '$http', '$rootScope', 'MQWEB
 				queue.loading = false;
 			});
 	}
-
-	if ( config.autoload )
-	{
-		$scope.load();
-	}
 }]);
 
-mqWebApp.controller('QueueController', ['$scope', '$rootScope', '$routeParams', 'queue', function($scope, $rootScope, $routeParams, queueProvider) {
+mqWebApp.controller('QueueController', ['$scope', '$rootScope', '$routeParams', 'mqWebQueue', function($scope, $rootScope, $routeParams, mqWebQueue) {
+	$rootScope.qmgr = mqWebQueue.getQueueManager();
+
 	$scope.loading = true;
 	$scope.mqweb = null;
 	$scope.error = null;
+	$scope.queue = null;
 	
-	queueProvider.inquire($routeParams.queueName)
+	mqWebQueue.inquire($routeParams.queueName)
 		.success(function(data, status) {
 			$scope.loading = false;
 			$scope.mqweb = data.mqweb;
 			if ( data.queues.length > 0 )
 			{
-				if ( $rootScope.queue == null )
+				if ( $scope.queue == null )
 				{
-					$rootScope.queue = { 'data' : data.queues[0] };
+					$scope.queue = { 'data' : data.queues[0] };
 				}
 				else
 				{
-					$rootScope.queue.data = data.queues[0];
+					$scope.queue.data = data.queues[0];
 				}
 			}
 			$scope.error = data.error;
@@ -95,16 +111,16 @@ mqWebApp.controller('QueueController', ['$scope', '$rootScope', '$routeParams', 
 	$scope.reload = function(queue)
 	{
 		$scope.loading = true;
-		queueProvider.inquire(queue.data.QName.value)
+		mqWebQueue.inquire(queue.data.QName.value)
 			.success(function(data, status) {
 				$scope.loading = false;
 				if ( data.queues.length > 0 )
 				{
 					queue.data = data.queues[0];
 				}
+				$rootScope.updateQueue(queue);
 			}).error(function(data, status) {
 				$scope.loading = false;
 			});
 	}
-
 }]);
