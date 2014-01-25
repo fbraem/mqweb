@@ -47,6 +47,31 @@ current queue depth of a queue will have the name `CurrentQDepth`.
 
 Query parameters are handled for GET or POST methods.
 
+All actions that return JSON objects can be used from any language. This sample 
+shows how to get a list of queues in PHP:
+
+{% highlight php %}
+   <?php
+        $url = "http://localhost:8081/queue/inquire/PIGEON";
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_HEADER, false);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        $response = curl_exec($curl);
+        echo $response;
+        $data=json_decode($response, true);
+{% endhighlight %}
+
+or in Python
+
+{% highlight python %}
+        conn = httplib.HTTPConnection(self.mqWebHost, self.mqWebPort)
+        conn.request('GET', '/queue/inquire/' + self.qmgr)
+        res = conn.getresponse()
+        data = json.loads(res.read())
+{% endhighlight %}
+
 The following table lists all available controllers.
 
 |Controller|URI path|

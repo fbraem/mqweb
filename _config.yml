@@ -2,3 +2,4 @@ paginate: 5
 baseurl: 
 repository: https://github.com/fbraem/mqweb
 markdown: kramdown
+pygments: true
