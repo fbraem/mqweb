@@ -38,19 +38,21 @@ public:
 	virtual ~ChannelStatusController();
 		/// Destructor
 
-	void view();
-		/// Action view. Returns the details of a channelstatus.
-		/// Only JSON format is supported.
+	void index();
+		/// Action index. Shows the single page application (SPA) html for channel statuses.
 
-	void list();
-		/// Action list. Returns the details of all channelstatusses.
-		/// Only JSON format is supported.
+	void inquire();
+		/// Action inquire. Inquire the channelstatus and return the details in JSON format.
+		/// URL's:
+		///  /chstatus/inquire/<qmgrName>
+		///  /chstatus/inquire/<qmgrName>/<channelName>/<channelType>
+		///  /chstatus/inquire/<qmgrName>?channelName=MQWEB*
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all actions.
 
 	std::string getDefaultAction() const;
-		/// Returns "list" as default action.
+		/// Returns "index" as default action.
 
 private:
 };
@@ -60,8 +62,8 @@ inline const Controller::ActionMap& ChannelStatusController::getActions() const
 {
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
-			("list", static_cast<ActionFn>(&ChannelStatusController::list))
-			("view", static_cast<ActionFn>(&ChannelStatusController::view));
+			("inquire", static_cast<ActionFn>(&ChannelStatusController::inquire))
+			("index", static_cast<ActionFn>(&ChannelStatusController::index));
 	return actions;
 }
 
