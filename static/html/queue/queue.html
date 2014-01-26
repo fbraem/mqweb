@@ -2,7 +2,7 @@
 	<!-- Content -->
 	<div id="content">
 		<div class="post">
-			<h3><strong>{{ qmgr }}</strong> - Queue - {{ queue.data.QName.value }}</h3>
+			<h3><strong>{{ mqweb.qmgr }}</strong> - Queue - {{ queue.data.QName.value }}</h3>
 		</div>
 		<div ng-include="'/static/html/queue/detail.html'"></div>
 		<div ng-if="loading" class="loader"></div>
