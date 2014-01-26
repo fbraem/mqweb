@@ -61,7 +61,6 @@ mqWebApp.controller('QueuesController', ['$scope', '$rootScope', 'mqWebQueue', f
 	$scope.toggle = function(q)
 	{
 		q.toggle = ! q.toggle;
-		//$scope.queue = q;
 	}
 	
 	$scope.reload = function(queue)
