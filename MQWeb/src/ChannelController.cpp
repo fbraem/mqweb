@@ -44,12 +44,7 @@ ChannelController::~ChannelController()
 
 }
 
-/**
- * URL: channel/index/<qmgrName>
- *
- * Returns an HTML page with a form for inquiring channels.
- * No JSON action available.
- */
+
 void ChannelController::index()
 {
 	Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
@@ -58,34 +53,35 @@ void ChannelController::index()
 	setView(multiView);
 }
 
-/**
- * URL: channel/list/<qmgrName>
- * Query string parameters:
- *   + channelName: Name of the channel (* by default)
- *   + channelType: The type of the channel (All by default)
- *        Possible values: All, Sender, Server, Receiver, Requester,
- *        Server-connection, Client-connection, Cluster-receiver,
- *        Cluster-sender.
- *   + channelExcludeSystem: 0 includes, 1 excludes the system channels from the list.
- *
- * List all channels with their current state.
- *
- * When the format is HTML, a redirect occurs to the index action.
- */
-void ChannelController::list()
+void ChannelController::inquire()
 {
-	if ( format().compare("html") == 0 )
-	{
-		response().redirect("/channel/index/" + qmgr()->name());
-		return;
-	}
-
 	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
 
-	std::string channelNameField = form().get("channelName", "*");
-	filter->set("name", channelNameField.empty() ? "*" : channelNameField);
-	filter->set("type", form().get("channelType", "All"));
-	filter->set("excludeSystem", form().get("channelExcludeSystem", "false").compare("true") == 0);
+	std::vector<std::string> parameters = getParameters();
+	// First parameter is queuemanager
+	// Second parameter can be a channelname and will result in inquiring
+	// only that channel. A third parameter is required because we need
+	// also the type of the channel for inquiring a specific channel.
+	if ( parameters.size() > 1 )
+	{
+		filter->set("name", parameters[1]);
+		if ( parameters.size() > 2 )
+		{
+			filter->set("type", parameters[2]);
+		}
+		else
+		{
+			setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "ChannelType is required when channelname is part of the URI-path");
+			return;
+		}
+	}
+	else
+	{
+		std::string channelNameField = form().get("channelName", "*");
+		filter->set("name", channelNameField.empty() ? "*" : channelNameField);
+		filter->set("type", form().get("channelType", "All"));
+		filter->set("excludeSystem", form().get("channelExcludeSystem", "false").compare("true") == 0);
+	}
 
 	ChannelMapper channelMapper(*commandServer());
 	Poco::JSON::Array::Ptr jsonChannels = channelMapper.inquire(filter);
@@ -111,9 +107,6 @@ void ChannelController::list()
 		}
 	}
 
-	filter = new Poco::JSON::Object();
-	filter->set("name", channelNameField.empty() ? "*" : channelNameField);
-	filter->set("type", form().get("channelType", "All"));
 	ChannelStatusMapper channelStatusMapper(*commandServer());
 	Poco::JSON::Array::Ptr statuses = channelStatusMapper.inquire(filter);
 
@@ -148,62 +141,6 @@ void ChannelController::list()
 
 	set("channels", jsonChannels);
 	setView(new JSONView());
-}
-
-
-/**
- * URL: channel/view/<qmgrName>/<channelName>/<channelType>
- *   Possible values for channelType: Sender, Server, Receiver, Requester,
- *   Server-connection, Client-connection, Cluster-receiver, Cluster-sender.
- *
- * Get all details for a channel.
- *
- * When the format is HTML, an HTML page will be returned which calls this
- * action again to get the data in JSON format.
- */
-void ChannelController::view()
-{
-	std::vector<std::string> parameters = getParameters();
-
-	// First parameter is the queuemanager name
-	// Second parameter is the channel name
-	// Third parameter is the type of the channel
-	if ( parameters.size() < 3 )
-	{
-		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
-		return;
-	}
-
-	std::string channelName = parameters[1];
-	std::string channelType = parameters[2];
-
-	if ( format().compare("html") == 0 )
-	{
-		set("channelName", channelName);
-		set("channelType", channelType);
-		Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
-		multiView->add("head", new TemplateView("channel/view_head.tpl"));
-		multiView->add("main", new TemplateView("channel/view.tpl"));
-		setView(multiView);
-		return;
-	}
-
-	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
-	filter->set("name", channelName);
-	filter->set("type", channelType);
-
-	ChannelMapper channelMapper(*commandServer());
-	Poco::JSON::Array::Ptr jsonChannels = channelMapper.inquire(filter);
-	Poco::JSON::Object::Ptr jsonChannel = jsonChannels->getObject(0);
-
-	if ( !jsonChannel.isNull() )
-	{
-		set("channel", jsonChannel);
-		setView(new JSONView());
-		return;
-	}
-	
-	setResponseStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
 }
 
 

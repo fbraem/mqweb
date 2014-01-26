@@ -41,13 +41,12 @@ public:
 	void index();
 		/// Action index. Shows the single page application (SPA) html for channels.
 
-	void view();
-		/// Action view. Returns the details of a channel.
-		/// It only supports the JSON format.
-
-	void list();
-		/// Action list. Returns the details of all channels.
-		/// It only supports the JSON format.
+	void inquire();
+		/// Action inquire. Inquire the channels and returns the details in JSON format.
+		/// URL:
+		///  channel/inquire/<qmgrName>
+		///  channel/inquire/<qmgrName>/<channelName>/<channelType>
+		///  channel/inquire/<qmgrName>?channelName=MQWEB*
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions.
@@ -64,8 +63,7 @@ inline const Controller::ActionMap& ChannelController::getActions() const
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
 			("index", static_cast<ActionFn>(&ChannelController::index))
-			("list", static_cast<ActionFn>(&ChannelController::list))
-			("view", static_cast<ActionFn>(&ChannelController::view));
+			("inquire", static_cast<ActionFn>(&ChannelController::inquire));
 	return actions;
 }
 
