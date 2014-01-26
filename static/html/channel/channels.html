@@ -2,7 +2,7 @@
 <div ng-controller="ChannelsController">
 	<div id="content">
 		<div class="post">
-			<h3><strong><mq-config name="qmgrName" /></strong> - Channels</h3>
+			<h3><strong>{{ qmgr }}</strong> - Channels</h3>
 			<form id="channelFilterForm">
 				<fieldset>
 					<legend>&nbsp;Filter&nbsp;</legend>
@@ -69,14 +69,14 @@
 				<tbody>
 					<tr ng-repeat-start="channel in channels">
 						<td>
-							<a ng-click="channel.toggle=!channel.toggle">{{ channel.data.ChannelName.value }}</a>
+							<a ng-click="toggle(channel)">{{ channel.data.ChannelName.value }}</a>
 							<div ng-if="channel.data.ChannelDesc && channel.data.ChannelDesc.value">
 								<em style="padding:5px;font-size:0.8em">{{channel.data.ChannelDesc.value}}</em>
 							</div>
 						</td>
 						<td>{{ channel.data.ChannelType.display }}</td>
 						<td>
-							<a href="/channel/view/{{ mqweb.qmgr }}/{{ channel.data.ChannelName.value }}/{{ channel.data.ChannelType.display }}"><img src="/static/images/go-next-icon.png" /></a>
+							<a href="#{{ channel.data.ChannelName.value }}/{{ channel.data.ChannelType.display }}"><img src="/static/images/go-next-icon.png" /></a>
 						</td>
 					</tr>
 					<tr ng-repeat-end ng-show="channel.toggle">

@@ -1,7 +1,20 @@
+<script type="text/javascript" src="/static/js/app/channel/provider.js"></script>
 <script type="text/javascript">
-	var mqWebApp = angular.module('mqWebApp');
-	mqWebApp.constant('MQWEB_CONFIG', {
-		qmgrName : '<?= mqweb.qmgr ?>',
-		html : 'channel/channels.html' });
+	angular.module('mqWebApp').config(function(mqWebChannelProvider) {
+    	mqWebChannelProvider.setQueueManager('<?= mqweb.qmgr ?>');
+	});
+	
+	angular.module('mqWebApp').config(['$routeProvider',
+		function($routeProvider) {
+			$routeProvider.when('/', {
+				templateUrl : '/static/html/channel/channels.html',
+				controller : 'ChannelsController'
+			}).when('/:channelName/:channelType', {
+				templateUrl : '/static/html/channel/channel.html',
+				controller : 'ChannelController'
+			}).otherwise({
+				redirectTo: '/'
+			});
+		}]);
 </script>
-<script type="text/javascript" src="/static/js/app/channels.js"></script>
+<script type="text/javascript" src="/static/js/app/channel/channel.js"></script>
