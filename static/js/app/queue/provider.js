@@ -6,15 +6,17 @@ angular.module('mqWebApp').provider('mqWebQueue', {
 			getQueueManager : function() {
 				return qmgr;
 			},
-			inquire : function(args) {
-				if ( typeof args == 'object' ) {
+			// Pass an object for using the query parameters of inquire
+			// or a name of a queue to set the URI path. 
+			inquire : function() {
+				if ( typeof arguments[0] == 'object' ) {
 					return $http.get('/queue/inquire/' + qmgr, {
 							cache : false,
-							params : args
+							params : arguments[0]
 						});
 				}
 				else {
-					return $http.get('/queue/inquire/' + qmgr + '/' + args, { cache : false } );
+					return $http.get('/queue/inquire/' + qmgr + '/' + arguments[0], { cache : false } );
 				}
 			} 
 		}
