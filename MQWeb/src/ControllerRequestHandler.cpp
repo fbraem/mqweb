@@ -78,7 +78,7 @@ void ControllerRequestHandler::registerControllers()
 	_controllerFactory.registerClass<QueueController>("queue");
 	_controllerFactory.registerClass<ChannelController>("channel");
 	_controllerFactory.registerClass<MessageController>("message");
-	_controllerFactory.registerClass<ChannelStatusController>("chs");
+	_controllerFactory.registerClass<ChannelStatusController>("chstatus");
 }
 
 
