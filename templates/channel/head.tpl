@@ -1,7 +1,12 @@
 <script type="text/javascript" src="/static/js/app/channel/provider.js"></script>
+<script type="text/javascript" src="/static/js/app/chstatus/provider.js"></script>
 <script type="text/javascript">
 	angular.module('mqWebApp').config(function(mqWebChannelProvider) {
     	mqWebChannelProvider.setQueueManager('<?= mqweb.qmgr ?>');
+	});
+
+	angular.module('mqWebApp').config(function(mqWebChannelStatusProvider) {
+    	mqWebChannelStatusProvider.setQueueManager('<?= mqweb.qmgr ?>');
 	});
 	
 	angular.module('mqWebApp').config(['$routeProvider',
@@ -18,3 +23,4 @@
 		}]);
 </script>
 <script type="text/javascript" src="/static/js/app/channel/channel.js"></script>
+<script type="text/javascript" src="/static/js/app/chstatus/chstatus.js"></script>
