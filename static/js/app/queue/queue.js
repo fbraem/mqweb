@@ -1,7 +1,6 @@
 var mqWebApp = angular.module('mqWebApp');
 
 mqWebApp.run(function ($rootScope) {
-	$rootScope.qmgr = '';
 	$rootScope.queues = null; // All queues
 	
 	// Call this when a queue has been reloaded on the detail page. 
@@ -23,7 +22,7 @@ mqWebApp.run(function ($rootScope) {
 });
 
 mqWebApp.controller('QueuesController', ['$scope', '$rootScope', 'mqWebQueue', function($scope, $rootScope, mqWebQueue) {
-	$rootScope.qmgr = mqWebQueue.getQueueManager();
+	$scope.qmgr = mqWebQueue.getQueueManager();
 
 	$scope.loading = false;
 	$scope.mqweb = null;
@@ -81,7 +80,6 @@ mqWebApp.controller('QueuesController', ['$scope', '$rootScope', 'mqWebQueue', f
 }]);
 
 mqWebApp.controller('QueueController', ['$scope', '$rootScope', '$routeParams', 'mqWebQueue', function($scope, $rootScope, $routeParams, mqWebQueue) {
-	$rootScope.qmgr = mqWebQueue.getQueueManager();
 
 	$scope.loading = true;
 	$scope.mqweb = null;
@@ -94,31 +92,25 @@ mqWebApp.controller('QueueController', ['$scope', '$rootScope', '$routeParams', 
 			$scope.mqweb = data.mqweb;
 			if ( data.queues.length > 0 )
 			{
-				if ( $scope.queue == null )
-				{
-					$scope.queue = { 'data' : data.queues[0] };
-				}
-				else
-				{
-					$scope.queue.data = data.queues[0];
-				}
+				$scope.queue = { 'data' : data.queues[0] };
+				$rootScope.updateQueue($scope.queue);
 			}
 			$scope.error = data.error;
 		}).error(function(data, status) {
 			$scope.loading = false;
 	});
 		
-	$scope.reload = function(queue)
+	$scope.reload = function()
 	{
 		$scope.loading = true;
-		mqWebQueue.inquire(queue.data.QName.value)
+		mqWebQueue.inquire($scope.queue.data.QName.value)
 			.success(function(data, status) {
 				$scope.loading = false;
 				if ( data.queues.length > 0 )
 				{
-					queue.data = data.queues[0];
+					$scope.queue.data = data.queues[0];
 				}
-				$rootScope.updateQueue(queue);
+				$rootScope.updateQueue($scope.queue);
 			}).error(function(data, status) {
 				$scope.loading = false;
 			});
