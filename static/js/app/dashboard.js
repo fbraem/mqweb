@@ -132,11 +132,11 @@ mqWebApp.controller('ChannelStatusController', ['$scope', '$http', 'MQWEB_CONFIG
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get('/chs/list.json/' + config.qmgrName, { cache: false })
+		$http.get('/chstatus/inquire.json/' + config.qmgrName, { cache: false })
 			.success(function(data, status) {
 				$scope.loading = false;
 				$scope.mqweb = data.mqweb;
-				$scope.channels = data.channels;
+				$scope.channels = data.statuses;
 				$scope.error = data.error;
 				})
 			.error(function(data, status) {
