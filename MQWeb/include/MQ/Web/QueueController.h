@@ -69,7 +69,7 @@ public:
 		///  mqweb : An object with information about the MQWeb application and request.
 		///  queues : An array with all matching queues. This is always an array (even when a queuename is passed in the URI path).
 		///   When an MQ error occurs there will be no queues property.
-		///  error: An object describing the MQ error.
+		///  error: An object describing the MQ error (only returned on error).
 
 private:
 };
