@@ -41,7 +41,7 @@
 					<div ng-if="qmgr.DeadLetterQName && qmgr.DeadLetterQName.value">
 						<h2>Dead Letter Queue</h2>
 						<div class="detail">
-							<a ng-href="/queue/view/{{ mqweb.qmgr }}/{{qmgr.DeadLetterQName.value}}">{{qmgr.DeadLetterQName.value}}</a>
+							<a ng-href="/queue/index/{{ mqweb.qmgr }}#{{qmgr.DeadLetterQName.value}}">{{qmgr.DeadLetterQName.value}}</a>
 						</div>
 					</div>
 					<div ng-if="!qmgr.DeadLetterQName || !qmgr.DeadLetterQName.value">
@@ -88,7 +88,7 @@
 				</thead>
 				<tbody>
 					<tr ng-repeat="queue in queues">
-						<td><a ng-href="/queue/view/{{ mqweb.qmgr }}/{{ queue.QName.value }}">{{ queue.QName.value }}</a></td>
+						<td><a ng-href="/queue/index/{{ mqweb.qmgr }}/#{{ queue.QName.value }}">{{ queue.QName.value }}</a></td>
 						<td>{{ queue.CurrentQDepth.value | number }}</td>
 					</tr>
 				</tbody>
@@ -111,7 +111,7 @@
 				</thead>
 				<tbody>
 					<tr ng-repeat="queue in queues">
-						<td><a ng-href="/queue/view/{{ mqweb.qmgr }}/{{ queue.QName.value }}">{{ queue.QName.value }}</a></td>
+						<td><a ng-href="/queue/index/{{ mqweb.qmgr }}/#{{ queue.QName.value }}">{{ queue.QName.value }}</a></td>
 						<td>{{ queue.CurrentQDepth.value | number : 0 }}</td>
 					</tr>
 				</tbody>
@@ -128,12 +128,12 @@
 		<div ng-controller="ChannelStatusController" id="channels">
 			<a ng-click="load()"><img class="imgtip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
 			<h3 data-qtip="This is a list with active channel statuses.">Channel Status</h3>
-			<table ng-if="channels && channels.length > 0" style="font-size:0.8em;border-collapse:collapse;">
+			<table ng-if="statuses && statuses.length > 0" style="font-size:0.8em;border-collapse:collapse;">
 				<thead>
 					<tr><th colspan="2">Channel</th><th>Status</th></tr>
 				</thead>
 				<tbody>
-					<tr ng-repeat="channel in Channels">
+					<tr ng-repeat="status in statuses">
 						<td ng-switch="ChannelStatus.display">
 							<img ng-switch-when="Retrying" alt="The channel {{ChannelName.value}} has status Retrying" class="tip" src="/static/images/flag-red-icon.png" />
 							<img ng-switch-when="Stopped" alt="The channel {{ChannelName.value}} has status Stopped' }" class="tip" src="/static/images/flag-black-icon.png" />
@@ -141,12 +141,12 @@
 							<img ng-switch-default alt="The channel {{ChannelName.value}} has status {{ChannelStatus.display}}" class="tip" src="/static/images/flag-yellow-icon.png" />
 						</td>
 						<td data-bind="template: { name: statusImage }" />
-						<td><a ng-href='/channel/view/{{ mqweb.qmgr }}/{{ ChannelName.value }}/{{ ChannelType.display }}'>{{ChannelName.value}}</a></td>
+						<td><a ng-href='/channel/index/{{ mqweb.qmgr }}/#{{ ChannelName.value }}/{{ ChannelType.display }}'>{{ChannelName.value}}</a></td>
 						<td>{{ ChannelStatus.display }}</td>
 					</tr>
 				</tbody>
 			</table>
-			<p ng-if="error == null && http_rc == 0 && (channels == null || channels.length == 0)">
+			<p ng-if="error == null && http_rc == 0 && (statuses == null || statuses.length == 0)">
 				No channel status found.
 			</p>
 			<div ng-if="loading" class="loader"></div>
@@ -181,7 +181,7 @@
 			</p>
 			<p ng-if="events != null && events.length < curdepth" style="margin-top:5px;display:none">
 				Number of messages on this queue: <strong>{{ curdepth }}</strong><br />
-				Only the first <strong>{{ events.length }}</strong> messages are shown. Use <a href="/queue/view/{{ mqweb.qmgr }}/SYSTEM.ADMIN.QMGR.EVENT">queue detail</a> page to browse all messages.
+				Only the first <strong>{{ events.length }}</strong> messages are shown. Use <a href="/queue/index/{{ mqweb.qmgr }}#SYSTEM.ADMIN.QMGR.EVENT">queue detail</a> page to browse all messages.
 			</p>
 			<div ng-if="loading" class="loader"></div>
 			<div ng-if="error != null" ng-include="'/static/html/error.html'"></div>

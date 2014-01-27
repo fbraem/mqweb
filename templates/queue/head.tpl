@@ -1,7 +1,7 @@
 <script type="text/javascript" src="/static/js/app/queue/provider.js"></script>
 <script type="text/javascript">
 	angular.module('mqWebApp').config(function(mqWebQueueProvider) {
-    	mqWebQueueProvider.setQueueManager('<?= mqweb.qmgr ?>');
+		mqWebQueueProvider.setQueueManager('<?= mqweb.qmgr ?>');
 	});
 	
 	angular.module('mqWebApp').config(['$routeProvider',

@@ -1,1 +1,2 @@
-<mq-template />
+<div ng-view>
+</div> <!-- ng-view -->
