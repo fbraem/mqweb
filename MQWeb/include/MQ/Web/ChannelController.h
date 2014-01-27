@@ -47,6 +47,20 @@ public:
 		///  channel/inquire/<qmgrName>
 		///  channel/inquire/<qmgrName>/<channelName>/<channelType>
 		///  channel/inquire/<qmgrName>?channelName=MQWEB*
+		///
+		/// Query Parameters:
+		///  channelName: Name of the channel (* is default).
+		///  channelType: Only return channels of the given type.
+		///   Possible values: 
+		///  excludeSystem: When 'true', don't return system channels
+		///
+		/// Query parameters are ignored when a queueName is passed in the URI path.
+		///
+		/// The returned JSON object can contain following properties:
+		///  mqweb : An object with information about the MQWeb application and request.
+		///  queues : An array with all matching queues. This is always an array (even when a queuename is passed in the URI path).
+		///   When an MQ error occurs there will be no queues property.
+		///  error: An object describing the MQ error (only returned on error).
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions.
