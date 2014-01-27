@@ -146,14 +146,15 @@ void MQController::handleException(const MQException& mqe)
 	}
 	error->set("reason", mqe.reason());
 
-	if ( format().compare("html") == 0 )
-	{
-		setView(new TemplateView("error.tpl"));
-	}
-	else if ( format().compare("json") == 0 )
+	if ( isJSON() )
 	{
 		setView(new JSONView());
 	}
+	else
+	{
+		setView(new TemplateView("error.tpl"));
+	}
+
 }
 
 

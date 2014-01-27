@@ -27,6 +27,7 @@
 #include "Poco/Net/HTTPServerResponse.h"
 #include "Poco/Net/PartHandler.h"
 #include "Poco/Net/HTMLForm.h"
+#include "Poco/Net/MediaType.h"
 
 #include "Poco/JSON/Object.h"
 
@@ -72,11 +73,6 @@ public:
 	virtual const ActionMap& getActions() const = 0;
 		/// Returns all actions.
 
-	std::string format() const;
-		/// Returns the format (html, json, ...) which is part of the action.
-		/// For example: action list.json will return the format "json". When no
-		/// suffix is found, "html" is returned by default.
-
 	virtual std::string getDefaultAction() const = 0;
 		/// Returns the default action.
 
@@ -88,6 +84,9 @@ public:
 
 	bool isGet() const;
 		/// Returns true when the HTTP method GET is used.
+
+	bool isJSON() const;
+		/// Returns true when application/json 
 
 	bool isPost() const;
 		/// Returns true when the HTTP method POST is used.
@@ -132,9 +131,6 @@ private:
 
 
 	Poco::Net::HTMLForm _form;
-
-
-	std::string _format;
 
 
 	Poco::JSON::Object::Ptr _data;
@@ -192,12 +188,6 @@ inline std::string Controller::getAction() const
 }
 
 
-inline std::string Controller::format() const
-{
-	return _format;
-}
-
-
 inline const std::vector<std::string>& Controller::getParameters() const
 {
 	return _parameters;
@@ -207,6 +197,13 @@ inline const std::vector<std::string>& Controller::getParameters() const
 inline bool Controller::isGet() const
 {
 	return _request->getMethod().compare("GET") == 0;
+}
+
+
+inline bool Controller::isJSON() const
+{
+	Poco::Net::MediaType mediaType(_request->get("Accept"));
+	return mediaType.matches("application", "json");
 }
 
 
