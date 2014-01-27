@@ -223,25 +223,28 @@ void MessageController::browse()
 	std::string queueName = parameters[1];
 	mqwebData().set("queue", queueName);
 
+	int limit = -1;
+	int teaser = 0;
+
 	std::string messageId;
 	if ( parameters.size() > 2 )
 	{
 		messageId = parameters[2];
 		mqwebData().set("messageId", messageId);
 	}
-
-	std::string limitField = form().get("limit", "");
-	int limit = -1;
-	if ( ! limitField.empty() )
+	else
 	{
-		Poco::NumberParser::tryParse(limitField, limit);
-	}
+		std::string limitField = form().get("limit", "");
+		if ( ! limitField.empty() )
+		{
+			Poco::NumberParser::tryParse(limitField, limit);
+		}
 
-	std::string teaserField = form().get("teaser", "");
-	int teaser = 0;
-	if ( ! teaserField.empty() )
-	{
-		Poco::NumberParser::tryParse(teaserField, teaser);
+		std::string teaserField = form().get("teaser", "");
+		if ( ! teaserField.empty() )
+		{
+			Poco::NumberParser::tryParse(teaserField, teaser);
+		}
 	}
 
 	Poco::JSON::Array::Ptr jsonMessages = new Poco::JSON::Array();
@@ -304,86 +307,6 @@ void MessageController::browse()
 }
 
 
-/**
- * URL: message/view/<qmgrName>/<queueName>/<msgId>
- *
- * Browse the message.
- * When the format is HTML, an HTML page will be returned which calls this
- * action again to get the data in JSON format.
- */
-void MessageController::view()
-{
-	std::vector<std::string> parameters = getParameters();
-
-	if ( parameters.size() < 3 )
-	{
-		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
-		return;
-	}
-
-	std::string queueName = parameters[1];
-	std::string messageId = parameters[2];
-
-	if ( format().compare("html") == 0 )
-	{
-		set("queueName", queueName);
-		set("messageId", messageId);
-		Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
-		multiView->add("head", new TemplateView("message/view_head.tpl"));
-		multiView->add("main", new TemplateView("message/view.tpl"));
-		setView(multiView);
-		return;
-	}
-
-	Message message;
-	try
-	{
-		message.setMessageId(messageId);
-	}
-	catch(Poco::DataFormatException&)
-	{
-		//An invalid message id is passed (No valid HEX character)
-		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "An invalid message id is passed (No valid HEX character)");
-		return;
-	}
-
-	Queue q(qmgr(), queueName);
-	q.open(MQOO_BROWSE);
-
-	try
-	{
-		q.get(message, MQGMO_BROWSE_FIRST);
-	}
-	catch(MQException& mqe)
-	{
-		if ( mqe.reason()   == MQRC_TRUNCATED_MSG_FAILED
-			|| mqe.reason() == MQRC_TRUNCATED )
-		{
-			//ignore
-		}
-		else
-		{
-			throw;
-		}
-	}
-
-	Poco::JSON::Object::Ptr jsonMessage = new Poco::JSON::Object();
-	mapMessageToJSON(message, *jsonMessage);
-	set("message", jsonMessage);
-
-	setView(new JSONView());
-}
-
-
-/**
- * URL: message/dump/<qmgrName>/<queueName>/<msgId>
- *
- * Browse the message and returns the data in hex, ASCII and EBCDIC format.
- * When the format is HTML, an HTML page will be returned which calls this
- * action again to get the data in JSON format.
- *
- * Currently the message size is restricted to 16K.
- */
 void MessageController::dump()
 {
 	std::vector<std::string> parameters = getParameters();
@@ -399,15 +322,6 @@ void MessageController::dump()
 
 	std::string messageId = parameters[2];
 	mqwebData().set("messageId", messageId);
-
-	if ( format().compare("html") == 0 )
-	{
-		Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
-		multiView->add("head", new TemplateView("message/dump_head.tpl"));
-		multiView->add("main", new TemplateView("message/dump.tpl"));
-		setView(multiView);
-		return;
-	}
 
 	Message message;
 
@@ -652,12 +566,10 @@ void MessageController::event()
 		set("event", jsonEvent);
 		MQMapper::mapToJSON(message, jsonEvent);
 
-		if ( format().compare("json") == 0 )
-		{
-			setView(new JSONView());
-			return;
-		}
+		setView(new JSONView());
+		return;
 
+/*
 		std::string templateName;
 		if ( message.getReasonCode() == MQRC_NOT_AUTHORIZED )
 		{
@@ -691,6 +603,7 @@ void MessageController::event()
 		setView(new TemplateView(templateName));
 
 		return;
+*/
 	}
 	else // Get all event messages
 	{
@@ -756,14 +669,15 @@ void MessageController::event()
 		}
 	}
 
+/*
 	if ( format().compare("html") == 0 )
 	{
 		setView(new TemplateView("message/events.tpl"));
+		return;
 	}
-	else if ( format().compare("json") == 0 )
-	{
-		setView(new JSONView());
-	}
+*/
+
+	setView(new JSONView());
 }
 
 

@@ -41,16 +41,20 @@ public:
 		/// Destructor
 
 	void index();
-		/// Shows the index page
-
-	void view();
-		/// Shows a message
+		/// Action index. Returns a single page application (SPA) for messages.
+		/// URL's:
+		///   message/index/<qmgrName>/<queueName>
+		///   message/index/<qmgrName>/<queueName>#<msgid>
 
 	void browse();
-		/// Browse messages from a queue
+		/// Action browse.
 
 	void dump();
-		/// Shows the message in ascii / hex / ebcdic
+		/// Action dump. Returns the message in ascii / hex / ebcdic in JSON format
+		/// URL':
+		///  /message/dump/<qmgrName>/<queuName>/<msgId>
+		///
+		/// Currently the message size is restricted to 16K.
 
 	void event();
 		/// Shows an event message
@@ -82,7 +86,6 @@ inline const Controller::ActionMap& MessageController::getActions() const
 		= MapInitializer<std::string, Controller::ActionFn>
 			("index", static_cast<ActionFn>(&MessageController::index))
 			("browse", static_cast<ActionFn>(&MessageController::browse))
-			("view", static_cast<ActionFn>(&MessageController::view))
 			("dump", static_cast<ActionFn>(&MessageController::dump))
 			("event", static_cast<ActionFn>(&MessageController::event))
 		;
