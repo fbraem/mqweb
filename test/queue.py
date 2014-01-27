@@ -28,7 +28,9 @@ class TestQueueActions(unittest.TestCase):
 		res = conn.getresponse()
 		data = json.loads(res.read())
 		
-		self.assertTrue(len(data['queues']) != 0, 'No queues returned')
+		print json.dumps(data, indent=4)
+		
+		self.assertTrue(data['queues'] != None, 'No queues returned')
 		
 suite = unittest.TestLoader().loadTestsFromTestCase(TestQueueActions)
 unittest.TextTestRunner(verbosity=2).run(suite)
