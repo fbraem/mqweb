@@ -1,5 +1,5 @@
 <div ng-controller="MessageDumpController">
-	<h3><strong><mq-config name="qmgrName" /></strong> - Message - <strong><mq-config name="queueName" /></strong></h3>
+	<h3><strong>{{ mqweb.qmgr }}</strong> - Message - <strong>{{ mqweb.queue }}</strong></h3>
 	<div class="details" style="margin-top:20px;">
 		<h2>Message ID:</h2>
 		<div class="detail">{{ message.MsgId }}</div>
@@ -28,7 +28,7 @@
 	   <th>Position</th><th>Hex</th><th ng-show="ascii">ASCII</th><th ng-show="ebcdic">EBCDIC</th>
 	  </tr>
 	 </thead>
-   <tbody data-bind="foreach: { data: dump, as: 'dump'}">
+   <tbody>
 	  <tr ng-repeat="dump in message.dump">
   	 <td style="padding-left:5px;padding-right:5px;border-left:1px dotted black;border-right:1px dotted black;"><code>{{ dump.position }}</code></td>
 	   <td nowrap="nowrap" style="padding-left:5px;padding-right:5px;border-right:1px dotted black;"><code>{{ dump.hex }}</code></td>

@@ -2,7 +2,7 @@
 	<!-- Content -->
 	<div id="content">
 		<div class="post">
-			<h3><strong><mq-config name="qmgrName" /></strong> - Messages - <strong><mq-config name="queueName" /></strong></h3>
+			<h3><strong>{{ qmgr }}</strong> - Messages - <strong>{{ queue }}</strong></h3>
 			<form id="messageFilterForm">
 				<fieldset style="padding:5px;">
 					<legend>&nbsp;Limits&nbsp;</legend>
@@ -42,24 +42,27 @@
 		<table ng-if="messages" class="overview" style="width:100%;border-collapse:collapse;font-size:0.85em;">
 			<thead>
 				<tr>
-					<th>Put Date</th><th>Id</th><th>Format</th><th>Length</th><th>User</th><th>Application</th><th>Encoding</th><th>CCSID</th>
+					<th>Put Date</th><th>Id</th><th>Format</th><th>Length</th><th>User</th><th>Application</th><th>Encoding</th><th>CCSID</th><th> </th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr ng-repeat-start="message in messages">
 					<td>{{ message.data.PutDate }}</td>
-					<td><a ng-click="message.toggle=!message.toggle">{{ message.data.MsgId }}</a></td>
+					<td><a ng-click="toggle(message)">{{ message.data.MsgId }}</a></td>
 					<td>{{ message.data.Format }}</td>
 					<td style="text-align:right">
-						<a href="/message/dump/{{ mqweb.qmgr }}/{{ mqweb.queue }}/{{ message.data.MsgId }}">{{ message.data.Length | number : 0 }}</a>
+						<a href="#/dump/{{ message.data.MsgId }}">{{ message.data.Length | number : 0 }}</a>
 					</td>
 					<td>{{ message.data.UserIdentifier }}</td>
 					<td>{{ message.data.PutApplName }}</td>
 					<td>{{ message.data.Encoding }}</td>
 					<td>{{ message.data.CodedCharSetId }}</td>
+					<td>
+						<a href="#view/{{ message.data.MsgId }}"><img src="/static/images/go-next-icon.png" /></a>
+					</td>
 				</tr>
 				<tr ng-repeat-end ng-show="message.toggle">
-					<td colspan="8" ng-include="'/static/html/message/detail.html'"></td>
+					<td colspan="9" ng-include="'/static/html/message/detail.html'"></td>
 				</tr>
 			</tbody>
 		</table>

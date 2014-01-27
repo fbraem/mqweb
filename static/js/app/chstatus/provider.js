@@ -16,7 +16,10 @@ angular.module('mqWebApp').provider('mqWebChannelStatus', {
 						});
 				}
 				else {
-					if ( arguments.length > 1 ) {
+					if ( arguments.length == 0 ) {
+						return $http.get('/chstatus/inquire/' + qmgr, { cache : false } );
+					}
+					else if ( arguments.length > 1 ) {
 						return $http.get('/chstatus/inquire/' + qmgr + '/' + arguments[0] + '/' + arguments[1], { cache : false } );
 					}
 				}

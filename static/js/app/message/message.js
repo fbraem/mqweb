@@ -1,34 +1,32 @@
 var mqWebApp = angular.module('mqWebApp');
 
-mqWebApp.controller('MessagesController', ['$scope', '$http', 'MQWEB_CONFIG', function($scope, $http, config) {
+mqWebApp.run(function ($rootScope) {
+	$rootScope.messages = null; // All messages
+});
+
+mqWebApp.controller('MessagesController', ['$scope', '$rootScope', 'mqWebMessage', function($scope, $rootScope, mqWebMessage) {
+	$scope.qmgr = mqWebMessage.getQueueManager();
+	$scope.queue = mqWebMessage.getQueue();
 	$scope.loading = false;
 	$scope.mqweb = null;
-	$scope.messages = null;
 	$scope.error = null;
 	$scope.http_rc = 0;
 	
 	$scope.formData = {
+		teaser : 80
 	};
 
 	$scope.load = function() {
 		$scope.loading = true;
-		var url = '/message/browse/' + config.qmgrName + '/' + config.queueName;
-		if ( config.messageId )
-		{
-			url += '/' + config.messageId;
-		}
-		$http.get(url, {
-					cache: false,
-					params : $scope.formData
-					})
+		mqWebMessage.browse($scope.formData)
 			.success(function(data, status) {
 				$scope.loading = false;
 				$scope.mqweb = data.mqweb;
-				$scope.messages = [];
+				$rootScope.messages = [];
 				$scope.http_rc = 0;
 				
 				data.messages.forEach(function(entry) { 
-					$scope.messages.push({
+					$rootScope.messages.push({
 						loading: false,
 						toggle: false,
 						data: entry
@@ -42,12 +40,15 @@ mqWebApp.controller('MessagesController', ['$scope', '$http', 'MQWEB_CONFIG', fu
 		});
 	};
 	
+	$scope.toggle = function(msg)
+	{
+		msg.toggle = ! msg.toggle;
+	}
+	
 	$scope.reload = function(message)
 	{
 		message.loading = true;
-		$http.get('/message/browse/' + config.qmgrName + '/' + config.queueName + '/' + message.data.MsgId,
-			{	cache : false	}
-			)
+		mqWebMessage.browse(message.data.MsgId)
 			.success(function(data, status) {
 				message.loading = false;
 				$scope.http_rc = 0;
@@ -62,14 +63,34 @@ mqWebApp.controller('MessagesController', ['$scope', '$http', 'MQWEB_CONFIG', fu
 				$scope.http_rc = status;
 			});
 	}
-
-	if ( config.autoload )
-	{
-		$scope.load();
-	}
 }]);
 
-mqWebApp.controller('MessageDumpController', ['$scope', '$http', 'MQWEB_CONFIG', function($scope, $http, config) {
+mqWebApp.controller('MessageController', ['$scope', '$routeParams', 'mqWebMessage', function($scope, $routeParams, mqWebMessage) {
+	$scope.loading = false;
+	$scope.mqweb = null;
+	$scope.message = null;
+	$scope.error = null;
+	$scope.http_rc = 0;
+	
+	$scope.load = function() {
+		$scope.loading = true;
+		mqWebMessage.browse($routeParams.msgid)
+			.success(function(data, status) {
+				$scope.loading = false;
+				$scope.mqweb = data.mqweb;
+				$scope.message = data.message;
+				$scope.http_rc = 0;
+				$scope.error = data.error;
+			}).error(function(data, status) {
+				$scope.loading = false;
+				$scope.http_rc = status;
+			});
+	};
+	$scope.load();
+}]);
+
+
+mqWebApp.controller('MessageDumpController', ['$scope', '$routeParams', 'mqWebMessage', function($scope, $routeParams, mqWebMessage) {
 	$scope.loading = false;
 	$scope.mqweb = null;
 	$scope.message = null;
@@ -80,10 +101,7 @@ mqWebApp.controller('MessageDumpController', ['$scope', '$http', 'MQWEB_CONFIG',
 	
 	$scope.load = function() {
 		$scope.loading = true;
-		var url = '/message/dump.json/' + config.qmgrName + '/' + config.queueName + '/' + config.messageId;
-		$http.get(url, {
-					cache: false,
-					})
+		mqWebMessage.dump($routeParams.msgid)
 			.success(function(data, status) {
 				$scope.loading = false;
 				$scope.mqweb = data.mqweb;

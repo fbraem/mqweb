@@ -40,7 +40,7 @@ mqWebApp.directive('mqEventQtip', function($http, $compile, $templateCache) {
 	}
 });
   
-mqWebApp.controller('QmgrController', ['$scope', '$http', 'MQWEB_CONFIG', function($scope, $http, config) {
+mqWebApp.controller('QmgrController', ['$scope', 'mqWebQueueManager', function($scope, mqWebQueueManager) {
 	$scope.loading = false;
 	$scope.mqweb = null;
 	$scope.qmgr = null;
@@ -48,7 +48,7 @@ mqWebApp.controller('QmgrController', ['$scope', '$http', 'MQWEB_CONFIG', functi
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get('/qmgr/view.json/' + config.qmgrName, { cache: false }) 
+		mqWebQueueManager.inquire()
 			.success(function(data, status) {
 				$scope.loading = false;
 				$scope.mqweb = data.mqweb;
@@ -62,7 +62,7 @@ mqWebApp.controller('QmgrController', ['$scope', '$http', 'MQWEB_CONFIG', functi
 	$scope.load();
 }]);
 
-mqWebApp.controller('LocalQueueController', ['$scope', '$http', 'MQWEB_CONFIG', function($scope, $http, config) {
+mqWebApp.controller('LocalQueueController', ['$scope', 'mqWebQueue', function($scope, mqWebQueue) {
 	$scope.loading = false;
 	$scope.mqweb = null;
 	$scope.queues = null;
@@ -71,14 +71,11 @@ mqWebApp.controller('LocalQueueController', ['$scope', '$http', 'MQWEB_CONFIG', 
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get('/queue/inquire/' + config.qmgrName, {
-			cache: false,
-			params : {
+		mqWebQueue.inquire({
 				queueDepth : 1,
 				queueExcludeSystem: 'true',
 				queueUsage : "normal",
 				queueExcludeTemp : 'true'
-			}
 		}).success(function(data, status) {
 			$scope.loading = false;
 			$scope.mqweb = data.mqweb;
@@ -93,7 +90,7 @@ mqWebApp.controller('LocalQueueController', ['$scope', '$http', 'MQWEB_CONFIG', 
 	$scope.load();
 }]);
 
-mqWebApp.controller('XmitQueueController', ['$scope', '$http', 'MQWEB_CONFIG', function($scope, $http, config) {
+mqWebApp.controller('XmitQueueController', ['$scope', 'mqWebQueue', function($scope, mqWebQueue) {
 	$scope.loading = false;
 	$scope.mqweb = null;
 	$scope.queues = null;
@@ -102,13 +99,10 @@ mqWebApp.controller('XmitQueueController', ['$scope', '$http', 'MQWEB_CONFIG', f
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get('/queue/inquire/' + config.qmgrName, {
-			cache : false,
-			params : {
+		mqWebQueue.inquire({
 				queueDepth : 1,
 				queueExcludeSystem: 'false',
 				queueUsage : "xmitq"
-			}
 		}).success(function(data, status) {
 			$scope.loading = false;
 			$scope.mqweb = data.mqweb;
@@ -123,7 +117,7 @@ mqWebApp.controller('XmitQueueController', ['$scope', '$http', 'MQWEB_CONFIG', f
 	$scope.load();
 }]);
 
-mqWebApp.controller('ChannelStatusController', ['$scope', '$http', 'MQWEB_CONFIG', function($scope, $http, config) {
+mqWebApp.controller('ChannelStatusController', ['$scope', 'mqWebChannelStatus', function($scope, mqWebChannelStatus) {
 	$scope.loading = false;
 	$scope.mqweb = null;
 	$scope.channels = null;
@@ -132,7 +126,7 @@ mqWebApp.controller('ChannelStatusController', ['$scope', '$http', 'MQWEB_CONFIG
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get('/chstatus/inquire.json/' + config.qmgrName, { cache: false })
+		mqWebChannelStatus.inquire()
 			.success(function(data, status) {
 				$scope.loading = false;
 				$scope.mqweb = data.mqweb;
