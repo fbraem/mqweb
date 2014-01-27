@@ -39,11 +39,6 @@ QueueManagerController::~QueueManagerController()
 }
 
 
-/**
- * URL: qmgr/index/<qmgrName>
- *
- * Returns HTML page for queuemanager details.
- */
 void QueueManagerController::index()
 {
 	Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
@@ -51,12 +46,9 @@ void QueueManagerController::index()
 	multiView->add("main", new TemplateView("qmgr/index.tpl"));
 	setView(multiView);
 }
-/**
- * URL: qmgr/view/<qmgrName>
- *
- * Get details of the given queuemanager in JSON format.
- */
-void QueueManagerController::view()
+
+
+void QueueManagerController::inquire()
 {
 	QueueManagerMapper queueManagerMapper(*commandServer());
 
@@ -66,14 +58,7 @@ void QueueManagerController::view()
 	if ( jsonQueueManagers->size() > 0 )
 	{
 		set("qmgr", jsonQueueManagers->get(0));
-		if ( format().compare("json") == 0 )
-		{
-			setView(new JSONView());
-		}
-		else
-		{
-			//TODO: Not allowed ...
-		}
+		setView(new JSONView());
 	}
 }
 

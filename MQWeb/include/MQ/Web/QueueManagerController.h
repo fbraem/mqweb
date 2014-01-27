@@ -50,17 +50,23 @@ public:
 	void index();
 		/// Returns the single page application (SPA) for a queuemanager
 
-	void view();
-		/// Returns the queuemanager object as JSON
+	void inquire();
+		/// Action inquire. Inquire the queuemanager and returns all data in JSON format.
+		/// URL's:
+		///  queue/inquire/<qmgrName>
+		///
+		/// The returned JSON object can contain following properties:
+		///  mqweb : An object with information about the MQWeb application and request.
+		///  qmgr : An object with all queuemanager details.
+		///  error: An object describing the MQ error (only returned on error).
 };
-
 
 inline const Controller::ActionMap& QueueManagerController::getActions() const
 {
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
 			("index", static_cast<ActionFn>(&QueueManagerController::index))
-			("view", static_cast<ActionFn>(&QueueManagerController::view));
+			("inquire", static_cast<ActionFn>(&QueueManagerController::inquire));
 	return actions;
 }
 
