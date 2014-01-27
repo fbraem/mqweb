@@ -26,29 +26,6 @@
 namespace MQ {
 namespace Web {
 
-typedef std::map<std::string, MQLONG> ChannelTypeFilterMap;
-
-ChannelTypeFilterMap initializeTypeFilterMap()
-{
-	ChannelTypeFilterMap map;
-
-	map["all"] = MQCHT_ALL;
-	map["sender"] = MQCHT_SENDER;
-	map["server"] = MQCHT_SERVER;
-	map["receiver"] = MQCHT_RECEIVER;
-	map["requester"] = MQCHT_REQUESTER;
-	map["svrconn"] = MQCHT_SVRCONN;
-	map["clntconn"] = MQCHT_CLNTCONN;
-	map["clusrcvr"] = MQCHT_CLUSRCVR;
-	map["clussdr"] = MQCHT_CLUSSDR;
-#ifdef MQCHT_MQTT
-	map["mqtt"] = MQCHT_MQTT;
-#endif
-
-	return map;
-}
-
-typedef std::map<MQLONG, std::string> ChannelTypeMap;
 
 ChannelMapper::ChannelMapper(CommandServer& commandServer) : MQMapper(commandServer)
 {
