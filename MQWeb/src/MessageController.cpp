@@ -27,7 +27,6 @@
 #include "Poco/URI.h"
 #include "Poco/Logger.h"
 #include "Poco/HexBinaryEncoder.h"
-#include "Poco/JSON/Query.h"
 
 #include "MQ/Web/MessageController.h"
 #include "MQ/Web/QueueMapper.h"
