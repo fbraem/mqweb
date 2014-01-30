@@ -55,6 +55,37 @@ Dictionary MQMapper::_dictionary = Dictionary()
 	(MQCA_Q_MGR_DESC, "QMgrDesc")
 	(MQCA_Q_MGR_IDENTIFIER, "QMgrIdentifier")
 
+	// QueueManager Status properties
+	(MQIACF_CHINIT_STATUS, "ChannelInitiatorStatus", DisplayMapInitializer
+		(MQSVC_STATUS_STOPPED, "Stopped")
+		(MQSVC_STATUS_STARTING, "Starting")
+		(MQSVC_STATUS_RUNNING, "Running")
+		(MQSVC_STATUS_STOPPING, "Stopping")
+		(MQSVC_STATUS_RETRYING, "Retrying")
+	)
+	(MQIACF_CMD_SERVER_STATUS, "CommandServerStatus", DisplayMapInitializer
+		(MQSVC_STATUS_STOPPED, "Stopped")
+		(MQSVC_STATUS_STARTING, "Starting")
+		(MQSVC_STATUS_RUNNING, "Running")
+		(MQSVC_STATUS_STOPPING, "Stopping")
+		(MQSVC_STATUS_RETRYING, "Retrying")
+	)
+	(MQIACF_CONNECTION_COUNT, "ConnectionCount")
+	(MQCACF_CURRENT_LOG_EXTENT_NAME, "CurrentLog")
+	(MQCA_INSTALLATION_DESC, "InstallationDesc")
+	(MQCA_INSTALLATION_NAME, "InstallationName")
+	(MQCA_INSTALLATION_PATH, "InstallationPath")
+	(MQCACF_LOG_PATH, "LogPath")
+	(MQCACF_MEDIA_LOG_EXTENT_NAME, "MediaRecoveryLog")
+	(MQIACF_Q_MGR_STATUS, "QMgrStatus", DisplayMapInitializer
+		(MQQMSTA_STARTING, "Starting")
+		(MQQMSTA_RUNNING, "Running")
+		(MQQMSTA_QUIESCING, "Quiescing")
+	)
+	(MQCACF_RESTART_LOG_EXTENT_NAME, "RestartRecoveryLog")
+	(MQCACF_Q_MGR_START_DATE, "StartDate")
+	(MQCACF_Q_MGR_START_TIME, "StartTime")
+
 	// QUEUE properties
 	(MQCA_BACKOUT_REQ_Q_NAME, "BackoutRequeueName")
 	(MQIA_BACKOUT_THRESHOLD, "BackoutThreshold")
@@ -1137,33 +1168,38 @@ void MQMapper::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json)
 	for(std::vector<MQLONG>::iterator it = parameters.begin(); it != parameters.end(); ++it)
 	{
 		std::string name = _dictionary.getName(*it);
-		if ( ! name.empty() )
+		if ( name.empty() )
 		{
-			Poco::JSON::Object::Ptr field = new Poco::JSON::Object();
-			json->set(name, field);
+			name = "id_" + Poco::NumberFormatter::format(*it);
+		}
 
-			field->set("id", *it);
+		Poco::JSON::Object::Ptr field = new Poco::JSON::Object();
+		json->set(name, field);
 
-			if ( pcf.isNumber(*it) )
+		field->set("id", *it);
+
+		if ( pcf.isNumber(*it) )
+		{
+			MQLONG value = pcf.getParameterNum(*it);
+			field->set("value", value);
+
+			if ( _dictionary.hasDisplayMap(*it) )
 			{
-				MQLONG value = pcf.getParameterNum(*it);
-				field->set("value", value);
-
-				if ( _dictionary.hasDisplayMap(*it) )
+				std::string displayValue = _dictionary.getDisplayValue(*it, value);
+				if ( displayValue.empty() )
 				{
-					std::string displayValue = _dictionary.getDisplayValue(*it, value);
-					field->set("display", displayValue.empty() 
-						? Poco::format("Unknown value %ld for %ld", value, *it) : displayValue);
+					displayValue = "Unknown value " + Poco::NumberFormatter::format(value) + " for " + Poco::NumberFormatter::format(*it);
 				}
+				field->set("display", displayValue);
 			}
-			else if ( pcf.isString(*it) )
-			{
-				field->set("value", pcf.getParameterString(*it));
-			}
-			else
-			{
-				//TODO:
-			}
+		}
+		else if ( pcf.isString(*it) )
+		{
+			field->set("value", pcf.getParameterString(*it));
+		}
+		else
+		{
+			//TODO:
 		}
 	}
 }
