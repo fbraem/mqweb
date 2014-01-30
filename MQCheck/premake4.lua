@@ -30,9 +30,6 @@ project "MQCheck"
               "_CRT_SECURE_NO_DEPRECATE" 
             }
   
-  configuration "linux"
-    includedirs { "/opt/mqm/inc" }
-
   configuration { "windows", "codelite or codeblock" }
     defines {
               "Foundation_Config_INCLUDED"
@@ -49,6 +46,7 @@ project "MQCheck"
                     poco_dir .. "/Foundation/include"
                   , poco_dir .. "/Util/include"
                   , poco_dir .. "/XML/include"
+                  , mq_inc
                   , "include"
                   , "../MQ/include"
                 }
