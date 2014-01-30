@@ -4,7 +4,7 @@
 		<div class="post">
 			<h3><strong>{{ mqweb.qmgr }}</strong> - Queue - {{ queue.data.QName.value }}</h3>
 		</div>
-		<div ng-include="'/static/html/queue/detail.html'"></div>
+		<div ng-if="queue" ng-include="'/static/html/queue/detail.html'"></div>
 		<div ng-if="loading" class="loader"></div>
 		<div ng-if="error != null" ng-include="'/static/html/error.html'"></div>
 	</div>
