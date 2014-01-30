@@ -53,7 +53,7 @@ public:
 	void inquire();
 		/// Action inquire. Inquire the queuemanager and returns all data in JSON format.
 		/// URL's:
-		///  queue/inquire/<qmgrName>
+		///  qmgr/inquire/<qmgrName>
 		///
 		/// The returned JSON object can contain following properties:
 		///  mqweb : An object with information about the MQWeb application and request.
