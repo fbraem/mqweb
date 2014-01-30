@@ -43,7 +43,11 @@ if not mq_inc or #mq_inc == 0 then
   if os.is("windows") then
     mq_inc = "C:\\Program Files\\IBM\\WebSphere MQ\\tools\\c\\include"
   elseif os.is("linux") then
-    mq_inc = "/opt/mqm/inc"
+    if os.isdir("/opt/mqm/inc") then
+      mq_inc = "/opt/mqm/inc"
+    elseif os.isdir("/opt/mqm75/inc") then
+      mq_inc = "/opt/mqm75/inc"
+    end
   else
     print("Can't detect Websphere MQ install on " .. os.id() .. ". Please update mq.lua and run again.")
     os.exit(1)
