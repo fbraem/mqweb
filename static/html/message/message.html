@@ -1,12 +1,12 @@
-<div ng-controller="MessagesController">
+<div ng-controller="MessageController">
 	<!-- Content -->
 	<div id="content">
 		<div class="post">
 			<h3><strong>{{ mqweb.qmgr }}</strong> - Queue - <strong>{{ mqweb.queue }}</strong></h3>
 		</div>
-		<div ng-include="'/static/html/message/detail.html'"></div>
+		<div ng-if="message" ng-include="'/static/html/message/detail.html'"></div>
 		<div ng-if="loading" class="loader"></div>
-		<div ng-if="error != null" ng-include="'/static/html/error.html'"></div>
+		<div ng-if="error" ng-include="'/static/html/error.html'"></div>
 	</div>
 	<!-- END Content -->
 	<!-- Sidebar -->
@@ -32,4 +32,7 @@
 		</div>
 		<div class="cl"></div>
 	</div>
+</div>
+<div style="float:right;font-size:0.8em">
+	<strong>MsgId:</strong> {{ mqweb.messageId }}
 </div>
