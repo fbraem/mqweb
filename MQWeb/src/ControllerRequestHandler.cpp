@@ -21,6 +21,7 @@
 #include "MQ/Web/ControllerRequestHandler.h"
 #include "MQ/Web/QueueController.h"
 #include "MQ/Web/QueueManagerController.h"
+#include "MQ/Web/QueueManagerStatusController.h"
 #include "MQ/Web/ChannelController.h"
 #include "MQ/Web/ChannelStatusController.h"
 #include "MQ/Web/MessageController.h"
@@ -75,6 +76,7 @@ void ControllerRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& reque
 void ControllerRequestHandler::registerControllers()
 {
 	_controllerFactory.registerClass<QueueManagerController>("qmgr");
+	_controllerFactory.registerClass<QueueManagerStatusController>("qmstatus");
 	_controllerFactory.registerClass<QueueController>("queue");
 	_controllerFactory.registerClass<ChannelController>("channel");
 	_controllerFactory.registerClass<MessageController>("message");
