@@ -200,13 +200,6 @@ inline bool Controller::isGet() const
 }
 
 
-inline bool Controller::isJSON() const
-{
-	Poco::Net::MediaType mediaType(_request->get("Accept"));
-	return mediaType.matches("application", "json");
-}
-
-
 inline bool Controller::isPost() const
 {
 	return _request->getMethod().compare("POST") == 0;

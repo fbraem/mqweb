@@ -107,6 +107,27 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 	afterAction();
 }
 
+
+bool Controller::isJSON() const
+{
+	bool result = false;
+
+	std::string accept;
+	try
+	{
+		accept = _request->get("Accept");
+		Poco::Net::MediaType mediaType(accept.substr(0, accept.find_first_of(',')));
+		result = mediaType.matches("application", "json");
+	}
+	catch(Poco::NotFoundException&)
+	{
+		// Ignore
+	}
+
+	return result;
+}
+
+
 void Controller::render()
 {
 	if ( _view.isNull() ) return; // No view set, don't do anything
