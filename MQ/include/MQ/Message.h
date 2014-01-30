@@ -234,6 +234,9 @@ public:
 	std::string getUser() const;
 		/// Returns the name of the user
 
+	static std::string getBufferAsHex(const MQBYTE* buffer, long size);
+		/// Returns a buffer content as hex
+
 private:
 
 	Buffer _buffer;
@@ -251,8 +254,6 @@ private:
 	friend class Queue;
 
 	static void copyBuffer(MQBYTE* target, const Buffer& buffer, long maxSize);
-
-	static std::string getBufferAsHex(const MQBYTE* buffer, long size);
 
 	static bool isEmptyBuffer(const MQBYTE* buffer, long size);
 
