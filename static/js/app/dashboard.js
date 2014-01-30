@@ -151,7 +151,7 @@ mqWebApp.controller('EventMessageController', ['$scope', '$http', 'MQWEB_CONFIG'
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get("/message/event.json/" + config.qmgrName + "/SYSTEM.ADMIN.QMGR.EVENT", { 
+		$http.get("/message/event/" + config.qmgrName + "/SYSTEM.ADMIN.QMGR.EVENT", { 
 			cache: false,
 			params : {
 				limit : 3
