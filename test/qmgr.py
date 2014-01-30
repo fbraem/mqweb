@@ -1,9 +1,10 @@
 import unittest
 import httplib
 import json
+import re
 import ConfigParser
 
-class TestQueueManagerActions(unittest.TestCase):
+class MQWebTest(unittest.TestCase):
 
 	def setUp(self):
 		config = ConfigParser.ConfigParser()
@@ -22,15 +23,31 @@ class TestQueueManagerActions(unittest.TestCase):
 		print 'MQ QueueManager: ' + self.qmgr
 		print
 
+class TestQueueManagerActions(MQWebTest):
+
 	def testInquire(self):
-		conn = httplib.HTTPConnection(self.mqWebHost, self.mqWebPort)
-		conn.request('GET', '/qmgr/inquire/' + self.qmgr)
-		res = conn.getresponse()
-		data = json.loads(res.read())
+		try:
+			conn = httplib.HTTPConnection(self.mqWebHost, self.mqWebPort)
+			conn.request('GET', '/qmgr/inquire/' + self.qmgr)
+			res = conn.getresponse()
+			data = json.loads(res.read())
+		except:
+			self.assertFalse(True, "Can't connect to MQWeb: " + self.mqWebHost + ":" + self.mqWebPort)
 		
-		print json.dumps(data, indent=4)
-		
-		self.assertTrue(data['qmgr'] != None, 'No queuemanager data returned')
-		
+		self.assertFalse(data['mqweb'] == None, 'No mqweb data returned')
+		self.assertFalse(data['qmgr'] == None, 'No queuemanager data returned')
+
+		ids = []
+		for key in data['qmgr']:
+			m = re.search(r"id_([0-9]+)", key)
+			if m :
+				ids.append(int(m.group(1)))
+
+		if len(ids) > 0:
+				print json.dumps(data['qmgr'], indent=4)
+				print str(ids)
+
+		self.assertTrue(len(ids) == 0, 'There are unmapped WebSphere MQ attributes!')
+
 suite = unittest.TestLoader().loadTestsFromTestCase(TestQueueManagerActions)
 unittest.TextTestRunner(verbosity=2).run(suite)
