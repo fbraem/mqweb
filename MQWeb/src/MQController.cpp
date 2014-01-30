@@ -46,6 +46,10 @@ void MQController::beforeAction()
 {
 	_stopwatch.start();
 
+	Poco::JSON::Object::Ptr date = new Poco::JSON::Object();
+	_mqwebData->set("date", date);
+	date->set("start", Poco::DateTimeFormatter::format(Poco::Timestamp(), Poco::DateTimeFormat::HTTP_FORMAT));
+
 	MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQSubsystem>();
 	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
 
@@ -160,9 +164,15 @@ void MQController::handleException(const MQException& mqe)
 
 void MQController::afterAction()
 {
+	Poco::JSON::Object::Ptr date = _mqwebData->getObject("date");
+	if ( ! date.isNull() )
+	{
+		date->set("end", Poco::DateTimeFormatter::format(Poco::Timestamp(), Poco::DateTimeFormat::HTTP_FORMAT));
+	}
+	
 	_stopwatch.stop();
 	_mqwebData->set("elapsed", (double) _stopwatch.elapsed() / 1000000 );
-	
+
 	Controller::afterAction();
 }
 
