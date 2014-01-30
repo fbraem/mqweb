@@ -74,6 +74,9 @@ public:
 	int getReasonCode() const;
 		/// Returns the reason code.
 
+	bool isByteString(MQLONG parameter) const;
+		/// Returns true when the value of the parameter is a byte string.
+
 	bool isExtendedResponse() const;
 		/// Returns true when this is an extended response.
 
@@ -82,6 +85,10 @@ public:
 
 	bool isString(MQLONG parameter) const;
 		/// Returns true when the value of the parameter is a string value.
+		/// Note: a byte string will also return true! When getParameterString is called
+		/// a byte string will be returned as hex. Use isByteString to check if a
+		/// value contains byte string
+	
 
 	bool isLast() const;
 		/// Returns true when this PCF message is the last of a response.
@@ -96,9 +103,15 @@ public:
 		/// Poco::BadCastException will be thrown when the parameter doesn't contain a numeric value.
 
 	std::string getParameterString(MQLONG parameter) const;
-		/// Returns the string value of a parameter.
+		/// Returns the string value of a parameter. A byte string is converted to a hex value.
+		/// If you need the real byte string, use getParameterByteString.
 		/// Poco::NotFoundException will be thrown when the parameter isn't found.
-		/// Poco::BadCastException will be thrown when the parameter doesn't contain a string value.
+		/// Poco::BadCastException will be thrown when the parameter doesn't contain a string or byte string value.
+
+	BufferPtr getParameterByteString(MQLONG parameter) const;
+		/// Returns the byte string value as a buffer.
+		/// Poco::NotFoundException will be thrown when the parameter isn't found.
+		/// Poco::BadCastException will be thrown when the parameter doesn't contain a byte string value.
 
 	std::vector<std::string> getParameterStringList(MQLONG parameter) const;
 		/// Returns a vector of strings of a parameter.
@@ -161,6 +174,17 @@ inline int PCF::getReasonCode() const
 { 
 	MQCFH* header = (MQCFH*)(MQBYTE*) &buffer()[0];
 	return header->Reason; 
+}
+
+inline bool PCF::isByteString(MQLONG parameter) const
+{
+	std::map<MQLONG, int>::const_iterator it = _pointers.find(parameter);
+	if ( it != _pointers.end() )
+	{
+		MQLONG *pcfType = (MQLONG*) &buffer()[it->second];
+		return *pcfType == MQCFT_BYTE_STRING;
+	}
+	return false;
 }
 
 inline bool PCF::isExtendedResponse() const
