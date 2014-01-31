@@ -40,6 +40,111 @@ Dictionary MQMapper::_dictionary = Dictionary()
 	(MQCA_Q_MGR_NAME, "QMgrName")
 
 	// QueueManager properties
+	(MQIA_ACCOUNTING_CONN_OVERRIDE, "AccountingConnOverride", DisplayMapInitializer
+		(MQMON_DISABLED, "Disabled")
+		(MQMON_ENABLED, "Enabled")
+	)
+	(MQIA_ACCOUNTING_INTERVAL, "AccountingInterval")
+	(MQIA_ACTIVITY_CONN_OVERRIDE, "ActivityConnOverride", DisplayMapInitializer
+		(MQMON_DISABLED, "Disabled")
+		(MQMON_ENABLED, "Enabled")
+	)
+	(MQIA_ACTIVITY_RECORDING, "ActivityRecording", DisplayMapInitializer
+		(MQRECORDING_DISABLED, "Disabled")
+		(MQRECORDING_MSG, "Msg")
+		(MQRECORDING_Q, "Queue")
+	)
+	(MQIA_ACTIVITY_TRACE, "ActivityTrace", DisplayMapInitializer
+		(MQMON_OFF, "Off")
+		(MQMON_ON, "On")
+	)
+	(MQIA_ADOPTNEWMCA_CHECK, "AdoptNewMCACheck", DisplayMapInitializer
+		(MQADOPT_CHECK_Q_MGR_NAME, "QmgrName")
+		(MQADOPT_CHECK_NET_ADDR, "NetAddr")
+		(MQADOPT_CHECK_ALL, "All")
+		(MQADOPT_CHECK_NONE, "None")
+	)
+	(MQIA_ADOPTNEWMCA_TYPE, "AdoptNewMCAType", DisplayMapInitializer
+		(MQADOPT_TYPE_NO, "No")
+		(MQADOPT_TYPE_ALL, "All")
+	)
+	(MQIA_AUTHORITY_EVENT, "AuthorityEvent", DisplayMapInitializer
+		(MQEVR_DISABLED, "Disabled")
+		(MQEVR_ENABLED, "Enabled")
+	)
+	(MQIA_BRIDGE_EVENT, "BridgeEvent", DisplayMapInitializer
+		(MQEVR_DISABLED, "Disabled")
+		(MQEVR_ENABLED, "Enabled")
+	)
+#ifdef MQIA_CERT_VAL_POLICY
+	(MQIA_CERT_VAL_POLICY, "CertificateValPolicy", DisplayMapInitializer
+		(MQ_CERT_VAL_POLICY_ANY, "Policy Any")
+		(MQ_CERT_VAL_POLICY_RFC5280, "Policy RFC5280")
+	)
+#endif
+	(MQIA_QMGR_CFCONLOS, "CFConlos", DisplayMapInitializer
+		(MQCFCONLOS_TERMINATE, "Terminate")
+		(MQCFCONLOS_TOLERATE, "Tolerate")
+	)
+	(MQIA_CHANNEL_AUTO_DEF, "ChannelAutoDef", DisplayMapInitializer
+		(MQCHAD_DISABLED, "Disabled")
+		(MQCHAD_ENABLED, "Enabled")
+	)
+	(MQIA_CHANNEL_AUTO_DEF_EVENT, "ChannelAutoDefEvent", DisplayMapInitializer
+		(MQEVR_DISABLED, "Disabled")
+		(MQEVR_ENABLED, "Enabled")
+	)
+	(MQCA_CHANNEL_AUTO_DEF_EXIT, "ChannelAutoDefExit")
+	(MQIA_CHLAUTH_RECORDS, "ChannelAuthenticationRecords", DisplayMapInitializer
+		(MQCHLA_DISABLED, "Disabled")
+		(MQCHLA_ENABLED, "Enabled")
+	)
+	(MQIA_CHANNEL_EVENT, "ChannelEvent", DisplayMapInitializer
+		(MQEVR_DISABLED, "Disabled")
+		(MQEVR_ENABLED, "Enabled")
+		(MQEVR_EXCEPTION, "Exception")
+	)
+	(MQIA_CHINIT_CONTROL, "ChannelInitiatorControl", DisplayMapInitializer
+		(MQSVC_CONTROL_MANUAL, "Manual")
+		(MQSVC_CONTROL_Q_MGR, "Qmgr")
+		)
+	(MQIA_MONITORING_CHANNEL, "ChannelMonitoring", DisplayMapInitializer
+		(MQMON_NONE, "None")
+		(MQMON_OFF, "Off")
+		(MQMON_LOW, "Low")
+		(MQMON_MEDIUM, "Medium")
+		(MQMON_HIGH, "High")
+	)
+	(MQIA_STATISTICS_CHANNEL, "ChannelStatistics", DisplayMapInitializer
+		(MQMON_NONE, "None")
+		(MQMON_OFF, "Off")
+		(MQMON_LOW, "Low")
+		(MQMON_MEDIUM, "Medium")
+		(MQMON_HIGH, "High")
+	)
+	(MQIA_CHINIT_ADAPTERS, "ChinitAdapters")
+	(MQIA_CHINIT_DISPATCHERS, "ChinitDispatchers")
+	(MQCA_CHINIT_SERVICE_PARM, "ChinitServiceParm")
+	(MQIA_CHINIT_TRACE_AUTO_START, "ChinitTraceAutoStart", DisplayMapInitializer
+		(MQTRAXSTR_YES, "Yes")
+		(MQTRAXSTR_NO, "No")
+	)
+	(MQIA_CHINIT_TRACE_TABLE_SIZE, "ChinitTraceTableSize")
+	(MQIA_MONITORING_AUTO_CLUSSDR, "ClusterSenderMonitoringDefault", DisplayMapInitializer
+		(MQMON_Q_MGR, "Qmgr")
+		(MQMON_OFF, "Off")
+		(MQMON_LOW, "Low")
+		(MQMON_MEDIUM, "Medium")
+		(MQMON_HIGH, "High")
+	)
+	(MQIA_STATISTICS_AUTO_CLUSSDR, "ClusterSenderStatistics", DisplayMapInitializer
+		(MQMON_Q_MGR, "Qmgr")
+		(MQMON_OFF, "Off")
+		(MQMON_LOW, "Low")
+		(MQMON_MEDIUM, "Medium")
+		(MQMON_HIGH, "High")
+	)
+	/*------------------*/
 	(MQIA_PLATFORM, "Platform", DisplayMapInitializer
 		(MQPL_UNIX, "UNIX")
 		(MQPL_NSK, "Compaq NonStop Kernel")
@@ -117,10 +222,10 @@ Dictionary MQMapper::_dictionary = Dictionary()
 	(MQIA_DEF_BIND, "DefBind", DisplayMapInitializer
 		(MQBND_BIND_ON_OPEN, "On Open")
 		(MQBND_BIND_NOT_FIXED, "Not Fixed")
-	)
-	#ifdef MQBND_BIND_ON_GROUP
+#ifdef MQBND_BIND_ON_GROUP
 		(MQBND_BIND_ON_GROUP, "On Group")
-	#endif
+#endif
+	)
 	(MQIA_DEFINITION_TYPE, "DefinitionType", DisplayMapInitializer
 		(MQQDT_PREDEFINED, "Predefined")
 		(MQQDT_PERMANENT_DYNAMIC, "Permanent Dynamically")
