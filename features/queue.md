@@ -22,10 +22,13 @@ Type
 
 Parameters
 : + **queueManager** 
+
     The name of the queuemanager
 
 Example
 : `/queue/index/PIGEON`
+
+<div style="clear:both;"> </div>
 
 Shows a form to inquire a queuelist. It's possible to directly go to the detail 
 page of a queue. Pass the name of queue as fragment of the URI. MQWeb uses the 
@@ -42,23 +45,35 @@ Type
 : JSON
 
 Parameters
-: + **queueManager** 
+: + **queueManager**
+ 
     The name of the queuemanager
+
   + **queueName** (optional)
+
     The name of a queue
 
 Query Parameters
 : + **queueDepth** (optional)
+
     Only return queues which have at least *queueDepth* messages.
+
   + **queueName** (optional)
+
     Only return queues with a name that matches *queueName*. By 
     default * is used which matches all queues.
+
   + **queueUsage** (optional)
+
     Only return queues with the given usage type. Use `normal` or `xmitq`. When
     this parameter is not set, all queues will be returned.
+
   + **excludeSystem** (optional)
+
     When value is `true`, all queues starting with SYSTEM. will be discarded.
+
   + **excludeTemp** (optional)
+
     When value is `true`, all temporary queues will be discarded.
 
 Example
@@ -66,11 +81,15 @@ Example
   `queue/inquire/PIGEON/*`  
   `queue/inquire/PIGEON?queueName=*&queueDepth=1`
 
+<div style="clear:both;"> </div>
+
 When a queuename parameter is passed in the URI path only the attributes of the
 queues which matches the given name will be returned. Query parameters are
-discarded.
+discarded in this case.
 
-A filter will be created based on the query parameters when no queuename parameter is passed in the URI path.
+A filter will be created based on the query parameters when no queuename 
+parameter is passed in the URI path.
 
 The returned JSON object will have a `mqweb` object and a `queues` array. 
-When a WebSphere MQ error occurred there will be no `queues` array, but instead an `error` object is returned.
+When a WebSphere MQ error occurred there will be no `queues` array, but instead 
+an `error` object is returned.
