@@ -66,8 +66,8 @@ shows how to get a list of queues in PHP:
 or in Python
 
 {% highlight python %}
-        conn = httplib.HTTPConnection(self.mqWebHost, self.mqWebPort)
-        conn.request('GET', '/queue/inquire/' + self.qmgr)
+        conn = httplib.HTTPConnection('localhost', 8081)
+        conn.request('GET', '/queue/inquire/PIGEON')
         res = conn.getresponse()
         data = json.loads(res.read())
 {% endhighlight %}
