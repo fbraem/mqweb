@@ -59,7 +59,6 @@ shows how to get a list of queues in PHP:
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
         $response = curl_exec($curl);
-        echo $response;
         $data=json_decode($response, true);
 {% endhighlight %}
 
