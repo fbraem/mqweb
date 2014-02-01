@@ -325,33 +325,33 @@ pre code {
   font-size: 1m;
 }
 
-dl { 
-  background-color:beige; 
-  width:75%; 
-  border-radius:15px;
-  margin:auto;
-  margin-bottom:15px;
-} 
-
-dt { 
-  font-weight:bold; 
-  background-color:#1293EE;
-  color:#FFF; 
-  padding:3px;
-  padding-left:15px; 
-} 
-
-dt:first-child {
-  border-top-left-radius:15px;
-  border-top-right-radius:15px;
+dl {
+	float: left;
+	margin-bottom: 15px;
+	padding: 0;
+	border-bottom: 1px solid #999;
+	background-color: beige;
 }
 
-dd { 
-  padding: 3px;
-  margin-left: 40px; 
-} 
-                  
-dd dl dt { 
-  background-color:#C2EBFF; 
+dt {
+	clear: left;
+	float: left;
+	width: 200px;
+	margin: 0;
+	padding: 5px;
+	border-top: 1px solid #999;
+	font-weight: bold;
 }
- 
+	
+dd {
+	float: left;
+	margin: 0;
+	padding: 5px;
+	border-top: 1px solid #999;
+	background-color: white;
+	width:400px;
+}
+
+li p {
+	padding: 0px;
+}
