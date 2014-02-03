@@ -14,6 +14,7 @@ Building MQWeb
 
 POCO
 ----
+
 Before you start building the MQWeb HTTP daemon, you need to build 
 [POCO](http://www.pocoproject.com). It's the only dependency you need to build.
 [POCO](http://www.pocoproject.com) is a collection of modern, powerful open 
@@ -32,6 +33,7 @@ need to care about.
 
 Premake
 -------
+
 MQWeb uses [premake](http://industriousone.com/premake) as build tool. Premake
 can generate Visual Studio solutions, make files, 
 [Codelite](http://codelite.org/) workspaces and more.
@@ -42,14 +44,18 @@ convenient location.
 
 WebSphere MQ
 ------------
+
 To build MQWeb you need to install the WebSphere MQ SDK package. Make sure you
 select this component when installing WebSphere MQ.
 
 [Building MQWeb for Linux](#linux)  
 [Building MQWeb for Windows](#windows)  
+
 <a name="linux"> </a>
+
 Linux
 -----
+
 ###POCO
 
 Create a directory *static* or *shared* in the directory where POCO is 
@@ -115,14 +121,17 @@ When you use [Codelite](http://codelite.org/), you'll find the workspaces in
 The result of your build will be placed in *bin/Debug* or *bin/Release*.
 
 <a name="windows"> </a>
+
 Windows
 -------
+
 To build MQWeb on Windows you need [Visual Studio](http://www.visualstudio.com).
 MQWeb can be build with the free Express editions.
 
 ###POCO
 
 Build the Foundation, JSON, XML, Util and Net libraries.
+
 > You can omit the build of the XML library, when you 
 > define POCO\_UTIL\_NO\_XMLCONFIGURATION in *Poco/Foundation/Config.h*. Open 
 > premake.lua in the MQWeb folder and remove the XML definitions.
