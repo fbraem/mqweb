@@ -510,171 +510,86 @@ void MessageController::event()
 	jsonQueue->set("name", q.name());
 	jsonQueue->set("curdepth", curdepth);
 
+	int limit = -1;
 	std::string messageId;
 	if ( parameters.size() > 2 )
 	{
 		messageId = parameters[2];
+		mqwebData().set("messageId", messageId);
+	}
+	else
+	{
+		if ( form().has("limit") )
+		{
+			Poco::NumberParser::tryParse(form().get("limit"), limit);
+		}
+	}
 
+	Poco::JSON::Array::Ptr jsonEvents = new Poco::JSON::Array();
+	set("events", jsonEvents);
+
+	int count = 0;
+	while(limit == -1 || count < limit)
+	{
 		PCF message(qmgr()->zos());
-		message.buffer().resize(DEFAULT_EVENT_MESSAGE_SIZE);
-
-		try
+		if ( !messageId.empty() )
 		{
 			message.setMessageId(messageId);
 		}
-		catch(Poco::DataFormatException&)
-		{
-			//An invalid message id is passed (No valid HEX character)
-			setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "An invalid message id is passed (No valid HEX character)");
-			return;
-		}
 
+		message.buffer().resize(DEFAULT_EVENT_MESSAGE_SIZE, false);
 		try
 		{
-			q.get(message, MQGMO_BROWSE_FIRST | MQGMO_CONVERT);
+			q.get(message, MQGMO_BROWSE_NEXT | MQGMO_CONVERT | MQGMO_ACCEPT_TRUNCATED_MSG);
 		}
 		catch(MQException& mqe)
 		{
+			if ( mqe.reason() == MQRC_NO_MSG_AVAILABLE )
+			{
+				if ( !messageId.empty() ) throw;
+				break;
+			}
+
 			if ( mqe.reason()   == MQRC_TRUNCATED_MSG_FAILED
 				|| mqe.reason() == MQRC_TRUNCATED )
 			{
 				message.buffer().resize(message.dataLength(), false);
 				message.clear();
-				message.setMessageId(messageId);
-				q.get(message, MQGMO_BROWSE_FIRST | MQGMO_CONVERT);
+				q.get(message, MQGMO_BROWSE_NEXT | MQGMO_CONVERT);
 			}
 			else
 			{
 				throw;
 			}
 		}
+
 		message.buffer().resize(message.dataLength());
 		message.init();
 
+		Poco::JSON::Object::Ptr jsonEventMessage = new Poco::JSON::Object();
+		jsonEvents->add(jsonEventMessage);
+
+		Poco::JSON::Object::Ptr jsonMessage = new Poco::JSON::Object();
+		jsonEventMessage->set("message", jsonMessage);
+		mapMessageToJSON(message, *jsonMessage);
+
+		Poco::JSON::Object::Ptr jsonEvent = new Poco::JSON::Object();
+		jsonEventMessage->set("event", jsonEvent);
+
 		Poco::JSON::Object::Ptr jsonReason = new Poco::JSON::Object();
-		set("reason", jsonReason);
+		jsonEvent->set("reason", jsonReason);
 		jsonReason->set("code", message.getReasonCode());
 		std::string reasonCodeStr = MQMapper::getReasonString(message.getReasonCode());
 		jsonReason->set("desc", reasonCodeStr);
 
-		Poco::JSON::Object::Ptr jsonMessage = new Poco::JSON::Object();
-		set("message", jsonMessage);
-		mapMessageToJSON(message, *jsonMessage);
-
-		Poco::JSON::Object::Ptr jsonEvent = new Poco::JSON::Object();
-		set("event", jsonEvent);
 		MQMapper::mapToJSON(message, jsonEvent);
 
-		setView(new JSONView());
-		return;
-
-/*
-		std::string templateName;
-		if ( message.getReasonCode() == MQRC_NOT_AUTHORIZED )
+		count++;
+		if ( limit != -1 && count == limit )
 		{
-			switch(message.getParameterNum(MQIACF_REASON_QUALIFIER))
-			{
-			case MQRQ_CONN_NOT_AUTHORIZED:
-			case MQRQ_SYS_CONN_NOT_AUTHORIZED:
-				templateName = Poco::format("message/events/%s-1.tpl", reasonCodeStr);
-				break;
-			case MQRQ_OPEN_NOT_AUTHORIZED:
-				templateName = Poco::format("message/events/%s-2.tpl", reasonCodeStr);
-				break;
-			case MQRQ_CLOSE_NOT_AUTHORIZED:
-				templateName = Poco::format("message/events/%s-3.tpl", reasonCodeStr);
-				break;
-			case MQRQ_CMD_NOT_AUTHORIZED:
-				templateName = Poco::format("message/events/%s-4.tpl", reasonCodeStr);
-				break;
-			case MQRQ_SUB_NOT_AUTHORIZED:
-				templateName = Poco::format("message/events/%s-5.tpl", reasonCodeStr);
-				break;
-			case MQRQ_SUB_DEST_NOT_AUTHORIZED:
-				templateName = Poco::format("message/events/%s-6.tpl", reasonCodeStr);
-				break;
-			}
-		}
-		else
-		{
-			templateName = Poco::format("message/events/%s.tpl", reasonCodeStr);
-		}
-		setView(new TemplateView(templateName));
-
-		return;
-*/
-	}
-	else // Get all event messages
-	{
-		int limit = -1;
-		if ( form().has("limit") )
-		{
-			Poco::NumberParser::tryParse(form().get("limit"), limit);
-		}
-
-		Poco::JSON::Array::Ptr jsonEvents = new Poco::JSON::Array();
-		set("events", jsonEvents);
-
-		int count = 0;
-		while(1)
-		{
-			PCF message(qmgr()->zos());
-			message.buffer().resize(DEFAULT_EVENT_MESSAGE_SIZE, false);
-			try
-			{
-				q.get(message, MQGMO_BROWSE_NEXT | MQGMO_CONVERT);
-			}
-			catch(MQException& mqe)
-			{
-				if ( mqe.reason() == MQRC_NO_MSG_AVAILABLE )
-				{
-					break;
-				}
-
-				if ( mqe.reason()   == MQRC_TRUNCATED_MSG_FAILED
-					|| mqe.reason() == MQRC_TRUNCATED )
-				{
-					message.buffer().resize(message.dataLength(), false);
-					message.clear();
-					q.get(message, MQGMO_BROWSE_NEXT | MQGMO_CONVERT);
-				}
-				else
-				{
-					throw;
-				}
-			}
-
-			message.buffer().resize(message.dataLength());
-			message.init();
-
-			Poco::JSON::Object::Ptr jsonEventMessage = new Poco::JSON::Object();
-			jsonEvents->add(jsonEventMessage);
-			
-			Poco::JSON::Object::Ptr jsonMessage = new Poco::JSON::Object();
-			jsonEventMessage->set("message", jsonMessage);
-			mapMessageToJSON(message, *jsonMessage);
-
-			Poco::JSON::Object::Ptr jsonEvent = new Poco::JSON::Object();
-			jsonEventMessage->set("event", jsonEvent);
-			jsonEvent->set("reason", message.getReasonCode());
-			jsonEvent->set("desc", MQMapper::getReasonString(message.getReasonCode()));
-			MQMapper::mapToJSON(message, jsonEvent);
-
-			count++;
-			if ( limit != -1 && count == limit )
-			{
-				break;
-			}
+			break;
 		}
 	}
-
-/*
-	if ( format().compare("html") == 0 )
-	{
-		setView(new TemplateView("message/events.tpl"));
-		return;
-	}
-*/
 
 	setView(new JSONView());
 }
