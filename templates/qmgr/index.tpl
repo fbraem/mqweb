@@ -1,7 +1,7 @@
 <div ng-controller="QmgrController">
 	<div id="content">
 		<div class="post">
-			<h3>QueueManager <strong><mq-config name="qmgrName" /></strong></h3>
+			<h3>QueueManager <strong>{{ qmgr.QMgrName.value }}</strong></h3>
 			<img ng-if="!mqweb.zos" src="/static/css/images/briefcase.jpg" alt="briefcase" />
 			<img ng-if="mqweb.zos" src="/static/images/zos-icon.png" alt="z/OS" title="z/OS" />
 			<div ng-show="qmgr != null">
@@ -171,8 +171,11 @@
 				<tbody >
 					<tr ng-repeat="item in events">
 						<td>{{item.message.PutDate}}</td>
-						<td>{{item.event.reason}}</td>
-						<td mq-event-qtip="/message/event/{{ mqweb.qmgr }}/SYSTEM.ADMIN.QMGR.EVENT/{{ item.message.MsgId }}">{{item.event.desc}}</td>
+						<td>{{item.event.reason.code}}</td>
+						<td>
+							<div mq-event-qtip>{{item.event.reason.desc}}</div>
+							<div style="display:none" ng-include="item.templateUrl"></div>
+						</td>
 					</tr>
 				</tbody>
 			</table>

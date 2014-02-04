@@ -3,9 +3,6 @@ var mqWebApp = angular.module('mqWebApp');
 mqWebApp.directive('mqEventQtip', function($http, $compile, $templateCache) {
 	return {
 		restrict: 'A',
-		scope : {
-			mqWebURL : '@mqEventQtip'
-		},
 		link : function(scope, element, attrs) {
 			$(element).qtip({
 				position: {
@@ -14,32 +11,20 @@ mqWebApp.directive('mqEventQtip', function($http, $compile, $templateCache) {
 				},
 				content: {
 					text: function(event, api) {
-						$http.get(scope.mqWebURL, { cache: false })
-						.success(function(content, status) {
-							// Set the tooltip content upon successful retrieval
-							var contentDOM = $(content);
-							// When a title id is found, use it as qtip title and make
-							// the title invisible.
-							var titleElement = contentDOM.find("#eventTitle");
-							if ( titleElement )
-							{
-								titleElement.hide();
-								api.set('content.title', titleElement.text());
-							}
-							api.set('content.text', contentDOM.html());
-						}).error(function(xhr, status, error) {
-							// Upon failure... set the tooltip content to the status and error value
-							api.set('content.text', status + ': ' + error);
-						});
-		
-						return 'Loading...'; // Set some initial text
+						var contentDOM = $(element).next('div'); // Use the "div" element next to this for the content
+						var titleElement = contentDOM.find('#eventTitle');
+						if ( titleElement )	{
+							titleElement.hide();
+							api.set('content.title', titleElement.text());
+						}
+						return contentDOM.html();
 					}
 				}
 			});
 		}
 	}
 });
-  
+	
 mqWebApp.controller('QmgrController', ['$scope', 'mqWebQueueManager', function($scope, mqWebQueueManager) {
 	$scope.loading = false;
 	$scope.mqweb = null;
@@ -141,7 +126,7 @@ mqWebApp.controller('ChannelStatusController', ['$scope', 'mqWebChannelStatus', 
 	$scope.load();
 }]);
 
-mqWebApp.controller('EventMessageController', ['$scope', '$http', 'MQWEB_CONFIG', function($scope, $http, config) {
+mqWebApp.controller('EventMessageController', ['$scope', 'mqWebMessage', function($scope, mqWebMessage) {
 
 	$scope.loading = false;
 	$scope.events = null;
@@ -151,21 +136,23 @@ mqWebApp.controller('EventMessageController', ['$scope', '$http', 'MQWEB_CONFIG'
 
 	$scope.load = function() {
 		$scope.loading = true;
-		$http.get("/message/event/" + config.qmgrName + "/SYSTEM.ADMIN.QMGR.EVENT", { 
-			cache: false,
-			params : {
-				limit : 3
-				}
-			}).success(function(data, status) {
-				$scope.loading = false;
-				$scope.error = data.error;
-				$scope.events = data.events;
-				$scope.curdepth = data.queue.curdepth;
-			}).error(function(data, status) {
-				$scope.loading = false;
-				$scope.http_rc = status;
+		mqWebMessage.events({
+			limit : 3
+		}).success(function(data, status) {
+			$scope.loading = false;
+			$scope.error = data.error;
+				
+			data.events.forEach(function(eventMsg) {
+				eventMsg.templateUrl = '/static/html/message/events/' + eventMsg.event.reason.desc + '.html';
 			});
-		};
+				
+			$scope.events = data.events;
+			$scope.curdepth = data.queue.curdepth;
+		}).error(function(data, status) {
+			$scope.loading = false;
+			$scope.http_rc = status;
+		});
+	};
 	$scope.load();
 }]);
 
