@@ -73,11 +73,12 @@ mqWebApp.controller('ChannelsController', ['$scope', '$rootScope', 'mqWebChannel
 
 }]);
 
-mqWebApp.controller('ChannelController', ['$scope', '$rootScope', '$routeParams', 'mqWebChannel', function($scope, $rootScope, $routeParams, mqWebChannel) {
+mqWebApp.controller('ChannelController', ['$scope', '$rootScope', '$routeParams', 'mqWebChannel', 'mqWebChannelStatus', function($scope, $rootScope, $routeParams, mqWebChannel, mqWebChannelStatus) {
 	$scope.loading = true;
 	$scope.mqweb = null;
 	$scope.error = null;
 	$scope.channel = null;
+	$scope.statuses = null;
 
 	mqWebChannel.inquire($routeParams.channelName, $routeParams.channelType)
 		.success(function(data, status) {
@@ -88,6 +89,16 @@ mqWebApp.controller('ChannelController', ['$scope', '$rootScope', '$routeParams'
 				$scope.channel = { 'data' : data.channels[0] };
 				$rootScope.updateChannel($scope.channel);
 			}
+			$scope.error = data.error;
+		}).error(function(data, status) {
+			$scope.loading = false;
+	});
+
+	mqWebChannelStatus.inquire($routeParams.channelName)
+		.success(function(data, status) {
+			$scope.loading = false;
+			$scope.mqweb = data.mqweb;
+			$scope.statuses = data.statuses;
 			$scope.error = data.error;
 		}).error(function(data, status) {
 			$scope.loading = false;
