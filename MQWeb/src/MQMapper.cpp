@@ -427,6 +427,10 @@ Dictionary MQMapper::_dictionary = Dictionary()
 	(MQCACF_RESTART_LOG_EXTENT_NAME, "RestartRecoveryLog")
 	(MQCACF_Q_MGR_START_DATE, "StartDate")
 	(MQCACF_Q_MGR_START_TIME, "StartTime")
+	(MQIACF_PERMIT_STANDBY, "PermitStandby", DisplayMapInitializer
+		(MQSTDBY_NOT_PERMITTED, "Not Permitted")
+		(MQSTDBY_PERMITTED, "Permitted")
+	)
 
 	// QUEUE properties
 	(MQCA_BACKOUT_REQ_Q_NAME, "BackoutRequeueName")
