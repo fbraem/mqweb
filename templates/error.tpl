@@ -19,7 +19,7 @@
     Object: <?= error.object ?><br />
     Function: <?= error.fn ?><br />
     Code: <?= error.code ?><br />
-    Reason: <?= error.reason ?>
+    Reason: <?= error.reason.code ?> - <?= error.reason.desc ?>
    </div>
  </div>
 </body>

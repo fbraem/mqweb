@@ -21,9 +21,11 @@
 #include "Poco/Util/Application.h"
 #include "Poco/JSON/Object.h"
 
-#include "MQ/Web/MQController.h"
 #include "MQ/MQSubsystem.h"
 #include "MQ/MQException.h"
+
+#include "MQ/Web/MQController.h"
+#include "MQ/Web/MQMapper.h"
 #include "MQ/Web/TemplateView.h"
 #include "MQ/Web/JSONView.h"
 
@@ -148,7 +150,11 @@ void MQController::handleException(const MQException& mqe)
 		case MQCC_WARNING: error->set("code", "WARNING"); break;
 		case MQCC_FAILED: error->set("code", "ERROR"); break;
 	}
-	error->set("reason", mqe.reason());
+
+	Poco::JSON::Object::Ptr reason = new Poco::JSON::Object();
+	error->set("reason", reason);
+	reason->set("code", mqe.reason());
+	reason->set("desc", MQMapper::getReasonString(mqe.reason()));
 
 	if ( isJSON() )
 	{
