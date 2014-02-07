@@ -63,19 +63,6 @@ Poco::JSON::Array::Ptr ChannelStatusMapper::inquire(const Poco::JSON::Object::Pt
 	PCF::Ptr inquireChlStatus = _commandServer.createCommand(MQCMD_INQUIRE_CHANNEL_STATUS);
 	inquireChlStatus->addParameter(MQCACH_CHANNEL_NAME, filter->optValue<std::string>("name", "*"));
 
-	std::string channelType = filter->optValue<std::string>("type", "All");
-	MQLONG channelTypeValue = _dictionary.getDisplayId(MQIACH_CHANNEL_TYPE, channelType);
-	poco_assert_dbg(channelTypeValue != -1);
-	if ( channelTypeValue == - 1 )
-	{
-		return jsonStatuses;
-	}
-
-	if ( channelTypeValue != MQCHT_ALL )
-	{
-		inquireChlStatus->addFilter(MQIACH_CHANNEL_TYPE, MQCFOP_EQUAL, channelTypeValue);
-	}
-
 	inquireChlStatus->addParameter(MQIACH_CHANNEL_INSTANCE_TYPE, MQOT_CURRENT_CHANNEL);
 
 	PCF::Vector commandResponse;

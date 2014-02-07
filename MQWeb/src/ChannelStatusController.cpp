@@ -65,22 +65,12 @@ void ChannelStatusController::inquire()
 	if ( parameters.size() > 1 )
 	{
 		filter->set("name", parameters[1]);
-		if ( parameters.size() > 2 )
-		{
-			filter->set("type", parameters[2]);
-		}
-		else
-		{
-			setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "ChannelType is required when channelname is part of the URI-path");
-			return;
-		}
 	}
 	else
 	{
 		Poco::Net::HTMLForm form(request(), request().stream());
 		std::string channelNameField = form.get("channelName", "*");
 		filter->set("name", channelNameField.empty() ? "*" : channelNameField);
-		filter->set("type", form.get("channelType", "All"));
 	}
 
 	ChannelStatusMapper channelStatusMapper(*commandServer());

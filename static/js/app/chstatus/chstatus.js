@@ -79,7 +79,7 @@ mqWebApp.controller('ChannelStatusController', ['$scope', '$rootScope', '$routeP
 	$scope.error = null;
 	$scope.status = null;
 
-	mqWebChannelStatus.inquire($routeParams.channelName, $routeParams.channelType)
+	mqWebChannelStatus.inquire($routeParams.channelName)
 		.success(function(data, status) {
 			$scope.loading = false;
 			$scope.mqweb = data.mqweb;
@@ -95,7 +95,7 @@ mqWebApp.controller('ChannelStatusController', ['$scope', '$rootScope', '$routeP
 
 	$scope.reload = function() {
 		$scope.loading = true;
-		mqWebChannel.inquire($scope.status.data.ChannelName.value, $scope.status.data.ChannelType.display)
+		mqWebChannelStatus.inquire($scope.status.data.ChannelName.value)
 			.success(function(data, status) {
 				$scope.loading = false;
 				if ( data.statuses.length > 0 ) {

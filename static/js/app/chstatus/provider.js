@@ -7,7 +7,7 @@ angular.module('mqWebApp').provider('mqWebChannelStatus', {
 				return qmgr;
 			},
 			// Pass an object for using the query parameters of inquire
-			// or a channel name with channel type to use the URI path
+			// or a channel name
 			inquire : function() {
 				if ( typeof arguments[0] == 'object' ) {
 					return $http.get('/chstatus/inquire/' + qmgr, {
@@ -19,8 +19,8 @@ angular.module('mqWebApp').provider('mqWebChannelStatus', {
 					if ( arguments.length == 0 ) {
 						return $http.get('/chstatus/inquire/' + qmgr, { cache : false } );
 					}
-					else if ( arguments.length > 1 ) {
-						return $http.get('/chstatus/inquire/' + qmgr + '/' + arguments[0] + '/' + arguments[1], { cache : false } );
+					else if ( arguments.length > 0 ) {
+						return $http.get('/chstatus/inquire/' + qmgr + '/' + arguments[0], { cache : false } );
 					}
 				}
 			} 
