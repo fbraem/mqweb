@@ -140,38 +140,43 @@ td
 */
 
 /** Tables **/
-table {
+table.zebra {
 	border-right:0;
-/*	clear: both;*/
 	color: #333;
 	margin-bottom: 10px;
 	width: 100%;
+	border-collapse:collapse;
 }
-th {
+
+table.zebra th {
 	border:0;
-	border-bottom:2px solid #555;
 	text-align: left;
 	padding:4px;
+	border-bottom:2px solid black;
 }
+
 th a {
 	display: block;
 	padding: 2px 4px;
 	text-decoration: none;
 }
+
 th a.asc:after {
 	content: ' ?';
 }
+
 th a.desc:after {
 	content: ' ?';
 }
-table tr td {
+
+table.zebra tr td {
 	padding: 6px;
 	text-align: left;
 	vertical-align: top;
 	border-bottom:1px solid #ddd;
 }
 
-table tr:nth-child(even) {
+table.zebra tr:nth-child(even) {
 	background-color: #f9f9f9;
 }
 
@@ -188,6 +193,22 @@ table td.actions a {
  * First row: used to toggle the second second row
  * Second row: toggled view by clicking on first row 
  */
+table.overview {
+	width:100%;
+	border-collapse:collapse
+}
+
+table.overview th {
+	border:0;
+	text-align: left;
+	padding:4px;
+	border-bottom:2px solid black;
+}
+
+table.overview tr td {
+	padding: 6px;
+}
+
 table.overview tr:nth-child(4n), table.overview tr:nth-child(4n-1) {
 	background-color: #fff;
 }
