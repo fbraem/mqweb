@@ -78,7 +78,9 @@ mqWebApp.controller('MessageController', ['$scope', '$routeParams', 'mqWebMessag
 			.success(function(data, status) {
 				$scope.loading = false;
 				$scope.mqweb = data.mqweb;
-				$scope.message = data.message;
+				if ( data.messages && data.messages.length > 0 ) {
+					$scope.message = { data : data.messages[0] };
+				}
 				$scope.http_rc = 0;
 				$scope.error = data.error;
 			}).error(function(data, status) {
