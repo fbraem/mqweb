@@ -1,0 +1,30 @@
+<div style="padding:5px;">
+	<h2 id="eventTitle" style="margin-bottom:10px;">{{item.event.reason.desc }}</h2>
+	<p style="margin-bottom:10px;">
+		MQPUT and MQPUT1 calls are currently inhibited for the queue or topic (see the InhibitPut queue attribute in InhibitPut (MQLONG) or the InhibitPublications topic attribute in Topic attributes for the queue to which this queue resolves.
+	</p>
+	<div class="details">
+		<h2>Put DateTime:</h2>
+		<div class="detail"><?= message.PutDate ?></div>
+		<h2>Reason Code:</h2>
+		<div class="detail">{{ item.event.reason.code }} - {{ item.event.reason.desc }}</div>
+		<h2>Queue Manager:</h2>
+		<div class="detail">{{ item.event.QMgrName.value }}</div>
+		<div ng-if="item.event.QName">
+			<h2>Queue Name:</h2>
+			<div class="detail">{{ item.event.QName.value }}</div>
+		</div>
+		<div ng-if="item.event.ObjectQMgrName">
+		 <h2>Object Queuemanager Name:</h2>
+		 <div class="detail">{{ item.event.ObjectQMgrName.value }}</div>
+		</div>
+		<div ng-if="item.event.TopicString">
+			<h2>Topic:</h2>
+			<div class="detail">{{ item.event.TopicString.value }}</div>
+		</div>
+		<h2>Application Type</h2>
+		<div class="detail">{{ item.event.ApplType.display }}</div>
+		<h2>Application Name</h2>
+		<div class="detail">{{ item.event.ApplName.value }}</div>
+	</div> <!-- details -->
+</div>
