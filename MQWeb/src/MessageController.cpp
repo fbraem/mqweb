@@ -228,6 +228,7 @@ void MessageController::browse()
 	std::string messageId;
 	if ( parameters.size() > 2 )
 	{
+		limit = 1;
 		messageId = parameters[2];
 		mqwebData().set("messageId", messageId);
 	}
@@ -268,10 +269,10 @@ void MessageController::browse()
 		{
 			if ( mqe.reason() == MQRC_NO_MSG_AVAILABLE )
 			{
-				if ( !messageId.empty() ) throw;
+				if (! messageId.empty()) throw;
 				break;
 			}
-			if ( mqe.reason() != MQRC_TRUNCATED_MSG_ACCEPTED )
+			else if ( mqe.reason() != MQRC_TRUNCATED_MSG_ACCEPTED )
 			{
 				throw;
 			}
@@ -352,6 +353,9 @@ void MessageController::dump()
 			MQLONG size = message.dataLength();
 			if ( size > 1024 * 16) size = 1024 * 16;
 			message.buffer().resize(size);
+			message.clear();
+			message.setMessageId(messageId);
+
 			try
 			{
 				q.get(message, MQGMO_BROWSE_FIRST);
@@ -510,10 +514,11 @@ void MessageController::event()
 	jsonQueue->set("name", q.name());
 	jsonQueue->set("curdepth", curdepth);
 
-	int limit = -1;
+	int limit = -1; // -1 -> no limit
 	std::string messageId;
 	if ( parameters.size() > 2 )
 	{
+		limit = 1;
 		messageId = parameters[2];
 		mqwebData().set("messageId", messageId);
 	}
@@ -534,7 +539,16 @@ void MessageController::event()
 		PCF message(qmgr()->zos());
 		if ( !messageId.empty() )
 		{
-			message.setMessageId(messageId);
+			try
+			{
+				message.setMessageId(messageId);
+			}
+			catch(Poco::DataFormatException&)
+			{
+				//An invalid message id is passed (No valid HEX character)
+				setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "An invalid message id is passed (No valid HEX character)");
+				return;
+			}
 		}
 
 		message.buffer().resize(DEFAULT_EVENT_MESSAGE_SIZE, false);
@@ -546,15 +560,18 @@ void MessageController::event()
 		{
 			if ( mqe.reason() == MQRC_NO_MSG_AVAILABLE )
 			{
-				if ( !messageId.empty() ) throw;
+				if (! messageId.empty()) throw;
 				break;
 			}
-
-			if ( mqe.reason()   == MQRC_TRUNCATED_MSG_FAILED
+			else if ( mqe.reason()   == MQRC_TRUNCATED_MSG_FAILED
 				|| mqe.reason() == MQRC_TRUNCATED )
 			{
 				message.buffer().resize(message.dataLength(), false);
 				message.clear();
+				if ( !messageId.empty() )
+				{
+					message.setMessageId(messageId);
+				}
 				q.get(message, MQGMO_BROWSE_NEXT | MQGMO_CONVERT);
 			}
 			else
@@ -585,10 +602,6 @@ void MessageController::event()
 		MQMapper::mapToJSON(message, jsonEvent);
 
 		count++;
-		if ( limit != -1 && count == limit )
-		{
-			break;
-		}
 	}
 
 	setView(new JSONView());
