@@ -1,5 +1,5 @@
 <!-- Content -->
-<div id="content" ng-controller="ChannelController">
+<div id="content">
 	<div class="post">
 		<h3><strong>{{ mqweb.qmgr }}</strong>- Channel - {{ channel.data.ChannelName.value }}</h3>
 	</div>
@@ -12,23 +12,21 @@
 <div id="sidebar">
 	<div class="box">
 		<h3>Status</h3>
-		<div ng-controller="ChannelStatusController">
-		 <table style="width:100%;border-collapse:collapse">
-		 	<thead>
-		 	 <tr>
-		 	  <th>Start Time</th><th>Status</th><th>Substate</th><th>Type</th>
-		 	 </tr>
-		 	</thead>
-		  <tbody>
-		   <tr ng-repeat="status in statuses">
-		    <td>{{ status.ChannelStartDate.value }}&nbsp;{{ status.ChannelStartTime.value }}</td>
-		    <td>{{ status.ChannelStatus.display }}</td>
-		    <td>{{ status.SubState.display }}</td>
-		    <td>{{ status.ChannelInstanceType.display }}</td>
-		   </tr>
-		  </tbody>
-		 </table>
-		</div>
+		<table class="zebra" style="font-size:0.8em;">
+			<thead>
+				<tr>
+					<th>Start Time</th><th>Status</th><th>Substate</th><th>Type</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="status in statuses">
+					<td>{{ status.ChannelStartDate.value }}&nbsp;{{ status.ChannelStartTime.value }}</td>
+					<td>{{ status.ChannelStatus.display }}</td>
+					<td>{{ status.SubState.display }}</td>
+					<td>{{ status.ChannelInstanceType.display }}</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 </div>
 <!-- END Sidebar -->
