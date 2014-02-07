@@ -105,7 +105,7 @@ mqWebApp.controller('XmitQueueController', ['$scope', 'mqWebQueue', function($sc
 mqWebApp.controller('ChannelStatusController', ['$scope', 'mqWebChannelStatus', function($scope, mqWebChannelStatus) {
 	$scope.loading = false;
 	$scope.mqweb = null;
-	$scope.channels = null;
+	$scope.statuses = null;
 	$scope.error = null;
 	$scope.http_rc = 0;
 
@@ -115,7 +115,7 @@ mqWebApp.controller('ChannelStatusController', ['$scope', 'mqWebChannelStatus', 
 			.success(function(data, status) {
 				$scope.loading = false;
 				$scope.mqweb = data.mqweb;
-				$scope.channels = data.statuses;
+				$scope.statuses = data.statuses;
 				$scope.error = data.error;
 				})
 			.error(function(data, status) {
@@ -143,7 +143,32 @@ mqWebApp.controller('EventMessageController', ['$scope', 'mqWebMessage', functio
 			$scope.error = data.error;
 				
 			data.events.forEach(function(eventMsg) {
-				eventMsg.templateUrl = '/static/html/message/events/' + eventMsg.event.reason.desc + '.html';
+				if ( eventMsg.event.reason.code == 2035 /* MQRC_NOT_AUTHORIZED */ ) {
+					switch(eventMsg.event.ReasonQualifier.value) {
+						case 1: // MQRQ_CONN_NOT_AUTHORIZED
+						case 20: // MQRQ_SYS_CONN_NOT_AUTHORIZED
+							eventMsg.templateUrl = '/static/html/message/events/' + eventMsg.event.reason.desc + '-1.html';
+							break;
+						case 2: // MQRQ_OPEN_NOT_AUTHORIZED:
+							eventMsg.templateUrl = '/static/html/message/events/' + eventMsg.event.reason.desc + '-2.html';
+							break;
+						case 3: // MQRQ_CLOSE_NOT_AUTHORIZED:
+							eventMsg.templateUrl = '/static/html/message/events/' + eventMsg.event.reason.desc + '-3.html';
+							break;
+						case 4: // MQRQ_CMD_NOT_AUTHORIZED:
+							eventMsg.templateUrl = '/static/html/message/events/' + eventMsg.event.reason.desc + '-4.html';
+							break;
+						case 17: // MQRQ_SUB_NOT_AUTHORIZED:
+							eventMsg.templateUrl = '/static/html/message/events/' + eventMsg.event.reason.desc + '-5.html';
+							break;
+						case 18: // MQRQ_SUB_DEST_NOT_AUTHORIZED:
+							eventMsg.templateUrl = '/static/html/message/events/' + eventMsg.event.reason.desc + '-6.html';
+							break;
+					}
+				}
+				else {
+					eventMsg.templateUrl = '/static/html/message/events/' + eventMsg.event.reason.desc + '.html';
+				}
 			});
 				
 			$scope.events = data.events;
