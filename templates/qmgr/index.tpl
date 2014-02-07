@@ -82,7 +82,7 @@
 		<div ng-controller="LocalQueueController" id="localQueues">
 			<a ng-click="load()"><img class="imgtip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
 			<h3 data-qtip="This is a list with local queues that contains at least one message.<br /><br />System queues and transmission queues are omitted.">Local Queues</h3>
-			<table ng-if="queues != null && queues.length > 0" style="font-size:0.8em;border-collapse:collapse;">
+			<table class="zebra" ng-if="queues != null && queues.length > 0" style="font-size:0.8em;border-collapse:collapse;">
 				<thead>
 					<tr><th>Queue</th><th>Depth</th></tr>
 				</thead>
@@ -105,7 +105,7 @@
 		<div ng-controller="XmitQueueController" id="xmitQueues">
 			<a ng-click="load()"><img class="imgtip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
 			<h3 data-qtip="This is a list with transmission queues (USAGE=XMITQ) that contains at least one message.<br /><br />Normally, this list is empty when no channels has problems.">Transmission Queues</h3>
-			<table ng-if="queues != null && queues.length > 0" style="font-size:0.8em;border-collapse:collapse;">
+			<table class="zebra" ng-if="queues != null && queues.length > 0" style="font-size:0.8em;border-collapse:collapse;">
 				<thead>
 					<tr><th>Queue</th><th>Depth</th></tr>
 				</thead>
@@ -128,21 +128,20 @@
 		<div ng-controller="ChannelStatusController" id="channels">
 			<a ng-click="load()"><img class="imgtip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
 			<h3 data-qtip="This is a list with active channel statuses.">Channel Status</h3>
-			<table ng-if="statuses && statuses.length > 0" style="font-size:0.8em;border-collapse:collapse;">
+			<table class="zebra" ng-if="statuses && statuses.length > 0" style="font-size:0.8em;border-collapse:collapse;">
 				<thead>
 					<tr><th colspan="2">Channel</th><th>Status</th></tr>
 				</thead>
 				<tbody>
 					<tr ng-repeat="status in statuses">
-						<td ng-switch="ChannelStatus.display">
-							<img ng-switch-when="Retrying" alt="The channel {{ChannelName.value}} has status Retrying" class="tip" src="/static/images/flag-red-icon.png" />
-							<img ng-switch-when="Stopped" alt="The channel {{ChannelName.value}} has status Stopped' }" class="tip" src="/static/images/flag-black-icon.png" />
-							<img ng-switch-when="Running" alt="The channel {{ChannelName.value}} has status Running' }" class="tip" src="/static/images/flag-green-icon.png" />
-							<img ng-switch-default alt="The channel {{ChannelName.value}} has status {{ChannelStatus.display}}" class="tip" src="/static/images/flag-yellow-icon.png" />
+						<td ng-switch="status.ChannelStatus.display">
+							<img ng-switch-when="Retrying" alt="The channel {{status.ChannelName.value}} has status Retrying" class="tip" src="/static/images/flag-red-icon.png" />
+							<img ng-switch-when="Stopped" alt="The channel {{status.ChannelName.value}} has status Stopped' }" class="tip" src="/static/images/flag-black-icon.png" />
+							<img ng-switch-when="Running" alt="The channel {{status.ChannelName.value}} has status Running' }" class="tip" src="/static/images/flag-green-icon.png" />
+							<img ng-switch-default alt="The channel {{status.ChannelName.value}} has status {{status.ChannelStatus.display}}" class="tip" src="/static/images/flag-yellow-icon.png" />
 						</td>
-						<td data-bind="template: { name: statusImage }" />
-						<td><a ng-href='/channel/index/{{ mqweb.qmgr }}/#{{ ChannelName.value }}/{{ ChannelType.display }}'>{{ChannelName.value}}</a></td>
-						<td>{{ ChannelStatus.display }}</td>
+						<td><a ng-href='/channel/index/{{ mqweb.qmgr }}/#{{ status.ChannelName.value }}/{{ status.ChannelType.display }}'>{{status.ChannelName.value}}</a></td>
+						<td>{{ status.ChannelStatus.display }}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -161,7 +160,7 @@
 		<div ng-controller="EventMessageController" id="eventMessages">
 			<a ng-click="load()"><img class="imgtip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
 			<h3>SYSTEM.ADMIN.QMGR.EVENT</h3>
-			<table ng-if="events && events.length > 0" style="border-spacing:0;border-collapse:collapse;">
+			<table class="zebra" ng-if="events && events.length > 0" style="border-spacing:0;border-collapse:collapse;">
 				<thead>
 					<tr>
 						<th style="text-align:left;">Date</th>
