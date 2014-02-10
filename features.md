@@ -14,6 +14,8 @@ channels, messages and other WebSphere MQ objects. When the build-in HTML pages
 are used, [AngularJS](http://angularjs.org) is used to transform the JSON model 
 objects into a view in the browser. 
 
+<img src="{{ site.baseurl }}/img/mqwebsequence.png" style="text-align:center" alt="MQWeb Sequence Diagram" />
+
 MQWeb uses the HTTPServer class from [POCO](http://www.pocoproject.org). 
 This class uses request handlers to handle incoming requests. MQWeb has three 
 handlers.
