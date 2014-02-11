@@ -73,6 +73,7 @@ for shared build
 The data libraries are omitted because MQWeb doesn't need them. If you only
 going to use POCO for MQWeb, there is also no need to build the tests and 
 samples.
+
 > You can also omit the build of the XML library, when you 
 > define POCO\_UTIL\_NO\_XMLCONFIGURATION in *Poco/Foundation/Config.h*. You 
 > also need to update premake.lua in the MQWeb folder and remove the XML 
@@ -138,7 +139,16 @@ Build the Foundation, JSON, XML, Util and Net libraries.
 
 ###MQWeb
 
-Run premake
+Download a MQWeb source archive from the 
+[releases](https://github.com/fbraem/mqweb/releases) or just download an archive
+from the [source tree](https://github.com/fbraem/mqweb). Note that the 
+[master](https://github.com/fbraem/mqweb/tree/master) always points to the 
+latest release, while the source tree with the latest branch points to code
+that is work in progress and it is possible that it doesn't work.
+
+Extract the archive and make the root folder of the archive the current
+folder. Open *poco.lua* and *mq.lua* and see if you need to make any changes. 
+Now run premake:
 
     premake4 vs2008
 
