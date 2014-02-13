@@ -118,7 +118,7 @@ is needed because the event action inquires the current depth of the queue.
     SET AUTHREC PROFILE(SYSTEM.ADMIN.QMGR.EVENT) +
     GROUP('mqweb') +
     OBJTYPE(QUEUE) +
-    AUTHADD(BROWSE, INQ)
+    AUTHADD(BROWSE, DSP, INQ)
 
 Channels
 --------
