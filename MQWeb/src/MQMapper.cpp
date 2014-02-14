@@ -438,6 +438,9 @@ Dictionary MQMapper::_dictionary = Dictionary()
 	//(MQCA_BASE_Q_NAME, "BaseQName")
 	(MQCA_BASE_OBJECT_NAME, "BaseObjectName")
 	(MQCA_CF_STRUC_NAME, "CFStructure")
+#ifdef MQCA_CLUS_CHL_NAME
+	(MQCA_CLUS_CHL_NAME, "ClusterChannelName")
+#endif
 	(MQCA_CLUSTER_DATE, "ClusterDate")
 	(MQCA_CLUSTER_TIME, "ClusterTime")
 	(MQIA_CLUSTER_Q_TYPE, "ClusterQType", DisplayMapInitializer
@@ -771,11 +774,14 @@ Dictionary MQMapper::_dictionary = Dictionary()
 	(MQCACH_SSL_PEER_NAME, "SSLPeerName")
 	(MQCACH_TP_NAME, "TpName")
 	(MQIACH_XMIT_PROTOCOL_TYPE, "TransportType", DisplayMapInitializer
+		(MQXPT_ALL, "All")
+		(MQXPT_LOCAL, "Local")
 		(MQXPT_LU62, "LU62")
 		(MQXPT_TCP, "TCP")
 		(MQXPT_NETBIOS, "NetBIOS")
 		(MQXPT_SPX, "SPX")
 		(MQXPT_DECNET, "DECnet")
+		(MQXPT_UDP, "UDP")
 	)
 #ifdef MQIA_USE_DEAD_LETTER_Q
 	(MQIA_USE_DEAD_LETTER_Q, "UseDLQ", DisplayMapInitializer
@@ -957,6 +963,34 @@ Dictionary MQMapper::_dictionary = Dictionary()
 	(MQCACF_USER_IDENTIFIER, "UserIdentifier")
 	(MQCACF_APPL_NAME, "ApplName")
 	(MQCACF_OBJECT_Q_MGR_NAME, "ObjectQMgrName")
+
+	// Listener Properties
+	(MQIACH_ADAPTER, "Adapter")
+	(MQIACH_BACKLOG, "Backlog")
+	(MQIACH_COMMAND_COUNT, "Commands")
+	(MQCACH_IP_ADDRESS, "IPAddress")
+	(MQCACH_LISTENER_DESC, "ListenerDesc")
+	(MQCACH_LISTENER_NAME, "ListenerName")
+	(MQCACH_LOCAL_NAME, "LocalName")
+	(MQIACH_NAME_COUNT, "NetbiosNames")
+	(MQIACH_PORT, "Port")
+	(MQIACF_PROCESS_ID, "ProcessId")
+	(MQIACH_SESSION_COUNT, "Sessions")
+	(MQIACH_SOCKET, "Socket")
+	(MQIACH_LISTENER_CONTROL, "StartMode", DisplayMapInitializer
+		(MQSVC_CONTROL_MANUAL, "Manual")
+		(MQSVC_CONTROL_Q_MGR, "Qmgr")
+		(MQSVC_CONTROL_Q_MGR_START, "Qmgr Start")
+	)
+
+	// Listener Status Properties
+	(MQCACH_LISTENER_START_DATE, "StartDate")
+	(MQCACH_LISTENER_START_TIME, "ListenerStartTime")
+	(MQIACH_LISTENER_STATUS, "Status", DisplayMapInitializer
+		(MQSVC_STATUS_STARTING, "Starting")
+		(MQSVC_STATUS_RUNNING, "Running")
+		(MQSVC_STATUS_STOPPING, "Stopping")
+	)
 
 	// Process Properties
 	(MQCA_PROCESS_NAME, "ProcessName")
