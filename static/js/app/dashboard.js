@@ -129,6 +129,7 @@ mqWebApp.controller('ChannelStatusController', ['$scope', 'mqWebChannelStatus', 
 mqWebApp.controller('EventMessageController', ['$scope', 'mqWebMessage', function($scope, mqWebMessage) {
 
 	$scope.loading = false;
+	$scope.mqweb = null;
 	$scope.events = null;
 	$scope.error = null;
 	$scope.curdepth = 0;
@@ -141,7 +142,7 @@ mqWebApp.controller('EventMessageController', ['$scope', 'mqWebMessage', functio
 		}).success(function(data, status) {
 			$scope.loading = false;
 			$scope.error = data.error;
-				
+			$scope.mqweb = data.mqweb;
 			data.events.forEach(function(eventMsg) {
 				if ( eventMsg.event.reason.code == 2035 /* MQRC_NOT_AUTHORIZED */ ) {
 					switch(eventMsg.event.ReasonQualifier.value) {
