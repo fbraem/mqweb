@@ -90,56 +90,45 @@ Poco::JSON::Array::Ptr QueueMapper::inquire(const Poco::JSON::Object::Ptr& filte
 
 	PCF::Vector commandResponse;
 	_commandServer.sendCommand(inquireQ, commandResponse);
-	if ( commandResponse.size() > 0 )
+
+	bool excludeSystem = filter->optValue("excludeSystem", false);
+	bool excludeTemp = filter->optValue("excludeTemp", false);
+
+	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
-		PCF::Vector::iterator it = commandResponse.begin();
-		if ( (*it)->getCompletionCode() != MQCC_OK )
+		if ( (*it)->isExtendedResponse() ) // Skip extended response
+			continue;
+
+		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)
+			continue;
+
+		if ( usage != -1 && (*it)->hasParameter(MQIA_USAGE) )
 		{
-			if ( (*it)->getReasonCode() != MQRC_UNKNOWN_OBJECT_NAME )
+			MQLONG queueUsage = (*it)->getParameterNum(MQIA_USAGE);
+			if ( queueUsage != usage )
 			{
-				throw MQException(_commandServer.qmgr().name(), "PCF", (*it)->getCompletionCode(), (*it)->getReasonCode());
+				continue;
 			}
 		}
 
-		bool excludeSystem = filter->optValue("excludeSystem", false);
-		bool excludeTemp = filter->optValue("excludeTemp", false);
-
-		for(; it != commandResponse.end(); it++)
+		std::string qName = (*it)->getParameterString(MQCA_Q_NAME);
+		if ( excludeSystem
+			&& qName.compare(0, 7, "SYSTEM.") == 0 )
 		{
-			if ( (*it)->isExtendedResponse() ) // Skip extended response
-				continue;
-
-			if ( (*it)->getReasonCode() != MQRC_NONE )
-				continue;
-
-			if ( usage != -1 && (*it)->hasParameter(MQIA_USAGE) )
-			{
-				MQLONG queueUsage = (*it)->getParameterNum(MQIA_USAGE);
-				if ( queueUsage != usage )
-				{
-					continue;
-				}
-			}
-
-			std::string qName = (*it)->getParameterString(MQCA_Q_NAME);
-			if ( excludeSystem
-				&& qName.compare(0, 7, "SYSTEM.") == 0 )
-			{
-				continue;
-			}
-
-			if ( excludeTemp
-				&& (*it)->hasParameter(MQIA_DEFINITION_TYPE)
-				&& (*it)->getParameterNum(MQIA_DEFINITION_TYPE) == MQQDT_TEMPORARY_DYNAMIC )
-			{
-				continue;
-			}
-
-			Poco::JSON::Object::Ptr jsonQueue = new Poco::JSON::Object();
-			jsonQueues->add(jsonQueue);
-
-			mapToJSON(**it, jsonQueue);
+			continue;
 		}
+
+		if ( excludeTemp
+			&& (*it)->hasParameter(MQIA_DEFINITION_TYPE)
+			&& (*it)->getParameterNum(MQIA_DEFINITION_TYPE) == MQQDT_TEMPORARY_DYNAMIC )
+		{
+			continue;
+		}
+
+		Poco::JSON::Object::Ptr jsonQueue = new Poco::JSON::Object();
+		jsonQueues->add(jsonQueue);
+
+		mapToJSON(**it, jsonQueue);
 	}
 
 	return jsonQueues;

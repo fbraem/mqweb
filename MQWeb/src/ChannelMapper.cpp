@@ -58,7 +58,7 @@ Poco::JSON::Array::Ptr ChannelMapper::inquire(const Poco::JSON::Object::Ptr& fil
 {
 	poco_assert_dbg(!filter.isNull());
 
-	Poco::JSON::Array::Ptr jsonChannels = new Poco::JSON::Array();
+	Poco::JSON::Array::Ptr channels = new Poco::JSON::Array();
 
 	PCF::Ptr inquireChl = _commandServer.createCommand(MQCMD_INQUIRE_CHANNEL);
 
@@ -69,55 +69,37 @@ Poco::JSON::Array::Ptr ChannelMapper::inquire(const Poco::JSON::Object::Ptr& fil
 	poco_assert_dbg(channelTypeValue != -1);
 	if ( channelTypeValue == - 1 )
 	{
-		return jsonChannels;
+		return channels;
 	}
 	inquireChl->addParameter(MQIACH_CHANNEL_TYPE, channelTypeValue);
 
 	PCF::Vector commandResponse;
 	_commandServer.sendCommand(inquireChl, commandResponse);
-	if ( commandResponse.size() > 0 )
+
+	bool excludeSystem = filter->optValue("excludeSystem", false);
+
+	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
-		PCF::Vector::iterator it = commandResponse.begin();
-		if ( (*it)->getReasonCode() != MQCC_OK )
+		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)
+			continue;
+
+		if ( (*it)->isExtendedResponse() ) // Skip extended response
+			continue;
+
+		std::string channelName = (*it)->getParameterString(MQCACH_CHANNEL_NAME);
+		if (    excludeSystem
+			&& channelName.compare(0, 7, "SYSTEM.") == 0 )
 		{
-			if ( (*it)->getReasonCode() != MQRC_UNKNOWN_OBJECT_NAME )
-			{
-				throw MQException(_commandServer.qmgr().name(), "PCF", (*it)->getCompletionCode(), (*it)->getReasonCode());
-			}
+			continue;
 		}
 
-		bool excludeSystem = filter->optValue("excludeSystem", false);
+		Poco::JSON::Object::Ptr channel = new Poco::JSON::Object();
+		channels->add(channel);
 
-		for(; it != commandResponse.end(); it++)
-		{
-			MQLONG rc =(*it)->getReasonCode();
-
-			// We didn't find an object ...
-			if ( (*it)->getReasonCode() == MQRC_UNKNOWN_OBJECT_NAME )
-				break;
-
-			// We are not allowed to view this ...
-			if ( (*it)->getReasonCode() == MQRC_NOT_AUTHORIZED )
-				continue;
-
-			if ( (*it)->isExtendedResponse() ) // Skip extended response
-				continue;
-
-			std::string channelName = (*it)->getParameterString(MQCACH_CHANNEL_NAME);
-			if (    excludeSystem
-				&& channelName.compare(0, 7, "SYSTEM.") == 0 )
-			{
-				continue;
-			}
-
-			Poco::JSON::Object::Ptr jsonChannel = new Poco::JSON::Object();
-			jsonChannels->add(jsonChannel);
-
-			mapToJSON(**it, jsonChannel);
-		}
+		mapToJSON(**it, channel);
 	}
 
-	return jsonChannels;
+	return channels;
 }
 
 }} //  Namespace MQ::Web

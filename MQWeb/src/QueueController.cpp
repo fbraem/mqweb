@@ -91,9 +91,9 @@ void QueueController::inquire()
 		filter->set("excludeTemp", form().get("queueExcludeTemp", "false").compare("true") == 0);
 	}
 
-	QueueMapper queueMapper(*commandServer());
-	Poco::JSON::Array::Ptr jsonQueues = queueMapper.inquire(filter);
-	set("queues", jsonQueues);
+	QueueMapper mapper(*commandServer());
+	Poco::JSON::Array::Ptr queues = mapper.inquire(filter);
+	set("queues", queues);
 	setView(new JSONView());
 }
 

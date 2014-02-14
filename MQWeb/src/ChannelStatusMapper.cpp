@@ -67,34 +67,18 @@ Poco::JSON::Array::Ptr ChannelStatusMapper::inquire(const Poco::JSON::Object::Pt
 
 	PCF::Vector commandResponse;
 	_commandServer.sendCommand(inquireChlStatus, commandResponse);
-	if ( commandResponse.size() > 0 )
+
+	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
-		PCF::Vector::iterator it = commandResponse.begin();
-		if ( (*it)->getCompletionCode() != MQCC_OK )
-		{
-			if ( (*it)->getReasonCode() == MQRCCF_NONE_FOUND ) // Nothing found
-			{
-				return jsonStatuses;
-			}
+		if ( (*it)->isExtendedResponse() ) // Skip Extended Response
+			continue;
 
-			if ( (*it)->getReasonCode() != MQRCCF_CHL_STATUS_NOT_FOUND )
-			{
-				throw MQException(_commandServer.qmgr().name(), "PCF", (*it)->getCompletionCode(), (*it)->getReasonCode());
-			}
-		}
+		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)
+			continue;
 
-		for(; it != commandResponse.end(); it++)
-		{
-			if ( (*it)->isExtendedResponse() ) // Skip Extended Response
-				continue;
-
-			if ( (*it)->getReasonCode() == MQRCCF_CHL_STATUS_NOT_FOUND )
-				break;
-
-			Poco::JSON::Object::Ptr jsonChannelStatus = new Poco::JSON::Object();
-			mapToJSON(**it, jsonChannelStatus);
-			jsonStatuses->add(jsonChannelStatus);
-		}
+		Poco::JSON::Object::Ptr jsonChannelStatus = new Poco::JSON::Object();
+		mapToJSON(**it, jsonChannelStatus);
+		jsonStatuses->add(jsonChannelStatus);
 	}
 
 	return jsonStatuses;

@@ -63,27 +63,15 @@ Poco::JSON::Array::Ptr QueueManagerMapper::inquire(const Poco::JSON::Object::Ptr
 	std::vector<Poco::SharedPtr<PCF> > commandResponse;
 	_commandServer.sendCommand(inquireQmgr, commandResponse);
 
-	if ( commandResponse.size() > 0 )
+	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
-		PCF::Vector::iterator it = commandResponse.begin();
-		if ( (*it)->getCompletionCode() != MQCC_OK )
-		{
-			if ( (*it)->getReasonCode() != MQRC_UNKNOWN_OBJECT_NAME )
-			{
-				throw MQException(_commandServer.qmgr().name(), "PCF", (*it)->getCompletionCode(), (*it)->getReasonCode());
-			}
-		}
+		if ( (*it)->isExtendedResponse() ) // Skip extended response
+			continue;
 
-		for(; it != commandResponse.end(); it++)
-		{
-			if ( (*it)->isExtendedResponse() ) // Skip extended response
-				continue;
+		Poco::JSON::Object::Ptr jsonQmgr = new Poco::JSON::Object();
+		jsonQueueManagers->add(jsonQmgr);
 
-			Poco::JSON::Object::Ptr jsonQmgr = new Poco::JSON::Object();
-			jsonQueueManagers->add(jsonQmgr);
-
-			mapToJSON(**it, jsonQmgr);
-		}
+		mapToJSON(**it, jsonQmgr);
 	}
 
 	return jsonQueueManagers;
