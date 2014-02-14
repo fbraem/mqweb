@@ -76,7 +76,6 @@ void ListenerController::inquire()
 
 	ListenerMapper mapper(*commandServer());
 	Poco::JSON::Array::Ptr listeners = mapper.inquire(filter);
-	std::cout << listeners->size() << std::endl;
 	set("listeners", listeners);
 	setView(new JSONView());
 }
