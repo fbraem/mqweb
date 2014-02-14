@@ -167,7 +167,7 @@
 						<th style="text-align:left;" colspan="2">Reason</th>
 					</tr>
 				</thead>
-				<tbody >
+				<tbody>
 					<tr ng-repeat="item in events">
 						<td>{{item.message.PutDate}}</td>
 						<td>{{item.event.reason.code}}</td>
@@ -181,7 +181,7 @@
 			<p ng-if="error == null && (events == null || events.length == 0)">
 				No event messages found.
 			</p>
-			<p ng-if="events != null && events.length < curdepth" style="margin-top:5px;display:none">
+			<p ng-if="events != null && events.length < curdepth" style="margin-top:5px;">
 				Number of messages on this queue: <strong>{{ curdepth }}</strong><br />
 				Only the first <strong>{{ events.length }}</strong> messages are shown. Use <a href="/queue/index/{{ mqweb.qmgr }}#SYSTEM.ADMIN.QMGR.EVENT">queue detail</a> page to browse all messages.
 			</p>
