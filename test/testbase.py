@@ -1,4 +1,5 @@
 import unittest
+import httplib
 import ConfigParser
 import re
 import json
@@ -40,3 +41,15 @@ class MQWebTest(unittest.TestCase):
 			return False
 			
 		return True
+
+	def getJSON(self, url):
+		print 'Trying to connect to ' + url
+		try:
+			conn = httplib.HTTPConnection(self.mqWebHost, self.mqWebPort)
+			conn.request('GET', url, "", MQWebTest.headers)
+			res = conn.getresponse()
+			data = json.loads(res.read())
+		except:
+			self.assertFalse(True, "Can't connect to MQWeb: " + self.mqWebHost + ":" + self.mqWebPort + ' (qmgr: ' + self.qmgr + ')')
+
+		return data

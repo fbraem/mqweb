@@ -1,36 +1,20 @@
 import unittest
-import httplib
-import json
-import ConfigParser
+from testbase import MQWebTest
 
-class TestQueueActions(unittest.TestCase):
-
-	def setUp(self):
-		config = ConfigParser.ConfigParser()
-		config.add_section('MQWeb')
-		config.set('MQWeb', 'host', 'localhost')
-		config.set('MQWeb', 'port', '8081') 
-		config.read('test.cfg')
-		self.qmgr = config.get('MQ', 'qmgr')
-		self.mqWebHost = config.get('MQWeb', 'host')
-		self.mqWebPort = config.get('MQWeb', 'port')
-
-		print
-		print 'Running test with the following configuration:'
-		print 'MQWeb Host: ' + self.mqWebHost
-		print 'MQWeb Port: ' + self.mqWebPort
-		print 'MQ QueueManager: ' + self.qmgr
-		print
+class TestQueueActions(MQWebTest):
 
 	def testInquire(self):
-		conn = httplib.HTTPConnection(self.mqWebHost, self.mqWebPort)
-		conn.request('GET', '/queue/inquire/' + self.qmgr)
-		res = conn.getresponse()
-		data = json.loads(res.read())
+
+		data = self.getJSON('/queue/inquire/' + self.qmgr)
 		
-		print json.dumps(data, indent=4)
-		
-		self.assertTrue(data['queues'] != None, 'No queues returned')
-		
+		self.assertFalse('mqweb' not in data, 'No mqweb data returned')
+
+		if 'error' in data:
+			self.assertFalse(True, 'Received a WebSphere MQ error:' + str(data['error']['reason']['code']))
+
+		self.assertFalse('queues' not in data, 'No queues returned')
+
+		self.assertTrue(self.checkIds(data['queues'][0]), 'There are unmapped Websphere MQ attributes')
+
 suite = unittest.TestLoader().loadTestsFromTestCase(TestQueueActions)
 unittest.TextTestRunner(verbosity=2).run(suite)

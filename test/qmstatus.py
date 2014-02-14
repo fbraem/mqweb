@@ -1,20 +1,12 @@
 import unittest
-import httplib
-import json
 from testbase import MQWebTest
 
 class TestQueueManagerStatusActions(MQWebTest):
 
 	def testInquire(self):
-	
-		try:
-			conn = httplib.HTTPConnection(self.mqWebHost, self.mqWebPort)
-			conn.request('GET', '/qmstatus/inquire/' + self.qmgr, "", MQWebTest.headers)
-			res = conn.getresponse()
-			data = json.loads(res.read())
-		except:
-			self.assertFalse(True, "Can't connect to MQWeb: " + self.mqWebHost + ":" + self.mqWebPort + ' (qmgr: ' + self.qmgr + ')')
-		
+
+		data = self.getJSON('/qmstatus/inquire/' + self.qmgr)
+
 		self.assertFalse('mqweb' not in data, 'No mqweb data returned')
 
 		if 'error' in data:
