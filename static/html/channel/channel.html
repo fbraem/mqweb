@@ -1,9 +1,9 @@
 <!-- Content -->
 <div id="content">
 	<div class="post">
-		<h3><strong>{{ mqweb.qmgr }}</strong>- Channel - {{ channel.data.ChannelName.value }}</h3>
+		<h3><strong>{{ mqweb.qmgr }}</strong> - Channel - {{ channel.data.ChannelName.value }}</h3>
 	</div>
-	<div ng-include="'/static/html/channel/detail.html'"></div>
+	<div ng-if="channel" ng-include="'/static/html/channel/detail.html'"></div>
 	<div ng-if="loading" class="loader"></div>
 	<div ng-if="error != null" ng-include="'/static/html/error.html'"></div>
 </div>
