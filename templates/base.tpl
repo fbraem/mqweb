@@ -49,6 +49,7 @@
 						<li><a title="Home" href="/qmgr/index/<?= mqweb.qmgr ?>">Home</a></li>
 						<li><a title="Queues" href="/queue/index/<?= mqweb.qmgr ?>">Queues</a></li>
 						<li><a title="Channels" href="/channel/index/<?= mqweb.qmgr ?>">Channels</a></li>
+						<li><a title="Listeners" href="/listener/index/<?= mqweb.qmgr ?>">Listeners</a></li>
 					</ul>
 					<div class="cl"></div>
 				</div>	<!-- END NAVIGATION -->

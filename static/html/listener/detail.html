@@ -1,0 +1,25 @@
+<div style="float:right;">
+	<a href="#" ng-click="reload(listener)"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
+</div>
+<div class="details" style="width:70%;margin:auto">
+	<h2>Name:</h2>
+	<div class="detail">
+		{{ listener.data.ListenerName.value }}
+	</div>
+	<h2>Transport Type:</h2>
+	<div class="detail">
+		{{ listener.data.TransportType.display }}
+	</div>
+	<div ng-if="listener.data.ListenerDesc && listener.data.ListenerDesc.value">
+		<h2>Description:</h2>
+		<div class="detail">
+			{{ listener.data.ListenerDesc.value }}
+		</div>
+	</div>
+	<div ng-if="listener.data.AlterationDate">
+		<h2>Alteration Date:</h2>
+		<div class="detail">
+			{{ listener.data.AlterationDate.value }} {{ listener.data.AlterationTime.value }}
+	  </div>
+	</div>
+</div> <!-- details -->
