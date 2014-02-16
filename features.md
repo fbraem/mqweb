@@ -10,7 +10,7 @@ Features
 > This page is still a work in progress ...
 
 MQWeb uses the MVC pattern. Models are JSON objects that represents queues,
-channels, messages and other WebSphere MQ objects. When the build-in HTML pages 
+channels, messages and other WebSphere MQ objects. When the built-in HTML pages 
 are used, [AngularJS](http://angularjs.org) is used to transform the JSON model 
 objects into a view in the browser. 
 
@@ -23,7 +23,7 @@ handlers.
 ##StaticRequestHandler
 
 This request handler is called when the URI starts with `static` and is only
-used when the build-in HTML pages are used. This handler is responsible for
+used when the built-in HTML pages are used. This handler is responsible for
 returning style sheets, images, scripts, ... In other words: it returns static
 content.
 
