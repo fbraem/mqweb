@@ -1,5 +1,5 @@
 <div style="float:right;">
-	<a href="#" ng-click="reload(listener)"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
+	<a ng-click="reload(listener)"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
 </div>
 <div class="details" style="width:70%;margin:auto">
 	<h2>Name:</h2>
@@ -20,6 +20,72 @@
 		<h2>Alteration Date:</h2>
 		<div class="detail">
 			{{ listener.data.AlterationDate.value }} {{ listener.data.AlterationTime.value }}
+	  </div>
+	</div>
+	<div ng-if="listener.data.Adapter">
+		<h2>Adapter:</h2>
+		<div class="detail">
+			{{ listener.data.Adapter.value }}
+	  </div>
+	</div>
+	<div ng-if="listener.data.Backlog">
+		<h2>Backlog:</h2>
+		<div class="detail">
+			{{ listener.data.Backlog.value }}
+	  </div>
+	</div>
+	<div ng-if="listener.data.Commands">
+		<h2>Commands:</h2>
+		<div class="detail">
+			{{ listener.data.Commands.value }}
+	  </div>
+	</div>
+	<div ng-if="listener.data.IPAddress">
+		<h2>IPAddress:</h2>
+		<div class="detail">
+			{{ listener.data.IPAddress.value | default: '-'}}
+	  </div>
+	</div>
+	<div ng-if="listener.data.LocalName">
+		<h2>Local Name:</h2>
+		<div class="detail">
+			{{ listener.data.LocalName.value }}
+	  </div>
+	</div>
+	<div ng-if="listener.data.NetbiosNames">
+		<h2>NetBIOS names:</h2>
+		<div class="detail">
+			{{ listener.data.NetbiosNames.value }}
+	  </div>
+	</div>
+	<div ng-if="listener.data.Port">
+		<h2>Port:</h2>
+		<div class="detail">
+			{{ listener.data.Port.value }}
+	  </div>
+	</div>
+	<div ng-if="listener.data.Sessions">
+		<h2>Sessions:</h2>
+		<div class="detail">
+			{{ listener.data.Sessions.value }}
+	  </div>
+	</div>
+	<div ng-if="listener.data.Socket">
+		<h2>SPX Socket Number:</h2>
+		<div class="detail">
+			{{ listener.data.Socket.value }}
+	  </div>
+	</div>
+	<div ng-if="listener.data.StartMode">
+		<h2>Start Mode:</h2>
+		<div class="detail">
+			{{ listener.data.StartMode.display }}
+	  </div>
+	</div>
+	<div ng-if="listener.data.TPName">
+		<h2>Transaction Program Name:</h2>
+		<div class="detail">
+			{{ listener.data.TPName.value }}
 	  </div>
 	</div>
 </div> <!-- details -->
