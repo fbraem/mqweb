@@ -72,8 +72,8 @@ void ListenerStatusController::inquire()
 	}
 
 	ListenerStatusMapper mapper(*commandServer());
-	Poco::JSON::Array::Ptr listeners = mapper.inquire(filter);
-	set("listeners", listeners);
+	Poco::JSON::Array::Ptr statuses = mapper.inquire(filter);
+	set("statuses", statuses);
 	setView(new JSONView());
 }
 
