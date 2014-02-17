@@ -82,7 +82,7 @@ mqWebApp.controller('ListenerStatusController', ['$scope', '$rootScope', '$route
 		.success(function(data, status) {
 			$scope.loading = false;
 			$scope.mqweb = data.mqweb;
-			if ( data.statuses.length > 0 )
+			if ( data.statuses && data.statuses.length > 0 )
 			{
 				$scope.status = { 'data' : data.statuses[0] };
 				$rootScope.updateListenerStatus($scope.status);
