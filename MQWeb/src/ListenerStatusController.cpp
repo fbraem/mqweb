@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/ListenerStatusController.h"
 #include "MQ/Web/ListenerStatusMapper.h"
-#include "MQ/Web/MultiView.h"
 #include "MQ/Web/JSONView.h"
 
 namespace MQ
@@ -36,15 +35,6 @@ ListenerStatusController::ListenerStatusController() : MQController()
 
 ListenerStatusController::~ListenerStatusController()
 {
-}
-
-
-void ListenerStatusController::index()
-{
-	Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
-	multiView->add("head", new TemplateView("listener/head.tpl"));
-	multiView->add("main", new TemplateView("listener/index.tpl"));
-	setView(multiView);
 }
 
 

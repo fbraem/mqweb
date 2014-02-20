@@ -73,9 +73,6 @@ public:
 	virtual const ActionMap& getActions() const = 0;
 		/// Returns all actions.
 
-	virtual std::string getDefaultAction() const = 0;
-		/// Returns the default action.
-
 	const std::vector<std::string>& getParameters() const;
 		/// Returns all parameters
 

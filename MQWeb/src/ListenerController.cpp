@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/ListenerController.h"
 #include "MQ/Web/ListenerMapper.h"
-#include "MQ/Web/MultiView.h"
 #include "MQ/Web/JSONView.h"
 
 namespace MQ
@@ -36,15 +35,6 @@ ListenerController::ListenerController() : MQController()
 
 ListenerController::~ListenerController()
 {
-}
-
-
-void ListenerController::index()
-{
-	Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
-	multiView->add("head", new TemplateView("listener/head.tpl"));
-	multiView->add("main", new TemplateView("listener/index.tpl"));
-	setView(multiView);
 }
 
 

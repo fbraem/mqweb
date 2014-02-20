@@ -10,13 +10,13 @@ angular.module('mqWebApp').provider('mqWebListener', {
 			// or a listener name to use the URI path
 			inquire : function() {
 				if ( typeof arguments[0] == 'object' ) {
-					return $http.get('/listener/inquire/' + qmgr, {
+					return $http.get('/api/listener/inquire/' + qmgr, {
 							cache : false,
 							params : arguments[0]
 						});
 				}
 				else {
-					return $http.get('/listener/inquire/' + qmgr + '/' + arguments[0], { cache : false } );
+					return $http.get('/api/listener/inquire/' + qmgr + '/' + arguments[0], { cache : false } );
 				}
 			} 
 		}

@@ -7,7 +7,7 @@ angular.module('mqWebApp').provider('mqWebQueueManager', {
 				return qmgr;
 			},
 			inquire : function() {
-					return $http.get('/qmgr/inquire/' + qmgr, {
+					return $http.get('/api/qmgr/inquire/' + qmgr, {
 							cache : false
 						});
 				}

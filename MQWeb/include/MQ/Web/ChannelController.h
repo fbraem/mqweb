@@ -38,9 +38,6 @@ public:
 	virtual ~ChannelController();
 		/// Destructor
 
-	void index();
-		/// Action index. Shows the single page application (SPA) html for channels.
-
 	void inquire();
 		/// Action inquire. Inquire the channels and returns the details in JSON format.
 		/// URL:
@@ -65,9 +62,6 @@ public:
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions.
 
-	std::string getDefaultAction() const;
-		/// Returns the default action "index".
-
 private:
 };
 
@@ -76,14 +70,9 @@ inline const Controller::ActionMap& ChannelController::getActions() const
 {
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
-			("index", static_cast<ActionFn>(&ChannelController::index))
-			("inquire", static_cast<ActionFn>(&ChannelController::inquire));
+			("inquire", static_cast<ActionFn>(&ChannelController::inquire))
+		;
 	return actions;
-}
-
-inline std::string ChannelController::getDefaultAction() const
-{
-	return "index";
 }
 
 

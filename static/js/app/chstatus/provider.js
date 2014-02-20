@@ -10,17 +10,17 @@ angular.module('mqWebApp').provider('mqWebChannelStatus', {
 			// or a channel name
 			inquire : function() {
 				if ( typeof arguments[0] == 'object' ) {
-					return $http.get('/chstatus/inquire/' + qmgr, {
+					return $http.get('/api/chstatus/inquire/' + qmgr, {
 							cache : false,
 							params : arguments[0]
 						});
 				}
 				else {
 					if ( arguments.length == 0 ) {
-						return $http.get('/chstatus/inquire/' + qmgr, { cache : false } );
+						return $http.get('/api/chstatus/inquire/' + qmgr, { cache : false } );
 					}
 					else if ( arguments.length > 0 ) {
-						return $http.get('/chstatus/inquire/' + qmgr + '/' + arguments[0], { cache : false } );
+						return $http.get('/api/chstatus/inquire/' + qmgr + '/' + arguments[0], { cache : false } );
 					}
 				}
 			} 

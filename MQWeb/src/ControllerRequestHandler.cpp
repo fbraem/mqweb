@@ -19,6 +19,7 @@
  * permissions and limitations under the Licence.
  */
 #include "MQ/Web/ControllerRequestHandler.h"
+#include "MQ/Web/WebController.h"
 #include "MQ/Web/QueueController.h"
 #include "MQ/Web/QueueManagerController.h"
 #include "MQ/Web/QueueManagerStatusController.h"
@@ -46,30 +47,50 @@ void ControllerRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& reque
 	std::vector<std::string> paths;
 	uri.getPathSegments(paths);
 
+	std::string controllerType;
 	std::string controllerName;
-	if ( paths.size() == 0 ) // Use the default controller
+	if ( paths.size() == 0 ) // Use the default controller type
 	{
-		controllerName = "qmgr";
+		controllerType = "web";
 	}
 	else
 	{
-		controllerName = paths.front();
+		controllerType = paths.front();
 		paths.erase(paths.begin());
 	}
 
-	poco_trace_f1(Poco::Logger::get("mq.web"), "MQ Controller: %s", controllerName);
-	try
+	Poco::SharedPtr<Controller> controller;
+	if ( controllerType.compare("web") == 0 )
 	{
-		Poco::SharedPtr<Controller> controller = _controllerFactory.createInstance(controllerName);
-		if ( controller.isNull() )
-		{
-			//TODO: redirect to error page!
-		}
+		controller = new WebController();
 		controller->handle(paths, request, response);
 	}
-	catch(Poco::NotFoundException&)
+	else if ( controllerType.compare("api") == 0 )
 	{
-		response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_NOT_FOUND, "Unknown controller");
+		if ( paths.size() == 0 )
+		{
+			controllerName = "qmgr";
+		}
+		else
+		{
+			controllerName = paths.front();
+			paths.erase(paths.begin());
+		}
+		poco_trace_f1(Poco::Logger::get("mq.web"), "api controller: %s", controllerName);
+		try
+		{
+			Poco::SharedPtr<Controller> controller = _controllerFactory.createInstance(controllerName);
+			controller->handle(paths, request, response);
+		}
+		catch(Poco::NotFoundException&)
+		{
+			response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_NOT_FOUND, "Unknown controller");
+			response.send();
+		}
+	}
+	else
+	{
+		response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "Only web or api are allowed as controller type");
 		response.send();
 	}
 }

@@ -44,12 +44,6 @@ public:
 	const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions
 
-	std::string getDefaultAction() const;
-		/// Returns "index" as default action
-
-	void index();
-		/// Returns the single page application (SPA) for a queuemanager
-
 	void inquire();
 		/// Action inquire. Inquire the queuemanager and returns all data in JSON format.
 		/// URL's:
@@ -65,16 +59,11 @@ inline const Controller::ActionMap& QueueManagerStatusController::getActions() c
 {
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
-			("index", static_cast<ActionFn>(&QueueManagerStatusController::index))
-			("inquire", static_cast<ActionFn>(&QueueManagerStatusController::inquire));
+			("inquire", static_cast<ActionFn>(&QueueManagerStatusController::inquire))
+		;
 	return actions;
 }
 
-
-inline std::string QueueManagerStatusController::getDefaultAction() const
-{
-	return "index";
-}
 
 }} // Namespace MQ::Web
 

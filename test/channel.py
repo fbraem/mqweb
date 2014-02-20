@@ -5,7 +5,7 @@ class TestChannelActions(MQWebTest):
 
 	def testInquire(self):
 
-		data = self.getJSON('/channel/inquire/' + self.qmgr)
+		data = self.getJSON('/api/channel/inquire/' + self.qmgr)
 
 		self.assertFalse('mqweb' not in data, 'No mqweb data returned')
 

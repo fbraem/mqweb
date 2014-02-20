@@ -64,7 +64,8 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 	}
 	else
 	{
-		_action = getDefaultAction();
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "Invalid URI parameters");
+		return;
 	}
 
 	for(std::vector<std::string>::iterator it = _parameters.begin(); it != _parameters.end(); ++it)

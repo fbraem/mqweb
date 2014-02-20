@@ -5,7 +5,7 @@ class TestListenerActions(MQWebTest):
 
 	def testInquire(self):
 
-		data = self.getJSON('/listener/inquire/' + self.qmgr)
+		data = self.getJSON('/api/listener/inquire/' + self.qmgr)
 		
 		self.assertFalse('mqweb' not in data, 'No mqweb data returned')
 

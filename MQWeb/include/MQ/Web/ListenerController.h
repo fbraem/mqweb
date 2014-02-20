@@ -41,15 +41,6 @@ public:
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions
 
-	std::string getDefaultAction() const;
-		/// Returns index as default action
-
-	void index();
-		/// Action index. Returns a single page application (SPA) for listeners.
-		/// URL's:
-		///   listener/index/<qmgrName>
-		///   listener/index/<qmgrName>/#<listenerName>
-
 	void inquire();
 		/// Action inquire. Inquire listeners and returns all data in JSON format.
 		/// URL's:
@@ -77,14 +68,9 @@ inline const Controller::ActionMap& ListenerController::getActions() const
 {
 	static Controller::ActionMap actions 
 		= MapInitializer<std::string, Controller::ActionFn>
-			("index", static_cast<ActionFn>(&ListenerController::index))
-			("inquire", static_cast<ActionFn>(&ListenerController::inquire));
+			("inquire", static_cast<ActionFn>(&ListenerController::inquire))
+		;
 	return actions;
-}
-
-inline std::string ListenerController::getDefaultAction() const
-{
-	return "index";
 }
 
 

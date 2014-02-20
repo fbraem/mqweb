@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/QueueManagerStatusController.h"
 #include "MQ/Web/QueueManagerStatusMapper.h"
-#include "MQ/Web/MultiView.h"
 #include "MQ/Web/JSONView.h"
 
 namespace MQ
@@ -36,15 +35,6 @@ QueueManagerStatusController::QueueManagerStatusController() : MQController()
 
 QueueManagerStatusController::~QueueManagerStatusController()
 {
-}
-
-
-void QueueManagerStatusController::index()
-{
-	Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
-	multiView->add("head", new TemplateView("qmstatus/head.tpl"));
-	multiView->add("main", new TemplateView("qmstatus/index.tpl"));
-	setView(multiView);
 }
 
 

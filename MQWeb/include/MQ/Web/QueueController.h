@@ -41,15 +41,6 @@ public:
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions
 
-	std::string getDefaultAction() const;
-		/// Returns index as default action
-
-	void index();
-		/// Action index. Returns a single page application (SPA) for queues.
-		/// URL's:
-		///   queue/index/<qmgrName>
-		///   queue/index/<qmgrName>/#<queueName>
-
 	void inquire();
 		/// Action inquire. Inquire queues and returns all data in JSON format.
 		/// URL's:
@@ -79,14 +70,9 @@ inline const Controller::ActionMap& QueueController::getActions() const
 {
 	static Controller::ActionMap actions 
 		= MapInitializer<std::string, Controller::ActionFn>
-			("index", static_cast<ActionFn>(&QueueController::index))
-			("inquire", static_cast<ActionFn>(&QueueController::inquire));
+			("inquire", static_cast<ActionFn>(&QueueController::inquire))
+		;
 	return actions;
-}
-
-inline std::string QueueController::getDefaultAction() const
-{
-	return "index";
 }
 
 

@@ -10,13 +10,13 @@ angular.module('mqWebApp').provider('mqWebQueue', {
 			// or a name of a queue to set the URI path. 
 			inquire : function() {
 				if ( typeof arguments[0] == 'object' ) {
-					return $http.get('/queue/inquire/' + qmgr, {
+					return $http.get('/api/queue/inquire/' + qmgr, {
 							cache : false,
 							params : arguments[0]
 						});
 				}
 				else {
-					return $http.get('/queue/inquire/' + qmgr + '/' + arguments[0], { cache : false } );
+					return $http.get('/api/queue/inquire/' + qmgr + '/' + arguments[0], { cache : false } );
 				}
 			} 
 		}

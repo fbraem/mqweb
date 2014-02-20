@@ -40,12 +40,6 @@ public:
 	virtual ~MessageController();
 		/// Destructor
 
-	void index();
-		/// Action index. Returns a single page application (SPA) for messages.
-		/// URL's:
-		///   message/index/<qmgrName>/<queueName>
-		///   message/index/<qmgrName>/<queueName>#<msgid>
-
 	void browse();
 		/// Action browse.
 
@@ -61,9 +55,6 @@ public:
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available action
-
-	std::string getDefaultAction() const;
-		/// Return "index" as default action
 
 private:
 
@@ -84,19 +75,12 @@ inline const Controller::ActionMap& MessageController::getActions() const
 {
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
-			("index", static_cast<ActionFn>(&MessageController::index))
 			("browse", static_cast<ActionFn>(&MessageController::browse))
 			("dump", static_cast<ActionFn>(&MessageController::dump))
 			("event", static_cast<ActionFn>(&MessageController::event))
 		;
 	return actions;
 }
-
-inline std::string MessageController::getDefaultAction() const
-{
-	return "index";
-}
-
 
 } } // Namespace MQ::Web
 

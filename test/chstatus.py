@@ -5,7 +5,7 @@ class TestChannelStatusActions(MQWebTest):
 
 	def testInquire(self):
 
-		data = self.getJSON('/chstatus/inquire/' + self.qmgr)
+		data = self.getJSON('/api/chstatus/inquire/' + self.qmgr)
 
 		self.assertFalse('mqweb' not in data, 'No mqweb data returned')
 

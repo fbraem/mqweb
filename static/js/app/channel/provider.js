@@ -10,14 +10,14 @@ angular.module('mqWebApp').provider('mqWebChannel', {
 			// or a channel name with channel type to use the URI path
 			inquire : function() {
 				if ( typeof arguments[0] == 'object' ) {
-					return $http.get('/channel/inquire/' + qmgr, {
+					return $http.get('/api/channel/inquire/' + qmgr, {
 							cache : false,
 							params : arguments[0]
 						});
 				}
 				else {
 					if ( arguments.length > 1 ) {
-						return $http.get('/channel/inquire/' + qmgr + '/' + arguments[0] + '/' + arguments[1], { cache : false } );
+						return $http.get('/api/channel/inquire/' + qmgr + '/' + arguments[0] + '/' + arguments[1], { cache : false } );
 					}
 				}
 			} 

@@ -1,7 +1,7 @@
 /*
  * Copyright 2010 MQWeb - Franky Braem
  *
- * Licensed under the EUPL, Version 1.1 or  as soon they
+ * Licensed under the EUPL, Version 1.1 or – as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the
@@ -19,8 +19,8 @@
  * permissions and limitations under the Licence.
  */
 
-#ifndef _MQWeb_ChannelStatusController_h
-#define _MQWeb_ChannelStatusController_h
+#ifndef _MQWeb_WebController_h
+#define _MQWeb_WebController_h
 
 #include "MQ/Web/MQController.h"
 #include "MQ/Web/MapInitializer.h"
@@ -28,39 +28,50 @@
 namespace MQ {
 namespace Web {
 
-class ChannelStatusController : public MQController
-	/// Controller that shows the status of a channel
+class WebController : public MQController
+	/// Controller that shows the details of a queue
 {
 public:
-	ChannelStatusController();
+	WebController();
 		/// Constructor
 
-	virtual ~ChannelStatusController();
+	virtual ~WebController();
 		/// Destructor
 
-	void inquire();
-		/// Action inquire. Inquire the channelstatus and return the details in JSON format.
-		/// URL's:
-		///  /chstatus/inquire/<qmgrName>
-		///  /chstatus/inquire/<qmgrName>/<channelName>/<channelType>
-		///  /chstatus/inquire/<qmgrName>?channelName=MQWEB*
-
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
-		/// Returns all actions.
+		/// Returns all available actions
+
+	void qmgr();
+
+	void queue();
+
+	void channel();
+
+	void chstatus();
+
+	void listener();
+
+	void lstatus();
+
+	void message();
 
 private:
 };
 
 
-inline const Controller::ActionMap& ChannelStatusController::getActions() const
+inline const Controller::ActionMap& WebController::getActions() const
 {
-	static Controller::ActionMap actions
+	static Controller::ActionMap actions 
 		= MapInitializer<std::string, Controller::ActionFn>
-			("inquire", static_cast<ActionFn>(&ChannelStatusController::inquire))
+			("qmgr", static_cast<ActionFn>(&WebController::qmgr))
+			("queue", static_cast<ActionFn>(&WebController::queue))
+			("channel", static_cast<ActionFn>(&WebController::channel))
+			("listener", static_cast<ActionFn>(&WebController::listener))
+			("message", static_cast<ActionFn>(&WebController::message))
 		;
 	return actions;
 }
 
-}} // Namespace MQ::Web
+} } // Namespace MQ::Web
 
-#endif // _MQWeb_ChannelStatusController_h
+#endif // _MQWeb_WebController_h

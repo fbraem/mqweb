@@ -18,14 +18,9 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include "Poco/DateTimeFormatter.h"
-#include "Poco/Net/HTMLForm.h"
-#include "Poco/URI.h"
-
 #include "MQ/Web/MQController.h"
 #include "MQ/Web/ChannelController.h"
 #include "MQ/Web/ChannelMapper.h"
-#include "MQ/Web/MultiView.h"
 #include "MQ/Web/JSONView.h"
 
 namespace MQ
@@ -43,14 +38,6 @@ ChannelController::~ChannelController()
 
 }
 
-
-void ChannelController::index()
-{
-	Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
-	multiView->add("head", new TemplateView("channel/head.tpl"));
-	multiView->add("main", new TemplateView("channel/index.tpl"));
-	setView(multiView);
-}
 
 void ChannelController::inquire()
 {

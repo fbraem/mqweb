@@ -23,14 +23,11 @@
 #include <iomanip>
 
 #include "Poco/DateTimeFormatter.h"
-#include "Poco/Net/HTMLForm.h"
-#include "Poco/URI.h"
 #include "Poco/Logger.h"
 #include "Poco/HexBinaryEncoder.h"
 
 #include "MQ/Web/MessageController.h"
-#include "MQ/Web/QueueMapper.h"
-#include "MQ/Web/MultiView.h"
+#include "MQ/Web/MQMapper.h"
 #include "MQ/Web/JSONView.h"
 #include "MQ/MQException.h"
 #include "MQ/Message.h"
@@ -176,35 +173,6 @@ MessageController::~MessageController()
 }
 
 /**
- * URL: message/index/<qmgrName>/<queueName>
- *
- * Shows a HTML form for browsing messages from a queue.
- * There is no JSON format available.
- */
-void MessageController::index()
-{
-	std::vector<std::string> parameters = getParameters();
-	if ( parameters.size() < 2 )
-	{
-		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
-		return;
-	}
-
-	mqwebData().set("queue", parameters[1]);
-	std::string messageId;
-	if ( parameters.size() > 2 )
-	{
-		messageId = parameters[2];
-		mqwebData().set("messageId", messageId);
-	}
-
-	Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
-	multiView->add("head", new TemplateView("message/head.tpl"));
-	multiView->add("main", new TemplateView("message/index.tpl"));
-	setView(multiView);
-}
-
-/**
  * URL: message/browse/<qmgrName>/<queueName>?limit=n&teaser=n
  *      message/browse/<qmgrName>/<queueName>/<msgId>
  */
@@ -215,7 +183,7 @@ void MessageController::browse()
 	// Second parameter is queuename
 	if ( parameters.size() < 2 )
 	{
-		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "Missing URI parameters");
 		return;
 	}
 

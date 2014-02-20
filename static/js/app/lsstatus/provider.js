@@ -10,17 +10,17 @@ angular.module('mqWebApp').provider('mqWebListenerStatus', {
 			// or a listener name
 			inquire : function() {
 				if ( typeof arguments[0] == 'object' ) {
-					return $http.get('/lsstatus/inquire/' + qmgr, {
+					return $http.get('/api/lsstatus/inquire/' + qmgr, {
 							cache : false,
 							params : arguments[0]
 						});
 				}
 				else {
 					if ( arguments.length == 0 ) {
-						return $http.get('/lsstatus/inquire/' + qmgr, { cache : false } );
+						return $http.get('/api/lsstatus/inquire/' + qmgr, { cache : false } );
 					}
 					else if ( arguments.length > 0 ) {
-						return $http.get('/lsstatus/inquire/' + qmgr + '/' + arguments[0], { cache : false } );
+						return $http.get('/api/lsstatus/inquire/' + qmgr + '/' + arguments[0], { cache : false } );
 					}
 				}
 			} 

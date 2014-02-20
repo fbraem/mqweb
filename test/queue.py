@@ -5,7 +5,7 @@ class TestQueueActions(MQWebTest):
 
 	def testInquire(self):
 
-		data = self.getJSON('/queue/inquire/' + self.qmgr)
+		data = self.getJSON('/api/queue/inquire/' + self.qmgr)
 		
 		self.assertFalse('mqweb' not in data, 'No mqweb data returned')
 
