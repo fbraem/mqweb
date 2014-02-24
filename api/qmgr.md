@@ -1,36 +1,16 @@
 ---
 layout: default
 title: MQWeb &bull; QueueManagerController
-features: true
+api: true
 hideSidebar: true
 ---
 QueueManagerController
 ======================
 
-The first part of the URI must be `qmgr` to call the QueueManagerController.
+The second part of the URI must be `qmgr` to call the QueueManagerController.
 This controller can be used to get information from a queuemanager.
 
 ##Actions
-
-###index
-
-Name
-: index
-
-Type
-: HTML
-
-Parameters
-: + **queueManager** 
-
-    The name of the queuemanager
-
-Example
-: `/qmgr/index/PIGEON`
-
-<div style="clear:both"> </div>
-
-Shows a dashboard page for a queuemanager
 
 ###inquire
 
@@ -46,7 +26,7 @@ Parameters
     The name of the queuemanager
     
 Example
-: `/qmgr/inquire/PIGEON`
+: `/api/qmgr/inquire/PIGEON`
 
 <div style="clear:both"> </div>
 

@@ -9,52 +9,33 @@ Features
 > The documented features are part of the upcoming release 0.0.9
 > This page is still a work in progress ...
 
-MQWeb uses the MVC pattern. Models are JSON objects that represents queues,
-channels, messages and other WebSphere MQ objects. When the built-in HTML pages 
-are used, [AngularJS](http://angularjs.org) is used to transform the JSON model 
-objects into a view in the browser. 
+MQWeb can be used in two ways:
 
-<img src="{{ site.baseurl }}/img/mqwebsequence.png" style="text-align:center" alt="MQWeb Sequence Diagram" />
+Built-in HTML
+-------------
 
-MQWeb uses the HTTPServer class from [POCO](http://www.pocoproject.org). 
-This class uses request handlers to handle incoming requests. MQWeb has three 
-handlers.
+MQWeb has its own HTML pages which can be viewed by surfing to the web controller.
+This controller can be reached by using `web` as first part of the URL:
 
-##StaticRequestHandler
+    http://<mqwebhost:port>/web/qmgr/PIGEON
 
-This request handler is called when the URI starts with `static` and is only
-used when the built-in HTML pages are used. This handler is responsible for
-returning style sheets, images, scripts, ... In other words: it returns static
-content.
+The built-in HTML pages use [AngularJS](http://angularjs.org) to call the API's
+of MQWeb and to transform the JSON objects into HTML.
 
-##DenyRequestHandler
+API
+---
 
-This handler is called when MQWeb detects an incoming request that needs to
-be blocked. It will always return 403 Forbidden.
-  
-##ControllerRequestHandler
+The web API of MQWeb sends a PCF command to WebSphere MQ and returns the answer
+ as JSON objects. The API can be reached by using `api` as first part of the 
+ URL:
 
-This handler is responsible for creating the controller that handles a request
-for a WebSphere MQ object. Each type of WebSphere MQ object has its own
-controller. A controller has actions that are called based on the URI. For
-example: the URI `/queue/inquire` will call the inquire action on the 
-`QueueController`. An action needs some parameters to know which
-WebSphere MQ object to use. These parameters are passed as path of the URI.
-The first parameter is always the name of the queuemanager. Other parameters 
-depends on the called action and are documented on this page. For example: 
-`/queue/inquire/PIGEON` will return all queues from the queuemanager PIGEON. 
-Properties of WebSphere MQ objects are returned with the name as documented 
-in the WebSphere MQ information center. For example: The property of the 
-current queue depth of a queue will have the name `CurrentQDepth`.
+	http://<mqwebhost:port>/api/queue/inquire/PIGEON
 
-Query parameters are handled for GET or POST methods.
-
-All actions that return JSON objects can be used from any language. This sample 
-shows how to get a list of queues in PHP:
+The API's can be called from any language that supports HTTP clients:
 
 {% highlight php %}
    <?php
-        $url = "http://localhost:8081/queue/inquire/PIGEON";
+        $url = "http://localhost:8081/api/queue/inquire/PIGEON";
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_HEADER, false);
@@ -68,15 +49,10 @@ or in Python
 
 {% highlight python %}
         conn = httplib.HTTPConnection('localhost', 8081)
-        conn.request('GET', '/queue/inquire/PIGEON')
+        conn.request('GET', '/api/queue/inquire/PIGEON')
         res = conn.getresponse()
         data = json.loads(res.read())
 {% endhighlight %}
 
-The following table lists all available controllers.
-
-|Controller|URI path|
-|----------|--------|
-|[QueueManagerController](features/qmgr.html)|qmgr|
-|[QueueController](features/queue.html)|queue|
+Look at [API overview](/api/index.html) to see which api's are available.
 

@@ -1,40 +1,16 @@
 ---
 layout: default
 title: MQWeb &bull; QueueController
-features: true
+api: true
 hideSidebar: true
 ---
 QueueController
 ===============
 
-The first part of the URI must be `queue` to call the QueueController.
+The second part of the URI must be `queue` to call the QueueController.
 This controller can be used to get information from a queue.
 
 ##Actions
-
-###index
-
-Name
-: index
-
-Type
-: HTML
-
-Parameters
-: + **queueManager** 
-
-    The name of the queuemanager
-
-Example
-: `/queue/index/PIGEON`
-
-<div style="clear:both;"> </div>
-
-Shows a form to inquire a queuelist. It's possible to directly go to the detail 
-page of a queue. Pass the name of queue as fragment of the URI. MQWeb uses the 
-AngularJS [ngRoute](http://docs.angularjs.org/api/ngRoute) module to make this
-work. `/queue/index/PIGEON/#MQWEB.TEST.Q01` will show the detail page of queue
-`MQWEB.TEST.Q01`.
 
 ###inquire
 
@@ -77,9 +53,9 @@ Query Parameters
     When value is `true`, all temporary queues will be discarded.
 
 Example
-: `queue/inquire/PIGEON/MQWEB.TEST.Q1`  
-  `queue/inquire/PIGEON/*`  
-  `queue/inquire/PIGEON?queueName=*&queueDepth=1`
+: `/api/queue/inquire/PIGEON/MQWEB.TEST.Q1`  
+  `/api/queue/inquire/PIGEON/*`  
+  `/api/queue/inquire/PIGEON?queueName=*&queueDepth=1`
 
 <div style="clear:both;"> </div>
 
