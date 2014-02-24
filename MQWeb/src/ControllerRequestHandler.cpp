@@ -63,6 +63,10 @@ void ControllerRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& reque
 	if ( controllerType.compare("web") == 0 )
 	{
 		controller = new WebController();
+		if ( paths.size() == 0 )
+		{
+			paths.push_back("qmgr"); // Default qmgr
+		}
 		controller->handle(paths, request, response);
 	}
 	else if ( controllerType.compare("api") == 0 )
