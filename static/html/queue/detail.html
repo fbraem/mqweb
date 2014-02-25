@@ -9,7 +9,7 @@
 	<div ng-if="queue.data.CurrentQDepth">
 		<h2>Depth:</h2>
 		<div class="detail">
-			<a href="/message/index/{{ mqweb.qmgr }}/{{ queue.data.QName.value }}">{{ queue.data.CurrentQDepth.value | number : 0 }}</a>
+			<a href="/web/message/index/{{ mqweb.qmgr }}/{{ queue.data.QName.value }}">{{ queue.data.CurrentQDepth.value | number : 0 }}</a>
 			 / {{ queue.data.MaxQDepth.value | number : 0 }}
 		</div> <!-- detail -->
 	</div>

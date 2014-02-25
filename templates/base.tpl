@@ -27,7 +27,7 @@
 				<!-- HEADER -->
 				<div id="header">
 					<div id="logo">
-						<h1>MQWeb - <a href="/qmgr/index/<?= mqweb.qmgr  ?>" title="home"><?= mqweb.qmgr ?></a></h1>
+						<h1>MQWeb - <a href="/web/qmgr/index/<?= mqweb.qmgr  ?>" title="home"><?= mqweb.qmgr ?></a></h1>
 						<p class="slogan">Administrating Websphere MQ with a browser</p>
 					</div>
 					<a href="https://github.com/fbraem/mqweb"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
@@ -46,10 +46,10 @@
 				<!-- NAVIGATION -->
 				<div id="navigation">
 					<ul>
-						<li><a title="Home" href="/qmgr/index/<?= mqweb.qmgr ?>">Home</a></li>
-						<li><a title="Queues" href="/queue/index/<?= mqweb.qmgr ?>">Queues</a></li>
-						<li><a title="Channels" href="/channel/index/<?= mqweb.qmgr ?>">Channels</a></li>
-						<li><a title="Listeners" href="/listener/index/<?= mqweb.qmgr ?>">Listeners</a></li>
+						<li><a title="Home" href="/web/qmgr/index/<?= mqweb.qmgr ?>">Home</a></li>
+						<li><a title="Queues" href="/web/queue/index/<?= mqweb.qmgr ?>">Queues</a></li>
+						<li><a title="Channels" href="/web/channel/index/<?= mqweb.qmgr ?>">Channels</a></li>
+						<li><a title="Listeners" href="/web/listener/index/<?= mqweb.qmgr ?>">Listeners</a></li>
 					</ul>
 					<div class="cl"></div>
 				</div>	<!-- END NAVIGATION -->

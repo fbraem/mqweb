@@ -1,5 +1,5 @@
 <div style="float:right;">
-	<a href="#" ng-click="reload(channel)"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
+	<a ng-click="reload(channel)"><img class="tip" src="/static/images/view-refresh-icon.png" style="float:right;padding-top:8px;padding-right:5px;" alt="Reload" /></a>
 </div>
 <div class="details" style="width:70%;margin:auto">
 	<h2>Name:</h2>
@@ -121,7 +121,7 @@
 	<div ng-if="channel.data.XmitQName && channel.data.XmitQName.value">
 		<h2>Transmission Queue:</h2>
 		<div class="detail">
-			<a href="/queue/index/{{ mqweb.qmgr }}/#{{ channel.data.XmitQName.value }}">{{channel.data.XmitQName.value}}</a>
+			<a href="/web/queue/index/{{ mqweb.qmgr }}/#{{ channel.data.XmitQName.value }}">{{channel.data.XmitQName.value}}</a>
 		</div>
 	</div>
 </div> <!-- details -->
