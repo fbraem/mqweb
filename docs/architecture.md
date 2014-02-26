@@ -9,6 +9,8 @@ Architecture
 > The documented features are part of the upcoming release 0.0.9
 > This page is still a work in progress ...
 
+This sequence diagram shows how a built-in HTML page is build.
+
 <img src="{{ site.baseurl }}/img/mqwebsequence.png" style="text-align:center" alt="MQWeb Sequence Diagram" />
 
 MQWeb uses the HTTPServer class from [POCO](http://www.pocoproject.org). 
