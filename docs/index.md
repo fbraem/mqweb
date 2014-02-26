@@ -12,3 +12,4 @@ Documentation
 [Building MQWeb](/docs/building.html)  
 [Configure MQWeb](/docs/configure.html)  
 [Security](/docs/security.html)  
+[Running MQWeb](/docs/running.html)  
