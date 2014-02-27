@@ -40,6 +40,13 @@ QueueManagerStatusController::~QueueManagerStatusController()
 
 void QueueManagerStatusController::inquire()
 {
+	if ( qmgr()->zos() )
+	{
+		// QueueManagerStatus is not supported on z/OS
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_NOT_IMPLEMENTED, "/qmstatus/inquire not implemented for z/OS");
+		return;
+	}
+
 	QueueManagerStatusMapper queueManagerStatusMapper(*commandServer());
 
 	Poco::JSON::Object::Ptr dummyFilter = new Poco::JSON::Object();
