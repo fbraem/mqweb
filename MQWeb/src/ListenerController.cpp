@@ -61,7 +61,7 @@ void ListenerController::inquire()
 		filter->set("name", listenerNameField);
 
 		filter->set("type", form().get("listenerType", "All"));
-		filter->set("excludeSystem", form().get("queueExcludeSystem", "false").compare("true") == 0);
+		filter->set("excludeSystem", form().get("listenerExcludeSystem", "false").compare("true") == 0);
 	}
 
 	ListenerMapper mapper(*commandServer());
