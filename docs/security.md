@@ -4,10 +4,6 @@ title: MQWeb &bull; Security
 security: true
 ---
 
-> This page is still a work in progress ... 
-> If you find a problem or an error please let it know
-> by entering an [issue](https://github.com/fbraem/mqweb/issues)
-
 Security
 ========
 You can start MQWeb with user mqm but it is recommended to run your applications 

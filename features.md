@@ -6,9 +6,6 @@ features: true
 Features
 ========
 
-> The documented features are part of the upcoming release 0.0.9
-> This page is still a work in progress ...
-
 MQWeb can be used in two ways:
 
 Built-in HTML

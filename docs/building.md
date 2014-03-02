@@ -4,11 +4,6 @@ title: MQWeb &bull; Building MQWeb
 doc_building: true
 ---
 
-> This page is still a work in progress and is about building the upcoming
-> release 0.0.9. For building prior versions of MQWeb read the README.md file.
-> If you find a problem or an error please let it know
-> by entering an [issue](https://github.com/fbraem/mqweb/issues).
-
 Building MQWeb
 ==============
 

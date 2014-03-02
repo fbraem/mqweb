@@ -27,7 +27,7 @@ Parameters
 
   + **queueName** (optional)
 
-    The name of a queue
+    The name of a queue.
 
 Query Parameters
 : + **queueDepth** (optional)
@@ -38,6 +38,11 @@ Query Parameters
 
     Only return queues with a name that matches *queueName*. By 
     default * is used which matches all queues.
+
+  + **queueType** (optional)
+  
+    Only return the queues of the given type. Possible values are `Local`,
+    `Remote`, `Model`, `Alias`, `Cluster` or `All`. Default is `All`.
 
   + **queueUsage** (optional)
 
