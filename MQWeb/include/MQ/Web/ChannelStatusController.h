@@ -22,8 +22,8 @@
 #ifndef _MQWeb_ChannelStatusController_h
 #define _MQWeb_ChannelStatusController_h
 
-#include <MQ/Web/MQController.h>
-#include <MQ/Web/MapInitializer.h>
+#include "MQ/Web/MQController.h"
+#include "MQ/Web/MapInitializer.h"
 
 namespace MQ {
 namespace Web {
@@ -38,19 +38,15 @@ public:
 	virtual ~ChannelStatusController();
 		/// Destructor
 
-	void view();
-		/// Action view. Returns the details of a channelstatus.
-		/// Only JSON format is supported.
-
-	void list();
-		/// Action list. Returns the details of all channelstatusses.
-		/// Only JSON format is supported.
+	void inquire();
+		/// Action inquire. Inquire the channelstatus and return the details in JSON format.
+		/// URL's:
+		///  /chstatus/inquire/<qmgrName>
+		///  /chstatus/inquire/<qmgrName>/<channelName>/<channelType>
+		///  /chstatus/inquire/<qmgrName>?channelName=MQWEB*
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all actions.
-
-	std::string getDefaultAction() const;
-		/// Returns "list" as default action.
 
 private:
 };
@@ -60,16 +56,10 @@ inline const Controller::ActionMap& ChannelStatusController::getActions() const
 {
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
-			("list", static_cast<ActionFn>(&ChannelStatusController::list))
-			("view", static_cast<ActionFn>(&ChannelStatusController::view));
+			("inquire", static_cast<ActionFn>(&ChannelStatusController::inquire))
+		;
 	return actions;
 }
-
-inline std::string ChannelStatusController::getDefaultAction() const
-{
-	return "list";
-}
-
 
 }} // Namespace MQ::Web
 

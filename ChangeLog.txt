@@ -1,3 +1,16 @@
+0.0.9
+  - Limit browse of messages to 16K
+  - To ease installation, switched to statically linked POCO
+  - DEFINE SERVICE(MQWEB) is now possible using the new --qmgr and --port
+    command line arguments.
+  - KnockOut is replaced by AngularJS
+  - Add inquire listener
+  - Add inquire listener status
+  - URI starts with /web (built-in pages) or /api (JSON requests).
+  - AngularJS makes it possible to reduce the number of actions in controllers
+    on the server. Views are moved to the client whenever possible.
+  - Add inquire queuemanager status
+
 0.0.8
   - Solve bug #4 Chars shift on messagecontroller.
   - Show EBCDIC/ASCII in message hex view

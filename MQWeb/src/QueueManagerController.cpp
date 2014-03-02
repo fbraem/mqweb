@@ -18,12 +18,9 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <sstream>
-
-#include <MQ/Web/QueueManagerController.h>
-#include <MQ/Web/QueueManagerMapper.h>
-#include <MQ/Web/MultiView.h>
-#include <MQ/Web/JSONView.h>
+#include "MQ/Web/QueueManagerController.h"
+#include "MQ/Web/QueueManagerMapper.h"
+#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -41,16 +38,7 @@ QueueManagerController::~QueueManagerController()
 }
 
 
-void QueueManagerController::index()
-{
-	Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
-	multiView->add("head", new TemplateView("qmgr/head.tpl"));
-	multiView->add("main", new TemplateView("qmgr/index.tpl"));
-	setView(multiView);
-}
-
-
-void QueueManagerController::view()
+void QueueManagerController::inquire()
 {
 	QueueManagerMapper queueManagerMapper(*commandServer());
 
@@ -60,14 +48,7 @@ void QueueManagerController::view()
 	if ( jsonQueueManagers->size() > 0 )
 	{
 		set("qmgr", jsonQueueManagers->get(0));
-		if ( format().compare("json") == 0 )
-		{
-			setView(new JSONView());
-		}
-		else
-		{
-			//TODO: Not allowed ...
-		}
+		setView(new JSONView());
 	}
 }
 

@@ -1,0 +1,54 @@
+<div class="details" style="width:70%;margin:auto">
+	<h2>Accounting Token:</h2>
+	<div class="detail">{{ message.data.AccountingToken }}</div>
+	<h2>Application Identity Data:</h2>
+	<div class="detail">{{ message.data.ApplIdentityData | default : '&nbsp;' }}</div>
+	<h2>Application Origin Data:</h2>
+	<div class="detail">{{ message.data.ApplOriginData | default : '&nbsp;' }}</div>
+	<h2>Backout Count:</h2>
+	<div class="detail">{{ message.data.BackoutCount | number : 0 }}</div>
+	<h2>Coded Character Set ID:</h2>
+	<div class="detail">{{ message.data.CodedCharSetId }}</div>
+	<h2>Correlation ID:</h2>
+	<div class="detail">{{ message.data.CorrelId }}</div>
+	<h2>Encoding:</h2>
+	<div class="detail">{{ message.data.Encoding }}</div>
+	<h2>Feedback:</h2>
+	<div class="detail">{{ message.data.Feedback }}</div>
+	<h2>Format:</h2>
+	<div class="detail">{{ message.data.Format }}</div>
+	<h2>Group ID:</h2>
+	<div class="detail">{{ message.data.GroupId }}</div>
+	<h2>Length:</h2>
+	<div class="detail">{{ message.data.Length | number : 0 }}</div>
+	<h2>Message Flags:</h2>
+	<div class="detail">{{ message.data.MsgFlags }}</div>
+	<h2>Message ID:</h2>
+	<div class="detail">{{ message.data.MsgId }}</div>
+	<h2>Message Sequence Number:</h2>
+	<div class="detail">{{ message.data.MsgSeqNumber }}</div>
+	<h2>Message Type:</h2>
+	<div class="detail">{{ message.data.MsgType }}</div>
+	<h2>Offset:</h2>
+	<div class="detail">{{ message.data.Offset }}</div>
+	<h2>Original Length:</h2>
+	<div class="detail">{{ message.data.OriginalLength }}</div>
+	<h2>Persistence:</h2>
+	<div class="detail">{{ message.data.Persistence }}</div>
+	<h2>Priority:</h2>
+	<div class="detail">{{ message.data.Priority }}</div>
+	<h2>Put Application Name:</h2>
+	<div class="detail">{{ message.data.PutApplName }}</div>
+	<h2>Put Application Type:</h2>
+	<div class="detail">{{ message.data.PutApplType }}</div>
+	<h2>Put Date:</h2>
+	<div class="detail">{{ message.data.PutDate }}</div>
+	<h2>ReplyTo Queue:</h2>
+	<div class="detail">{{ message.data.ReplyToQ | default : '&nbsp;' }}</div>
+	<h2>ReplyTo Queuemanager:</h2>
+	<div class="detail">{{ message.data.ReplyToQmgr }}</div>
+	<h2>Report:</h2>
+	<div class="detail">{{ message.data.Report }}</div>
+	<h2>User ID:</h2>
+	<div class="detail">{{ message.data.UserIdentifier }}</div>
+</div> <!-- details -->

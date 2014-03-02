@@ -22,8 +22,8 @@
 #ifndef _MQWeb_View_H
 #define _MQWeb_View_H
 
-#include <Poco/Net/HTTPServerResponse.h>
-#include <Poco/JSON/Object.h>
+#include "Poco/Net/HTTPServerResponse.h"
+#include "Poco/JSON/Object.h"
 
 namespace MQ {
 namespace Web {

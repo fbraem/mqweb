@@ -20,12 +20,12 @@
  */
 #include <string.h>
 
-#include <Poco/DateTimeParser.h>
-#include <Poco/Util/Application.h>
+#include "Poco/DateTimeParser.h"
+#include "Poco/Util/Application.h"
 
-#include <MQ/QueueManager.h>
-#include <MQ/MQException.h>
-#include <MQ/MQSubsystem.h>
+#include "MQ/QueueManager.h"
+#include "MQ/MQException.h"
+#include "MQ/MQSubsystem.h"
 
 namespace MQ
 {

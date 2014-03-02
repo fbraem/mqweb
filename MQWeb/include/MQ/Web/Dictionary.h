@@ -6,7 +6,7 @@
 #include <map>
 #include <string>
 
-#include <MQ/Web/MapInitializer.h>
+#include "MQ/Web/MapInitializer.h"
 
 namespace MQ {
 namespace Web {

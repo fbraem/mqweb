@@ -25,7 +25,7 @@
 #include <vector>
 #include <map>
 
-#include <Poco/SharedLibrary.h>
+#include "Poco/SharedLibrary.h"
 
 #ifndef _MQ_MQFunctions_H
 #define _MQ_MQFunctions_H

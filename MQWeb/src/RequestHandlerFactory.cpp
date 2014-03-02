@@ -18,15 +18,15 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <MQ/Web/RequestHandlerFactory.h>
-#include <MQ/Web/StaticRequestHandler.h>
-#include <MQ/Web/DenyRequestHandler.h>
-#include <MQ/Web/ControllerRequestHandler.h>
+#include "MQ/Web/RequestHandlerFactory.h"
+#include "MQ/Web/StaticRequestHandler.h"
+#include "MQ/Web/DenyRequestHandler.h"
+#include "MQ/Web/ControllerRequestHandler.h"
 
-#include <Poco/Logger.h>
-#include <Poco/RegularExpression.h>
-#include <Poco/Util/Application.h>
-#include <Poco/Util/AbstractConfiguration.h>
+#include "Poco/Logger.h"
+#include "Poco/RegularExpression.h"
+#include "Poco/Util/Application.h"
+#include "Poco/Util/AbstractConfiguration.h"
 
 namespace MQ
 {

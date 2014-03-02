@@ -1,0 +1,9 @@
+<h3 style="margin-bottom:20px;"><strong>{{ mqweb.qmgr }}</strong> - Queue - <strong>{{ mqweb.queue }}</strong></h3>
+<div ng-if="message" ng-include="'/static/html/message/detail.html'"></div>
+<div ng-if="loading" class="loader"></div>
+<div ng-if="error" ng-include="'/static/html/error.html'"></div>
+<div class="widgets">
+	<div style="float:right;font-size:0.8em">
+		<strong>MsgId:</strong> {{ mqweb.messageId }}
+	</div>
+</div>

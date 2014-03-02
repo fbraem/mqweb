@@ -22,8 +22,8 @@
 #ifndef _MQWeb_QueueManagerController_h
 #define _MQWeb_QueueManagerController_h
 
-#include <MQ/Web/MQController.h>
-#include <MQ/Web/MapInitializer.h>
+#include "MQ/Web/MQController.h"
+#include "MQ/Web/MapInitializer.h"
 
 namespace MQ
 {
@@ -44,31 +44,26 @@ public:
 	const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions
 
-	std::string getDefaultAction() const;
-		/// Returns "index" as default action
-
-	void index();
-		/// Returns the single page application (SPA) for a queuemanager
-
-	void view();
-		/// Returns the queuemanager object as JSON
+	void inquire();
+		/// Action inquire. Inquire the queuemanager and returns all data in JSON format.
+		/// URL's:
+		///  qmgr/inquire/<qmgrName>
+		///
+		/// The returned JSON object can contain following properties:
+		///  mqweb : An object with information about the MQWeb application and request.
+		///  qmgr : An object with all queuemanager details.
+		///  error: An object describing the MQ error (only returned on error).
 };
-
 
 inline const Controller::ActionMap& QueueManagerController::getActions() const
 {
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
-			("index", static_cast<ActionFn>(&QueueManagerController::index))
-			("view", static_cast<ActionFn>(&QueueManagerController::view));
+			("inquire", static_cast<ActionFn>(&QueueManagerController::inquire))
+		;
 	return actions;
 }
 
-
-inline std::string QueueManagerController::getDefaultAction() const
-{
-	return "index";
-}
 
 }} // Namespace MQ::Web
 

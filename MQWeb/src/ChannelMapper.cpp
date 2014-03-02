@@ -18,37 +18,14 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <MQ/Web/ChannelMapper.h>
-#include <MQ/MQException.h>
+#include "MQ/Web/ChannelMapper.h"
+#include "MQ/MQException.h"
 
-#include <Poco/JSON/Object.h>
+#include "Poco/JSON/Object.h"
 
 namespace MQ {
 namespace Web {
 
-typedef std::map<std::string, MQLONG> ChannelTypeFilterMap;
-
-ChannelTypeFilterMap initializeTypeFilterMap()
-{
-	ChannelTypeFilterMap map;
-
-	map["all"] = MQCHT_ALL;
-	map["sender"] = MQCHT_SENDER;
-	map["server"] = MQCHT_SERVER;
-	map["receiver"] = MQCHT_RECEIVER;
-	map["requester"] = MQCHT_REQUESTER;
-	map["svrconn"] = MQCHT_SVRCONN;
-	map["clntconn"] = MQCHT_CLNTCONN;
-	map["clusrcvr"] = MQCHT_CLUSRCVR;
-	map["clussdr"] = MQCHT_CLUSSDR;
-#ifdef MQCHT_MQTT
-	map["mqtt"] = MQCHT_MQTT;
-#endif
-
-	return map;
-}
-
-typedef std::map<MQLONG, std::string> ChannelTypeMap;
 
 ChannelMapper::ChannelMapper(CommandServer& commandServer) : MQMapper(commandServer)
 {
@@ -81,7 +58,7 @@ Poco::JSON::Array::Ptr ChannelMapper::inquire(const Poco::JSON::Object::Ptr& fil
 {
 	poco_assert_dbg(!filter.isNull());
 
-	Poco::JSON::Array::Ptr jsonChannels = new Poco::JSON::Array();
+	Poco::JSON::Array::Ptr channels = new Poco::JSON::Array();
 
 	PCF::Ptr inquireChl = _commandServer.createCommand(MQCMD_INQUIRE_CHANNEL);
 
@@ -92,48 +69,37 @@ Poco::JSON::Array::Ptr ChannelMapper::inquire(const Poco::JSON::Object::Ptr& fil
 	poco_assert_dbg(channelTypeValue != -1);
 	if ( channelTypeValue == - 1 )
 	{
-		return jsonChannels;
+		return channels;
 	}
 	inquireChl->addParameter(MQIACH_CHANNEL_TYPE, channelTypeValue);
 
 	PCF::Vector commandResponse;
 	_commandServer.sendCommand(inquireChl, commandResponse);
-	if ( commandResponse.size() > 0 )
+
+	bool excludeSystem = filter->optValue("excludeSystem", false);
+
+	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
-		PCF::Vector::iterator it = commandResponse.begin();
-		if ( (*it)->getReasonCode() != MQCC_OK )
+		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)
+			continue;
+
+		if ( (*it)->isExtendedResponse() ) // Skip extended response
+			continue;
+
+		std::string channelName = (*it)->getParameterString(MQCACH_CHANNEL_NAME);
+		if (    excludeSystem
+			&& channelName.compare(0, 7, "SYSTEM.") == 0 )
 		{
-			if ( (*it)->getReasonCode() != MQRC_UNKNOWN_OBJECT_NAME )
-			{
-				throw MQException(_commandServer.qmgr().name(), "PCF", (*it)->getCompletionCode(), (*it)->getReasonCode());
-			}
+			continue;
 		}
 
-		bool excludeSystem = filter->optValue("excludeSystem", false);
+		Poco::JSON::Object::Ptr channel = new Poco::JSON::Object();
+		channels->add(channel);
 
-		for(; it != commandResponse.end(); it++)
-		{
-			if ( (*it)->getReasonCode() == MQRC_UNKNOWN_OBJECT_NAME )
-				break;
-
-			if ( (*it)->isExtendedResponse() ) // Skip extended response
-				continue;
-
-			std::string channelName = (*it)->getParameterString(MQCACH_CHANNEL_NAME);
-			if (    excludeSystem
-				&& channelName.compare(0, 7, "SYSTEM.") == 0 )
-			{
-				continue;
-			}
-
-			Poco::JSON::Object::Ptr jsonChannel = new Poco::JSON::Object();
-			jsonChannels->add(jsonChannel);
-
-			mapToJSON(**it, jsonChannel);
-		}
+		mapToJSON(**it, channel);
 	}
 
-	return jsonChannels;
+	return channels;
 }
 
 }} //  Namespace MQ::Web

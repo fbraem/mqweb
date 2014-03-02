@@ -22,8 +22,8 @@
 #ifndef _MQWeb_ChannelController_h
 #define _MQWeb_ChannelController_h
 
-#include <MQ/Web/MQController.h>
-#include <MQ/Web/MapInitializer.h>
+#include "MQ/Web/MQController.h"
+#include "MQ/Web/MapInitializer.h"
 
 namespace MQ {
 namespace Web {
@@ -38,22 +38,29 @@ public:
 	virtual ~ChannelController();
 		/// Destructor
 
-	void index();
-		/// Action index. Shows the single page application (SPA) html for channels.
-
-	void view();
-		/// Action view. Returns the details of a channel.
-		/// It only supports the JSON format.
-
-	void list();
-		/// Action list. Returns the details of all channels.
-		/// It only supports the JSON format.
+	void inquire();
+		/// Action inquire. Inquire the channels and returns the details in JSON format.
+		/// URL:
+		///  channel/inquire/<qmgrName>
+		///  channel/inquire/<qmgrName>/<channelName>/<channelType>
+		///  channel/inquire/<qmgrName>?channelName=MQWEB*
+		///
+		/// Query Parameters:
+		///  channelName: Name of the channel (* is default).
+		///  channelType: Only return channels of the given type.
+		///   Possible values: 
+		///  excludeSystem: When 'true', don't return system channels
+		///
+		/// Query parameters are ignored when a queueName is passed in the URI path.
+		///
+		/// The returned JSON object can contain following properties:
+		///  mqweb : An object with information about the MQWeb application and request.
+		///  queues : An array with all matching queues. This is always an array (even when a queuename is passed in the URI path).
+		///   When an MQ error occurs there will be no queues property.
+		///  error: An object describing the MQ error (only returned on error).
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions.
-
-	std::string getDefaultAction() const;
-		/// Returns the default action "index".
 
 private:
 };
@@ -63,15 +70,9 @@ inline const Controller::ActionMap& ChannelController::getActions() const
 {
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
-			("index", static_cast<ActionFn>(&ChannelController::index))
-			("list", static_cast<ActionFn>(&ChannelController::list))
-			("view", static_cast<ActionFn>(&ChannelController::view));
+			("inquire", static_cast<ActionFn>(&ChannelController::inquire))
+		;
 	return actions;
-}
-
-inline std::string ChannelController::getDefaultAction() const
-{
-	return "index";
 }
 
 

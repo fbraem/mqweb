@@ -1,7 +1,7 @@
 /*
  * Copyright 2010 MQWeb - Franky Braem
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they
+ * Licensed under the EUPL, Version 1.1 or Â– as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the
@@ -18,16 +18,10 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <Poco/DateTimeFormatter.h>
-#include <Poco/Net/HTMLForm.h>
-#include <Poco/URI.h>
-
-#include <MQ/Web/MQController.h>
-#include <MQ/Web/ChannelStatusController.h>
-#include <MQ/Web/ChannelMapper.h>
-#include <MQ/Web/ChannelStatusMapper.h>
-#include <MQ/Web/MultiView.h>
-#include <MQ/Web/JSONView.h>
+#include "MQ/Web/MQController.h"
+#include "MQ/Web/ChannelStatusController.h"
+#include "MQ/Web/ChannelStatusMapper.h"
+#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -41,95 +35,34 @@ ChannelStatusController::ChannelStatusController() : MQController()
 
 ChannelStatusController::~ChannelStatusController()
 {
-
 }
 
 
-void ChannelStatusController::list()
+void ChannelStatusController::inquire()
 {
-	Poco::Net::HTMLForm form(request(), request().stream());
-
 	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
-	std::string channelNameField = form.get("channelName", "*");
-	filter->set("name", channelNameField.empty() ? "*" : channelNameField);
-	filter->set("type", form.get("channelType", "All"));
+
+	std::vector<std::string> parameters = getParameters();
+	// First parameter is queuemanager
+	// Second parameter can be a channelname and will result in inquiring
+	// only that channel. A third parameter is required because we need
+	// also the type of the channel for inquiring a specific channel.
+	if ( parameters.size() > 1 )
+	{
+		filter->set("name", parameters[1]);
+	}
+	else
+	{
+		Poco::Net::HTMLForm form(request(), request().stream());
+		std::string channelNameField = form.get("channelName", "*");
+		filter->set("name", channelNameField.empty() ? "*" : channelNameField);
+	}
+
 	ChannelStatusMapper channelStatusMapper(*commandServer());
 	Poco::JSON::Array::Ptr statuses = channelStatusMapper.inquire(filter);
 
 	set("statuses", statuses);
-
-	if ( format().compare("html") == 0 )
-	{
-		setView(new TemplateView("channelStatus.tpl"));
-	}
-	else if ( format().compare("json") == 0 )
-	{
-		setView(new JSONView());
-	}
-
-}
-
-
-void ChannelStatusController::view()
-{
-	std::vector<std::string> parameters = getParameters();
-
-	// First parameter is the queuemanager name
-	// Second parameter is the queue name
-	if ( parameters.size() < 2 )
-	{
-		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
-		return;
-	}
-
-	std::string channelName = parameters[1];
-
-	if ( format().compare("html") == 0 )
-	{
-		set("channelName", channelName);
-		Poco::SharedPtr<MultiView> multiView = new MultiView("base.tpl");
-		multiView->add("head", new TemplateView("chs/view_head.tpl"));
-		multiView->add("main", new TemplateView("chs/view.tpl"));
-		setView(multiView);
-		return;
-	}
-
-	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
-	filter->set("name", channelName);
-
-	ChannelStatusMapper channelStatusMapper(*commandServer());
-	Poco::JSON::Array::Ptr jsonStatuses = channelStatusMapper.inquire(filter);
-	set("statuses", jsonStatuses);
 	setView(new JSONView());
-/*
-	std::vector<std::string> parameters = getParameters();
-
-	// First parameter is the queuemanager name
-	// Second parameter is the channelname
-	if ( parameters.size() < 2 )
-	{
-		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
-		return;
-	}
-
-	std::string channelName = parameters[1];
-
-	std::string type = form().get("type", "All");
-
-	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
-	filter->set("name", channelName);
-	filter->set("type", type);
-
-	ChannelMapper channelMapper(*commandServer());
-	Poco::JSON::Array::Ptr jsonChannels = channelMapper.inquire(filter);
-	Poco::JSON::Object::Ptr jsonChannel = jsonChannels->getObject(0);
-
-	if ( !jsonChannel.isNull() )
-	{
-		set("channel", jsonChannel);
-	}
-	render("channel.tpl");
-*/
 }
 
 

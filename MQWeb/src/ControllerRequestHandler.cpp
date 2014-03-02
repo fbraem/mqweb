@@ -18,14 +18,18 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <MQ/Web/ControllerRequestHandler.h>
-#include <MQ/Web/QueueController.h>
-#include <MQ/Web/QueueManagerController.h>
-#include <MQ/Web/ChannelController.h>
-#include <MQ/Web/ChannelStatusController.h>
-#include <MQ/Web/MessageController.h>
+#include "MQ/Web/ControllerRequestHandler.h"
+#include "MQ/Web/WebController.h"
+#include "MQ/Web/QueueController.h"
+#include "MQ/Web/QueueManagerController.h"
+#include "MQ/Web/QueueManagerStatusController.h"
+#include "MQ/Web/ChannelController.h"
+#include "MQ/Web/ChannelStatusController.h"
+#include "MQ/Web/MessageController.h"
+#include "MQ/Web/ListenerController.h"
+#include "MQ/Web/ListenerStatusController.h"
 
-#include <Poco/URI.h>
+#include "Poco/URI.h"
 
 namespace MQ {
 namespace Web {
@@ -43,34 +47,69 @@ void ControllerRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& reque
 	std::vector<std::string> paths;
 	uri.getPathSegments(paths);
 
+	std::string controllerType;
 	std::string controllerName;
-	if ( paths.size() == 0 ) // Use the default controller
+	if ( paths.size() == 0 ) // Use the default controller type
 	{
-		controllerName = "qmgr";
+		controllerType = "web";
 	}
 	else
 	{
-		controllerName = paths.front();
+		controllerType = paths.front();
 		paths.erase(paths.begin());
 	}
 
-	poco_trace_f1(Poco::Logger::get("mq.web"), "MQ Controller: %s", controllerName);
-	Poco::SharedPtr<Controller> controller = _controllerFactory.createInstance(controllerName);
-	if ( controller.isNull() )
+	Poco::SharedPtr<Controller> controller;
+	if ( controllerType.compare("web") == 0 )
 	{
-		//TODO: redirect to error page!
+		controller = new WebController();
+		if ( paths.size() == 0 )
+		{
+			paths.push_back("qmgr"); // Default qmgr
+		}
+		controller->handle(paths, request, response);
 	}
-	controller->handle(paths, request, response);
+	else if ( controllerType.compare("api") == 0 )
+	{
+		if ( paths.size() == 0 )
+		{
+			controllerName = "qmgr";
+		}
+		else
+		{
+			controllerName = paths.front();
+			paths.erase(paths.begin());
+		}
+		poco_trace_f1(Poco::Logger::get("mq.web"), "api controller: %s", controllerName);
+		try
+		{
+			Poco::SharedPtr<Controller> controller = _controllerFactory.createInstance(controllerName);
+			controller->handle(paths, request, response);
+		}
+		catch(Poco::NotFoundException&)
+		{
+			response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_NOT_FOUND, "Unknown controller");
+			response.send();
+		}
+	}
+	else
+	{
+		response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "Only web or api are allowed as controller type");
+		response.send();
+	}
 }
 
 
 void ControllerRequestHandler::registerControllers()
 {
 	_controllerFactory.registerClass<QueueManagerController>("qmgr");
+	_controllerFactory.registerClass<QueueManagerStatusController>("qmstatus");
 	_controllerFactory.registerClass<QueueController>("queue");
 	_controllerFactory.registerClass<ChannelController>("channel");
 	_controllerFactory.registerClass<MessageController>("message");
-	_controllerFactory.registerClass<ChannelStatusController>("chs");
+	_controllerFactory.registerClass<ChannelStatusController>("chstatus");
+	_controllerFactory.registerClass<ListenerController>("listener");
+	_controllerFactory.registerClass<ListenerStatusController>("lsstatus");
 }
 
 

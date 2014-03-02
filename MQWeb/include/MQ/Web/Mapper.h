@@ -21,7 +21,7 @@
 #ifndef _MQWeb_Mapper_H
 #define _MQWeb_Mapper_H
 
-#include <Poco/JSON/Object.h>
+#include "Poco/JSON/Object.h"
 
 namespace MQ {
 namespace Web {

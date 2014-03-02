@@ -18,14 +18,16 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <Poco/Util/Application.h>
-#include <Poco/JSON/Object.h>
+#include "Poco/Util/Application.h"
+#include "Poco/JSON/Object.h"
 
-#include <MQ/Web/MQController.h>
-#include <MQ/MQSubsystem.h>
-#include <MQ/MQException.h>
-#include <MQ/Web/TemplateView.h>
-#include <MQ/Web/JSONView.h>
+#include "MQ/MQSubsystem.h"
+#include "MQ/MQException.h"
+
+#include "MQ/Web/MQController.h"
+#include "MQ/Web/MQMapper.h"
+#include "MQ/Web/TemplateView.h"
+#include "MQ/Web/JSONView.h"
 
 namespace MQ {
 namespace Web {
@@ -46,6 +48,10 @@ void MQController::beforeAction()
 {
 	_stopwatch.start();
 
+	Poco::JSON::Object::Ptr date = new Poco::JSON::Object();
+	_mqwebData->set("date", date);
+	date->set("start", Poco::DateTimeFormatter::format(Poco::Timestamp(), Poco::DateTimeFormat::HTTP_FORMAT));
+
 	MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQSubsystem>();
 	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
 
@@ -53,19 +59,29 @@ void MQController::beforeAction()
 
 	_mqwebData->set("client", mqSystem.client());
 
-	if ( parameters.size() > 0 )
+	if ( config.hasProperty("mq.web.qmgr") )
 	{
-		_qmgr = new QueueManager(parameters[0]);
+		// When a queuemanager is passed on the command line, we always
+		// connect to this queuemanager. When the user specified another
+		// queuemanager on the URL, it will be ignored.
+		_qmgr = new QueueManager(config.getString("mq.web.qmgr"));
 	}
 	else
 	{
-		if ( mqSystem.client() )
+		if ( parameters.size() > 0 )
 		{
-			_qmgr = new QueueManager(config.getString("mq.web.defaultQmgr", "*"));
+			_qmgr = new QueueManager(parameters[0]);
 		}
-		else // In bindings mode we can connect to the default queuemanager
+		else
 		{
-			_qmgr = new QueueManager();
+			if ( mqSystem.client() )
+			{
+				_qmgr = new QueueManager(config.getString("mq.web.defaultQmgr", "*"));
+			}
+			else // In bindings mode we can connect to the default queuemanager
+			{
+				_qmgr = new QueueManager();
+			}
 		}
 	}
 
@@ -134,24 +150,35 @@ void MQController::handleException(const MQException& mqe)
 		case MQCC_WARNING: error->set("code", "WARNING"); break;
 		case MQCC_FAILED: error->set("code", "ERROR"); break;
 	}
-	error->set("reason", mqe.reason());
 
-	if ( format().compare("html") == 0 )
-	{
-		setView(new TemplateView("error.tpl"));
-	}
-	else if ( format().compare("json") == 0 )
+	Poco::JSON::Object::Ptr reason = new Poco::JSON::Object();
+	error->set("reason", reason);
+	reason->set("code", mqe.reason());
+	reason->set("desc", MQMapper::getReasonString(mqe.reason()));
+
+	if ( isJSON() )
 	{
 		setView(new JSONView());
 	}
+	else
+	{
+		setView(new TemplateView("error.tpl"));
+	}
+
 }
 
 
 void MQController::afterAction()
 {
+	Poco::JSON::Object::Ptr date = _mqwebData->getObject("date");
+	if ( ! date.isNull() )
+	{
+		date->set("end", Poco::DateTimeFormatter::format(Poco::Timestamp(), Poco::DateTimeFormat::HTTP_FORMAT));
+	}
+	
 	_stopwatch.stop();
 	_mqwebData->set("elapsed", (double) _stopwatch.elapsed() / 1000000 );
-	
+
 	Controller::afterAction();
 }
 

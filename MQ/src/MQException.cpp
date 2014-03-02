@@ -18,12 +18,12 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include "cmqc.h"
+#include <cmqc.h>
 
-#include <Poco/Logger.h>
-#include <Poco/NumberFormatter.h>
+#include "Poco/Logger.h"
+#include "Poco/NumberFormatter.h"
 
-#include <MQ/MQException.h>
+#include "MQ/MQException.h"
 
 namespace MQ
 {

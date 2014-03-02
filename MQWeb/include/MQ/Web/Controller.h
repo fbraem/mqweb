@@ -22,17 +22,18 @@
 #ifndef _MQWeb_Controller_h
 #define _MQWeb_Controller_h
 
-#include <Poco/SharedPtr.h>
-#include <Poco/Net/HTTPServerRequest.h>
-#include <Poco/Net/HTTPServerResponse.h>
-#include <Poco/Net/PartHandler.h>
-#include <Poco/Net/HTMLForm.h>
+#include "Poco/SharedPtr.h"
+#include "Poco/Net/HTTPServerRequest.h"
+#include "Poco/Net/HTTPServerResponse.h"
+#include "Poco/Net/PartHandler.h"
+#include "Poco/Net/HTMLForm.h"
+#include "Poco/Net/MediaType.h"
 
-#include <Poco/JSON/Object.h>
+#include "Poco/JSON/Object.h"
 
-#include <MQ/QueueManager.h>
-#include <MQ/CommandServer.h>
-#include <MQ/Web/View.h>
+#include "MQ/QueueManager.h"
+#include "MQ/CommandServer.h"
+#include "MQ/Web/View.h"
 
 namespace MQ {
 namespace Web {
@@ -72,14 +73,6 @@ public:
 	virtual const ActionMap& getActions() const = 0;
 		/// Returns all actions.
 
-	std::string format() const;
-		/// Returns the format (html, json, ...) which is part of the action.
-		/// For example: action list.json will return the format "json". When no
-		/// suffix is found, "html" is returned by default.
-
-	virtual std::string getDefaultAction() const = 0;
-		/// Returns the default action.
-
 	const std::vector<std::string>& getParameters() const;
 		/// Returns all parameters
 
@@ -88,6 +81,9 @@ public:
 
 	bool isGet() const;
 		/// Returns true when the HTTP method GET is used.
+
+	bool isJSON() const;
+		/// Returns true when application/json 
 
 	bool isPost() const;
 		/// Returns true when the HTTP method POST is used.
@@ -102,7 +98,10 @@ public:
 		/// Returns the HTTP response
 
 	void setResponseStatus(Poco::Net::HTTPServerResponse::HTTPStatus status);
-		/// Sets the HTTP response
+		/// Sets the HTTP response status. This will send the response to the client.
+
+	void setResponseStatus(Poco::Net::HTTPServerResponse::HTTPStatus status, const std::string& reason);
+		/// Sets the HTTP response status and reason. This will send the response to the client.
 
 	void render();
 		/// Renders the view
@@ -129,9 +128,6 @@ private:
 
 
 	Poco::Net::HTMLForm _form;
-
-
-	std::string _format;
 
 
 	Poco::JSON::Object::Ptr _data;
@@ -189,12 +185,6 @@ inline std::string Controller::getAction() const
 }
 
 
-inline std::string Controller::format() const
-{
-	return _format;
-}
-
-
 inline const std::vector<std::string>& Controller::getParameters() const
 {
 	return _parameters;
@@ -224,6 +214,14 @@ inline void Controller::setResponseStatus(Poco::Net::HTTPServerResponse::HTTPSta
 	_response->setStatus(status);
 	_response->send();
 }
+
+
+inline void Controller::setResponseStatus(Poco::Net::HTTPServerResponse::HTTPStatus status, const std::string &reason)
+{
+	_response->setStatusAndReason(status, reason);
+	_response->send();
+}
+
 
 inline Poco::Net::HTTPServerRequest& Controller::request()
 {

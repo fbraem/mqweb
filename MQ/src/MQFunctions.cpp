@@ -18,13 +18,12 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <MQ/MQFunctions.h>
-#include <MQ/MQException.h>
+#include "MQ/MQFunctions.h"
+#include "MQ/MQException.h"
 
-#include <Poco/String.h>
-#include <Poco/ScopedLock.h>
-#include <Poco/Logger.h>
-#include <Poco/NumberFormatter.h>
+#include "Poco/String.h"
+#include "Poco/Logger.h"
+#include "Poco/NumberFormatter.h"
 
 #ifdef __linux__
 #include <string.h>

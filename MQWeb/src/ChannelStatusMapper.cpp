@@ -18,10 +18,10 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <MQ/Web/ChannelStatusMapper.h>
-#include <MQ/MQException.h>
+#include "MQ/Web/ChannelStatusMapper.h"
+#include "MQ/MQException.h"
 
-#include <Poco/JSON/Object.h>
+#include "Poco/JSON/Object.h"
 
 namespace MQ {
 namespace Web {
@@ -63,51 +63,22 @@ Poco::JSON::Array::Ptr ChannelStatusMapper::inquire(const Poco::JSON::Object::Pt
 	PCF::Ptr inquireChlStatus = _commandServer.createCommand(MQCMD_INQUIRE_CHANNEL_STATUS);
 	inquireChlStatus->addParameter(MQCACH_CHANNEL_NAME, filter->optValue<std::string>("name", "*"));
 
-	std::string channelType = filter->optValue<std::string>("type", "All");
-	MQLONG channelTypeValue = _dictionary.getDisplayId(MQIACH_CHANNEL_TYPE, channelType);
-	poco_assert_dbg(channelTypeValue != -1);
-	if ( channelTypeValue == - 1 )
-	{
-		return jsonStatuses;
-	}
-
-	if ( channelTypeValue != MQCHT_ALL )
-	{
-		inquireChlStatus->addFilter(MQIACH_CHANNEL_TYPE, MQCFOP_EQUAL, channelTypeValue);
-	}
-
 	inquireChlStatus->addParameter(MQIACH_CHANNEL_INSTANCE_TYPE, MQOT_CURRENT_CHANNEL);
 
 	PCF::Vector commandResponse;
 	_commandServer.sendCommand(inquireChlStatus, commandResponse);
-	if ( commandResponse.size() > 0 )
+
+	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
-		PCF::Vector::iterator it = commandResponse.begin();
-		if ( (*it)->getCompletionCode() != MQCC_OK )
-		{
-			if ( (*it)->getReasonCode() == MQRCCF_NONE_FOUND ) // Nothing found
-			{
-				return jsonStatuses;
-			}
+		if ( (*it)->isExtendedResponse() ) // Skip Extended Response
+			continue;
 
-			if ( (*it)->getReasonCode() != MQRCCF_CHL_STATUS_NOT_FOUND )
-			{
-				throw MQException(_commandServer.qmgr().name(), "PCF", (*it)->getCompletionCode(), (*it)->getReasonCode());
-			}
-		}
+		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)
+			continue;
 
-		for(; it != commandResponse.end(); it++)
-		{
-			if ( (*it)->isExtendedResponse() ) // Skip Extended Response
-				continue;
-
-			if ( (*it)->getReasonCode() == MQRCCF_CHL_STATUS_NOT_FOUND )
-				break;
-
-			Poco::JSON::Object::Ptr jsonChannelStatus = new Poco::JSON::Object();
-			mapToJSON(**it, jsonChannelStatus);
-			jsonStatuses->add(jsonChannelStatus);
-		}
+		Poco::JSON::Object::Ptr jsonChannelStatus = new Poco::JSON::Object();
+		mapToJSON(**it, jsonChannelStatus);
+		jsonStatuses->add(jsonChannelStatus);
 	}
 
 	return jsonStatuses;

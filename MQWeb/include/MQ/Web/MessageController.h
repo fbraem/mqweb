@@ -22,8 +22,8 @@
 #ifndef _MQWeb_MessageController_h
 #define _MQWeb_MessageController_h
 
-#include <MQ/Web/MQController.h>
-#include <MQ/Web/Dictionary.h>
+#include "MQ/Web/MQController.h"
+#include "MQ/Web/Dictionary.h"
 
 namespace MQ
 {
@@ -40,26 +40,21 @@ public:
 	virtual ~MessageController();
 		/// Destructor
 
-	void index();
-		/// Shows the index page
-
-	void view();
-		/// Shows a message
-
-	void list();
-		/// List messages from a queue
+	void browse();
+		/// Action browse.
 
 	void dump();
-		/// Shows the message in ascii / hex / ebcdic
+		/// Action dump. Returns the message in ascii / hex / ebcdic in JSON format
+		/// URL':
+		///  /message/dump/<qmgrName>/<queuName>/<msgId>
+		///
+		/// Currently the message size is restricted to 16K.
 
 	void event();
 		/// Shows an event message
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available action
-
-	std::string getDefaultAction() const;
-		/// Return "index" as default action
 
 private:
 
@@ -80,20 +75,12 @@ inline const Controller::ActionMap& MessageController::getActions() const
 {
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
-			("index", static_cast<ActionFn>(&MessageController::index))
-			("list", static_cast<ActionFn>(&MessageController::list))
-			("view", static_cast<ActionFn>(&MessageController::view))
+			("browse", static_cast<ActionFn>(&MessageController::browse))
 			("dump", static_cast<ActionFn>(&MessageController::dump))
 			("event", static_cast<ActionFn>(&MessageController::event))
 		;
 	return actions;
 }
-
-inline std::string MessageController::getDefaultAction() const
-{
-	return "index";
-}
-
 
 } } // Namespace MQ::Web
 

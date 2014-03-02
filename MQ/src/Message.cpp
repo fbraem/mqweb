@@ -21,12 +21,12 @@
 #include <sstream>
 #include <iomanip>
 
-#include <Poco/HexBinaryEncoder.h>
-#include <Poco/HexBinaryDecoder.h>
-#include <Poco/DateTime.h>
-#include <Poco/DateTimeParser.h>
+#include "Poco/HexBinaryEncoder.h"
+#include "Poco/HexBinaryDecoder.h"
+#include "Poco/DateTime.h"
+#include "Poco/DateTimeParser.h"
 
-#include <MQ/Message.h>
+#include "MQ/Message.h"
 
 namespace MQ
 {

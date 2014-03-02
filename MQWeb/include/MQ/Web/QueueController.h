@@ -22,8 +22,8 @@
 #ifndef _MQWeb_QueueController_h
 #define _MQWeb_QueueController_h
 
-#include <MQ/Web/MQController.h>
-#include <MQ/Web/MapInitializer.h>
+#include "MQ/Web/MQController.h"
+#include "MQ/Web/MapInitializer.h"
 
 namespace MQ {
 namespace Web {
@@ -41,17 +41,26 @@ public:
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions
 
-	std::string getDefaultAction() const;
-		/// Returns index as default action
-
-	void index();
-		/// Action index. Returns a single page application (SPA) for queues
-
-	void list();
-		/// Action list. Returns a list of queues as JSON
-
-	void view();
-		/// Action view. Returns a queue as JSON
+	void inquire();
+		/// Action inquire. Inquire queues and returns all data in JSON format.
+		/// URL's:
+		///  queue/inquire/<qmgrName>
+		///  queue/inquire/<qmgrName>/<queueName>
+		///  queue/inquire/<qmgrName>?queueName=MQWEB*&queueDepth=1
+		///
+		/// Query Parameters:
+		///  queueName: Name of the queue (* is default).
+		///  queueDepth: Only select queues which has at least queueDepth messages.
+		///  queueUsage: xmitq or normal (default is normal)
+		///  type: queue type. Possible values: All, Local, Alias, Cluster, Model or Remote (default is All)
+		///
+		/// Query parameters are ignored when a queueName is passed in the URI path.
+		///
+		/// The returned JSON object can contain following properties:
+		///  mqweb : An object with information about the MQWeb application and request.
+		///  queues : An array with all matching queues. This is always an array (even when a queuename is passed in the URI path).
+		///   When an MQ error occurs there will be no queues property.
+		///  error: An object describing the MQ error (only returned on error).
 
 private:
 };
@@ -61,15 +70,9 @@ inline const Controller::ActionMap& QueueController::getActions() const
 {
 	static Controller::ActionMap actions 
 		= MapInitializer<std::string, Controller::ActionFn>
-			("index", static_cast<ActionFn>(&QueueController::index))
-			("list", static_cast<ActionFn>(&QueueController::list))
-			("view", static_cast<ActionFn>(&QueueController::view));
+			("inquire", static_cast<ActionFn>(&QueueController::inquire))
+		;
 	return actions;
-}
-
-inline std::string QueueController::getDefaultAction() const
-{
-	return "index";
 }
 
 

@@ -1,7 +1,7 @@
 /*
  * Copyright 2010 MQWeb - Franky Braem
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they
+ * Licensed under the EUPL, Version 1.1 or Â– as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the
@@ -18,7 +18,7 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <MQ/Web/JSONView.h>
+#include "MQ/Web/JSONView.h"
 
 namespace MQ {
 namespace Web {
@@ -37,6 +37,9 @@ void JSONView::initializeResponse(Poco::Net::HTTPServerResponse& response)
 {
 	response.setChunkedTransferEncoding(true);
 	response.setContentType("application/json");
+	response.set("Cache-Controle", "no-cache,no-store,must-revalidate"); // HTTP 1.1
+	response.set("Pragma", "no-cache"); // HTTP 1.0
+	response.set("Expires", "0"); // Proxies
 }
 
 bool JSONView::render(Poco::JSON::Object::Ptr data, std::ostream& os)

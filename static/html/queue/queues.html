@@ -1,0 +1,152 @@
+<!-- Content -->
+<div id="content">
+	<div class="post">
+		<h3><strong>{{ qmgr }}</strong> - Queues</h3>
+		<form id="queueFilterForm">
+			<fieldset>
+				<legend>&nbsp;Filter&nbsp;</legend>
+				<div style="float:left;margin:5px;">
+					<div style="margin:5px;">
+						<div style="margin:5px;">
+							<label for="queueName">Queue Name: </label><input type="text" id="queueName" ng-model="formData.queueName" />
+						</div>
+						<div style="margin:5px;">
+							<label for="queueDepth">Queue Depth: </label><input type="text" id="queueDepth" ng-model="formData.queueDepth" />
+						</div>
+						<div style="float:left;margin:5px;">
+							<input type="checkbox" ng-model="formData.queueExcludeSystem" /> Exclude System Queues<br />
+							<input type="checkbox" ng-model="formData.queueExcludeTemp" /> Exclude Temporary Queues<br />
+						</div>
+					</div>
+				</div>
+				<fieldset style="float:left;">
+					<legend>&nbsp;Queue	Type&nbsp;</legend>
+					<div style="float:left;margin:5px;">
+						<input type="radio" ng-model="formData.queueType" value="All" />All<br />
+						<input type="radio" ng-model="formData.queueType" value="Local" />Local<br />
+						<input type="radio" ng-model="formData.queueType" value="Alias" />Alias
+					</div>
+					<div style="float:left;margin:5px;">
+						<input type="radio" ng-model="formData.queueType" value="Cluster" />Cluster<br />
+						<input type="radio" ng-model="formData.queueType" value="Model" />Model<br />
+						<input type="radio" ng-model="formData.queueType" value="Remote" />Remote
+					</div>
+				</fieldset>
+				<div style="clear:both;" />
+				<div style="float:right;margin-right:10px;margin-top:-30px;">
+					<button ng-click="load()" id="filterSubmit">Filter &gt;&gt;</button>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</div>
+<!-- END Content -->
+<!-- Sidebar -->
+<div id="sidebar">
+	<div class="box">
+	<!--
+		<h3>Our Services</h3>
+		<ul>
+			<li><a title="List Queues Containing Messages" href="#">List Non-empty Queues</a></li>
+			<li><a title="Ipsum is not simply" href="#">Ipsum is not simply</a></li>
+			<li><a title="Dom text roots" href="#">Dom text roots</a></li>
+			<li><a title="Popular belief lorem" href="#">Popular belief lorem</a></li>
+			<li><a title="Ipsum is not simply" href="#">Ipsum is not simply</a></li>
+		</ul>
+	-->
+	</div>
+</div>
+<!-- END Sidebar -->
+<div class="cl"></div>
+<div class="widgets">
+	<div class="loader" ng-if="loading"></div>
+	<div style="margin:10px;" ng-if="queues">
+		<table class="overview" style="width:100%;border-collapse:collapse">
+			<thead>
+				<tr>
+					<th>Queue</th><th>Type</th><th>Depth</th><th>Input</th><th>Output</th><th>Get Enabled</th><th>Put Enabled</th><th>Usage</th><th> </th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat-start="queue in queues">
+					<td>
+						<a ng-click="toggle(queue)">{{ queue.data.QName.value }}</a>
+						<span style="font-size:0.8em" ng-if="queue.data.BaseObjectName">
+							<br />Target: <a href="#{{ queue.data.BaseObjectName.value }}">{{ queue.data.BaseObjectName.value }}</a>
+						</span>
+						<div style="font-size:0.8em" ng-if="queue.data.RemoteQName && queue.data.RemoteQName.value">
+							<br />
+							Qmgr: {{ queue.data.RemoteQmgrName.value }} Queue: {{ queue.data.RemoteQName.value }}<br />
+							Transmission Queue: <a href="#{{ queue.data.XmitQName.value }}"></a>
+						</div>
+						<div ng-if="queue.data.QDesc && queue.data.QDesc.value.length > 0">
+							<em style="padding:5px;font-size:0.8em">{{ queue.data.QDesc.value }}</em>
+						</div>
+					</td>
+					<td>{{ queue.data.QType.display }}</td>
+					<td ng-if="queue.data.CurrentQDepth && queue.data.CurrentQDepth.value > 0" style="text-align:right;background-color: #FF9966;">
+						{{ queue.data.CurrentQDepth.value | number : 0 }}
+					</td>
+					<td ng-if="queue.data.CurrentQDepth && queue.data.CurrentQDepth.value == 0" style="text-align:right">
+						0
+					</td>
+					<td style="text-align:right" ng-if="!queue.data.CurrentQDepth">
+						-
+					</td>
+					<td style="text-align:right">
+						<div ng-if="queue.data.OpenInputCount">
+							{{ queue.data.OpenInputCount.value | number : 0 }}
+						</div>
+						<div ng-if="!queue.data.OpenInputCount">
+							-
+						</div>
+					</td>
+					<td style="text-align:right">
+						<div ng-if="queue.data.OpenOutputCount">
+							{{ queue.data.OpenOutputCount.value | number : 0 }}
+						</div>
+						<div ng-if="! queue.data.OpenOutputCount">
+							-
+						</div>
+					</td>
+					<td style="text-align:center">
+						<div ng-if="queue.data.InhibitGet">
+							<img ng-if="queue.data.InhibitGet.value == 0" src="/static/images/ok-icon.png" />
+							<img ng-if="queue.data.InhibitGet.value == 1" src="/static/images/not-ok-icon.png" />
+						</div>
+						<div ng-if="!queue.data.InhibitGet">
+							-
+						</div>
+					</td>
+					<td style="text-align:center">
+						<div ng-if="queue.data.InhibitPut">
+							<img ng-if="queue.data.InhibitPut.value == 0" src="/static/images/ok-icon.png" />
+							<img ng-if="queue.data.InhibitPut.value == 1" src="/static/images/not-ok-icon.png" />
+						</div>
+						<div ng-if="!queue.data.InhibitPut">
+							-
+						</div>
+					</td>
+					<td>
+						<div ng-if="queue.data.Usage">
+							{{ queue.data.Usage.display }}
+						</div>
+					</td>
+					<td class="actions">
+						<a href="#{{ queue.data.QName.value }}"><img src="/static/images/go-next-icon.png" /></a>
+					</td>
+				</tr>
+				<tr ng-repeat-end ng-show="queue.toggle">
+					<td colspan="9">
+						<div ng-include="'/static/html/queue/detail.html'"></div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div ng-if="error != null" ng-include="'/static/html/error.html'"></div>
+	<div class="cl"></div>
+	<div class="col contacts">
+	</div>
+	<div class="cl"></div>
+</div>

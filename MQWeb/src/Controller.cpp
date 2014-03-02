@@ -20,15 +20,15 @@
  */
 #include <sstream>
 
-#include <MQ/Web/Controller.h>
-#include <MQ/MQSubsystem.h>
+#include "MQ/Web/Controller.h"
+#include "MQ/MQSubsystem.h"
 
-#include <Poco/Util/Application.h>
-#include <Poco/NullStream.h>
-#include <Poco/StreamCopier.h>
-#include <Poco/URI.h>
+#include "Poco/Util/Application.h"
+#include "Poco/NullStream.h"
+#include "Poco/StreamCopier.h"
+#include "Poco/URI.h"
 
-#include <Poco/JSON/TemplateCache.h>
+#include "Poco/JSON/TemplateCache.h"
 
 namespace MQ
 {
@@ -36,7 +36,7 @@ namespace Web
 {
 
 
-Controller::Controller() : _format("html"), _data(new Poco::JSON::Object())
+Controller::Controller() : _data(new Poco::JSON::Object())
 {
 }
 
@@ -64,19 +64,13 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 	}
 	else
 	{
-		_action = getDefaultAction();
-	}
-
-	int pos = _action.find_last_of('.');
-	if ( pos != std::string::npos )
-	{
-		_format = _action.substr(pos+1);
-		_action = _action.substr(0, pos);
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "Invalid URI parameters");
+		return;
 	}
 
 	for(std::vector<std::string>::iterator it = _parameters.begin(); it != _parameters.end(); ++it)
 	{
-		pos = it->find_first_of(':');
+		int pos = it->find_first_of(':');
 		if ( pos != std::string::npos )
 		{
 			std::string name = it->substr(0, pos);
@@ -102,14 +96,38 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 
 	const ActionMap& actions = getActions();
 	ActionMap::const_iterator it = actions.find(_action);
-	if ( it != actions.end() )
+	if ( it == actions.end() )
 	{
-		ActionFn action = it->second;
-		(this->*action)();
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND, "Invalid action '" + _action + "' specified.");
+		return;
 	}
+
+	ActionFn action = it->second;
+	(this->*action)();
 
 	afterAction();
 }
+
+
+bool Controller::isJSON() const
+{
+	bool result = false;
+
+	std::string accept;
+	try
+	{
+		accept = _request->get("Accept");
+		Poco::Net::MediaType mediaType(accept.substr(0, accept.find_first_of(',')));
+		result = mediaType.matches("application", "json");
+	}
+	catch(Poco::NotFoundException&)
+	{
+		// Ignore
+	}
+
+	return result;
+}
+
 
 void Controller::render()
 {

@@ -20,13 +20,13 @@
  */
 #include <string.h>
 
-#include <Poco/Util/Application.h>
+#include "Poco/Util/Application.h"
 
-#include <MQ/MQSubsystem.h>
-#include <MQ/Queue.h>
-#include <MQ/QueueManager.h>
-#include <MQ/MQException.h>
-#include <MQ/Message.h>
+#include "MQ/MQSubsystem.h"
+#include "MQ/Queue.h"
+#include "MQ/QueueManager.h"
+#include "MQ/MQException.h"
+#include "MQ/Message.h"
 
 namespace MQ
 {

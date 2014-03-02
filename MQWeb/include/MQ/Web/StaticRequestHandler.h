@@ -22,7 +22,7 @@
 #ifndef _MQWeb_StaticRequestHandler_H
 #define _MQWeb_StaticRequestHandler_H
 
-#include <Poco/Net/HTTPRequestHandler.h>
+#include "Poco/Net/HTTPRequestHandler.h"
 
 namespace MQ
 {

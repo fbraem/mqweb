@@ -24,7 +24,7 @@
 
 #include <string>
 
-#include <Poco/Logger.h>
+#include "Poco/Logger.h"
 
 namespace MQ {
 

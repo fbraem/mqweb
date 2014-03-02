@@ -58,19 +58,19 @@ project "MQWeb"
   configuration "Debug"
     links { 
               "mqd"
-            , "PocoJSONd"
             , "PocoNetd" 
             , "PocoUtild"
+            , "PocoJSONd"
             , "PocoXMLd" 
-            , "PocoFoundationd" 
+            , "PocoFoundationd"
           }
   
   configuration "Release"
     links { 
               "mq"
-            , "PocoJSON"
             , "PocoNet" 
             , "PocoUtil"
+            , "PocoJSON"
             , "PocoXML" 
             , "PocoFoundation"
           }
@@ -90,3 +90,10 @@ project "MQWeb"
             , "iphlpapi"
           }
 
+if ( poco_static ) then
+  configuration "linux"
+    links {
+              "pthread"
+            , "dl"
+          }
+end

@@ -1,7 +1,7 @@
 /*
  * Copyright 2010 MQWeb - Franky Braem
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they
+ * Licensed under the EUPL, Version 1.1 or Â– as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the
@@ -18,9 +18,9 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <Poco/JSON/TemplateCache.h>
+#include "Poco/JSON/TemplateCache.h"
 
-#include <MQ/Web/MultiView.h>
+#include "MQ/Web/MultiView.h"
 
 namespace MQ {
 namespace Web {

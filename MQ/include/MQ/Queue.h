@@ -24,8 +24,8 @@
 
 #include <cmqc.h>
 
-#include <Poco/SharedPtr.h>
-#include <Poco/String.h>
+#include "Poco/SharedPtr.h"
+#include "Poco/String.h"
 
 #include <string>
 #include <vector>

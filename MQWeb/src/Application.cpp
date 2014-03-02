@@ -18,18 +18,18 @@
 * See the Licence for the specific language governing
 * permissions and limitations under the Licence.
 */
-#include <MQ/MQSubsystem.h>
-#include <MQ/Web/Application.h>
-#include <MQ/Web/RequestHandlerFactory.h>
+#include "MQ/MQSubsystem.h"
+#include "MQ/Web/Application.h"
+#include "MQ/Web/RequestHandlerFactory.h"
 
-#include <Poco/Net/HTTPServer.h>
-#include <Poco/Net/HTTPServerParams.h>
-#include <Poco/Net/HTTPServerRequest.h>
-#include <Poco/Net/HTTPServerResponse.h>
-#include <Poco/Net/HTTPServerParams.h>
+#include "Poco/Net/HTTPServer.h"
+#include "Poco/Net/HTTPServerParams.h"
+#include "Poco/Net/HTTPServerRequest.h"
+#include "Poco/Net/HTTPServerResponse.h"
+#include "Poco/Net/HTTPServerParams.h"
 
-#include <Poco/Logger.h>
-#include <Poco/File.h>
+#include "Poco/Logger.h"
+#include "Poco/File.h"
 
 #include <iostream>
 
@@ -48,14 +48,22 @@ MQWebApplication::~MQWebApplication()
 
 void MQWebApplication::initialize(Application& self)
 {
-	int count = loadConfiguration(); // load default configuration files, if present
+	try
+	{
+		loadConfiguration(); // load default configuration files, if present
+	}
+	catch(Poco::FileException& fe)
+	{
+		std::cout << "Caught a file exception when loading configuration file: " << fe.message() << std::endl;
+	}
+
 	try
 	{
 		ServerApplication::initialize(self);
 	}
 	catch(Poco::NotFoundException& nfe)
 	{
-	// We can get here when some log configuration is not available
+		// We can get here when some log configuration is not available
 		std::cout << "Please check your logger configuration because we got a NotFoundException for " << nfe.message() << std::endl;
 	}
 }
@@ -75,6 +83,20 @@ void MQWebApplication::defineOptions(Poco::Util::OptionSet& options)
 	Option("help", "h", "display help information on command line arguments")
 		.required(false)
 		.repeatable(false));
+
+	options.addOption(
+	Option("qmgr", "m", "connect only to this queuemanager")
+		.required(false)
+		.repeatable(false)
+		.binding("mq.web.qmgr")
+		.argument("name"));
+
+	options.addOption(
+	Option("port", "p", "Port for HTTP listener")
+		.required(false)
+		.repeatable(false)
+		.binding("mq.web.port")
+		.argument("port"));
 }
 
 void MQWebApplication::handleOption(const std::string& name, const std::string& value)

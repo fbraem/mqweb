@@ -21,7 +21,7 @@
 #ifndef _MQWeb_DenyRequestHandler_H
 #define _MQWeb_DenyRequestHandler_H
 
-#include <Poco/Net/HTTPRequestHandler.h>
+#include "Poco/Net/HTTPRequestHandler.h"
 
 namespace MQ {
 namespace Web {

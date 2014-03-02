@@ -1,0 +1,39 @@
+<!-- Content -->
+<div id="content">
+	<div class="post">
+		<h3><strong>{{ mqweb.qmgr }}</strong> - Channel - {{ channel.data.ChannelName.value }}</h3>
+	</div>
+	<div ng-if="channel" ng-include="'/static/html/channel/detail.html'"></div>
+	<div ng-if="loading" class="loader"></div>
+	<div ng-if="error != null" ng-include="'/static/html/error.html'"></div>
+</div>
+<!-- END Content -->
+<!-- Sidebar -->
+<div id="sidebar">
+	<div class="box" ng-controller="ChannelStatusController">
+		<h3>Status</h3>
+		<table class="zebra" style="font-size:0.8em;">
+			<thead>
+				<tr>
+					<th>Start Time</th><th>Status</th><th>Substate</th><th>Type</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="status in statuses">
+					<td>{{ status.ChannelStartDate.value }}&nbsp;{{ status.ChannelStartTime.value }}</td>
+					<td>{{ status.ChannelStatus.display }}</td>
+					<td>{{ status.SubState.display }}</td>
+					<td>{{ status.ChannelInstanceType.display }}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+<!-- END Sidebar -->
+<div class="cl"></div>
+<div class="widgets">
+	<div class="cl"></div>
+	<div class="col	contacts">
+	</div>
+	<div class="cl"></div>
+</div>

@@ -22,10 +22,10 @@
 #ifndef _MQWeb_ControllerRequestHandler_INCLUDED
 #define _MQWeb_ControllerRequestHandler_INCLUDED
 
-#include <Poco/Net/HTTPRequestHandler.h>
-#include <Poco/DynamicFactory.h>
+#include "Poco/Net/HTTPRequestHandler.h"
+#include "Poco/DynamicFactory.h"
 
-#include <MQ/Web/Controller.h>
+#include "MQ/Web/Controller.h"
 
 namespace MQ {
 namespace Web {

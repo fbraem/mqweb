@@ -18,9 +18,9 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include <MQ/Web/MQMapper.h>
+#include "MQ/Web/MQMapper.h"
 
-#include <Poco/JSON/Object.h>
+#include "Poco/JSON/Object.h"
 
 namespace MQ {
 namespace Web {
@@ -31,6 +31,8 @@ Dictionary MQMapper::_dictionary = Dictionary()
 	(MQCA_ALTERATION_TIME, "AlterationTime")
 	(MQCA_CLUSTER_NAME, "ClusterName")
 	(MQCA_CLUSTER_NAMELIST, "ClusterNamelist")
+	(MQCA_CREATION_DATE, "CreationDate")
+	(MQCA_CREATION_TIME, "CreationTime")
 	(MQIA_QSG_DISP, "QSGDisposition", DisplayMapInitializer
 		(MQQSGD_COPY, "Copy")
 		(MQQSGD_GROUP, "Group")
@@ -40,6 +42,237 @@ Dictionary MQMapper::_dictionary = Dictionary()
 	(MQCA_Q_MGR_NAME, "QMgrName")
 
 	// QueueManager properties
+	(MQIA_ACCOUNTING_CONN_OVERRIDE, "AccountingConnOverride", DisplayMapInitializer
+		(MQMON_DISABLED, "Disabled")
+		(MQMON_ENABLED, "Enabled")
+	)
+	(MQIA_ACCOUNTING_INTERVAL, "AccountingInterval")
+	(MQIA_ACTIVITY_CONN_OVERRIDE, "ActivityConnOverride", DisplayMapInitializer
+		(MQMON_DISABLED, "Disabled")
+		(MQMON_ENABLED, "Enabled")
+	)
+	(MQIA_ACTIVITY_RECORDING, "ActivityRecording", DisplayMapInitializer
+		(MQRECORDING_DISABLED, "Disabled")
+		(MQRECORDING_MSG, "Msg")
+		(MQRECORDING_Q, "Queue")
+	)
+	(MQIA_ACTIVITY_TRACE, "ActivityTrace", DisplayMapInitializer
+		(MQMON_OFF, "Off")
+		(MQMON_ON, "On")
+	)
+	(MQIA_ADOPTNEWMCA_CHECK, "AdoptNewMCACheck", DisplayMapInitializer
+		(MQADOPT_CHECK_Q_MGR_NAME, "QmgrName")
+		(MQADOPT_CHECK_NET_ADDR, "NetAddr")
+		(MQADOPT_CHECK_ALL, "All")
+		(MQADOPT_CHECK_NONE, "None")
+	)
+	(MQIA_ADOPTNEWMCA_TYPE, "AdoptNewMCAType", DisplayMapInitializer
+		(MQADOPT_TYPE_NO, "No")
+		(MQADOPT_TYPE_ALL, "All")
+	)
+	(MQIA_AUTHORITY_EVENT, "AuthorityEvent", DisplayMapInitializer
+		(MQEVR_DISABLED, "Disabled")
+		(MQEVR_ENABLED, "Enabled")
+	)
+	(MQIA_BRIDGE_EVENT, "BridgeEvent", DisplayMapInitializer
+		(MQEVR_DISABLED, "Disabled")
+		(MQEVR_ENABLED, "Enabled")
+	)
+#ifdef MQIA_CERT_VAL_POLICY
+	(MQIA_CERT_VAL_POLICY, "CertificateValPolicy", DisplayMapInitializer
+		(MQ_CERT_VAL_POLICY_ANY, "Policy Any")
+		(MQ_CERT_VAL_POLICY_RFC5280, "Policy RFC5280")
+	)
+#endif
+	(MQIA_QMGR_CFCONLOS, "CFConlos", DisplayMapInitializer
+		(MQCFCONLOS_TERMINATE, "Terminate")
+		(MQCFCONLOS_TOLERATE, "Tolerate")
+	)
+	(MQIA_CHANNEL_AUTO_DEF, "ChannelAutoDef", DisplayMapInitializer
+		(MQCHAD_DISABLED, "Disabled")
+		(MQCHAD_ENABLED, "Enabled")
+	)
+	(MQIA_CHANNEL_AUTO_DEF_EVENT, "ChannelAutoDefEvent", DisplayMapInitializer
+		(MQEVR_DISABLED, "Disabled")
+		(MQEVR_ENABLED, "Enabled")
+	)
+	(MQCA_CHANNEL_AUTO_DEF_EXIT, "ChannelAutoDefExit")
+	(MQIA_CHLAUTH_RECORDS, "ChannelAuthenticationRecords", DisplayMapInitializer
+		(MQCHLA_DISABLED, "Disabled")
+		(MQCHLA_ENABLED, "Enabled")
+	)
+	(MQIA_CHANNEL_EVENT, "ChannelEvent", DisplayMapInitializer
+		(MQEVR_DISABLED, "Disabled")
+		(MQEVR_ENABLED, "Enabled")
+		(MQEVR_EXCEPTION, "Exception")
+	)
+	(MQIA_CHINIT_CONTROL, "ChannelInitiatorControl", DisplayMapInitializer
+		(MQSVC_CONTROL_MANUAL, "Manual")
+		(MQSVC_CONTROL_Q_MGR, "Qmgr")
+		)
+	(MQIA_MONITORING_CHANNEL, "ChannelMonitoring", DisplayMapInitializer
+		(MQMON_NONE, "None")
+		(MQMON_Q_MGR, "Qmgr")
+		(MQMON_OFF, "Off")
+		(MQMON_LOW, "Low")
+		(MQMON_MEDIUM, "Medium")
+		(MQMON_HIGH, "High")
+	)
+	(MQIA_STATISTICS_CHANNEL, "ChannelStatistics", DisplayMapInitializer
+		(MQMON_NONE, "None")
+		(MQMON_Q_MGR, "Qmgr")
+		(MQMON_OFF, "Off")
+		(MQMON_LOW, "Low")
+		(MQMON_MEDIUM, "Medium")
+		(MQMON_HIGH, "High")
+	)
+	(MQIA_CHINIT_ADAPTERS, "ChinitAdapters")
+	(MQIA_CHINIT_DISPATCHERS, "ChinitDispatchers")
+	(MQCA_CHINIT_SERVICE_PARM, "ChinitServiceParm")
+	(MQIA_CHINIT_TRACE_AUTO_START, "ChinitTraceAutoStart", DisplayMapInitializer
+		(MQTRAXSTR_YES, "Yes")
+		(MQTRAXSTR_NO, "No")
+	)
+	(MQIA_CHINIT_TRACE_TABLE_SIZE, "ChinitTraceTableSize")
+	(MQIA_MONITORING_AUTO_CLUSSDR, "ClusterSenderMonitoringDefault", DisplayMapInitializer
+		(MQMON_Q_MGR, "Qmgr")
+		(MQMON_OFF, "Off")
+		(MQMON_LOW, "Low")
+		(MQMON_MEDIUM, "Medium")
+		(MQMON_HIGH, "High")
+	)
+	(MQIA_STATISTICS_AUTO_CLUSSDR, "ClusterSenderStatistics", DisplayMapInitializer
+		(MQMON_Q_MGR, "Qmgr")
+		(MQMON_OFF, "Off")
+		(MQMON_LOW, "Low")
+		(MQMON_MEDIUM, "Medium")
+		(MQMON_HIGH, "High")
+	)
+	(MQCA_CLUSTER_WORKLOAD_DATA, "ClusterWorkLoadData")
+	(MQCA_CLUSTER_WORKLOAD_EXIT, "ClusterWorkLoadExit")
+	(MQIA_CLUSTER_WORKLOAD_LENGTH, "ClusterWorkLoadLength")
+	(MQIA_CLWL_MRU_CHANNELS, "CLWLMRUChannels")
+	(MQIA_CLWL_USEQ, "CLWLUseQ", DisplayMapInitializer
+		(MQCLWL_USEQ_ANY, "Any")
+		(MQCLWL_USEQ_LOCAL, "Local")
+	)
+	(MQIA_CODED_CHAR_SET_ID, "CodedCharSetID")
+	(MQIA_COMMAND_EVENT, "CommandEvent", DisplayMapInitializer
+		(MQEVR_DISABLED, "Disabled")
+		(MQEVR_ENABLED, "Enabled")
+		(MQEVR_NO_DISPLAY, "NoDisplay")
+	)
+	(MQCA_COMMAND_INPUT_Q_NAME, "CommandInputQName")
+	(MQIA_COMMAND_LEVEL, "CommandLevel", DisplayMapInitializer
+		(MQCMDL_LEVEL_1, "Level 1")
+		(MQCMDL_LEVEL_101, "Level 101")
+		(MQCMDL_LEVEL_110, "Level 110")
+		(MQCMDL_LEVEL_200, "Level 200")
+		(MQCMDL_LEVEL_220, "Level 220")
+		(MQCMDL_LEVEL_221, "Level 221")
+		(MQCMDL_LEVEL_320, "Level 320")
+		(MQCMDL_LEVEL_420, "Level 420")
+		(MQCMDL_LEVEL_500, "Level 500")
+		(MQCMDL_LEVEL_510, "Level 510")
+		(MQCMDL_LEVEL_520, "Level 520")
+		(MQCMDL_LEVEL_530, "Level 530")
+		(MQCMDL_LEVEL_531, "Level 531")
+		(MQCMDL_LEVEL_600, "Level 600")
+		(MQCMDL_LEVEL_700, "Level 700")
+		(MQCMDL_LEVEL_701, "Level 701")
+		(MQCMDL_LEVEL_710, "Level 710")
+	)
+	(MQIA_CMD_SERVER_CONTROL, "CommandServerControl", DisplayMapInitializer
+		(MQSVC_CONTROL_MANUAL, "Manual")
+		(MQSVC_CONTROL_Q_MGR, "Qmgr")
+	)
+	(MQIA_CONFIGURATION_EVENT, "ConfigurationEvent", DisplayMapInitializer
+		(MQEVR_DISABLED, "Disabled")
+		(MQEVR_ENABLED, "Enabled")
+	)
+	(MQCA_CUSTOM, "Custom")
+	(MQCA_DEAD_LETTER_Q_NAME, "DeadLetterQName")
+#ifdef MQIA_DEF_CLUSTER_XMIT_Q_TYPE
+	(MQIA_DEF_CLUSTER_XMIT_Q_TYPE, "DefClusterXmitQueueType", DisplayMapInitializer
+		(MQCLXQ_SCTQ, "SCTQ")
+		(MQCLXQ_CHANNEL, "Channel")
+	)
+#endif
+	(MQCA_DEF_XMIT_Q_NAME, "DefXmitQName")
+	(MQIA_DIST_LISTS, "DistLists", DisplayMapInitializer
+		(MQDL_SUPPORTED, "Supported")
+		(MQDL_NOT_SUPPORTED, "Not Supported")
+	)
+	(MQCA_DNS_GROUP, "DNSGroup")
+	(MQIA_DNS_WLM, "DNSWLM", DisplayMapInitializer
+		(MQDNSWLM_YES, "Yes")
+		(MQDNSWLM_NO, "No")
+	)
+	(MQIA_SUITE_B_STRENGTH, "EncryptionPolicySuiteB", DisplayMapInitializer
+		(MQ_SUITE_B_NONE, "None")
+		(MQ_SUITE_B_128_BIT, "128 Bit")
+		(MQ_SUITE_B_192_BIT, "192 Bit")
+	)
+	(MQIA_EXPIRY_INTERVAL, "ExpiryInterval")
+	(MQIA_GROUP_UR, "GroupUR", DisplayMapInitializer
+		(MQGUR_DISABLED, "Disabled")
+		(MQGUR_ENABLED, "Enabled")
+	)
+	(MQIA_IGQ_PUT_AUTHORITY, "IGQPutAuthority", DisplayMapInitializer
+		(MQIGQPA_DEFAULT, "Default")
+		(MQIGQPA_CONTEXT, "Context")
+		(MQIGQPA_ONLY_IGQ, "Only IGQ")
+		(MQIGQPA_ALTERNATE_OR_IGQ, "Alternate or IGQ")
+	)
+	(MQCA_IGQ_USER_ID, "IGQUserId")
+	(MQIA_INHIBIT_EVENT, "InhibitEvent", DisplayMapInitializer
+		(MQEVR_DISABLED, "Disabled")
+		(MQEVR_ENABLED, "Enabled")
+	)
+	(MQIA_INTRA_GROUP_QUEUING, "IntraGroupQueueing", DisplayMapInitializer
+		(MQIGQ_DISABLED, "Disabled")
+		(MQIGQ_ENABLED, "Enabled")
+	)
+	(MQIA_IP_ADDRESS_VERSION, "IPAddressVersion", DisplayMapInitializer
+		(MQIPADDR_IPV4, "IPV4")
+		(MQIPADDR_IPV6, "IPV6")
+	)
+	(MQIA_LISTENER_TIMER, "ListenerTimer")
+	(MQIA_LOCAL_EVENT, "LocalEvent", DisplayMapInitializer
+		(MQEVR_DISABLED, "Disabled")
+		(MQEVR_ENABLED, "Enabled")
+	)
+	(MQIA_LOGGER_EVENT, "LoggerEvent", DisplayMapInitializer
+		(MQEVR_DISABLED, "Disabled")
+		(MQEVR_ENABLED, "Enabled")
+	)
+	(MQCA_LU_GROUP_NAME, "LUGroupName")
+	(MQCA_LU_NAME, "LUName")
+	(MQCA_LU62_ARM_SUFFIX, "LU62ARMSuffix")
+	(MQIA_LU62_CHANNELS, "LU62Channels")
+	(MQIA_ACTIVE_CHANNELS, "MaxActiveChannels")
+	(MQIA_MAX_CHANNELS, "MaxChannels")
+	(MQIA_MAX_HANDLES, "MaxHandles")
+	(MQIA_MAX_MSG_LENGTH, "MaxMsgLength")
+	(MQIA_MAX_PRIORITY, "MaxPriority")
+	(MQIA_MAX_PROPERTIES_LENGTH, "MaxPropertiesLength")
+	(MQIA_MAX_UNCOMMITTED_MSGS, "MaxUncommitedMsgs")
+	(MQIA_ACCOUNTING_MQI, "MQIAccounting", DisplayMapInitializer
+		(MQMON_OFF, "Off")
+		(MQMON_ON, "On")
+	)
+	(MQIA_STATISTICS_MQI, "MQIStatistics", DisplayMapInitializer
+		(MQMON_OFF, "Off")
+		(MQMON_ON, "On")
+	)
+	(MQIA_MSG_MARK_BROWSE_INTERVAL, "MsgMarkBrowseInterval")
+	(MQIA_OUTBOUND_PORT_MAX, "OutBoundPortMax")
+	(MQIA_OUTBOUND_PORT_MIN, "OutBoundPortMin")
+	(MQCA_PARENT, "Parent")
+	(MQIA_PERFORMANCE_EVENT, "LoggerEvent", DisplayMapInitializer
+		(MQEVR_DISABLED, "Disabled")
+		(MQEVR_ENABLED, "Enabled")
+	)
 	(MQIA_PLATFORM, "Platform", DisplayMapInitializer
 		(MQPL_UNIX, "UNIX")
 		(MQPL_NSK, "Compaq NonStop Kernel")
@@ -48,18 +281,166 @@ Dictionary MQMapper::_dictionary = Dictionary()
 		(MQPL_WINDOWS_NT, "Windows")
 		(MQPL_ZOS, "z/OS")
 	)
-	(MQIA_CODED_CHAR_SET_ID, "CodedCharSetID")
-	(MQCA_COMMAND_INPUT_Q_NAME, "CommandInputQName")
-	(MQIA_COMMAND_LEVEL, "CommandLevel")
-	(MQCA_DEAD_LETTER_Q_NAME, "DeadLetterQName")
+#ifdef MQIA_PROT_POLICY_CAPABILITY
+	(MQIA_PROT_POLICY_CAPABILITY, "SplCap", DisplayMapInitializer
+		(MQCAP_SUPPORTED, "Supported")
+		(MQCAP_NOT_SUPPORTED, "Not Supported")
+	)
+#endif
+	(MQIA_PUBSUB_CLUSTER, "PubSubClus", DisplayMapInitializer
+		(MQPSCLUS_ENABLED, "Enabled")
+		(MQPSCLUS_DISABLED, "Disabled")
+	)
+	(MQIA_PUBSUB_MAXMSG_RETRY_COUNT, "PubSubMaxMsgRetryCount")
+	(MQIA_PUBSUB_MODE, "PubSubMode", DisplayMapInitializer
+		(MQPSM_COMPAT, "Compat")
+		(MQPSM_DISABLED, "Disabled")
+		(MQPSM_ENABLED, "Enabled")
+	)
+	(MQIA_PUBSUB_NP_MSG, "PubSubNPInputMsg", DisplayMapInitializer
+		(MQUNDELIVERED_DISCARD, "Discard")
+		(MQUNDELIVERED_KEEP, "Keep")
+	)
+	(MQIA_PUBSUB_NP_RESP, "PubSubNPResponse", DisplayMapInitializer
+		(MQUNDELIVERED_NORMAL, "Normal")
+		(MQUNDELIVERED_SAFE, "Safe")
+		(MQUNDELIVERED_DISCARD, "Discard")
+		(MQUNDELIVERED_KEEP, "Keep")
+	)
+	(MQIA_PUBSUB_SYNC_PT, "PubSubSyncPoiunt", DisplayMapInitializer
+		(MQSYNCPOINT_IFPER, "IFPER")
+		(MQSYNCPOINT_YES, "Yes")
+	)
 	(MQCA_Q_MGR_DESC, "QMgrDesc")
 	(MQCA_Q_MGR_IDENTIFIER, "QMgrIdentifier")
+	(MQCA_QSG_NAME, "QSGName")
+	(MQIA_ACCOUNTING_Q, "QueueAccounting", DisplayMapInitializer
+		(MQMON_NONE, "None")
+		(MQMON_OFF, "Off")
+		(MQMON_ON, "On")
+	)
+	(MQIA_MONITORING_Q, "QueueMonitoring", DisplayMapInitializer
+		(MQMON_OFF, "Off")
+		(MQMON_NONE, "None")
+		(MQMON_LOW, "Low")
+		(MQMON_MEDIUM, "Medium")
+		(MQMON_HIGH, "High")
+	)
+	(MQIA_STATISTICS_Q, "QueueStatistics", DisplayMapInitializer
+		(MQMON_NONE, "None")
+		(MQMON_OFF, "Off")
+		(MQMON_ON, "On")
+	)
+	(MQIA_RECEIVE_TIMEOUT, "ReceiveTimeout")
+	(MQIA_RECEIVE_TIMEOUT_MIN, "ReceiveTimeoutMin")
+	(MQIA_RECEIVE_TIMEOUT_TYPE, "ReceiveTimeoutType", DisplayMapInitializer
+		(MQRCVTIME_MULTIPLY, "Multiply")
+		(MQRCVTIME_ADD, "Add")
+		(MQRCVTIME_EQUAL, "Equal")
+	)
+	(MQIA_REMOTE_EVENT, "RemoveEvent", DisplayMapInitializer
+		(MQEVR_DISABLED, "Disabled")
+		(MQEVR_ENABLED, "Enabled")
+	)
+	(MQCA_REPOSITORY_NAME, "RepositoryName")
+	(MQCA_REPOSITORY_NAMELIST, "RepositoryNamelist")
+	(MQIA_SECURITY_CASE, "SecurityCase", DisplayMapInitializer
+		(MQSCYC_UPPER, "Upper")
+		(MQSCYC_MIXED, "Mixed")
+	)
+	(MQIA_SHARED_Q_Q_MGR_NAME, "SharedQQmgrName", DisplayMapInitializer
+		(MQSQQM_USE, "Use")
+		(MQSQQM_IGNORE, "Ignore")
+	)
+	(MQCA_SSL_CRL_NAMELIST, "SSLCRLNamelist")
+	(MQCA_SSL_CRYPTO_HARDWARE, "SSLCryptoHardware")
+	(MQIA_SSL_EVENT, "SSLEvent", DisplayMapInitializer
+		(MQEVR_DISABLED, "Disabled")
+		(MQEVR_ENABLED, "Enabled")
+	)
+	(MQIA_SSL_FIPS_REQUIRED, "SSLFipsRequired", DisplayMapInitializer
+		(MQSSL_FIPS_NO, "No")
+		(MQSSL_FIPS_YES, "Yes")
+	)
+	(MQCA_SSL_KEY_REPOSITORY, "SSLKeyRepository")
+	(MQIA_SSL_RESET_COUNT, "SSLKeyResetCount")
+	(MQIA_SSL_TASKS, "SSLTasks")
+	(MQIA_START_STOP_EVENT, "StartStopEvent", DisplayMapInitializer
+		(MQEVR_DISABLED, "Disabled")
+		(MQEVR_ENABLED, "Enabled")
+	)
+	(MQIA_STATISTICS_INTERVAL, "StatisticsInterval")
+	(MQIA_SYNCPOINT, "SyncPoint", DisplayMapInitializer
+		(MQSP_AVAILABLE, "Available")
+		(MQSP_NOT_AVAILABLE, "Not Available")
+	)
+	(MQIA_TCP_CHANNELS, "TCPChannels")
+	(MQIA_TCP_KEEP_ALIVE, "TCPKeepAlive", DisplayMapInitializer
+		(MQTCPKEEP_NO, "No")
+		(MQTCPKEEP_YES, "Yes")
+	)
+	(MQCA_TCP_NAME, "TCPName")
+	(MQIA_TCP_STACK_TYPE, "TCPStackType", DisplayMapInitializer
+		(MQTCPSTACK_SINGLE, "Single")
+		(MQTCPSTACK_MULTIPLE, "Multiple")
+	)
+	(MQIA_TRACE_ROUTE_RECORDING, "TraceRouteRecording", DisplayMapInitializer
+		(MQRECORDING_DISABLED, "Disabled")
+		(MQRECORDING_MSG, "Msg")
+		(MQRECORDING_Q, "Q")
+	)
+	(MQIA_TREE_LIFE_TIME, "TreeLifeTime")
+	(MQIA_TRIGGER_INTERVAL, "TriggerInterval")
+	(MQCA_VERSION, "Version")
+	(MQIA_XR_CAPABILITY, "XrCapability", DisplayMapInitializer
+		(MQCAP_SUPPORTED, "Supported")
+		(MQCAP_NOT_SUPPORTED, "Not Supported")
+	)
+
+	// QueueManager Status properties
+	(MQIACF_CHINIT_STATUS, "ChannelInitiatorStatus", DisplayMapInitializer
+		(MQSVC_STATUS_STOPPED, "Stopped")
+		(MQSVC_STATUS_STARTING, "Starting")
+		(MQSVC_STATUS_RUNNING, "Running")
+		(MQSVC_STATUS_STOPPING, "Stopping")
+		(MQSVC_STATUS_RETRYING, "Retrying")
+	)
+	(MQIACF_CMD_SERVER_STATUS, "CommandServerStatus", DisplayMapInitializer
+		(MQSVC_STATUS_STOPPED, "Stopped")
+		(MQSVC_STATUS_STARTING, "Starting")
+		(MQSVC_STATUS_RUNNING, "Running")
+		(MQSVC_STATUS_STOPPING, "Stopping")
+		(MQSVC_STATUS_RETRYING, "Retrying")
+	)
+	(MQIACF_CONNECTION_COUNT, "ConnectionCount")
+	(MQCACF_CURRENT_LOG_EXTENT_NAME, "CurrentLog")
+	(MQCA_INSTALLATION_DESC, "InstallationDesc")
+	(MQCA_INSTALLATION_NAME, "InstallationName")
+	(MQCA_INSTALLATION_PATH, "InstallationPath")
+	(MQCACF_LOG_PATH, "LogPath")
+	(MQCACF_MEDIA_LOG_EXTENT_NAME, "MediaRecoveryLog")
+	(MQIACF_Q_MGR_STATUS, "QMgrStatus", DisplayMapInitializer
+		(MQQMSTA_STARTING, "Starting")
+		(MQQMSTA_RUNNING, "Running")
+		(MQQMSTA_QUIESCING, "Quiescing")
+	)
+	(MQCACF_RESTART_LOG_EXTENT_NAME, "RestartRecoveryLog")
+	(MQCACF_Q_MGR_START_DATE, "StartDate")
+	(MQCACF_Q_MGR_START_TIME, "StartTime")
+	(MQIACF_PERMIT_STANDBY, "PermitStandby", DisplayMapInitializer
+		(MQSTDBY_NOT_PERMITTED, "Not Permitted")
+		(MQSTDBY_PERMITTED, "Permitted")
+	)
 
 	// QUEUE properties
 	(MQCA_BACKOUT_REQ_Q_NAME, "BackoutRequeueName")
 	(MQIA_BACKOUT_THRESHOLD, "BackoutThreshold")
-	(MQCA_BASE_Q_NAME, "BaseQName")
+	//(MQCA_BASE_Q_NAME, "BaseQName")
+	(MQCA_BASE_OBJECT_NAME, "BaseObjectName")
 	(MQCA_CF_STRUC_NAME, "CFStructure")
+#ifdef MQCA_CLUS_CHL_NAME
+	(MQCA_CLUS_CHL_NAME, "ClusterChannelName")
+#endif
 	(MQCA_CLUSTER_DATE, "ClusterDate")
 	(MQCA_CLUSTER_TIME, "ClusterTime")
 	(MQIA_CLUSTER_Q_TYPE, "ClusterQType", DisplayMapInitializer
@@ -75,8 +456,6 @@ Dictionary MQMapper::_dictionary = Dictionary()
 		(MQCLWL_USEQ_ANY, "Any")
 		(MQCLWL_USEQ_LOCAL, "Local")
 	)
-	(MQCA_CREATION_DATE, "CreationDate")
-	(MQCA_CREATION_TIME, "CreationTime")
 	(MQIA_CURRENT_Q_DEPTH, "CurrentQDepth")
 	(MQIA_DEF_PUT_RESPONSE_TYPE, "DefaultPutResponse", DisplayMapInitializer
 		(MQPRT_SYNC_RESPONSE, "Sync")
@@ -85,10 +464,10 @@ Dictionary MQMapper::_dictionary = Dictionary()
 	(MQIA_DEF_BIND, "DefBind", DisplayMapInitializer
 		(MQBND_BIND_ON_OPEN, "On Open")
 		(MQBND_BIND_NOT_FIXED, "Not Fixed")
-	)
-	#ifdef MQBND_BIND_ON_GROUP
+#ifdef MQBND_BIND_ON_GROUP
 		(MQBND_BIND_ON_GROUP, "On Group")
-	#endif
+#endif
+	)
 	(MQIA_DEFINITION_TYPE, "DefinitionType", DisplayMapInitializer
 		(MQQDT_PREDEFINED, "Predefined")
 		(MQQDT_PERMANENT_DYNAMIC, "Permanent Dynamically")
@@ -308,6 +687,11 @@ Dictionary MQMapper::_dictionary = Dictionary()
 		(MQCOMPRESS_NONE, "None")
 		(MQCOMPRESS_SYSTEM, "System")
 		(MQCOMPRESS_NOT_AVAILABLE, "Not Available")
+		(MQCOMPRESS_RLE, "RLE")
+		(MQCOMPRESS_ZLIBFAST, "Zlib Fast")
+		(MQCOMPRESS_ZLIBHIGH, "Zlib High")
+		(MQCOMPRESS_ANY, "Any")
+		(MQCOMPRESS_SYSTEM, "System")
 	)
 	(MQIACH_HB_INTERVAL, "HeartbeatInterval")
 #ifdef MQIACH_IN_DOUBT
@@ -390,11 +774,14 @@ Dictionary MQMapper::_dictionary = Dictionary()
 	(MQCACH_SSL_PEER_NAME, "SSLPeerName")
 	(MQCACH_TP_NAME, "TpName")
 	(MQIACH_XMIT_PROTOCOL_TYPE, "TransportType", DisplayMapInitializer
+		(MQXPT_ALL, "All")
+		(MQXPT_LOCAL, "Local")
 		(MQXPT_LU62, "LU62")
 		(MQXPT_TCP, "TCP")
 		(MQXPT_NETBIOS, "NetBIOS")
 		(MQXPT_SPX, "SPX")
 		(MQXPT_DECNET, "DECnet")
+		(MQXPT_UDP, "UDP")
 	)
 #ifdef MQIA_USE_DEAD_LETTER_Q
 	(MQIA_USE_DEAD_LETTER_Q, "UseDLQ", DisplayMapInitializer
@@ -577,6 +964,34 @@ Dictionary MQMapper::_dictionary = Dictionary()
 	(MQCACF_APPL_NAME, "ApplName")
 	(MQCACF_OBJECT_Q_MGR_NAME, "ObjectQMgrName")
 
+	// Listener Properties
+	(MQIACH_ADAPTER, "Adapter")
+	(MQIACH_BACKLOG, "Backlog")
+	(MQIACH_COMMAND_COUNT, "Commands")
+	(MQCACH_IP_ADDRESS, "IPAddress")
+	(MQCACH_LISTENER_DESC, "ListenerDesc")
+	(MQCACH_LISTENER_NAME, "ListenerName")
+	(MQCACH_LOCAL_NAME, "LocalName")
+	(MQIACH_NAME_COUNT, "NetbiosNames")
+	(MQIACH_PORT, "Port")
+	(MQIACF_PROCESS_ID, "ProcessId")
+	(MQIACH_SESSION_COUNT, "Sessions")
+	(MQIACH_SOCKET, "Socket")
+	(MQIACH_LISTENER_CONTROL, "StartMode", DisplayMapInitializer
+		(MQSVC_CONTROL_MANUAL, "Manual")
+		(MQSVC_CONTROL_Q_MGR, "Qmgr")
+		(MQSVC_CONTROL_Q_MGR_START, "Qmgr Start")
+	)
+
+	// Listener Status Properties
+	(MQCACH_LISTENER_START_DATE, "StartDate")
+	(MQCACH_LISTENER_START_TIME, "ListenerStartTime")
+	(MQIACH_LISTENER_STATUS, "Status", DisplayMapInitializer
+		(MQSVC_STATUS_STARTING, "Starting")
+		(MQSVC_STATUS_RUNNING, "Running")
+		(MQSVC_STATUS_STOPPING, "Stopping")
+	)
+
 	// Process Properties
 	(MQCA_PROCESS_NAME, "ProcessName")
 
@@ -586,6 +1001,43 @@ Dictionary MQMapper::_dictionary = Dictionary()
 
 	// Namelist Properties
 	(MQCA_NAMELIST_NAME, "NamelistName")
+
+	// Event Properties
+	(MQIACF_REASON_QUALIFIER, "ReasonQualifier", DisplayMapInitializer
+		(MQRQ_CONN_NOT_AUTHORIZED, "Conn Not Authorized")
+		(MQRQ_OPEN_NOT_AUTHORIZED, "Open Not Authorized")
+		(MQRQ_CLOSE_NOT_AUTHORIZED, "Close Not Authorized")
+		(MQRQ_CMD_NOT_AUTHORIZED, "Cmd Not Authorized")
+		(MQRQ_Q_MGR_STOPPING, "Qmgr Stopping")
+		(MQRQ_Q_MGR_QUIESCING, "Qmgr Quiescing")
+		(MQRQ_CHANNEL_STOPPED_OK, "Channel Stopped OK")
+		(MQRQ_CHANNEL_STOPPED_ERROR, "Channel Stopped Error")
+		(MQRQ_CHANNEL_STOPPED_RETRY, "Channel Stopped Retry")
+		(MQRQ_CHANNEL_STOPPED_DISABLED, "Channel Stopped Disabled")
+		(MQRQ_BRIDGE_STOPPED_OK, "Bridge Stopped OK")
+		(MQRQ_BRIDGE_STOPPED_ERROR, "Bridge Stopped Error")
+		(MQRQ_SSL_HANDSHAKE_ERROR, "SSL Handshake Error")
+		(MQRQ_SSL_CIPHER_SPEC_ERROR, "SSL Cipher Spec Error")
+		(MQRQ_SSL_CLIENT_AUTH_ERROR, "SSL Client Auth Error")
+		(MQRQ_SSL_PEER_NAME_ERROR, "SSL Peer Name Error")
+		(MQRQ_SUB_NOT_AUTHORIZED, "Sub Not Authorized")
+		(MQRQ_SUB_DEST_NOT_AUTHORIZED, "Sub Dest Not Authorized")
+		(MQRQ_SSL_UNKNOWN_REVOCATION, "SSL Unknown Revocation")
+		(MQRQ_SYS_CONN_NOT_AUTHORIZED, "SyS Conn Not Authorized")
+		(MQRQ_CHANNEL_BLOCKED_ADDRESS, "Channel Blocked Address")
+		(MQRQ_CHANNEL_BLOCKED_USERID, "Channel Blocked Userid")
+		(MQRQ_CHANNEL_BLOCKED_NOACCESS, "Channel Blocked NoAccess")
+		(MQRQ_MAX_ACTIVE_CHANNELS, "Max Active Channels")
+		(MQRQ_MAX_CHANNELS, "Max Channels")
+		(MQRQ_SVRCONN_INST_LIMIT, "SvrConn Inst Limit")
+		(MQRQ_CLIENT_INST_LIMIT, "Client Inst Limit")
+		(MQRQ_CAF_NOT_INSTALLED, "CAF Not Installed")
+	)
+	// Bridge Events
+	(MQIACF_BRIDGE_TYPE, "BridgeType", DisplayMapInitializer
+		(MQBT_OTMA, "OTMA")
+	)
+	(MQCACF_BRIDGE_NAME, "BridgeName")
 ;
 
 #define RCSTR(x) (x, #x)
@@ -1136,33 +1588,68 @@ void MQMapper::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json)
 	for(std::vector<MQLONG>::iterator it = parameters.begin(); it != parameters.end(); ++it)
 	{
 		std::string name = _dictionary.getName(*it);
-		if ( ! name.empty() )
+		if ( name.empty() )
 		{
-			Poco::JSON::Object::Ptr field = new Poco::JSON::Object();
-			json->set(name, field);
+			name = "id_" + Poco::NumberFormatter::format(*it);
+		}
 
-			field->set("id", *it);
+		Poco::JSON::Object::Ptr field = new Poco::JSON::Object();
+		json->set(name, field);
 
-			if ( pcf.isNumber(*it) )
+		field->set("id", *it);
+
+		if ( pcf.isNumber(*it) )
+		{
+			MQLONG value = pcf.getParameterNum(*it);
+			field->set("value", value);
+
+			if ( _dictionary.hasDisplayMap(*it) )
 			{
-				MQLONG value = pcf.getParameterNum(*it);
-				field->set("value", value);
-
-				if ( _dictionary.hasDisplayMap(*it) )
+				std::string displayValue = _dictionary.getDisplayValue(*it, value);
+				if ( displayValue.empty() )
 				{
-					std::string displayValue = _dictionary.getDisplayValue(*it, value);
-					field->set("display", displayValue.empty() 
-						? Poco::format("Unknown value %ld for %ld", value, *it) : displayValue);
+					displayValue = "Unknown value " + Poco::NumberFormatter::format(value) + " for " + Poco::NumberFormatter::format(*it);
 				}
+				field->set("display", displayValue);
 			}
-			else if ( pcf.isString(*it) )
+		}
+		else if ( pcf.isString(*it) )
+		{
+			field->set("value", pcf.getParameterString(*it));
+		}
+		else if ( pcf.isNumberList(*it) )
+		{
+			std::vector<MQLONG> values = pcf.getParameterNumList(*it);
+			Poco::JSON::Array::Ptr jsonValues = new Poco::JSON::Array();
+			field->set("value", jsonValues);
+
+			if ( _dictionary.hasDisplayMap(*it) )
 			{
-				field->set("value", pcf.getParameterString(*it));
+				for(std::vector<MQLONG>::iterator vit = values.begin(); vit != values.end(); ++vit)
+				{
+					Poco::JSON::Object::Ptr jsonValueObject = new Poco::JSON::Object();
+
+					std::string displayValue = _dictionary.getDisplayValue(*it, *vit);
+					if ( displayValue.empty() )
+					{
+						displayValue = "Unknown value " + Poco::NumberFormatter::format(*vit) + " for " + Poco::NumberFormatter::format(*it);
+					}
+					jsonValueObject->set("value", *vit);
+					jsonValueObject->set("display", displayValue);
+					jsonValues->add(jsonValueObject);
+				}
 			}
 			else
 			{
-				//TODO:
+				for(std::vector<MQLONG>::iterator vit = values.begin(); vit != values.end(); ++vit)
+				{
+					jsonValues->add(*vit);
+				}
 			}
+		}
+		else
+		{
+			//TODO:
 		}
 	}
 }

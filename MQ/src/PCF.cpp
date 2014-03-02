@@ -19,9 +19,11 @@
  * permissions and limitations under the Licence.
  */
 #include <string.h> // For memcpy
-#include <Poco/DateTimeParser.h>
 #include <cmqc.h>
-#include <MQ/PCF.h>
+
+#include "Poco/DateTimeParser.h"
+#include "MQ/PCF.h"
+
 namespace MQ
 {
 
@@ -85,16 +87,37 @@ std::string PCF::getParameterString(MQLONG parameter) const
 		throw Poco::NotFoundException(parameter);
 
 	MQLONG *pcfType = (MQLONG*) &buffer()[it->second];
-	if ( *pcfType == MQCFT_STRING || *pcfType == MQCFT_BYTE_STRING )
+	if ( *pcfType == MQCFT_STRING )
 	{
 		MQCFST* pcfParam = (MQCFST*) &buffer()[it->second];
 		std::string result(pcfParam->String, pcfParam->StringLength);
 		return Poco::trimRightInPlace(result);
 	}
+	else if ( *pcfType == MQCFT_BYTE_STRING )
+	{
+		MQCFBS* pcfParam = (MQCFBS*) &buffer()[it->second];
+		return Message::getBufferAsHex(pcfParam->String, pcfParam->StringLength);
+	}
 
 	throw Poco::BadCastException(parameter);
 }
 
+BufferPtr PCF::getParameterByteString(MQLONG parameter) const
+{
+	MQCFH* header = (MQCFH*)(MQBYTE*) &(buffer()[0]);
+	std::map<MQLONG, int>::const_iterator it = _pointers.find(parameter);
+	if ( it == _pointers.end() )
+		throw Poco::NotFoundException(parameter);
+
+	MQLONG *pcfType = (MQLONG*) &buffer()[it->second];
+	if ( *pcfType == MQCFT_BYTE_STRING )
+	{
+		MQCFBS* pcfParam = (MQCFBS*) &buffer()[it->second];
+		return new Buffer(pcfParam->String, pcfParam->StringLength);
+	}
+
+	throw Poco::BadCastException(parameter);
+}
 
 std::string PCF::optParameterString(MQLONG parameter, const std::string& def) const
 {
@@ -140,6 +163,27 @@ MQLONG PCF::getParameterNum(MQLONG parameter) const
 	{
 		MQCFIN* pcfParam = (MQCFIN*) &buffer()[it->second];
 		return pcfParam->Value;
+	}
+
+	throw Poco::BadCastException(parameter);
+}
+
+std::vector<MQLONG> PCF::getParameterNumList(MQLONG parameter) const
+{
+	std::map<MQLONG, int>::const_iterator it = _pointers.find(parameter);
+	if ( it == _pointers.end() )
+		throw Poco::NotFoundException(parameter);
+
+	MQLONG *pcfType = (MQLONG*) &buffer()[it->second];
+	if ( *pcfType == MQCFT_INTEGER_LIST )
+	{
+		std::vector<MQLONG> list;
+		MQCFIL* pcfParam = (MQCFIL*) &buffer()[it->second];
+		for(int i = 0; i < pcfParam->Count; ++i)
+		{
+			list.push_back(pcfParam->Values[i]);
+		}
+		return list;
 	}
 
 	throw Poco::BadCastException(parameter);

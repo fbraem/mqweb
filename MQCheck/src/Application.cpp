@@ -146,10 +146,10 @@ int MQCheckApplication::main(const std::vector<std::string>& args)
 
 void MQCheckApplication::checkQueues(MQ::QueueManager::Ptr qmgr, MQ::CommandServer& cmdServer)
 {
-  MQ::PCF inquireQ(MQCMD_INQUIRE_Q);
+  MQ::PCF::Ptr inquireQ = new MQ::PCF(MQCMD_INQUIRE_Q);
   
   std::string queueName = config().getString("mqcheck.options.object", "*");
-  inquireQ.addParameter(MQCA_Q_NAME, queueName);
+  inquireQ->addParameter(MQCA_Q_NAME, queueName);
   
   std::string queueDepthOption = config().getString("mqcheck.options.qdepth", "");
   int queueDepth = -1;
@@ -164,7 +164,7 @@ void MQCheckApplication::checkQueues(MQ::QueueManager::Ptr qmgr, MQ::CommandServ
   }
   if ( queueDepth != -1 )
   {
-    inquireQ.addFilter(MQIA_CURRENT_Q_DEPTH, MQCFOP_NOT_LESS, queueDepth);
+    inquireQ->addFilter(MQIA_CURRENT_Q_DEPTH, MQCFOP_NOT_LESS, queueDepth);
   }
   
   std::vector<Poco::SharedPtr<MQ::PCF> > commandResponse;
@@ -229,10 +229,10 @@ void MQCheckApplication::checkQueues(MQ::QueueManager::Ptr qmgr, MQ::CommandServ
 
 void MQCheckApplication::checkChannelStatus(MQ::QueueManager::Ptr qmgr, MQ::CommandServer& cmdServer)
 {
-  MQ::PCF inquireChannelStatus(MQCMD_INQUIRE_CHANNEL_STATUS);
+	MQ::PCF::Ptr inquireChannelStatus = new MQ::PCF(MQCMD_INQUIRE_CHANNEL_STATUS);
 
   std::string channelName = config().getString("mqcheck.options.object", "*");
-  inquireChannelStatus.addParameter(MQCACH_CHANNEL_NAME, channelName);
+  inquireChannelStatus->addParameter(MQCACH_CHANNEL_NAME, channelName);
 
   std::vector<Poco::SharedPtr<MQ::PCF> > commandResponse;
   cmdServer.sendCommand(inquireChannelStatus, commandResponse);

@@ -26,8 +26,8 @@
 
 #include <string>
 
-#include <Poco/SharedPtr.h>
-#include <Poco/DateTime.h>
+#include "Poco/SharedPtr.h"
+#include "Poco/DateTime.h"
 
 namespace MQ {
 
