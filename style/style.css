@@ -53,10 +53,11 @@ h6
 /*  font: italic 90% arial, sans-serif; */
   color: #362C20;}
 
-a, a:hover
-{ outline: none;
+a, a:hover { 
+  outline: none;
   text-decoration: underline;
-  color: #FD5BFF;}
+  /*color: #FD5BFF;*/
+}
 
 a:hover
 { text-decoration: none;}
