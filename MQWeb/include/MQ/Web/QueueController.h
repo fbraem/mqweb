@@ -53,6 +53,8 @@ public:
 		///  queueDepth: Only select queues which has at least queueDepth messages.
 		///  queueUsage: xmitq or normal (default is normal)
 		///  type: queue type. Possible values: All, Local, Alias, Cluster, Model or Remote (default is All)
+		///  excludeSystem: when 'true', queues starting with 'SYSTEM.' are excluded.
+		///  excludeTemp: when 'true', temporary queues are excluded.
 		///
 		/// Query parameters are ignored when a queueName is passed in the URI path.
 		///
