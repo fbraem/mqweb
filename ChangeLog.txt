@@ -1,3 +1,7 @@
+0.0.10
+  - queueExcludeSystem/queueExcludeTemp renamed into excludeSystem/excludeTemp
+  - Add inquire clusterqmgr (clusqmgr)
+
 0.0.9
   - Limit browse of messages to 16K
   - To ease installation, switched to statically linked POCO
