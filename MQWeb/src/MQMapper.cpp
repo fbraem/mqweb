@@ -923,6 +923,23 @@ Dictionary MQMapper::_dictionary = Dictionary()
 	)
 	(MQIACH_XMITQ_TIME_INDICATOR, "XQTime")
 
+	// Cluster Queuemanager properties
+	(MQCA_CLUSTER_Q_MGR_NAME, "QMgrName")
+	(MQIACF_SUSPEND, "Suspend", DisplayMapInitializer
+		(MQSUS_NO, "No")
+		(MQSUS_YES, "Yes")
+	)
+	(MQIACF_Q_MGR_TYPE, "QMgrType", DisplayMapInitializer
+		(MQQMT_NORMAL, "Normal")
+		(MQQMT_REPOSITORY, "Repository")
+	)
+	(MQIACF_Q_MGR_DEFINITION_TYPE, "QMgrDefinitionType", DisplayMapInitializer
+		(MQQMDT_EXPLICIT_CLUSTER_SENDER, "Explicit Cluster Sender")
+		(MQQMDT_AUTO_CLUSTER_SENDER, "Auto Cluster Sender")
+		(MQQMDT_CLUSTER_RECEIVER, "Cluster Receiver")
+		(MQQMDT_AUTO_EXP_CLUSTER_SENDER, "Auto Exp Cluster Sender")
+	)
+
 	// Connection Properties
 	(MQIA_APPL_TYPE, "ApplType", DisplayMapInitializer
 		(MQAT_UNKNOWN, "Unknown")
@@ -1038,6 +1055,10 @@ Dictionary MQMapper::_dictionary = Dictionary()
 		(MQBT_OTMA, "OTMA")
 	)
 	(MQCACF_BRIDGE_NAME, "BridgeName")
+
+	// Extended Response
+	(MQBACF_RESPONSE_ID, "ResponseID")
+	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
 ;
 
 #define RCSTR(x) (x, #x)
