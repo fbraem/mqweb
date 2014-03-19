@@ -96,16 +96,20 @@ void MQController::beforeAction()
 		// is configured.
 		std::string qmgrConfig = "mq.web.qmgr." + _qmgr->name();
 		std::string qmgrConfigConnection = qmgrConfig + ".connection";
-		std::string qmgrConfigChannel = qmgrConfig + ".channel";
-
 		if ( config.has(qmgrConfigConnection) )
 		{
 			std::string connection;
 			std::string channel;
-
 			connection = config.getString(qmgrConfigConnection);
-			channel = config.getString(qmgrConfigChannel, "SYSTEM.DEFAULT.SVRCONN");
-
+			std::string qmgrConfigChannel = qmgrConfig + ".channel";
+			if ( config.has(qmgrConfigChannel) )
+			{
+				channel = config.getString(qmgrConfigChannel);
+			}
+			else
+			{
+				channel = config.getString("mq.web.defaultChannel", "SYSTEM.DEFAULT.SVRCONN");
+			}
 			_qmgr->connect(channel, connection);
 		}
 		else // Hope that there is a channel tab file available
