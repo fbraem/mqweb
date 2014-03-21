@@ -56,6 +56,8 @@ file:
    &lt;channelName&gt; is the name of the server connection channel. When no channel
    property is set, *SYSTEM.DEFAULT.SVRCONN* will be used as default.
 
+   > The default channel should be *SYSTEM.DEF.SVRCONN*. This will be solved in version 0.0.10
+
 Default Queuemanager
 --------------------
 
