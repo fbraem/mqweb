@@ -108,7 +108,7 @@ void MQController::beforeAction()
 			}
 			else
 			{
-				channel = config.getString("mq.web.defaultChannel", "SYSTEM.DEFAULT.SVRCONN");
+				channel = config.getString("mq.web.defaultChannel", "SYSTEM.DEF.SVRCONN");
 			}
 			_qmgr->connect(channel, connection);
 		}
