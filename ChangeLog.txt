@@ -1,6 +1,8 @@
 0.0.10
   - queueExcludeSystem/queueExcludeTemp renamed into excludeSystem/excludeTemp
   - Add inquire clusterqmgr (clusqmgr)
+  - Wrong default channel SYSTEM.DEFAULT.SVRCONN
+  - Add mq.web.defaultChannel configuration property
 
 0.0.9
   - Limit browse of messages to 16K
