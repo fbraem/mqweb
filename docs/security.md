@@ -86,13 +86,13 @@ following SET AUTHREC statement to the model queue:
 > MQ will grant access to this queue automatically.
 
 ###Configured queue
-When a reply queue is configured in the mqweb properties file, MQWeb needs
+When a reply queue is configured in the mqweb properties file, the MQWeb user needs
 permissions to use this queue. This sample uses *MQWEB.REPLY.Q01*:
 
     SET AUTHREC PROFILE(MQWEB.REPLY.Q01) +
     GROUP('mqweb') +
     OBJTYPE(QUEUE) +
-    AUTHADD(GET)
+    AUTHADD(GET,PUT)
 
 Queues
 ------
@@ -119,3 +119,4 @@ is needed because the event action inquires the current depth of the queue.
 Channels
 --------
 
+TODO
