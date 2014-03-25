@@ -1002,7 +1002,7 @@ Dictionary MQMapper::_dictionary = Dictionary()
 
 	// Listener Status Properties
 	(MQCACH_LISTENER_START_DATE, "StartDate")
-	(MQCACH_LISTENER_START_TIME, "ListenerStartTime")
+	(MQCACH_LISTENER_START_TIME, "StartTime")
 	(MQIACH_LISTENER_STATUS, "Status", DisplayMapInitializer
 		(MQSVC_STATUS_STARTING, "Starting")
 		(MQSVC_STATUS_RUNNING, "Running")
