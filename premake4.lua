@@ -92,4 +92,4 @@ solution "MQWeb"
 include "MQ"
 include "MQWeb"
 include "MQCheck"
-
+include "MQDictionary"

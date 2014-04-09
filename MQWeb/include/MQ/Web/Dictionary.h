@@ -30,7 +30,7 @@ public:
 	virtual ~Dictionary();
 		/// Destructor
 
-	Dictionary& operator()(MQLONG id, const std::string& name);
+	Dictionary& operator()(MQLONG id, const std::string& name = "");
 		/// Adds the name for the given id.
 
 	Dictionary& operator()(MQLONG id, const std::string& name, const DisplayMap& displayMap);
@@ -57,6 +57,14 @@ public:
 
 	bool hasDisplayMap(MQLONG id) const;
 		/// Returns true when the id has a corresponding map with display values.
+
+	std::map<MQLONG, std::string>::const_iterator begin() const;
+		/// Returns the begin iterator of the id map
+
+	std::map<MQLONG, std::string>::const_iterator end() const;
+		/// Returns the end iterator of the id map
+
+	void set(MQLONG id, const std::string& name);
 
 private:
 
@@ -107,6 +115,22 @@ inline bool Dictionary::hasDisplayMap(MQLONG id) const
 {
 	return _displayMaps.find(id) != _displayMaps.end();
 }
+
+inline std::map<MQLONG, std::string>::const_iterator Dictionary::begin() const
+{
+	return _idMap.begin();
+}
+
+inline std::map<MQLONG, std::string>::const_iterator Dictionary::end() const
+{
+	return _idMap.end();
+}
+
+inline void Dictionary::set(MQLONG id, const std::string& name)
+{
+	_idMap[id] = name;
+}
+
 
 }} // Namespace MQWeb
 

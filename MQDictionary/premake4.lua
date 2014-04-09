@@ -1,7 +1,7 @@
-project "MQWeb"
+project "MQDictionary"
   kind       "ConsoleApp"
   language   "C++"
-  targetname "mqweb"
+  targetname "mqdict"
   location   ( solution().location )
 
   configuration "Debug"
@@ -10,8 +10,8 @@ project "MQWeb"
   configuration { }  
 
   files { 
-            "src/*.cpp"
-          , "include/**.h"
+            "src/*.cpp",
+            "../MQWeb/src/Dictionary.cpp"
         }
 
   flags {
@@ -24,7 +24,7 @@ project "MQWeb"
         
   configuration "windows"
       flags { "WinMain" }
-	  defines { 
+  defines { 
               "_WINDOWS", 
               "_USRDLL", 
               "WIN32", 
@@ -47,21 +47,16 @@ project "MQWeb"
     includedirs { 
                     poco_dir .. "/Foundation/include"
                   , poco_dir .. "/Util/include"
-                  , poco_dir .. "/Net/include"
                   , poco_dir .. "/XML/include"
                   , poco_dir .. "/JSON/include"
                   , poco_dir .. "/Data/include"
                   , poco_dir .. "/Data/SQLite/include"
-                  , "include"
-                  , "../MQ/include"
+                  , "../MQWeb/include"
                   , mq_inc
                 }
 
   configuration "Debug"
-    links { 
-              "mqd"
-            , "PocoNetd" 
-            , "PocoUtild"
+    links {   "PocoUtild"
             , "PocoJSONd"
             , "PocoXMLd" 
             , "PocoDataSQLited"
@@ -70,10 +65,7 @@ project "MQWeb"
           }
   
   configuration "Release"
-    links { 
-              "mq"
-            , "PocoNet" 
-            , "PocoUtil"
+    links {   "PocoUtil"
             , "PocoJSON"
             , "PocoXML" 
             , "PocoDataSQLite"
