@@ -40,7 +40,6 @@ project "MQWeb"
   
     libdirs { 
                 poco_lib_dir
-                , "../bin/Debug"
             }
 
     -- Set the include paths
