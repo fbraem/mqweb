@@ -23,6 +23,7 @@
 
 #include "MQ/Web/Mapper.h"
 #include "MQ/Web/Dictionary.h"
+#include "MQ/Web/DictionaryCache.h"
 
 #include "MQ/CommandServer.h"
 
@@ -42,6 +43,9 @@ public:
 		/// Destructor
 
 	static void mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json);
+
+	static void mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& mapperName);
+
 		/// Turns a PCF into a JSON object
 
 	//static void mapNumberToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter);
@@ -65,6 +69,9 @@ protected:
 
 
 	static Dictionary _dictionary;
+
+	
+	static DictionaryCache _dictionaryCache;
 
 
 	static DisplayMap _reasonCodes;

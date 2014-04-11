@@ -25,6 +25,8 @@
 namespace MQ {
 namespace Web {
 
+DictionaryCache MQMapper::_dictionaryCache;
+
 Dictionary MQMapper::_dictionary = Dictionary()
 	// Common properties
 	(MQCA_ALTERATION_DATE, "AlterationDate")
@@ -1675,43 +1677,86 @@ void MQMapper::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json)
 	}
 }
 
-/*
-void MQMapper::mapNumberToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter)
+void MQMapper::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& mapperName)
 {
-	if ( pcf.hasParameter(parameter) )
+	Poco::SharedPtr<Dictionary> dict = _dictionaryCache.getDictionary(mapperName);
+
+	std::vector<MQLONG> parameters = pcf.getParameters();
+	for(std::vector<MQLONG>::iterator it = parameters.begin(); it != parameters.end(); ++it)
 	{
-		json->set(name, pcf.getParameterNum(parameter));
+		std::string name = _dictionary.getName(*it);
+		if ( name.empty() )
+		{
+			name = "id_" + Poco::NumberFormatter::format(*it);
+		}
+
+		Poco::JSON::Object::Ptr field = new Poco::JSON::Object();
+		json->set(name, field);
+
+		field->set("id", *it);
+
+		if ( pcf.isNumber(*it) )
+		{
+			MQLONG value = pcf.getParameterNum(*it);
+			field->set("value", value);
+
+			if ( dict->hasDisplayMap(*it) )
+			{
+				std::string displayValue = dict->getDisplayValue(*it, value);
+				if ( displayValue.empty() )
+				{
+					displayValue = "Unknown value " + Poco::NumberFormatter::format(value) + " for " + Poco::NumberFormatter::format(*it);
+				}
+				field->set("display", displayValue);
+			}
+		}
+		else if ( pcf.isString(*it) )
+		{
+			field->set("value", pcf.getParameterString(*it));
+		}
+		else if ( pcf.isNumberList(*it) )
+		{
+			std::vector<MQLONG> values = pcf.getParameterNumList(*it);
+			Poco::JSON::Array::Ptr jsonValues = new Poco::JSON::Array();
+			field->set("value", jsonValues);
+
+			if ( dict->hasDisplayMap(*it) )
+			{
+				for(std::vector<MQLONG>::iterator vit = values.begin(); vit != values.end(); ++vit)
+				{
+					Poco::JSON::Object::Ptr jsonValueObject = new Poco::JSON::Object();
+
+					std::string displayValue = dict->getDisplayValue(*it, *vit);
+					if ( displayValue.empty() )
+					{
+						displayValue = "Unknown value " + Poco::NumberFormatter::format(*vit) + " for " + Poco::NumberFormatter::format(*it);
+					}
+					jsonValueObject->set("value", *vit);
+					jsonValueObject->set("display", displayValue);
+					jsonValues->add(jsonValueObject);
+				}
+			}
+			else
+			{
+				for(std::vector<MQLONG>::iterator vit = values.begin(); vit != values.end(); ++vit)
+				{
+					jsonValues->add(*vit);
+				}
+			}
+		}
+		else
+		{
+			//TODO:
+		}
 	}
 }
 
-
-void MQMapper::mapStringToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter)
-{
-	if (    pcf.hasParameter(parameter) )
-	{
-		json->set(name, pcf.getParameterString(parameter));
-	}
-}
-
-
-void MQMapper::mapDateToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int dateParameter, int timeParameter)
-{
-	if (    pcf.hasParameter(dateParameter)
-	   && pcf.hasParameter(timeParameter) )
-	{
-		Poco::DateTime dateTime = pcf.getParameterDate(dateParameter, timeParameter);
-		json->set(name, Poco::DateTimeFormatter::format(dateTime, "%d-%m-%Y %H:%M:%S"));
-	}
-}
-*/
 
 std::string MQMapper::getReasonString(MQLONG reasonCode)
 {
-	DisplayMap::const_iterator it = _reasonCodes.find(reasonCode);
-	if ( it == _reasonCodes.end() )
-	{
-		return "";
-	}
-	return it->second;
+	static Poco::SharedPtr<Dictionary> dict = _dictionaryCache.getDictionary("Reason");
+
+	return dict->getDisplayValue(MQIACF_REASON_CODE, reasonCode);
 }
+
 }} //  Namespace MQ::Web

@@ -66,6 +66,9 @@ public:
 
 	void set(MQLONG id, const std::string& name);
 
+
+	void set(MQLONG id, const std::string& name, const DisplayMap& displayMap);
+
 private:
 
 	std::map<MQLONG, std::string> _idMap;
@@ -131,6 +134,11 @@ inline void Dictionary::set(MQLONG id, const std::string& name)
 	_idMap[id] = name;
 }
 
+inline void Dictionary::set(MQLONG id, const std::string& name, const DisplayMap& displayMap)
+{
+	_idMap[id] = name;
+	_displayMaps[id] = displayMap;
+}
 
 }} // Namespace MQWeb
 
