@@ -44,8 +44,12 @@ Poco::SharedPtr<Dictionary> DictionaryCache::getDictionary(const std::string& na
 	if ( dictionary.isNull() ) // Load it
 	{
 		Poco::Mutex::ScopedLock lock(_mutex);
-		dictionary = load(name);
-		_cache.add(name, dictionary);
+		dictionary = _cache.get(name); // Check it again ...
+		if ( dictionary.isNull() )
+		{
+			dictionary = load(name);
+			_cache.add(name, dictionary);
+		}
 	}
 
 	return dictionary;
@@ -53,14 +57,54 @@ Poco::SharedPtr<Dictionary> DictionaryCache::getDictionary(const std::string& na
 
 Poco::SharedPtr<Dictionary> DictionaryCache::load(const std::string& name)
 {
-	Poco::SharedPtr<Dictionary> dictionary;
+	Poco::SharedPtr<Dictionary> dictionary = new Dictionary();
 
 	Poco::Data::Session session(Poco::Data::SQLite::Connector::KEY, "mqweb.db");
 
 	int objectId = 0;
 	session << "SELECT id FROM objects WHERE name == :n", into(objectId), useRef(name), now;
 
-	session << "SELECT a.id, a.name, d.value, d.display FROM object_attributes oa INNER JOIN attributes a ON oa.attribute_id = a.id LEFT JOIN displays d ON oa.attribute_id = d.attribute_id", now;
+	typedef Poco::Tuple<int, std::string, Poco::Nullable<int>, Poco::Nullable<std::string> > Attribute;
+	std::vector<Attribute> attributes;
+
+	session << "SELECT a.id, a.name, d.value, d.display FROM object_attributes oa INNER JOIN attributes a ON oa.attribute_id = a.id LEFT JOIN displays d ON oa.attribute_id = d.attribute_id WHERE oa.object_id = ?", use(objectId), into(attributes), now;
+
+	if ( attributes.size() == 0) // This is not normal, but just return an empty dictionary for now
+		return dictionary;
+
+	int prevAttributeId = -1;
+	DisplayMap displayMap;
+
+	std::string attributeName;
+
+	for(std::vector<Attribute>::iterator it = attributes.begin(); it != attributes.end(); ++it)
+	{
+		if ( prevAttributeId != it->get<0>() )
+		{
+			if ( displayMap.size() > 0 )
+			{
+				dictionary->set(prevAttributeId, attributeName, displayMap);
+				displayMap.clear();
+			}
+			prevAttributeId = it->get<0>();
+		}
+
+		if ( it->get<2>().isNull() )
+		{
+			dictionary->set(it->get<0>(), it->get<1>());
+			continue;
+		}
+
+		displayMap.insert(std::make_pair(it->get<2>(), it->get<3>()));
+		attributeName = it->get<1>();
+	}
+
+	// Do the last one ...
+	if ( displayMap.size() > 0 )
+	{
+		dictionary->set(prevAttributeId, attributeName, displayMap);
+		displayMap.clear();
+	}
 
 	return dictionary;
 }
