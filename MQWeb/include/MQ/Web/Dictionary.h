@@ -6,6 +6,9 @@
 #include <map>
 #include <string>
 
+#include "Poco/JSON/Object.h"
+
+#include "MQ/PCF.h"
 #include "MQ/Web/MapInitializer.h"
 
 namespace MQ {
@@ -57,6 +60,8 @@ public:
 
 	bool hasDisplayMap(MQLONG id) const;
 		/// Returns true when the id has a corresponding map with display values.
+
+	void mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json) const;
 
 	std::map<MQLONG, std::string>::const_iterator begin() const;
 		/// Returns the begin iterator of the id map

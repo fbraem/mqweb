@@ -27,7 +27,7 @@ namespace MQ {
 namespace Web {
 
 
-ChannelMapper::ChannelMapper(CommandServer& commandServer) : MQMapper(commandServer)
+ChannelMapper::ChannelMapper(CommandServer& commandServer) : MQMapper(commandServer, "Channel")
 {
 }
 
@@ -65,7 +65,7 @@ Poco::JSON::Array::Ptr ChannelMapper::inquire(const Poco::JSON::Object::Ptr& fil
 	inquireChl->addParameter(MQCACH_CHANNEL_NAME, filter->optValue<std::string>("name", "*"));
 
 	std::string channelType = filter->optValue<std::string>("type", "All");
-	MQLONG channelTypeValue = _dictionary.getDisplayId(MQIACH_CHANNEL_TYPE, channelType);
+	MQLONG channelTypeValue = dictionary()->getDisplayId(MQIACH_CHANNEL_TYPE, channelType);
 	poco_assert_dbg(channelTypeValue != -1);
 	if ( channelTypeValue == - 1 )
 	{
@@ -96,7 +96,7 @@ Poco::JSON::Array::Ptr ChannelMapper::inquire(const Poco::JSON::Object::Ptr& fil
 		Poco::JSON::Object::Ptr channel = new Poco::JSON::Object();
 		channels->add(channel);
 
-		mapToJSON(**it, channel);
+		dictionary()->mapToJSON(**it, channel);
 	}
 
 	return channels;

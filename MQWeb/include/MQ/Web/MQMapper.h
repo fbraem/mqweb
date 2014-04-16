@@ -36,51 +36,43 @@ class MQMapper : public Mapper
 	/// It uses the Dictionary class for holding all Websphere MQ fields/values.
 {
 public:
-	MQMapper(CommandServer& commandServer);
+	MQMapper(CommandServer& commandServer, const std::string& objectType);
 		/// Constructor
 
 	virtual ~MQMapper();
 		/// Destructor
 
-	static void mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json);
-
-	static void mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& mapperName);
-
-		/// Turns a PCF into a JSON object
-
-	//static void mapNumberToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter);
-
-
-	//static void mapStringToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int parameter);
-
-
-	//static void mapDateToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, const std::string& name, int dateParameter, int timeParameter);
-
+	const Poco::SharedPtr<Dictionary> dictionary() const;
 
 	static std::string getReasonString(MQLONG reasonCode);
 		/// Translates a reason code into a string
 
-	static const DisplayMap& getDisplayMap(MQLONG id);
+	static const DisplayMap& getDisplayMap(const std::string& objectType, MQLONG id);
 		/// Returns the DisplayMap for the given Websphere MQ id
+
+	static const Poco::SharedPtr<Dictionary> dictionary(const std::string& objectType);
+		/// Returns the dictionary for the given object type
 
 protected:
 
 	MQ::CommandServer& _commandServer;
 
 
-	static Dictionary _dictionary;
+	Poco::SharedPtr<Dictionary> _dictionary;
 
-	
+
 	static DictionaryCache _dictionaryCache;
-
-
-	static DisplayMap _reasonCodes;
 };
 
 
-inline const DisplayMap& MQMapper::getDisplayMap(MQLONG id)
+inline const Poco::SharedPtr<Dictionary> MQMapper::dictionary() const
 {
-	return _dictionary.getDisplayMap(id);
+	return _dictionary;
+}
+
+inline const Poco::SharedPtr<Dictionary> MQMapper::dictionary(const std::string& objectType)
+{
+	return _dictionaryCache.getDictionary(objectType);
 }
 
 }} // Namespace MQ::Web

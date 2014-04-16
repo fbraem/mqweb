@@ -25,7 +25,7 @@
 namespace MQ {
 namespace Web {
 
-ListenerMapper::ListenerMapper(CommandServer& commandServer) : MQMapper(commandServer)
+ListenerMapper::ListenerMapper(CommandServer& commandServer) : MQMapper(commandServer, "Listener")
 {
 }
 
@@ -64,7 +64,7 @@ Poco::JSON::Array::Ptr ListenerMapper::inquire(const Poco::JSON::Object::Ptr& fi
 	std::string listenerType = filter->optValue<std::string>("type", "");
 	if ( !listenerType.empty() )
 	{
-		MQLONG listenerTypeValue = _dictionary.getDisplayId(MQIACH_XMIT_PROTOCOL_TYPE, listenerType);
+		MQLONG listenerTypeValue = dictionary()->getDisplayId(MQIACH_XMIT_PROTOCOL_TYPE, listenerType);
 		if ( listenerTypeValue >= -1 && listenerTypeValue <= 6 )
 		{
 			inquireListener->addParameter(MQIACH_XMIT_PROTOCOL_TYPE, listenerTypeValue);
@@ -94,7 +94,7 @@ Poco::JSON::Array::Ptr ListenerMapper::inquire(const Poco::JSON::Object::Ptr& fi
 		Poco::JSON::Object::Ptr listener = new Poco::JSON::Object();
 		listeners->add(listener);
 
-		mapToJSON(**it, listener);
+		dictionary()->mapToJSON(**it, listener);
 	}
 
 	return listeners;

@@ -38,13 +38,13 @@ namespace MQ
 namespace Web
 {
 
-StaticRequestHandler::StaticRequestHandler() 
+StaticRequestHandler::StaticRequestHandler()
 {
 }
 
 void StaticRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
 {
-	// Check for the favicon.ico request, we don't have one for now, 
+	// Check for the favicon.ico request, we don't have one for now,
 	// so set status code to HTTP_NOT_FOUND
 	if ( request.getURI().compare("/favicon.ico") == 0 )
 	{
@@ -53,94 +53,92 @@ void StaticRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, 
 		return;
 	}
 
-  std::string lastModifiedHeader = request.get("If-Modified-Since", "");
+	std::string lastModifiedHeader = request.get("If-Modified-Since", "");
 
-  Poco::URI uri(request.getURI());
+	Poco::URI uri(request.getURI());
 
-  Poco::Util::Application& app = Poco::Util::Application::instance();
-  std::string staticPathname = app.config().getString("mq.web.static", "");
-  if ( staticPathname.empty() )
-  {
-    staticPathname = app.config().getString("application.dir");
-  }
-
-  if ( ! staticPathname.empty() )
-  {
-    Poco::Path staticPath(staticPathname);
-    staticPath.makeDirectory();
-
-	std::vector<std::string> uriPathSegments;
-	uri.getPathSegments(uriPathSegments);
-	std::vector<std::string>::iterator it = uriPathSegments.begin();
-	it++;
-	for(; it != uriPathSegments.end(); ++it)
+	Poco::Util::Application& app = Poco::Util::Application::instance();
+	std::string staticPathname = app.config().getString("mq.web.static", "");
+	if ( staticPathname.empty() )
 	{
-		staticPath.append(*it);
+		staticPathname = app.config().getString("application.dir");
 	}
 
-    Poco::File staticFile(staticPath);
-    
-    Poco::Logger& logger = Poco::Logger::get("mq.web.access");
-    if ( staticFile.exists() )
-    {
-      if ( !lastModifiedHeader.empty() )
-      {
-        Poco::DateTime lastModifiedDate;
-        int timeZoneDifferential = 0;
-        if ( Poco::DateTimeParser::tryParse(Poco::DateTimeFormat::HTTP_FORMAT, lastModifiedHeader, lastModifiedDate, timeZoneDifferential) )
-        {
-          if ( staticFile.getLastModified() <= lastModifiedDate.timestamp() )
-          {
-            logger.information(Poco::Logger::format("$0 : HTTP_NOT_MODIFIED", staticPath.toString()));
-            response.setStatus(Poco::Net::HTTPResponse::HTTP_NOT_MODIFIED);
-            response.send();
-            return;
-          }
-        }
-      }
+	if ( ! staticPathname.empty() )
+	{
+		Poco::Path staticPath(staticPathname);
+		staticPath.makeDirectory();
 
-      logger.information(Poco::Logger::format("$0 : HTTP_OK", staticPath.toString()));
+		std::vector<std::string> uriPathSegments;
+		uri.getPathSegments(uriPathSegments);
+		std::vector<std::string>::iterator it = uriPathSegments.begin();
+		it++;
+		for(; it != uriPathSegments.end(); ++it)
+		{
+			staticPath.append(*it);
+		}
 
-      std::string mimeType;
-      if ( staticPath.getExtension().compare("gif") == 0 )
-      {
-        mimeType = "image/gif";
-      }
-      else if ( staticPath.getExtension().compare("css") == 0 )
-      {
-        mimeType = "text/css";
-      }
-      else if (   staticPath.getExtension().compare("html") == 0
-               || staticPath.getExtension().compare("htm") == 0)
-      {
-        mimeType = "text/html";
-      }
-      else if ( staticPath.getExtension().compare("js") == 0 )
-      {
-        mimeType = "text/javascript";
-      }
-      else if ( staticPath.getExtension().compare("png") == 0 )
-      {
-        mimeType = "image/png";
-      }
-      else if (    staticPath.getExtension().compare("jpg") == 0 
-                || staticPath.getExtension().compare("jpeg") == 0)
-      {
-        mimeType = "image/jpeg";
-      }
+		Poco::File staticFile(staticPath);
 
-      response.sendFile(staticPath.toString(), mimeType);
-      response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-      return;
-    }
-    else
-    {
-      logger.error(Poco::Logger::format("$0 : HTTP_NOT_FOUND", staticFile.path()));
-    }
-  }
+		Poco::Logger& logger = Poco::Logger::get("mq.web.access");
+		if ( staticFile.exists() )
+		{
+			if ( !lastModifiedHeader.empty() )
+			{
+				Poco::DateTime lastModifiedDate;
+				int timeZoneDifferential = 0;
+				if ( Poco::DateTimeParser::tryParse(Poco::DateTimeFormat::HTTP_FORMAT, lastModifiedHeader, lastModifiedDate, timeZoneDifferential) )
+				{
+					if ( staticFile.getLastModified() <= lastModifiedDate.timestamp() )
+					{
+						logger.information(Poco::Logger::format("$0 : HTTP_NOT_MODIFIED", staticPath.toString()));
+						response.setStatus(Poco::Net::HTTPResponse::HTTP_NOT_MODIFIED);
+						response.send();
+						return;
+					}
+				}
+			}
 
-  response.setStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
-  response.send();
+			logger.information(Poco::Logger::format("$0 : HTTP_OK", staticPath.toString()));
+
+			std::string mimeType;
+			if ( staticPath.getExtension().compare("gif") == 0 )
+			{
+				mimeType = "image/gif";
+			}
+			else if ( staticPath.getExtension().compare("css") == 0 )
+			{
+				mimeType = "text/css";
+			}
+			else if ( staticPath.getExtension().compare("html") == 0 || staticPath.getExtension().compare("htm") == 0)
+			{
+				mimeType = "text/html";
+			}
+			else if ( staticPath.getExtension().compare("js") == 0 )
+			{
+				mimeType = "text/javascript";
+			}
+			else if ( staticPath.getExtension().compare("png") == 0 )
+			{
+				mimeType = "image/png";
+			}
+			else if ( staticPath.getExtension().compare("jpg") == 0 || staticPath.getExtension().compare("jpeg") == 0)
+			{
+				mimeType = "image/jpeg";
+			}
+
+			response.sendFile(staticPath.toString(), mimeType);
+			response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+			return;
+		}
+		else
+		{
+			logger.error(Poco::Logger::format("$0 : HTTP_NOT_FOUND", staticFile.path()));
+		}
+	}
+
+	response.setStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
+	response.send();
 }
 
-} } // Namespace MQ::Web
+}} // Namespace MQ::Web

@@ -27,7 +27,7 @@ namespace MQ {
 namespace Web {
 
 
-ChannelStatusMapper::ChannelStatusMapper(CommandServer& commandServer) : MQMapper(commandServer)
+ChannelStatusMapper::ChannelStatusMapper(CommandServer& commandServer) : MQMapper(commandServer, "ChannelStatus")
 {
 }
 
@@ -77,7 +77,7 @@ Poco::JSON::Array::Ptr ChannelStatusMapper::inquire(const Poco::JSON::Object::Pt
 			continue;
 
 		Poco::JSON::Object::Ptr jsonChannelStatus = new Poco::JSON::Object();
-		mapToJSON(**it, jsonChannelStatus);
+		dictionary()->mapToJSON(**it, jsonChannelStatus);
 		jsonStatuses->add(jsonChannelStatus);
 	}
 

@@ -27,7 +27,7 @@ namespace MQ {
 namespace Web {
 
 
-QueueManagerMapper::QueueManagerMapper(CommandServer& commandServer) : MQMapper(commandServer)
+QueueManagerMapper::QueueManagerMapper(CommandServer& commandServer) : MQMapper(commandServer, "QueueManager")
 {
 }
 
@@ -71,7 +71,7 @@ Poco::JSON::Array::Ptr QueueManagerMapper::inquire(const Poco::JSON::Object::Ptr
 		Poco::JSON::Object::Ptr jsonQmgr = new Poco::JSON::Object();
 		jsonQueueManagers->add(jsonQmgr);
 
-		mapToJSON(**it, jsonQmgr, "QueueManager");
+		dictionary()->mapToJSON(**it, jsonQmgr);
 	}
 
 	return jsonQueueManagers;

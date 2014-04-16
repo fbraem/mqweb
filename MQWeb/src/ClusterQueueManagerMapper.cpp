@@ -27,7 +27,7 @@ namespace MQ {
 namespace Web {
 
 
-ClusterQueueManagerMapper::ClusterQueueManagerMapper(CommandServer& commandServer) : MQMapper(commandServer)
+ClusterQueueManagerMapper::ClusterQueueManagerMapper(CommandServer& commandServer) : MQMapper(commandServer, "ClusterQueueManager")
 {
 }
 
@@ -91,7 +91,7 @@ Poco::JSON::Array::Ptr ClusterQueueManagerMapper::inquire(const Poco::JSON::Obje
 		Poco::JSON::Object::Ptr clusqmgr = new Poco::JSON::Object();
 		clusqmgrs->add(clusqmgr);
 
-		mapToJSON(**it, clusqmgr);
+		dictionary()->mapToJSON(**it, clusqmgr);
 	}
 
 	return clusqmgrs;

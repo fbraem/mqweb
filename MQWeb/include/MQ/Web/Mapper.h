@@ -28,20 +28,20 @@ namespace Web {
 
 
 class Mapper
-  /// Interface for mapping objects (Data Mapper pattern)
+	/// Interface for mapping objects (Data Mapper pattern)
 {
 public:
 
-  virtual void change(const Poco::JSON::Object::Ptr&obj) = 0;
+	virtual void change(const Poco::JSON::Object::Ptr&obj) = 0;
 
 
-  virtual void create(const Poco::JSON::Object::Ptr& obj, bool replace = false) = 0;
+	virtual void create(const Poco::JSON::Object::Ptr& obj, bool replace = false) = 0;
 
 
-  virtual void copy(const Poco::JSON::Object::Ptr& obj, bool replace = false) = 0;
+	virtual void copy(const Poco::JSON::Object::Ptr& obj, bool replace = false) = 0;
 
 
-  virtual Poco::JSON::Array::Ptr inquire(const Poco::JSON::Object::Ptr& filter) = 0;
+	virtual Poco::JSON::Array::Ptr inquire(const Poco::JSON::Object::Ptr& filter) = 0;
 };
 
 

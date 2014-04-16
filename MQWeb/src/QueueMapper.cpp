@@ -25,7 +25,7 @@
 namespace MQ {
 namespace Web {
 
-QueueMapper::QueueMapper(CommandServer& commandServer) : MQMapper(commandServer)
+QueueMapper::QueueMapper(CommandServer& commandServer) : MQMapper(commandServer, "Queue")
 {
 }
 
@@ -80,7 +80,7 @@ Poco::JSON::Array::Ptr QueueMapper::inquire(const Poco::JSON::Object::Ptr& filte
 	}
 
 	std::string queueType = filter->optValue<std::string>("type", "All");
-	MQLONG queueTypeValue = _dictionary.getDisplayId(MQIA_Q_TYPE, queueType);
+	MQLONG queueTypeValue = dictionary()->getDisplayId(MQIA_Q_TYPE, queueType);
 	poco_assert_dbg(queueTypeValue != -1);
 	if ( queueTypeValue == - 1 )
 	{
@@ -128,7 +128,7 @@ Poco::JSON::Array::Ptr QueueMapper::inquire(const Poco::JSON::Object::Ptr& filte
 		Poco::JSON::Object::Ptr jsonQueue = new Poco::JSON::Object();
 		jsonQueues->add(jsonQueue);
 
-		mapToJSON(**it, jsonQueue);
+		dictionary()->mapToJSON(**it, jsonQueue);
 	}
 
 	return jsonQueues;
