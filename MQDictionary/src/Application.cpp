@@ -2262,15 +2262,15 @@ void store(Poco::Data::Session& session, int oid, const std::string& name, const
 	std::map<MQLONG, std::string>::const_iterator it = dict.begin();
 	for(; it != dict.end(); ++it)
 	{
-		int count = 0;
+		objectAttributes.push_back(ObjectAttribute(oid, it->first));
+		
 		if ( it->second.empty() ) continue;
 		// Empty attributes are ignored, we assume they are already defined ...
 
 		// Already inserted skip it (we assume that display map and
 		// name are defined on the first occurrence)
 
-		if ( allAttributes.find(it->first) != allAttributes.end() )
-			continue;
+		if ( allAttributes.find(it->first) != allAttributes.end() ) continue;
 
 		attributes.insert(std::make_pair(it->first, Attribute(it->first, it->second)));
 		allAttributes.insert(std::make_pair(it->first, it->second));
@@ -2294,10 +2294,24 @@ void store(Poco::Data::Session& session, int oid, const std::string& name, const
 	}
 
 	std::cout << "Insert Object Attributes" << std::endl;
-	session << "INSERT INTO object_attributes(object_id, attribute_id) VALUES(?, ?)", use(objectAttributes), now;
-
+	if ( objectAttributes.size() > 0 )
+	{
+		session << "INSERT INTO object_attributes(object_id, attribute_id) VALUES(?, ?)", use(objectAttributes), now;
+	}
+	else
+	{
+		std::cout << "No attributes attached to the objecttype " << name << ". Please check !!!" << std::endl;
+	}
+	
 	std::cout << "Insert Attributes" << std::endl;
-	session << "INSERT INTO attributes(id, name) VALUES(?, ?)", use(attributes), now;
+	if ( attributes.size() > 0 )
+	{
+		session << "INSERT INTO attributes(id, name) VALUES(?, ?)", use(attributes), now;
+	}
+	else
+	{
+		std::cout << "No new attributes found ..." << std::endl;
+	}
 }
 
 int main(const std::vector<std::string>& args)
