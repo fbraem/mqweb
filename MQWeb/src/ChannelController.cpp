@@ -66,7 +66,7 @@ void ChannelController::inquire()
 		std::string channelNameField = form().get("channelName", "*");
 		filter->set("name", channelNameField.empty() ? "*" : channelNameField);
 		filter->set("type", form().get("channelType", "All"));
-		filter->set("excludeSystem", form().get("channelExcludeSystem", "false").compare("true") == 0);
+		filter->set("excludeSystem", form().get("excludeSystem", "false").compare("true") == 0);
 	}
 
 	ChannelMapper channelMapper(*commandServer());
