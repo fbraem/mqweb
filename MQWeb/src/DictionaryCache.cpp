@@ -18,6 +18,10 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
+#include "Poco/Logger.h"
+
+#include "Poco/Util/Application.h"
+
 #include "Poco/Data/SessionFactory.h"
 #include "Poco/Data/SQLite/Connector.h"
 
@@ -59,18 +63,34 @@ Poco::SharedPtr<Dictionary> DictionaryCache::load(const std::string& name)
 {
 	Poco::SharedPtr<Dictionary> dictionary = new Dictionary();
 
-	Poco::Data::Session session(Poco::Data::SQLite::Connector::KEY, "mqweb.db");
-
-	int objectId = 0;
-	session << "SELECT id FROM objects WHERE name == :n", into(objectId), useRef(name), now;
-
 	typedef Poco::Tuple<int, std::string, Poco::Nullable<int>, Poco::Nullable<std::string> > Attribute;
 	std::vector<Attribute> attributes;
 
-	session << "SELECT a.id, a.name, d.value, d.display FROM object_attributes oa INNER JOIN attributes a ON oa.attribute_id = a.id LEFT JOIN displays d ON oa.attribute_id = d.attribute_id WHERE oa.object_id = ?", use(objectId), into(attributes), now;
+	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
+	std::string databaseName = config.getString("mq.web.db", "mqweb.db");
 
-	if ( attributes.size() == 0) // This is not normal, but just return an empty dictionary for now
+	try
+	{
+		Poco::Data::Session session(Poco::Data::SQLite::Connector::KEY, databaseName);
+
+		int objectId = 0;
+		session << "SELECT id FROM objects WHERE name == :n", into(objectId), useRef(name), now;
+
+		session << "SELECT a.id, a.name, d.value, d.display FROM object_attributes oa INNER JOIN attributes a ON oa.attribute_id = a.id LEFT JOIN displays d ON oa.attribute_id = d.attribute_id WHERE oa.object_id = ?", use(objectId), into(attributes), now;
+	}
+	catch(Poco::Data::DataException& de)
+	{
+		Poco::Logger& logger = Poco::Logger::get("mq.web");
+		logger.log(de);
 		return dictionary;
+	}
+
+	if ( attributes.size() == 0)
+	{
+		Poco::Logger& logger = Poco::Logger::get("mq.web");
+		poco_error_f1(logger, "No attributes found for objecttype %s", name);
+		return dictionary;
+	}
 
 	int prevAttributeId = -1;
 	DisplayMap displayMap;
