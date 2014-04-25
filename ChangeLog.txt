@@ -1,5 +1,7 @@
 0.0.10
   - queueExcludeSystem/queueExcludeTemp renamed into excludeSystem/excludeTemp
+  - channelExcludeSystem renamed into excludeSystem
+  - All MQ attributes (dictionary) are now stored in a SQLite database
   - Add inquire clusterqmgr (clusqmgr)
   - Wrong default channel SYSTEM.DEFAULT.SVRCONN
   - Add mq.web.defaultChannel configuration property
