@@ -51,6 +51,7 @@ project "MQDictionary"
                   , poco_dir .. "/JSON/include"
                   , poco_dir .. "/Data/include"
                   , poco_dir .. "/Data/SQLite/include"
+                  , "../MQ/include"
                   , "../MQWeb/include"
                   , mq_inc
                 }
@@ -62,6 +63,7 @@ project "MQDictionary"
             , "PocoDataSQLited"
             , "PocoDatad"
             , "PocoFoundationd"
+            , "mqd"
           }
   
   configuration "Release"
@@ -71,6 +73,7 @@ project "MQDictionary"
             , "PocoDataSQLite"
             , "PocoData"
             , "PocoFoundation"
+            , "mq"
           }
 
   configuration "windows"
