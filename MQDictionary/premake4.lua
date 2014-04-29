@@ -57,23 +57,23 @@ project "MQDictionary"
                 }
 
   configuration "Debug"
-    links {   "PocoUtild"
+    links {   "mqd"  
+            , "PocoUtild"
             , "PocoJSONd"
             , "PocoXMLd" 
             , "PocoDataSQLited"
             , "PocoDatad"
             , "PocoFoundationd"
-            , "mqd"
           }
   
   configuration "Release"
-    links {   "PocoUtil"
+    links {   "mq"
+			, "PocoUtil"
             , "PocoJSON"
             , "PocoXML" 
             , "PocoDataSQLite"
             , "PocoData"
             , "PocoFoundation"
-            , "mq"
           }
 
   configuration "windows"
