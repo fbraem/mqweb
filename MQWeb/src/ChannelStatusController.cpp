@@ -45,17 +45,16 @@ void ChannelStatusController::inquire()
 	std::vector<std::string> parameters = getParameters();
 	// First parameter is queuemanager
 	// Second parameter can be a channelname and will result in inquiring
-	// only that channel. A third parameter is required because we need
-	// also the type of the channel for inquiring a specific channel.
+	// only that channel.
 	if ( parameters.size() > 1 )
 	{
 		filter->set("name", parameters[1]);
 	}
 	else
 	{
-		Poco::Net::HTMLForm form(request(), request().stream());
-		std::string channelNameField = form.get("channelName", "*");
-		filter->set("name", channelNameField.empty() ? "*" : channelNameField);
+		if ( form().has("name") ) filter->set("name", form().get("name"));
+		if ( form().has("instanceType") ) filter->set("instanceType", form().get("instanceType"));
+		if ( form().has("channelType") ) filter->set("channelType", form().get("channelType"));
 	}
 
 	ChannelStatusMapper channelStatusMapper(*commandServer());
