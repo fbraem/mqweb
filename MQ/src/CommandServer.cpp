@@ -28,9 +28,10 @@
 #include "MQ/Message.h"
 #include "MQ/PCF.h"
 
-// For now we do this, in the future we solve this
-// by rebrowsing the message when we get a MQRC_TRUNCATE...
-#define REPLY_MESSAGE_LEN 1000
+// When we get a MQRC_TRUNCATE..., we will try to enlarge the buffer.
+// It is still possible to get MQRC_CONVERTED_MSG_TOO_BIG, but we really hope
+// this buffer is large enough for all possible PCF answers.
+#define REPLY_MESSAGE_LEN 8192
 
 namespace MQ
 {
