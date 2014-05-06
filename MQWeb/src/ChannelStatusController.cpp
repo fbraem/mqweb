@@ -53,9 +53,10 @@ void ChannelStatusController::inquire()
 	else
 	{
 		if ( form().has("name") ) filter->set("name", form().get("name"));
-		if ( form().has("instanceType") ) filter->set("instanceType", form().get("instanceType"));
 		if ( form().has("channelType") ) filter->set("channelType", form().get("channelType"));
 	}
+
+	if ( form().has("instanceType") ) filter->set("instanceType", form().get("instanceType"));
 
 	ChannelStatusMapper channelStatusMapper(*commandServer());
 	Poco::JSON::Array::Ptr statuses = channelStatusMapper.inquire(filter);
