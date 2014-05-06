@@ -5,6 +5,8 @@
   - Add inquire clusterqmgr (clusqmgr)
   - Wrong default channel SYSTEM.DEFAULT.SVRCONN
   - Add mq.web.defaultChannel configuration property
+  - api/chstatus: instanceType can also be used when channelname is passed as
+    URI parameter
 
 0.0.9
   - Limit browse of messages to 16K
