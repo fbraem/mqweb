@@ -110,7 +110,15 @@ void MQController::beforeAction()
 			{
 				channel = config.getString("mq.web.defaultChannel", "SYSTEM.DEF.SVRCONN");
 			}
-			_qmgr->connect(channel, connection);
+			if ( config.has("mq.web.ssl.keyrepos") )
+			{
+				Poco::AutoPtr<Poco::Util::AbstractConfiguration> sslConfig = config.createView("mq.web.ssl");
+				_qmgr->connect(channel, connection, *sslConfig.get());
+			}
+			else
+			{
+				_qmgr->connect(channel, connection);
+			}
 		}
 		else // Hope that there is a channel tab file available
 		{

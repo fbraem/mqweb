@@ -22,6 +22,7 @@
 
 #include "Poco/DateTimeParser.h"
 #include "Poco/Util/Application.h"
+#include "Poco/StringTokenizer.h"
 
 #include "MQ/QueueManager.h"
 #include "MQ/MQException.h"
@@ -57,7 +58,6 @@ void QueueManager::connect()
 {
 	MQCNO cno = { MQCNO_DEFAULT };
 	cno.Version = MQCNO_VERSION_2;
-	//cno.Options = MQCNO_HANDLE_SHARE_NO_BLOCK;
 	cno.Options = MQCNO_HANDLE_SHARE_NONE;
 
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
@@ -70,7 +70,6 @@ void QueueManager::connect(const std::string& channel, const std::string& server
 {
 	MQCNO cno = { MQCNO_DEFAULT };
 	cno.Version = MQCNO_VERSION_2;
-	//cno.Options = MQCNO_HANDLE_SHARE_NO_BLOCK;
 	cno.Options = MQCNO_HANDLE_SHARE_NONE;
 
 	MQCD cd = { MQCD_CLIENT_CONN_DEFAULT };
@@ -84,6 +83,118 @@ void QueueManager::connect(const std::string& channel, const std::string& server
 
 	inquireQmgrAttrs();
 }
+
+
+void QueueManager::connect(const std::string& channel, const std::string& server, const Poco::Util::AbstractConfiguration& ssl)
+{
+	MQCNO cno = { MQCNO_DEFAULT };
+
+	/*
+	We must specify MQCNO version 4 to ensure that both the client 
+	connection pointer and SSL configuration options are used 
+	*/
+	cno.Version = MQCNO_VERSION_4;
+	cno.Options = MQCNO_HANDLE_SHARE_NONE;
+
+	MQCD cd = { MQCD_CLIENT_CONN_DEFAULT };
+	strncpy(cd.ChannelName, channel.c_str(), MQ_CHANNEL_NAME_LENGTH);
+	strncpy(cd.ConnectionName, server.c_str(), MQ_CONN_NAME_LENGTH);
+	
+	if ( ssl.has("cipherspec") )
+	{
+		strncpy(cd.SSLCipherSpec, ssl.getString("cipherspec").c_str(), MQ_SSL_CIPHER_SPEC_LENGTH);
+		cd.Version = MQCD_VERSION_7; // SSL requires MQCD version 7 or later
+	}
+	cd.TransportType = MQXPT_TCP;
+	cno.ClientConnPtr = &cd;
+
+	MQSCO sco = { MQSCO_DEFAULT };
+	MQAIR authInfoRec = { MQAIR_DEFAULT };
+
+	strncpy(sco.KeyRepository, ssl.getString("keyrepos").c_str(), MQ_SSL_KEY_REPOSITORY_LENGTH);
+
+	if ( ssl.getBool("fips", false) )
+	{
+		sco.FipsRequired = MQSSL_FIPS_YES;
+		sco.Version = MQSCO_VERSION_2; // A version 2 MQSCO supports FipsRequired
+	}
+
+	if ( ssl.has("suiteb") ) 
+	{
+		static std::map<std::string, MQLONG> suiteBTable;
+		if ( suiteBTable.size() == 0 )
+		{
+			suiteBTable.insert(std::make_pair<std::string, MQLONG>("none", MQ_SUITE_B_NONE));
+			suiteBTable.insert(std::make_pair<std::string, MQLONG>("128 bit", MQ_SUITE_B_128_BIT));
+			suiteBTable.insert(std::make_pair<std::string, MQLONG>("192 bit", MQ_SUITE_B_192_BIT));
+		}
+
+		sco.Version = MQSCO_VERSION_3; /* A version 3 MQSCO supports Suite B encryption policy */
+
+		std::string suiteb = ssl.getString("suiteb");
+		Poco::StringTokenizer tokenizer(suiteb, ",", Poco::StringTokenizer::TOK_TRIM);
+		int n = 0;
+		for(Poco::StringTokenizer::Iterator it = tokenizer.begin(); it != tokenizer.end() && n < 4; ++it, ++n)
+		{
+			std::map<std::string, MQLONG>::iterator suiteBIterator = suiteBTable.find(*it);
+			if ( suiteBIterator == suiteBTable.end() )
+			{
+				throw Poco::NotFoundException(Poco::format("Unknown SuiteB value: %s", *it));
+			}
+			else
+			{
+				sco.EncryptionPolicySuiteB[n] = suiteBIterator->second;
+			}
+		}
+	}
+
+#ifdef MQSCO_VERSION_4
+	if ( ssl.has("certificate_validation_policy") )
+	{
+		static std::map<std::string, MQLONG> certValPolicyTable;
+		if ( certValPolicyTable.size() == 0 )
+		{
+			certValPolicyTable.insert(std::make_pair<std::string, MQLONG>("any", MQ_CERT_VAL_POLICY_ANY));
+			certValPolicyTable.insert(std::make_pair<std::string, MQLONG>("rfc5280", MQ_CERT_VAL_POLICY_RFC5280));
+		}
+
+		sco.Version = MQSCO_VERSION_4; /* A version 4 MQSCO supports certificate validation policy */
+
+		std::string certValPolicy = ssl.getString("certificate_validation_policy");
+		std::map<std::string, MQLONG>::iterator certValPolicyIterator = certValPolicyTable.find(certValPolicy);
+		if ( certValPolicyIterator == certValPolicyTable.end() )
+		{
+			throw Poco::NotFoundException(Poco::format("Unknown Certification Validation Policy: %s", certValPolicy));
+		}
+		else
+		{
+			sco.CertificateValPolicy = certValPolicyIterator->second;
+		}
+	}
+#endif
+	if ( ssl.has("ocsp_url") )
+	{
+		std::string ocsp = ssl.getString("ocsp_url");
+
+		/* OCSP requires MQAIR version 2 or later */
+		authInfoRec.Version = MQAIR_VERSION_2;
+		authInfoRec.AuthInfoType = MQAIT_OCSP;
+
+		strncpy(authInfoRec.OCSPResponderURL, ocsp.c_str(), MQ_AUTH_INFO_OCSP_URL_LENGTH);
+
+		/* The MQSCO must point to the MQAIR */
+		sco.AuthInfoRecCount = 1;
+		sco.AuthInfoRecPtr = &authInfoRec;
+	}
+
+	cno.SSLConfigPtr = &sco;
+
+	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
+	_handle = mqSystem.functions().connx(_name, &cno);
+
+	inquireQmgrAttrs();
+}
+
 
 void QueueManager::inquireQmgrAttrs()
 {
