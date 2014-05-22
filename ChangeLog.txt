@@ -7,6 +7,9 @@
   - Add mq.web.defaultChannel configuration property
   - api/chstatus: instanceType can also be used when channelname is passed as
     URI parameter
+  - Enhancement #6: Add support for connecting with SSL channels
+  - Solve #5: MQRC_TRUNCATED for PCF messages from z/OS
+  - Solve #7: MQRC_Q_MGR_NAME_ERROR received due to wrong URI in web pages
 
 0.0.9
   - Limit browse of messages to 16K
