@@ -127,8 +127,19 @@ void StaticRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, 
 				mimeType = "image/jpeg";
 			}
 
-			response.sendFile(staticPath.toString(), mimeType);
-			response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+			try
+			{
+				response.sendFile(staticPath.toString(), mimeType);
+			}
+			catch(Poco::FileNotFoundException&)
+			{
+				// We can't get here normally ... but you never know :)
+				response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_NOT_FOUND, Poco::Logger::format("Can't find file $0", staticPath.toString()));
+			}
+			catch(Poco::OpenFileException&)
+			{
+				response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR, Poco::Logger::format("Can't open file $0", staticPath.toString()));
+			}
 			return;
 		}
 		else
