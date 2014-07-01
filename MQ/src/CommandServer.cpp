@@ -75,6 +75,12 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
 		{
 			if ( mqe.reason() == MQRC_TRUNCATED_MSG_FAILED )
 			{
+				Poco::Logger& logger = Poco::Logger::get("mq");
+				if ( logger.trace() )
+				{
+					poco_trace_f2(logger, "Truncated message received. Actual size is %ld (> %d).", msgResponse->dataLength(), REPLY_MESSAGE_LEN);
+				}
+				
 				msgResponse->buffer().resize(msgResponse->dataLength(), false);
 				msgResponse->clear();
 				msgResponse->setCorrelationId(*command->getMessageId());
