@@ -3,7 +3,6 @@
   {% for post in site.posts %}
    <h4><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h4>
    <h5>{{ post.date | date: "%-d %B %Y" }}</h5>
-   <p>{{ post.excerpt }}</p>
   {% endfor %} 
  <hr />
  <div style="text-align:center;margin-top:30px;">
