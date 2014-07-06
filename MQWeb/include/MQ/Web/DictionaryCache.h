@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2010 MQWeb - Franky Braem
  *
  * Licensed under the EUPL, Version 1.1 or  as soon they
@@ -18,33 +18,40 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#ifndef _MQWeb_Mapper_H
-#define _MQWeb_Mapper_H
+#ifndef _MQWeb_DictionaryCache_H
+#define _MQWeb_DictionaryCache_H
 
-#include "Poco/JSON/Object.h"
+#include "Poco/ExpireCache.h"
+#include "Poco/Mutex.h"
+
+#include "MQ/Web/Dictionary.h"
 
 namespace MQ {
 namespace Web {
 
 
-class Mapper
-	/// Interface for mapping objects (Data Mapper pattern)
+class DictionaryCache
+	/// Cache for dictionaries
 {
 public:
+	DictionaryCache();
+		/// Constructor
 
-	virtual void change(const Poco::JSON::Object::Ptr&obj) = 0;
+	virtual ~DictionaryCache();
+		/// Destructor
 
+	Poco::SharedPtr<Dictionary> getDictionary(const std::string& name);
+		/// Returns a dictionary for a specific object
 
-	virtual void create(const Poco::JSON::Object::Ptr& obj, bool replace = false) = 0;
+private:
 
+	Poco::ExpireCache<std::string, Dictionary> _cache;
 
-	virtual void copy(const Poco::JSON::Object::Ptr& obj, bool replace = false) = 0;
+	Poco::Mutex _mutex;
 
-
-	virtual Poco::JSON::Array::Ptr inquire(const Poco::JSON::Object::Ptr& filter) = 0;
+	Poco::SharedPtr<Dictionary> load(const std::string& name);
 };
-
 
 }} // Namespace MQ::Web
 
-#endif // _MQWeb_Mapper_H
+#endif // _MQWeb_DictionaryCache_H

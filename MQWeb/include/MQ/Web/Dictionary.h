@@ -6,6 +6,9 @@
 #include <map>
 #include <string>
 
+#include "Poco/JSON/Object.h"
+
+#include "MQ/PCF.h"
 #include "MQ/Web/MapInitializer.h"
 
 namespace MQ {
@@ -30,7 +33,7 @@ public:
 	virtual ~Dictionary();
 		/// Destructor
 
-	Dictionary& operator()(MQLONG id, const std::string& name);
+	Dictionary& operator()(MQLONG id, const std::string& name = "");
 		/// Adds the name for the given id.
 
 	Dictionary& operator()(MQLONG id, const std::string& name, const DisplayMap& displayMap);
@@ -57,6 +60,19 @@ public:
 
 	bool hasDisplayMap(MQLONG id) const;
 		/// Returns true when the id has a corresponding map with display values.
+
+	void mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json) const;
+
+	std::map<MQLONG, std::string>::const_iterator begin() const;
+		/// Returns the begin iterator of the id map
+
+	std::map<MQLONG, std::string>::const_iterator end() const;
+		/// Returns the end iterator of the id map
+
+	void set(MQLONG id, const std::string& name);
+
+
+	void set(MQLONG id, const std::string& name, const DisplayMap& displayMap);
 
 private:
 
@@ -106,6 +122,27 @@ inline const DisplayMap& Dictionary::getDisplayMap(MQLONG id) const
 inline bool Dictionary::hasDisplayMap(MQLONG id) const
 {
 	return _displayMaps.find(id) != _displayMaps.end();
+}
+
+inline std::map<MQLONG, std::string>::const_iterator Dictionary::begin() const
+{
+	return _idMap.begin();
+}
+
+inline std::map<MQLONG, std::string>::const_iterator Dictionary::end() const
+{
+	return _idMap.end();
+}
+
+inline void Dictionary::set(MQLONG id, const std::string& name)
+{
+	_idMap[id] = name;
+}
+
+inline void Dictionary::set(MQLONG id, const std::string& name, const DisplayMap& displayMap)
+{
+	_idMap[id] = name;
+	_displayMaps[id] = displayMap;
 }
 
 }} // Namespace MQWeb

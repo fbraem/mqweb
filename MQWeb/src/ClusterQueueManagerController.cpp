@@ -19,8 +19,8 @@
  * permissions and limitations under the Licence.
  */
 #include "MQ/Web/MQController.h"
-#include "MQ/Web/ChannelController.h"
-#include "MQ/Web/ChannelMapper.h"
+#include "MQ/Web/ClusterQueueManagerController.h"
+#include "MQ/Web/ClusterQueueManagerMapper.h"
 #include "MQ/Web/JSONView.h"
 
 namespace MQ
@@ -28,50 +28,41 @@ namespace MQ
 namespace Web
 {
 
-ChannelController::ChannelController() : MQController()
+ClusterQueueManagerController::ClusterQueueManagerController() : MQController()
 {
 }
 
 
-ChannelController::~ChannelController()
+ClusterQueueManagerController::~ClusterQueueManagerController()
 {
 
 }
 
 
-void ChannelController::inquire()
+void ClusterQueueManagerController::inquire()
 {
 	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
 
 	std::vector<std::string> parameters = getParameters();
 	// First parameter is queuemanager
-	// Second parameter can be a channelname and will result in inquiring
-	// only that channel. A third parameter is required because we need
-	// also the type of the channel for inquiring a specific channel.
+	// Second parameter is a clustername
 	if ( parameters.size() > 1 )
 	{
-		filter->set("name", parameters[1]);
-		if ( parameters.size() > 2 )
-		{
-			filter->set("type", parameters[2]);
-		}
-		else
-		{
-			setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "ChannelType is required when channelname is part of the URI-path");
-			return;
-		}
+		filter->set("clusterName", parameters[1]);
 	}
 	else
 	{
+		std::string clusterNameField = form().get("clusterName", "*");
+		filter->set("clusterName", clusterNameField.empty() ? "*" : clusterNameField);
+		std::string clusterQmgrNameField = form().get("clusterQmgrName", "*");
+		filter->set("clusterQmgrName", clusterQmgrNameField.empty() ? "*" : clusterQmgrNameField);
 		std::string channelNameField = form().get("channelName", "*");
-		filter->set("name", channelNameField.empty() ? "*" : channelNameField);
-		filter->set("type", form().get("channelType", "All"));
-		filter->set("excludeSystem", form().get("excludeSystem", "false").compare("true") == 0);
+		filter->set("channelName", channelNameField.empty() ? "*" : channelNameField);
 	}
 
-	ChannelMapper channelMapper(*commandServer());
-	Poco::JSON::Array::Ptr jsonChannels = channelMapper.inquire(filter);
-	set("channels", jsonChannels);
+	ClusterQueueManagerMapper mapper(*commandServer());
+	Poco::JSON::Array::Ptr clusqmgrs = mapper.inquire(filter);
+	set("clusqmgrs", clusqmgrs);
 	setView(new JSONView());
 }
 

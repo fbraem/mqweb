@@ -27,7 +27,7 @@ namespace MQ {
 namespace Web {
 
 
-QueueManagerStatusMapper::QueueManagerStatusMapper(CommandServer& commandServer) : MQMapper(commandServer)
+QueueManagerStatusMapper::QueueManagerStatusMapper(CommandServer& commandServer) : MQMapper(commandServer, "QueueManagerStatus")
 {
 }
 
@@ -82,7 +82,7 @@ Poco::JSON::Array::Ptr QueueManagerStatusMapper::inquire(const Poco::JSON::Objec
 			Poco::JSON::Object::Ptr jsonQmgr = new Poco::JSON::Object();
 			jsonQueueManagerStatuses->add(jsonQmgr);
 
-			mapToJSON(**it, jsonQmgr);
+			dictionary()->mapToJSON(**it, jsonQmgr);
 		}
 	}
 

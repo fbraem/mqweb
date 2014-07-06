@@ -76,20 +76,17 @@ solution "MQWeb"
     targetdir "bin/Debug"
     defines { "DEBUG", "_DEBUG" }
     flags { "Symbols" }
+    libdirs { 
+              "bin/Debug"
+            }
 
   configuration "Release"
     targetdir "bin/Release"
-
-  configuration { "linux", "Release" }
     libdirs { 
               "bin/Release"
-            }
-  configuration { "linux", "Debug" }
-    libdirs { 
-              "bin/Debug"
             }
 
 include "MQ"
 include "MQWeb"
 include "MQCheck"
-
+include "MQDictionary"

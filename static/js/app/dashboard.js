@@ -58,9 +58,9 @@ mqWebApp.controller('LocalQueueController', ['$scope', 'mqWebQueue', function($s
 		$scope.loading = true;
 		mqWebQueue.inquire({
 				queueDepth : 1,
-				queueExcludeSystem: 'true',
+				excludeSystem: 'true',
 				queueUsage : "normal",
-				queueExcludeTemp : 'true'
+				excludeTemp : 'true'
 		}).success(function(data, status) {
 			$scope.loading = false;
 			$scope.mqweb = data.mqweb;

@@ -28,6 +28,7 @@
 #include "MQ/Web/MessageController.h"
 #include "MQ/Web/ListenerController.h"
 #include "MQ/Web/ListenerStatusController.h"
+#include "MQ/Web/ClusterQueueManagerController.h"
 
 #include "Poco/URI.h"
 
@@ -110,6 +111,7 @@ void ControllerRequestHandler::registerControllers()
 	_controllerFactory.registerClass<ChannelStatusController>("chstatus");
 	_controllerFactory.registerClass<ListenerController>("listener");
 	_controllerFactory.registerClass<ListenerStatusController>("lsstatus");
+	_controllerFactory.registerClass<ClusterQueueManagerController>("clusqmgr");
 }
 
 

@@ -32,8 +32,8 @@ mqWebApp.controller('QueuesController', ['$scope', '$rootScope', 'mqWebQueue', f
 	$scope.formData = {
 		queueName : "*",
 		queueType : "All",
-		queueExcludeSystem : true,
-		queueExcludeTemp : true
+		excludeSystem : true,
+		excludeTemp : true
 	};
 
 	$scope.load = function() {

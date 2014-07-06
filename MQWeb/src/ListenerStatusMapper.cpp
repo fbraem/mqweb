@@ -25,7 +25,7 @@
 namespace MQ {
 namespace Web {
 
-ListenerStatusMapper::ListenerStatusMapper(CommandServer& commandServer) : MQMapper(commandServer)
+ListenerStatusMapper::ListenerStatusMapper(CommandServer& commandServer) : MQMapper(commandServer, "ListenerStatus")
 {
 }
 
@@ -74,7 +74,7 @@ Poco::JSON::Array::Ptr ListenerStatusMapper::inquire(const Poco::JSON::Object::P
 		Poco::JSON::Object::Ptr status = new Poco::JSON::Object();
 		statuses->add(status);
 
-		mapToJSON(**it, status);
+		dictionary()->mapToJSON(**it, status);
 	}
 
 	return statuses;

@@ -29,6 +29,8 @@
 #include "Poco/SharedPtr.h"
 #include "Poco/DateTime.h"
 
+#include "Poco/Util/ConfigurationView.h"
+
 namespace MQ {
 
 class QueueManager
@@ -50,6 +52,14 @@ public:
 	void connect(const std::string& channel, const std::string& server);
 		/// Connects to the queuemanager. Only use this method when the Websphere
 		/// MQ system is loaded in client mode. Can throw an MQException.
+
+	void connect(const std::string& channel, const std::string& server, const Poco::Util::AbstractConfiguration& ssl);
+		/// Connects to the queuemanager using a channel that is protected with SSL.
+		/// The configuration for SSL is based on the following properties: keyrepos (required),
+		/// cipherspec, fips, suiteb and certificate_validation_policy (only when
+		/// MQSCO_VERSION_4 is defined).
+		/// Only use this method when MQ system is loaded in client mode. Can
+		/// throw an MQException.
 
 	void disconnect();
 		/// Disconnects from the queuemanager. Can throw an MQException.

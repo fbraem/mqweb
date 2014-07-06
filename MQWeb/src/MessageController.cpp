@@ -567,7 +567,9 @@ void MessageController::event()
 		std::string reasonCodeStr = MQMapper::getReasonString(message.getReasonCode());
 		jsonReason->set("desc", reasonCodeStr);
 
-		MQMapper::mapToJSON(message, jsonEvent);
+		Poco::SharedPtr<Dictionary> dictionary = MQMapper::dictionary("Event");
+		poco_assert_dbg(! dictionary.isNull());
+		dictionary->mapToJSON(message, jsonEvent);
 
 		count++;
 	}
@@ -610,7 +612,7 @@ void MessageController::mapMessageToJSON(const Message& message, Poco::JSON::Obj
 	obj.set("AccountingToken", message.getAccountingTokenHex());
 	obj.set("ApplIdentityData", message.getApplIdentityData());
 
-	const DisplayMap& applTypes = MQMapper::getDisplayMap(MQIA_APPL_TYPE);
+	const DisplayMap& applTypes = MQMapper::getDisplayMap("QueueStatus", MQIA_APPL_TYPE);
 	it = applTypes.find(message.getPutApplType());
 	obj.set("PutApplType", it == applTypes.end() ? "" : it->second);
 

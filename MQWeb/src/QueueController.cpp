@@ -75,8 +75,8 @@ void QueueController::inquire()
 		}
 
 		filter->set("type", form().get("queueType", "All"));
-		filter->set("excludeSystem", form().get("queueExcludeSystem", "false").compare("true") == 0);
-		filter->set("excludeTemp", form().get("queueExcludeTemp", "false").compare("true") == 0);
+		filter->set("excludeSystem", form().get("excludeSystem", "false").compare("true") == 0);
+		filter->set("excludeTemp", form().get("excludeTemp", "false").compare("true") == 0);
 	}
 
 	QueueMapper mapper(*commandServer());

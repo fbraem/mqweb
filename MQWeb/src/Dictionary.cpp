@@ -18,7 +18,6 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-
 #include "MQ/Web/Dictionary.h"
 
 namespace MQ {
@@ -78,6 +77,78 @@ MQLONG Dictionary::getDisplayId(MQLONG id, const std::string& value) const
 			return it2->first;
 	}
 	return -1;
+}
+
+void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json) const
+{
+	std::vector<MQLONG> parameters = pcf.getParameters();
+	for(std::vector<MQLONG>::iterator it = parameters.begin(); it != parameters.end(); ++it)
+	{
+		std::string name = getName(*it);
+		if ( name.empty() )
+		{
+			name = "id_" + Poco::NumberFormatter::format(*it);
+		}
+
+		Poco::JSON::Object::Ptr field = new Poco::JSON::Object();
+		json->set(name, field);
+
+		field->set("id", *it);
+
+		if ( pcf.isNumber(*it) )
+		{
+			MQLONG value = pcf.getParameterNum(*it);
+			field->set("value", value);
+
+			if ( hasDisplayMap(*it) )
+			{
+				std::string displayValue = getDisplayValue(*it, value);
+				if ( displayValue.empty() )
+				{
+					displayValue = "Unknown value " + Poco::NumberFormatter::format(value) + " for " + Poco::NumberFormatter::format(*it);
+				}
+				field->set("display", displayValue);
+			}
+		}
+		else if ( pcf.isString(*it) )
+		{
+			field->set("value", pcf.getParameterString(*it));
+		}
+		else if ( pcf.isNumberList(*it) )
+		{
+			std::vector<MQLONG> values = pcf.getParameterNumList(*it);
+			Poco::JSON::Array::Ptr jsonValues = new Poco::JSON::Array();
+			field->set("value", jsonValues);
+
+			if ( hasDisplayMap(*it) )
+			{
+				for(std::vector<MQLONG>::iterator vit = values.begin(); vit != values.end(); ++vit)
+				{
+					Poco::JSON::Object::Ptr jsonValueObject = new Poco::JSON::Object();
+
+					std::string displayValue = getDisplayValue(*it, *vit);
+					if ( displayValue.empty() )
+					{
+						displayValue = "Unknown value " + Poco::NumberFormatter::format(*vit) + " for " + Poco::NumberFormatter::format(*it);
+					}
+					jsonValueObject->set("value", *vit);
+					jsonValueObject->set("display", displayValue);
+					jsonValues->add(jsonValueObject);
+				}
+			}
+			else
+			{
+				for(std::vector<MQLONG>::iterator vit = values.begin(); vit != values.end(); ++vit)
+				{
+					jsonValues->add(*vit);
+				}
+			}
+		}
+		else
+		{
+			//TODO:
+		}
+	}
 }
 
 }} // Namespace MQ::Web

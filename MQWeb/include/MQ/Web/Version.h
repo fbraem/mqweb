@@ -1,7 +1,7 @@
 /*
  * Copyright 2010 MQWeb - Franky Braem
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they
+ * Licensed under the EUPL, Version 1.1 or - as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the
@@ -18,13 +18,15 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-
 #ifndef _MQWeb_Version_H
 #define _MQWeb_Version_H
 
 #define MQWEB_VERSION_MAJOR 0
 #define MQWEB_VERSION_MINOR 0
-#define MQWEB_RELEASE_NUMBER 9
-#define MQWEB_VERSION_STRING "MQWeb 0.0.9"
+#define MQWEB_RELEASE_NUMBER 10
 
-#endif //_MQWeb_Version_H
+#define MQWEB_VERSION "0.0.10"
+#define MQWEB_COMPLETE_VERSION "MQWeb v0.0.10"
+
+#endif // _MQWeb_Version_H
+

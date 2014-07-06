@@ -27,7 +27,7 @@ namespace MQ {
 namespace Web {
 
 
-ChannelStatusMapper::ChannelStatusMapper(CommandServer& commandServer) : MQMapper(commandServer)
+ChannelStatusMapper::ChannelStatusMapper(CommandServer& commandServer) : MQMapper(commandServer, "ChannelStatus")
 {
 }
 
@@ -61,9 +61,28 @@ Poco::JSON::Array::Ptr ChannelStatusMapper::inquire(const Poco::JSON::Object::Pt
 	Poco::JSON::Array::Ptr jsonStatuses = new Poco::JSON::Array();
 
 	PCF::Ptr inquireChlStatus = _commandServer.createCommand(MQCMD_INQUIRE_CHANNEL_STATUS);
+
 	inquireChlStatus->addParameter(MQCACH_CHANNEL_NAME, filter->optValue<std::string>("name", "*"));
 
-	inquireChlStatus->addParameter(MQIACH_CHANNEL_INSTANCE_TYPE, MQOT_CURRENT_CHANNEL);
+	if ( filter->has("type") )
+	{
+		std::string channelType = filter->optValue<std::string>("type", "All");
+		MQLONG channelTypeValue = dictionary()->getDisplayId(MQIACH_CHANNEL_TYPE, channelType);
+		poco_assert_dbg(channelTypeValue != -1);
+		if ( channelTypeValue != MQCHT_ALL )
+		{
+			inquireChlStatus->addFilter(MQIACH_CHANNEL_TYPE, MQCFOP_EQUAL, channelTypeValue);
+		}
+	}
+
+	MQLONG instanceTypeValue = MQOT_CURRENT_CHANNEL;
+	if ( filter->has("instanceType") )
+	{
+		std::string instanceType = filter->optValue<std::string>("type", "Current");
+		instanceTypeValue = dictionary()->getDisplayId(MQIACH_CHANNEL_INSTANCE_TYPE, instanceType);
+		poco_assert_dbg(instanceTypeValue != -1);
+	}
+	inquireChlStatus->addParameter(MQIACH_CHANNEL_INSTANCE_TYPE, instanceTypeValue);
 
 	PCF::Vector commandResponse;
 	_commandServer.sendCommand(inquireChlStatus, commandResponse);
@@ -77,7 +96,7 @@ Poco::JSON::Array::Ptr ChannelStatusMapper::inquire(const Poco::JSON::Object::Pt
 			continue;
 
 		Poco::JSON::Object::Ptr jsonChannelStatus = new Poco::JSON::Object();
-		mapToJSON(**it, jsonChannelStatus);
+		dictionary()->mapToJSON(**it, jsonChannelStatus);
 		jsonStatuses->add(jsonChannelStatus);
 	}
 

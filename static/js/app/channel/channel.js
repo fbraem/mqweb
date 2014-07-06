@@ -27,7 +27,7 @@ mqWebApp.controller('ChannelsController', ['$scope', '$rootScope', 'mqWebChannel
 	$scope.formData = {
 		channelName : "*",
 		channelType : "All",
-		channelExcludeSystem : false
+		excludeSystem : false
 	};
 
 	$scope.load = function() {
