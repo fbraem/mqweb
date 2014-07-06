@@ -27,7 +27,8 @@ Parameters
 
   + **channelName** (optional)
   
-    The name of a channel
+    The name of a channel. When this parameter is used, query parameters are
+    ignored.
 
 Query Parameters
 : + **channelType** (optional)
