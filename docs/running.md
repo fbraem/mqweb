@@ -11,6 +11,13 @@ Before you start MQWeb, make sure it is correctly [configured](/docs/configure.h
 MQWeb is a server application that can run as a Windows service or as a Unix
 daemon.
 
+MQWeb SQLite database
+---------------------
+Starting from version 0.0.10, MQWeb needs a database that defines all properties
+and values that are used in WebSphere MQ. Download the file [here](http://mqweb.org/files/mqweb.db-). Put this file in the same folder as where the mqweb binary is placed. You
+can build this database yourself by building the MQDictionary project and run
+it.
+
 Daemon Process
 --------------
 
