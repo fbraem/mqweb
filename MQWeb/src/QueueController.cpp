@@ -18,8 +18,6 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include "Poco/Net/HTMLForm.h"
-
 #include "MQ/Web/QueueController.h"
 #include "MQ/Web/QueueMapper.h"
 #include "MQ/Web/JSONView.h"
