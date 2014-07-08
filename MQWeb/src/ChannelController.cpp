@@ -18,7 +18,6 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include "MQ/Web/MQController.h"
 #include "MQ/Web/ChannelController.h"
 #include "MQ/Web/ChannelMapper.h"
 #include "MQ/Web/JSONView.h"
