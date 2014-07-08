@@ -22,6 +22,16 @@ configuration file named *MQWeb.properties* if it exists and if
 > Note that the working directory for an application running as a service is 
 > the Windows system directory (e.g., C:\Windows\system32).
 
+SQLite Database
+---------------
+MQWeb uses a SQLite database that defines all WebSphere MQ attributes.
+Download the database [here](http://mqweb.org/files/mqweb.db). 
+Put this file somewhere and set the `mq.web.db` property in the configuration file. 
+If you placed the database in the application folder, you can use this to 
+configure it:
+
+    mq.web.db=${application.dir}/mqweb.db
+    
 Connection Mode
 ---------------
 

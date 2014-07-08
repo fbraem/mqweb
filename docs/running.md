@@ -14,8 +14,14 @@ daemon.
 MQWeb SQLite database
 ---------------------
 Starting from version 0.0.10, MQWeb needs a database that defines all properties
-and values that are used in WebSphere MQ. Download the file [here](http://mqweb.org/files/mqweb.db-). Put this file in the same folder as where the mqweb binary is placed. You
-can build this database yourself by building the MQDictionary project and run
+and values that are used in WebSphere MQ. Download the file [here](http://mqweb.org/files/mqweb.db). 
+Put this file somewhere and set the `mq.web.db` property in the configuration file. 
+If you placed the database in the application folder, you can use this to 
+configure MQWeb:
+
+    mq.web.db=${application.dir}/mqweb.db
+    
+You can build this database yourself by building the MQDictionary project and run
 it.
 
 Daemon Process
