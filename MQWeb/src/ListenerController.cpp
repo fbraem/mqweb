@@ -18,6 +18,7 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
+#include "MQ/Web/ListenerController.h"
 #include "MQ/Web/ListenerMapper.h"
 #include "MQ/Web/JSONView.h"
 
