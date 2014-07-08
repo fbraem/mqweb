@@ -256,6 +256,20 @@ void PCF::addParameter(MQLONG parameter, MQLONG value)
 	header->ParameterCount++;
 }
 
+void PCF::addParameter(MQLONG parameter, BufferPtr value)
+{
+	MQLONG structLength = ((MQCFST_STRUC_LENGTH_FIXED + value->sizeBytes()) / 4 + 1) * 4;
+	_pointers[parameter] = buffer().size();
+	buffer().resize(buffer().size() + structLength);
+	MQCFBS* pcfParam = (MQCFBS*) &buffer()[_pointers[parameter]];
+	pcfParam->Type           = MQCFT_BYTE_STRING;
+	pcfParam->StrucLength    = structLength;
+	pcfParam->Parameter      = parameter;
+	pcfParam->StringLength   = value->sizeBytes();
+	memcpy(pcfParam->String, value->begin(), pcfParam->StringLength);
+	MQCFH* header = (MQCFH*) (MQBYTE*) &buffer()[0];
+	header->ParameterCount++;
+}
 
 void PCF::addParameterList(MQLONG parameter, MQLONG *values)
 {

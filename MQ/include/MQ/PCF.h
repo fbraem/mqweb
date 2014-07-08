@@ -56,6 +56,9 @@ public:
 	void addParameter(MQLONG parameter, MQLONG value);
 		/// Add a numeric parameter.
 
+	void addParameter(MQLONG parameter, BufferPtr buffer);
+		/// Add a byte string parameter.
+
 	void addParameterList(MQLONG parameter, MQLONG *values);
 		/// Add a numeric list parameter.
 
