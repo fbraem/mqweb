@@ -27,7 +27,7 @@ namespace MQ {
 namespace Web {
 
 class NamelistMapper : public MQMapper
-	/// Maps channel object to/from Websphere MQ
+	/// Maps namelist object to/from Websphere MQ
 {
 public:
 
@@ -38,16 +38,16 @@ public:
 		/// Destructor
 
 	void change(const Poco::JSON::Object::Ptr&obj);
-		/// Implements the change channel command. Not implemented yet.
+		/// Implements the change namelist command. Not implemented yet.
 
 	void create(const Poco::JSON::Object::Ptr& obj, bool replace = false);
-		/// Implements the create channel command. Not implemented yet.
+		/// Implements the create namelist command. Not implemented yet.
 
 	void copy(const Poco::JSON::Object::Ptr& obj, bool replace = false);
-		/// Implements the copy channel command. Not implemented yet.
+		/// Implements the copy namelist command. Not implemented yet.
 
 	Poco::JSON::Array::Ptr inquire(const Poco::JSON::Object::Ptr& filter);
-		/// Implements the inquire channel command.
+		/// Implements the inquire namelist command.
 
 private:
 

@@ -27,7 +27,7 @@ namespace MQ {
 namespace Web {
 
 class ConnectionMapper : public MQMapper
-	/// Maps channel object to/from Websphere MQ
+	/// Maps connection object to/from Websphere MQ
 {
 public:
 
