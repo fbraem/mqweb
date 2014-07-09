@@ -1254,6 +1254,12 @@ Dictionary clusterQueueManagerDictionary = Dictionary()
 
 Dictionary connectionDictionary = Dictionary()
 	(MQIA_APPL_TYPE, "")
+	(MQBACF_CONNECTION_ID, "ConnectionId")
+	(MQIACF_CONN_INFO_TYPE, "ConnInfoType", DisplayMapInitializer
+		(MQIACF_CONN_INFO_CONN, "Generic Information")
+		(MQIACF_CONN_INFO_HANDLE, "Connection Information")
+	)
+	(MQBACF_GENERIC_CONNECTION_ID, "GenericConnectionId")
 	// Extended Response
 	(MQBACF_RESPONSE_ID, "ResponseID")
 	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
@@ -2236,6 +2242,22 @@ Dictionary reasonDictionary = Dictionary()
 	)
 ;
 
+Dictionary namelistDictionary = Dictionary()
+	(MQCA_ALTERATION_DATE)
+	(MQCA_ALTERATION_TIME)
+	(MQIA_NAME_COUNT, "NameCount")
+	(MQCA_NAMELIST_DESC, "NamelistDesc")
+	(MQCA_NAMELIST_NAME)
+	(MQIA_NAMELIST_TYPE, "NamelistType", DisplayMapInitializer
+		(MQNT_NONE, "None")
+		(MQNT_Q, "Queue")
+		(MQNT_CLUSTER, "Cluster")
+		(MQNT_AUTH_INFO, "AuthInfo")
+	)
+	(MQCA_NAMES, "Names")
+	(MQIA_QSG_DISP)
+;
+
 class MQDictionary : public Poco::Util::Application
 {
 public:
@@ -2345,6 +2367,7 @@ int main(const std::vector<std::string>& args)
 	store(session, ++oid, "Topic", topicDictionary);
 	store(session, ++oid, "Event", eventDictionary);
 	store(session, ++oid, "Reason", reasonDictionary);
+	store(session, ++oid, "Namelist", namelistDictionary);
 
 	return Application::EXIT_OK;
 }

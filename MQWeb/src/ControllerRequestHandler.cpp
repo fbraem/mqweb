@@ -20,16 +20,17 @@
  */
 #include "MQ/Web/ControllerRequestHandler.h"
 #include "MQ/Web/WebController.h"
+#include "MQ/Web/ChannelController.h"
+#include "MQ/Web/ChannelStatusController.h"
+#include "MQ/Web/ClusterQueueManagerController.h"
+#include "MQ/Web/ConnectionController.h"
+#include "MQ/Web/ListenerController.h"
+#include "MQ/Web/ListenerStatusController.h"
+#include "MQ/Web/MessageController.h"
+#include "MQ/Web/NamelistController.h"
 #include "MQ/Web/QueueController.h"
 #include "MQ/Web/QueueManagerController.h"
 #include "MQ/Web/QueueManagerStatusController.h"
-#include "MQ/Web/ChannelController.h"
-#include "MQ/Web/ChannelStatusController.h"
-#include "MQ/Web/ConnectionController.h"
-#include "MQ/Web/MessageController.h"
-#include "MQ/Web/ListenerController.h"
-#include "MQ/Web/ListenerStatusController.h"
-#include "MQ/Web/ClusterQueueManagerController.h"
 
 #include "Poco/URI.h"
 
@@ -114,6 +115,7 @@ void ControllerRequestHandler::registerControllers()
 	_controllerFactory.registerClass<ListenerStatusController>("lsstatus");
 	_controllerFactory.registerClass<ClusterQueueManagerController>("clusqmgr");
 	_controllerFactory.registerClass<ConnectionController>("conn");
+	_controllerFactory.registerClass<NamelistController>("nl");
 }
 
 
