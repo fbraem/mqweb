@@ -32,6 +32,7 @@
 #include "MQ/Web/QueueController.h"
 #include "MQ/Web/QueueManagerController.h"
 #include "MQ/Web/QueueManagerStatusController.h"
+#include "MQ/Web/ServiceController.h"
 
 #include "Poco/URI.h"
 
@@ -118,6 +119,7 @@ void ControllerRequestHandler::registerControllers()
 	_controllerFactory.registerClass<ConnectionController>("conn");
 	_controllerFactory.registerClass<NamelistController>("nl");
 	_controllerFactory.registerClass<ProcessController>("process");
+	_controllerFactory.registerClass<ServiceController>("service");
 }
 
 

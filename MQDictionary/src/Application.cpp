@@ -2270,6 +2270,28 @@ Dictionary processDictionary = Dictionary()
 	(MQCA_USER_DATA, "UserData")
 ;
 
+Dictionary serviceDictionary = Dictionary()
+	(MQCA_ALTERATION_DATE)
+	(MQCA_ALTERATION_TIME)
+	(MQCA_SERVICE_DESC, "ServiceDesc")
+	(MQCA_SERVICE_NAME, "ServiceName")
+	(MQIA_SERVICE_TYPE, "ServiceType", DisplayMapInitializer
+		(MQSVC_TYPE_SERVER, "Server")
+		(MQSVC_TYPE_COMMAND, "Command")
+	)
+	(MQCA_SERVICE_START_ARGS, "StartArguments")
+	(MQCA_SERVICE_START_COMMAND, "StartCommand")
+	(MQIA_SERVICE_CONTROL, "StartMode", DisplayMapInitializer
+		(MQSVC_CONTROL_MANUAL, "Manual")
+		(MQSVC_CONTROL_Q_MGR, "Qmgr")
+		(MQSVC_CONTROL_Q_MGR_START, "QmgrStart")
+	)
+	(MQCA_STDERR_DESTINATION, "StderrDestination")
+	(MQCA_STDOUT_DESTINATION, "StdoutDestination")
+	(MQCA_SERVICE_STOP_ARGS, "StopArguments")
+	(MQCA_SERVICE_STOP_COMMAND, "StopCommand")
+;
+
 class MQDictionary : public Poco::Util::Application
 {
 public:
@@ -2381,6 +2403,7 @@ int main(const std::vector<std::string>& args)
 	store(session, ++oid, "Reason", reasonDictionary);
 	store(session, ++oid, "Namelist", namelistDictionary);
 	store(session, ++oid, "Process", processDictionary);
+	store(session, ++oid, "Service", serviceDictionary);
 
 	return Application::EXIT_OK;
 }
