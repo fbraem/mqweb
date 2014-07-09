@@ -28,6 +28,7 @@
 #include "MQ/Web/ListenerStatusController.h"
 #include "MQ/Web/MessageController.h"
 #include "MQ/Web/NamelistController.h"
+#include "MQ/Web/ProcessController.h"
 #include "MQ/Web/QueueController.h"
 #include "MQ/Web/QueueManagerController.h"
 #include "MQ/Web/QueueManagerStatusController.h"
@@ -116,6 +117,7 @@ void ControllerRequestHandler::registerControllers()
 	_controllerFactory.registerClass<ClusterQueueManagerController>("clusqmgr");
 	_controllerFactory.registerClass<ConnectionController>("conn");
 	_controllerFactory.registerClass<NamelistController>("nl");
+	_controllerFactory.registerClass<ProcessController>("process");
 }
 
 

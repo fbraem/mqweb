@@ -2258,6 +2258,18 @@ Dictionary namelistDictionary = Dictionary()
 	(MQIA_QSG_DISP)
 ;
 
+Dictionary processDictionary = Dictionary()
+	(MQCA_ALTERATION_DATE)
+	(MQCA_ALTERATION_TIME)
+	(MQCA_APPL_ID, "ApplId")
+	(MQIA_APPL_TYPE)
+	(MQCA_ENV_DATA, "EnvData")
+	(MQCA_PROCESS_DESC, "ProcessDesc")
+	(MQCA_PROCESS_NAME)
+	(MQIA_QSG_DISP)
+	(MQCA_USER_DATA, "UserData")
+;
+
 class MQDictionary : public Poco::Util::Application
 {
 public:
@@ -2368,6 +2380,7 @@ int main(const std::vector<std::string>& args)
 	store(session, ++oid, "Event", eventDictionary);
 	store(session, ++oid, "Reason", reasonDictionary);
 	store(session, ++oid, "Namelist", namelistDictionary);
+	store(session, ++oid, "Process", processDictionary);
 
 	return Application::EXIT_OK;
 }
