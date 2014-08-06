@@ -2292,6 +2292,23 @@ Dictionary serviceDictionary = Dictionary()
 	(MQCA_SERVICE_STOP_COMMAND, "StopCommand")
 ;
 
+Dictionary authenticationInformationDictionary = Dictionary()
+	(MQCA_ALTERATION_DATE)
+	(MQCA_ALTERATION_TIME)
+	(MQCA_AUTH_INFO_CONN_NAME, "AuthInfoConnName")
+	(MQCA_AUTH_INFO_DESC, "AuthInfoDesc")
+	(MQCA_AUTH_INFO_NAME, "AuthInfoName")
+	(MQIA_AUTH_INFO_TYPE, "AuthInfoType", DisplayMapInitializer
+		(MQAIT_ALL, "All")
+		(MQAIT_CRL_LDAP, "CRL LDAP")
+		(MQAIT_OCSP, "OCSP")
+	)
+	(MQCA_LDAP_PASSWORD, "LDAPPassword")
+	(MQCA_LDAP_USER_NAME, "LDAPUserName")
+	(MQCA_AUTH_INFO_OCSP_URL, "OCSPResponderURL")
+	(MQIA_QSG_DISP)
+;
+
 class MQDictionary : public Poco::Util::Application
 {
 public:
@@ -2404,6 +2421,7 @@ int main(const std::vector<std::string>& args)
 	store(session, ++oid, "Namelist", namelistDictionary);
 	store(session, ++oid, "Process", processDictionary);
 	store(session, ++oid, "Service", serviceDictionary);
+	store(session, ++oid, "AuthenticationInformation", authenticationInformationDictionary);
 
 	return Application::EXIT_OK;
 }
