@@ -59,13 +59,13 @@ extracted. Make this directory the current working directory and run the
 
 for static build
 
-    ../configure --static --omit=Data/MySQL,Data/ODBC,Data/SQLite --no-tests --no-samples
+    ../configure --static --omit=Data/MySQL,Data/ODBC --no-tests --no-samples
    
 for shared build
 
-    ../configure --shared --omit=Data/MySQL,Data/ODBC,Data/SQLite --no-tests --no-samples
+    ../configure --shared --omit=Data/MySQL,Data/ODBC --no-tests --no-samples
    
-The data libraries are omitted because MQWeb doesn't need them. If you only
+The MySQL and ODBC data libraries are omitted because MQWeb doesn't need them. If you only
 going to use POCO for MQWeb, there is also no need to build the tests and 
 samples.
 
