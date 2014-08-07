@@ -58,14 +58,13 @@ Poco::JSON::Array::Ptr AuthenticationInformationMapper::inquire(const Poco::JSON
 
 	Poco::JSON::Array::Ptr jsonAuthInfos = new Poco::JSON::Array();
 
-	PCF::Ptr command = _commandServer.createCommand(MQCMD_INQUIRE_Q);
+	PCF::Ptr command = _commandServer.createCommand(MQCMD_INQUIRE_AUTH_INFO);
 	command->addParameter(MQCA_AUTH_INFO_NAME, filter->optValue<std::string>("authInfoName", "*"));
 
 	PCF::Vector commandResponse;
 	_commandServer.sendCommand(command, commandResponse);
 
 	bool excludeSystem = filter->optValue("excludeSystem", false);
-	bool excludeTemp = filter->optValue("excludeTemp", false);
 
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
