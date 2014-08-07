@@ -7,6 +7,7 @@
 
 #include <cmqcfc.h>
 #include <cmqxc.h>
+#include <cmqzc.h>
 
 using namespace MQ::Web;
 using namespace Poco::Data::Keywords;
@@ -1645,6 +1646,7 @@ Dictionary eventDictionary = Dictionary()
 	(MQIA_MSG_DEQ_COUNT, "MsgDeqCount")
 	(MQCACF_OBJECT_Q_MGR_NAME, "ObjectQMgrName")
 	(MQIACF_OBJECT_TYPE, "ObjectType", DisplayMapInitializer
+		(MQOT_ALL, "All")
 		(MQOT_CHANNEL, "Channel")
 		(MQOT_CHLAUTH, "Channel Authentication Record")
 		(MQOT_NAMELIST, "Namelist")
@@ -1658,6 +1660,23 @@ Dictionary eventDictionary = Dictionary()
 		(MQOT_TOPIC, "Topic")
 		(MQOT_COMM_INFO, "Communication Information")
 		(MQOT_LISTENER, "Listener")
+		(MQOT_CLNTCONN_CHANNEL, "Client-connection Channel")
+		(MQOT_REMOTE_Q_MGR_NAME, "Remote Queuemanager")
+		(MQOT_SERVICE, "Service")
+		(MQOT_ALIAS_Q, "Alias Queue")
+		(MQOT_MODEL_Q, "Model Queue")
+		(MQOT_LOCAL_Q, "Local Queue")
+		(MQOT_REMOTE_Q, "Remote Queue")
+		(MQOT_SENDER_CHANNEL, "Sender Channel")
+		(MQOT_SERVER_CHANNEL, "Server Channel")
+		(MQOT_REQUESTER_CHANNEL, "Requester Channel")
+		(MQOT_RECEIVER_CHANNEL, "Receiver Channel")
+		(MQOT_CURRENT_CHANNEL, "Current Channel")
+		(MQOT_SAVED_CHANNEL, "Saved Channel")
+		(MQOT_SVRCONN_CHANNEL, "Server-connection Channel")
+		(MQOT_CLNTCONN_CHANNEL, "Client-connection Channel")
+		(MQOT_SHORT_CHANNEL, "Short Channel")
+		(MQOT_PROT_POLICY, "Protection Policy")
 	)
 	(MQIACF_OPEN_OPTIONS, "OpenOptions")
 	(MQCA_PROCESS_NAME, "ProcessName")
@@ -2309,6 +2328,47 @@ Dictionary authenticationInformationDictionary = Dictionary()
 	(MQIA_QSG_DISP)
 ;
 
+Dictionary authorityRecordDictionary = Dictionary()
+	(MQIACF_AUTHORIZATION_LIST, "AuthorizationList", DisplayMapInitializer
+		(MQAUTH_NONE, "None")
+		(MQAUTH_ALT_USER_AUTHORITY, "Alt User Authority")
+		(MQAUTH_BROWSE, "Browse")
+		(MQAUTH_CHANGE, "Change")
+		(MQAUTH_CLEAR, "Clear")
+		(MQAUTH_CONNECT, "Connect")
+		(MQAUTH_CREATE, "Create")
+		(MQAUTH_DELETE, "Delete")
+		(MQAUTH_DISPLAY, "Display")
+		(MQAUTH_INPUT, "Input")
+		(MQAUTH_INQUIRE, "Inquire")
+		(MQAUTH_OUTPUT, "Output")
+		(MQAUTH_PASS_ALL_CONTEXT, "Pass All Context")
+		(MQAUTH_PASS_IDENTITY_CONTEXT, "Pass Identity Context")
+		(MQAUTH_SET, "Set")
+		(MQAUTH_SET_ALL_CONTEXT, "Set All Context")
+		(MQAUTH_SET_IDENTITY_CONTEXT, "Set Identity Context")
+		(MQAUTH_CONTROL, "Control")
+		(MQAUTH_CONTROL_EXTENDED, "Control Extended")
+		(MQAUTH_PUBLISH, "Publish")
+		(MQAUTH_SUBSCRIBE, "Subscribe")
+		(MQAUTH_RESUME, "Resume")
+		(MQAUTH_SYSTEM, "System")
+		(MQAUTH_ALL, "All")
+		(MQAUTH_ALL_ADMIN, "All Admin")
+		(MQAUTH_ALL_MQI, "All MQI")
+	)
+	(MQCACF_ENTITY_NAME, "EntityName")
+	(MQIACF_ENTITY_TYPE, "EntityType", DisplayMapInitializer
+		(MQZAET_GROUP, "Group")
+		(MQZAET_PRINCIPAL, "Principal")
+		(MQZAET_UNKNOWN, "Unknown")
+	)
+	(MQIACF_OBJECT_TYPE)
+	(MQIACF_AUTH_OPTIONS, "Options")
+	(MQCACF_AUTH_PROFILE_NAME, "ProfileName")
+	(MQCA_Q_MGR_NAME, "QMgrName")
+;
+
 class MQDictionary : public Poco::Util::Application
 {
 public:
@@ -2422,7 +2482,7 @@ int main(const std::vector<std::string>& args)
 	store(session, ++oid, "Process", processDictionary);
 	store(session, ++oid, "Service", serviceDictionary);
 	store(session, ++oid, "AuthenticationInformation", authenticationInformationDictionary);
-
+	store(session, ++oid, "AuthorityRecord", authorityRecordDictionary);
 	return Application::EXIT_OK;
 }
 

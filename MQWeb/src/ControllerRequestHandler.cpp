@@ -21,6 +21,7 @@
 #include "MQ/Web/ControllerRequestHandler.h"
 #include "MQ/Web/WebController.h"
 #include "MQ/Web/AuthenticationInformationController.h"
+#include "MQ/Web/AuthorityRecordController.h"
 #include "MQ/Web/ChannelController.h"
 #include "MQ/Web/ChannelStatusController.h"
 #include "MQ/Web/ClusterQueueManagerController.h"
@@ -124,6 +125,7 @@ void ControllerRequestHandler::registerControllers()
 	_controllerFactory.registerClass<ServiceController>("service");
 	_controllerFactory.registerClass<QueueStatusController>("qstatus");
 	_controllerFactory.registerClass<AuthenticationInformationController>("authinfo");
+	_controllerFactory.registerClass<AuthorityRecordController>("authrec");
 }
 
 
