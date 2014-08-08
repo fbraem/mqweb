@@ -3,6 +3,9 @@
   - Add inquire namelist (nl)
   - Add inquire process (process)
   - Add inquire service (service)
+  - Add inquire authentication information (authinfo)
+  - Add inquire authority record (authrec)
+  - Support for JSONP
 
 0.0.10
   - queueExcludeSystem/queueExcludeTemp renamed into excludeSystem/excludeTemp
