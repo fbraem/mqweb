@@ -170,7 +170,7 @@ void MQController::handleException(const MQException& mqe)
 
 	if ( isJSON() )
 	{
-		setView(new JSONView());
+		setJSONView();
 	}
 	else
 	{

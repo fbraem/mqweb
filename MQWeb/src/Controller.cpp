@@ -21,6 +21,7 @@
 #include <sstream>
 
 #include "MQ/Web/Controller.h"
+#include "MQ/Web/JSONPView.h"
 #include "MQ/MQSubsystem.h"
 
 #include "Poco/Util/Application.h"
@@ -128,6 +129,12 @@ bool Controller::isJSON() const
 	return result;
 }
 
+void Controller::setJSONView()
+{
+	if ( _form.has("callback") ) setView(new JSONPView(_form.get("callback")));
+	else if ( _form.has("jsonp") ) setView(new JSONPView(_form.get("jsonp")));
+	else setView(new JSONView());
+}
 
 void Controller::render()
 {

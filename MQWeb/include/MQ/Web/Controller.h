@@ -68,7 +68,8 @@ public:
 		/// Called before an action is executed.
 
 	virtual void afterAction();
-		/// Called after an action is executed.
+		/// Called after an action is executed. The default implementation renders
+		/// the associated view. When no view is set, a JSON view will be used 
 
 	virtual const ActionMap& getActions() const = 0;
 		/// Returns all actions.
@@ -96,6 +97,9 @@ public:
 
 	Poco::Net::HTTPServerResponse& response();
 		/// Returns the HTTP response
+
+	void setJSONView();
+		/// Checks for JSONP or JSON request and creates the corresponding view class
 
 	void setResponseStatus(Poco::Net::HTTPServerResponse::HTTPStatus status);
 		/// Sets the HTTP response status. This will send the response to the client.
@@ -151,11 +155,10 @@ private:
 
 inline void Controller::afterAction()
 {
-	//default: render the view if one is set
-	if ( !_view.isNull() )
-	{
-		render();
-	}
+	// When no view is set yet, we assume JSON
+	if ( _view.isNull() ) setJSONView();
+
+	render();
 }
 
 
