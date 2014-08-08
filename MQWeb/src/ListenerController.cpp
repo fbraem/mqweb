@@ -67,7 +67,6 @@ void ListenerController::inquire()
 	ListenerMapper mapper(*commandServer());
 	Poco::JSON::Array::Ptr listeners = mapper.inquire(filter);
 	set("listeners", listeners);
-	setView(new JSONView());
 }
 
 

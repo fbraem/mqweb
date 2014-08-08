@@ -60,7 +60,6 @@ void ProcessController::inquire()
 	ProcessMapper mapper(*commandServer());
 	Poco::JSON::Array::Ptr json = mapper.inquire(filter);
 	set("processes", json);
-	setView(new JSONView());
 }
 
 

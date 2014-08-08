@@ -48,7 +48,6 @@ void QueueManagerController::inquire()
 	if ( jsonQueueManagers->size() > 0 )
 	{
 		set("qmgr", jsonQueueManagers->get(0));
-		setView(new JSONView());
 	}
 }
 

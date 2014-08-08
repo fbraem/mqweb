@@ -55,7 +55,6 @@ void QueueManagerStatusController::inquire()
 	if ( jsonQueueManagers->size() > 0 )
 	{
 		set("status", jsonQueueManagers->get(0));
-		setView(new JSONView());
 	}
 }
 

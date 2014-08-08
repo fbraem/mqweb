@@ -54,7 +54,6 @@ void ConnectionController::inquire()
 	ConnectionMapper mapper(*commandServer());
 	Poco::JSON::Array::Ptr json = mapper.inquire(filter);
 	set("connections", json);
-	setView(new JSONView());
 }
 
 

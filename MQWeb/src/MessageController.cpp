@@ -270,8 +270,6 @@ void MessageController::browse()
 	}
 
 	set("messages", jsonMessages);
-
-	setView(new JSONView());
 }
 
 
@@ -443,8 +441,6 @@ void MessageController::dump()
 	mapMessageToJSON(message, *jsonMessage);
 
 	set("message", jsonMessage);
-
-	setView(new JSONView());
 }
 
 
@@ -573,8 +569,6 @@ void MessageController::event()
 
 		count++;
 	}
-
-	setView(new JSONView());
 }
 
 

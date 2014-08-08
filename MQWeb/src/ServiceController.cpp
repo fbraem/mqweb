@@ -60,7 +60,6 @@ void ServiceController::inquire()
 	ServiceMapper mapper(*commandServer());
 	Poco::JSON::Array::Ptr json = mapper.inquire(filter);
 	set("services", json);
-	setView(new JSONView());
 }
 
 

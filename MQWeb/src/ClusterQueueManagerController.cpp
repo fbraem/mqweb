@@ -62,7 +62,6 @@ void ClusterQueueManagerController::inquire()
 	ClusterQueueManagerMapper mapper(*commandServer());
 	Poco::JSON::Array::Ptr clusqmgrs = mapper.inquire(filter);
 	set("clusqmgrs", clusqmgrs);
-	setView(new JSONView());
 }
 
 

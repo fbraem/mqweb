@@ -61,7 +61,6 @@ void ChannelStatusController::inquire()
 	Poco::JSON::Array::Ptr statuses = channelStatusMapper.inquire(filter);
 
 	set("statuses", statuses);
-	setView(new JSONView());
 }
 
 

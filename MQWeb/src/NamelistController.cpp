@@ -60,7 +60,6 @@ void NamelistController::inquire()
 	NamelistMapper mapper(*commandServer());
 	Poco::JSON::Array::Ptr json = mapper.inquire(filter);
 	set("namelists", json);
-	setView(new JSONView());
 }
 
 
