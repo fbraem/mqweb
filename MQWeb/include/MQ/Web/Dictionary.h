@@ -137,11 +137,12 @@ inline std::map<MQLONG, std::string>::const_iterator Dictionary::end() const
 inline void Dictionary::set(MQLONG id, const std::string& name)
 {
 	_idMap[id] = name;
+	_nameMap[name] = id;
 }
 
 inline void Dictionary::set(MQLONG id, const std::string& name, const DisplayMap& displayMap)
 {
-	_idMap[id] = name;
+	set(id, name);
 	_displayMaps[id] = displayMap;
 }
 
