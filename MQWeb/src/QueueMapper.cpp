@@ -88,6 +88,21 @@ Poco::JSON::Array::Ptr QueueMapper::inquire(const Poco::JSON::Object::Ptr& filte
 	}
 	inquireQ->addParameter(MQIA_Q_TYPE, queueTypeValue);
 
+	if ( filter->has("QAttrs") )
+	{
+		Poco::JSON::Array::Ptr attrs = filter->getArray("QAttrs");
+		if ( !attrs.isNull() && attrs->size() > 0 )
+		{
+			std::vector<MQLONG> numList;
+			for(Poco::JSON::Array::ValueVec::const_iterator it = attrs->begin(); it != attrs->end(); ++it)
+			{
+				MQLONG id = dictionary()->getId(*it);
+				if ( id != -1 ) numList.push_back(id);
+			}
+			if ( numList.size() > 0 ) inquireQ->addParameterList(MQIACF_Q_ATTRS, numList);
+		}
+	}
+
 	PCF::Vector commandResponse;
 	_commandServer.sendCommand(inquireQ, commandResponse);
 

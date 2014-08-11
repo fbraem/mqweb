@@ -77,6 +77,16 @@ void QueueController::inquire()
 		filter->set("excludeTemp", form().get("excludeTemp", "false").compare("true") == 0);
 	}
 
+	Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+	filter->set("QAttrs", attrs);
+
+	for(Poco::Net::NameValueCollection::ConstIterator itAttrs = form().find("Attrs"); 
+		itAttrs != form().end() && Poco::icompare(itAttrs->first, "Attrs") == 0;
+		++itAttrs)
+	{
+		attrs->add(itAttrs->second);
+	}
+
 	QueueMapper mapper(*commandServer());
 	Poco::JSON::Array::Ptr queues = mapper.inquire(filter);
 	set("queues", queues);
