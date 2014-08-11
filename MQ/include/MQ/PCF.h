@@ -62,6 +62,9 @@ public:
 	void addParameterList(MQLONG parameter, MQLONG *values);
 		/// Add a numeric list parameter.
 
+	void addParameterList(MQLONG parameter, const std::vector<MQLONG>& values);
+		/// Add a numeric list parameter
+		
 	void addFilter(MQLONG parameter, MQLONG op, const std::string& value);
 		/// Add a filter with a string value.
 
@@ -174,6 +177,10 @@ private:
 		/// Returns true when the parameter is of given type.
 };
 
+inline void PCF::addParameterList(MQLONG parameter, const std::vector<MQLONG>& values)
+{
+	addParameterList(parameter, (MQLONG*) &values[0]);
+}
 
 inline int PCF::getCommand() const 
 {
