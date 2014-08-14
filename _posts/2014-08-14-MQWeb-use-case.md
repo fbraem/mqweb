@@ -3,6 +3,11 @@ layout: default
 title: MQWeb use case
 excerpt: MQWeb use case
 ---
+MQWeb use case
+==============
+
+#####14 august 2014
+
 With some pride I can announce today that my employer, [KBC](http://www.kbc.be), 
 is now using my open source project MQWeb to help their developers, who use 
 WebSphere MQ, to get status information from their queues, channels, ...
