@@ -21,19 +21,20 @@ Type
 : JSON
 
 Parameters
-: **queueManager**
+: 
+**queueManager**
 
-    The name of the queuemanager
+The name of the queuemanager
 
-  **channelName** (optional)
+**channelName** (optional)
   
-    The name of a channel. When this parameter is used, query parameters are
-    ignored.
+The name of a channel. When this parameter is used, query parameters are ignored.
 
 Query Parameters
-: **channelType** (optional)
+: 
+**channelType** (optional)
 
-  **channelName** (optional)
+**channelName** (optional)
 
 Example
 : `/api/channel/inquire/PIGEON`  

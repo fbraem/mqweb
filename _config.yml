@@ -3,3 +3,5 @@ baseurl:
 repository: https://github.com/fbraem/mqweb
 markdown: kramdown
 pygments: true
+kramdown:
+  input: GFM
