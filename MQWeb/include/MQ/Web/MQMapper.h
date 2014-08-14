@@ -43,6 +43,10 @@ public:
 		/// Destructor
 
 	const Poco::SharedPtr<Dictionary> dictionary() const;
+		/// Returns the dictionary for the associated object type
+
+	static MQLONG getOperator(const std::string& op);
+		/// Returns the string equivalent for an operator
 
 	static std::string getReasonString(MQLONG reasonCode);
 		/// Translates a reason code into a string
@@ -52,6 +56,12 @@ public:
 
 	static const Poco::SharedPtr<Dictionary> dictionary(const std::string& objectType);
 		/// Returns the dictionary for the given object type
+
+	void handleIntegerFilter(PCF::Ptr pcf, Poco::JSON::Object::Ptr filter);
+		/// When IntegerFilterCommand is set, it will add an integer filter to the PCF message
+
+	void handleStringFilter(PCF::Ptr pcf, Poco::JSON::Object::Ptr filter);
+		/// When StringFilterCommand is set, it will add an string filter to the PCF message
 
 protected:
 
