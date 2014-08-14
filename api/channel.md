@@ -14,14 +14,8 @@ This controller can be used to get information from a channel.
 
 ###inquire
 
-Name
-: inquire
+####Parameters
 
-Type
-: JSON
-
-Parameters
-: 
 **queueManager**
 
 The name of the queuemanager
@@ -30,16 +24,15 @@ The name of the queuemanager
   
 The name of a channel. When this parameter is used, query parameters are ignored.
 
-Query Parameters
-: 
+#####Query Parameters
 **channelType** (optional)
 
 **channelName** (optional)
 
-Example
-: `/api/channel/inquire/PIGEON`  
-  `/api/channel/inquire/PIGEON/CL.*`  
-  `/api/channel/inquire/PIGEON?channelName=CL.*`
+#####Example
+`/api/channel/inquire/PIGEON`  
+`/api/channel/inquire/PIGEON/CL.*`  
+`/api/channel/inquire/PIGEON?channelName=CL.*`
 
 <div style="clear:both"> </div>
 
