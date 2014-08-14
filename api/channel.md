@@ -10,10 +10,15 @@ ChannelController
 The second part of the URI must be `channel` to call the ChannelController.
 This controller can be used to get information from a channel.
 
-##inquire
+##Actions
 
 ###Parameters
 
+<<<<<<< HEAD
+=======
+####Parameters
+
+>>>>>>> origin/gh-pages
 **queueManager**
 
 The name of the queuemanager
@@ -22,12 +27,20 @@ The name of the queuemanager
   
 The name of a channel. When this parameter is used, query parameters are ignored.
 
+<<<<<<< HEAD
 ###Query Parameters
+=======
+#####Query Parameters
+>>>>>>> origin/gh-pages
 **channelType** (optional)
 
 **channelName** (optional)
 
+<<<<<<< HEAD
 ###Example
+=======
+#####Example
+>>>>>>> origin/gh-pages
 `/api/channel/inquire/PIGEON`  
 `/api/channel/inquire/PIGEON/CL.*`  
 `/api/channel/inquire/PIGEON?channelName=CL.*`
