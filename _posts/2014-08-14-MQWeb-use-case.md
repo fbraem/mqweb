@@ -1,7 +1,7 @@
 ---
 layout: default
 title: MQWeb use case
-excerpt: MQWeb use case
+excerpt: KBC is using MQWeb to help their developers
 ---
 MQWeb use case
 ==============
