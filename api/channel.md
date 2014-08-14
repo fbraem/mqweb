@@ -10,18 +10,10 @@ ChannelController
 The second part of the URI must be `channel` to call the ChannelController.
 This controller can be used to get information from a channel.
 
-##Actions
+##inquire
 
-###inquire
+###Parameters
 
-Name
-: inquire
-
-Type
-: JSON
-
-Parameters
-: 
 **queueManager**
 
 The name of the queuemanager
@@ -30,16 +22,15 @@ The name of the queuemanager
   
 The name of a channel. When this parameter is used, query parameters are ignored.
 
-Query Parameters
-: 
+###Query Parameters
 **channelType** (optional)
 
 **channelName** (optional)
 
-Example
-: `/api/channel/inquire/PIGEON`  
-  `/api/channel/inquire/PIGEON/CL.*`  
-  `/api/channel/inquire/PIGEON?channelName=CL.*`
+###Example
+`/api/channel/inquire/PIGEON`  
+`/api/channel/inquire/PIGEON/CL.*`  
+`/api/channel/inquire/PIGEON?channelName=CL.*`
 
 <div style="clear:both"> </div>
 
