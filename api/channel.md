@@ -12,20 +12,23 @@ This controller can be used to get information from a channel.
 
 ##inquire
 
-###Parameters
+###URL Parameters
 
-**queueManager**
+`/api/channel/inquire/<QueueManager>/<ChannelName>`
 
-The name of the queuemanager
+**QueueManager**
 
-**channelName** (optional)
+The name of the queuemanager. This parameter is required!
+
+**ChannelName** (optional)
   
 The name of a channel. When this parameter is used, query parameters are ignored.
 
 ###Query Parameters
-**channelType** (optional)
 
-**channelName** (optional)
+**ChannelType** (optional)
+
+**ChannelName** (optional)
 
 ###Example
 `/api/channel/inquire/PIGEON`  
