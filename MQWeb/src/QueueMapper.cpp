@@ -59,27 +59,27 @@ Poco::JSON::Array::Ptr QueueMapper::inquire(const Poco::JSON::Object::Ptr& filte
 	Poco::JSON::Array::Ptr jsonQueues = new Poco::JSON::Array();
 
 	PCF::Ptr inquireQ = _commandServer.createCommand(MQCMD_INQUIRE_Q);
-	inquireQ->addParameter(MQCA_Q_NAME, filter->optValue<std::string>("name", "*"));
-	if ( filter->has("qdepth") )
-	{
-		inquireQ->addFilter(MQIA_CURRENT_Q_DEPTH, MQCFOP_NOT_LESS, filter->getValue<int>("qdepth"));
-	}
+	inquireQ->addParameter(MQCA_Q_NAME, filter->optValue<std::string>("QName", "*"));
+
+	handleIntegerFilter(inquireQ, filter);
+	handleStringFilter(inquireQ, filter);
 
 	MQLONG usage = -1;
-	if ( filter->has("usage") )
+	if ( filter->has("Usage") )
 	{
-		std::string usageValue = filter->optValue<std::string>("usage", "");
-		if ( usageValue.compare("xmitq") == 0 )
+		std::string usageValue = filter->optValue<std::string>("Usage", "");
+		if ( Poco::icompare(usageValue, "Transmission") == 0
+			|| Poco::icompare(usageValue, "XmitQ") == 0 )
 		{
 			usage = MQUS_TRANSMISSION;
 		}
-		else if ( usageValue.compare("normal") == 0 )
+		else if ( Poco::icompare(usageValue, "Normal") == 0 )
 		{
 			usage = MQUS_NORMAL;
 		}
 	}
 
-	std::string queueType = filter->optValue<std::string>("type", "All");
+	std::string queueType = filter->optValue<std::string>("QType", "All");
 	MQLONG queueTypeValue = dictionary()->getDisplayId(MQIA_Q_TYPE, queueType);
 	poco_assert_dbg(queueTypeValue != -1);
 	if ( queueTypeValue == - 1 )
@@ -106,8 +106,8 @@ Poco::JSON::Array::Ptr QueueMapper::inquire(const Poco::JSON::Object::Ptr& filte
 	PCF::Vector commandResponse;
 	_commandServer.sendCommand(inquireQ, commandResponse);
 
-	bool excludeSystem = filter->optValue("excludeSystem", false);
-	bool excludeTemp = filter->optValue("excludeTemp", false);
+	bool excludeSystem = filter->optValue("ExcludeSystem", false);
+	bool excludeTemp = filter->optValue("ExcludeTemp", false);
 
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{

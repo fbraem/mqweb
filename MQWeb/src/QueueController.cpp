@@ -40,55 +40,92 @@ QueueController::~QueueController()
 
 void QueueController::inquire()
 {
-	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+	Poco::JSON::Object::Ptr pcfParameters;
 
-	std::vector<std::string> parameters = getParameters();
-	// First parameter is queuemanager
-	// Second parameter can be a queuename and will result in inquiring 
-	// only that queue and ignores all query parameters.
-	if ( parameters.size() > 1 )
+	if ( data().has("filter") && data().isObject("filter") )
 	{
-		filter->set("name", parameters[1]);
+		pcfParameters = data().getObject("filter");
 	}
 	else
 	{
-		// Handle query parameters
-		std::string queueNameField = form().get("queueName", "*");
-		if ( queueNameField.empty() )
-		{
-			queueNameField = "*";
-		}
-		filter->set("name", queueNameField);
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
 
-		std::string queueDepthField = form().get("queueDepth", "");
-		int queueDepth = 0;
-		if ( Poco::NumberParser::tryParse(queueDepthField, queueDepth) )
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a queuename and will result in inquiring 
+		// only that queue and ignores all query parameters.
+		if ( parameters.size() > 1 )
 		{
-			filter->set("qdepth", queueDepth);
+			pcfParameters->set("QName", parameters[1]);
+		}
+		else
+		{
+			// Handle query parameters
+			std::string queueNameField;
+			if ( form().has("QName") )
+			{
+				queueNameField = form().get("QName");
+			}
+			else
+			{
+				queueNameField = form().get("queueName", "*");
+			}
+			if ( queueNameField.empty() )
+			{
+				queueNameField = "*";
+			}
+			pcfParameters->set("QName", queueNameField);
+		}
+
+		std::string queueDepthField;
+		if ( form().has("CurrentQDepth") )
+		{
+			queueDepthField = form().get("CurrentQDepth", "");
+		}
+		else if ( form().has("queueDepth"))
+		{
+			queueDepthField = form().get("queueDepth", "");
+		}
+		if ( !queueDepthField.empty() )
+		{
+			int queueDepth = 0;
+			if ( Poco::NumberParser::tryParse(queueDepthField, queueDepth) )
+			{
+				Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+				filter->set("Parameter", "CurrentQDepth");
+				filter->set("Operator", "NLT"); //Not Less
+				filter->set("FilterValue", queueDepth);
+				pcfParameters->set("IntegerFilterCommand", filter);
+			}
 		}
 
 		if ( form().has("queueUsage") )
 		{
-			filter->set("usage", form().get("queueUsage"));
+			pcfParameters->set("Usage", form().get("queueUsage"));
+		}
+		else if ( form().has("Usage") )
+		{
+			pcfParameters->set("Usage", form().get("Usage"));
 		}
 
-		filter->set("type", form().get("queueType", "All"));
-		filter->set("excludeSystem", form().get("excludeSystem", "false").compare("true") == 0);
-		filter->set("excludeTemp", form().get("excludeTemp", "false").compare("true") == 0);
-	}
+		pcfParameters->set("QType", form().get("queueType", "All"));
+		pcfParameters->set("ExcludeSystem", form().get("excludeSystem", "false").compare("true") == 0);
+		pcfParameters->set("ExcludeTemp", form().get("excludeTemp", "false").compare("true") == 0);
 
-	Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
-	filter->set("QAttrs", attrs);
+		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+		pcfParameters->set("QAttrs", attrs);
 
-	for(Poco::Net::NameValueCollection::ConstIterator itAttrs = form().find("Attrs"); 
-		itAttrs != form().end() && Poco::icompare(itAttrs->first, "Attrs") == 0;
-		++itAttrs)
-	{
-		attrs->add(itAttrs->second);
+		for(Poco::Net::NameValueCollection::ConstIterator itAttrs = form().find("Attrs"); 
+			itAttrs != form().end() && Poco::icompare(itAttrs->first, "Attrs") == 0;
+			++itAttrs)
+		{
+			attrs->add(itAttrs->second);
+		}
 	}
 
 	QueueMapper mapper(*commandServer());
-	Poco::JSON::Array::Ptr queues = mapper.inquire(filter);
+	Poco::JSON::Array::Ptr queues = mapper.inquire(pcfParameters);
 	set("queues", queues);
 	setView(new JSONView());
 }

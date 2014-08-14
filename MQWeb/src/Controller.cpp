@@ -29,7 +29,7 @@
 #include "Poco/StreamCopier.h"
 #include "Poco/URI.h"
 
-#include "Poco/JSON/TemplateCache.h"
+#include "Poco/JSON/Parser.h"
 
 namespace MQ
 {
@@ -80,7 +80,33 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 		}
 	}
 
-	_form.load(request, request.stream(), *this);
+	std::string contentType = request.getContentType();
+	if ( contentType == "application/json" )
+	{
+		Poco::JSON::Parser parser;
+		try
+		{
+			Poco::Dynamic::Var json = parser.parse(request.stream());
+			if ( ! json.isEmpty() && json.type() == typeid(Poco::JSON::Object::Ptr) )
+			{
+				_data->set("filter", json.extract<Poco::JSON::Object::Ptr>());
+			}
+		}
+		catch(Poco::JSON::JSONException& jsone)
+		{
+			// Make sure everything is read, otherwise this can result
+			// in Bad Request error in the next call.
+			Poco::NullOutputStream nos;
+			Poco::StreamCopier::copyStream(request.stream(), nos);
+
+			setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "JSON error occurred: " + jsone.displayText());
+			return;
+		}
+	}
+	else
+	{
+		_form.load(request, request.stream(), *this);
+	}
 
 	// Make sure everything is read, otherwise this can result
 	// in Bad Request error in the next call.
