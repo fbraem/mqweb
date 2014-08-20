@@ -30,10 +30,9 @@ h1
   color: #1293EE;}
 
 h2
-{ font-size: 1.75em; 
-  border-bottom-color: #1293EE;	
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
+{ 
+  font-size: 1.75em;
+  color: #1293EE;
 }
 
 h3
