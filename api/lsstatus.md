@@ -37,6 +37,6 @@ a listenername, * will be used.
     
 ###Example
 
-`/api/lsstatus/inquire/PIGEON`
+`/api/lsstatus/inquire/PIGEON`  
 `/api/lsstatus/inquire/PIGEON?ListenerName=MQWEB*`
 
