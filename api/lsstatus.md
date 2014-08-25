@@ -12,13 +12,13 @@ This controller can be used to get status information for listeners.
 
 ##inquire
 
-Inquires the state of the listeners. The returned JSON object will have a `mqweb` object and a`statuses` array with
+Inquires the state of the listeners. The returned JSON object will have a `mqweb` object and a `statuses` array with
 all returned statuses as object. When an WebSphere MQ error occurred, there will be no `statuses` array.
 Instead an `error` object is returned.
 
 ###URL Parameters
 
-`/api/lsstatus/inquire/<QueueManager>/<ListernName>`
+`/api/lsstatus/inquire/<QueueManager>/<ListenerName>`
 
 **QueueManager**
 
