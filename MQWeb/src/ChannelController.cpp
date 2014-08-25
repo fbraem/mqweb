@@ -40,37 +40,64 @@ ChannelController::~ChannelController()
 
 void ChannelController::inquire()
 {
-	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+	Poco::JSON::Object::Ptr pcfParameters;
 
-	std::vector<std::string> parameters = getParameters();
-	// First parameter is queuemanager
-	// Second parameter can be a channelname and will result in inquiring
-	// only that channel. A third parameter is required because we need
-	// also the type of the channel for inquiring a specific channel.
-	if ( parameters.size() > 1 )
+	if ( data().has("filter") && data().isObject("filter") )
 	{
-		filter->set("name", parameters[1]);
-		if ( parameters.size() > 2 )
-		{
-			filter->set("type", parameters[2]);
-		}
-		else
-		{
-			setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "ChannelType is required when channelname is part of the URI-path");
-			return;
-		}
+		pcfParameters = data().getObject("filter");
 	}
 	else
 	{
-		std::string channelNameField = form().get("channelName", "*");
-		filter->set("name", channelNameField.empty() ? "*" : channelNameField);
-		filter->set("type", form().get("channelType", "All"));
-		filter->set("excludeSystem", form().get("excludeSystem", "false").compare("true") == 0);
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a channelname. If this is passed
+		// the query parameter ChannelName is ignored. A third parameter 
+		// can be used for setting the channel type. This parameter can also
+		// be set using the query parameter ChannelType.
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("ChannelName", parameters[1]);
+		}
+		else
+		{
+			std::string channelNameField = form().get("ChannelName", "*");
+			pcfParameters->set("ChannelName", channelNameField.empty() ? "*" : channelNameField);
+		}
+
+		if ( parameters.size() > 2 )
+		{
+			pcfParameters->set("ChannelType", parameters[2]);
+		}
+		else
+		{
+			pcfParameters->set("ChannelType", form().get("ChannelType", "All"));
+		}
+
+		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
+
+		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+		pcfParameters->set("ChannelAttrs", attrs);
+
+		Poco::Net::NameValueCollection::ConstIterator itAttrs = form().find("ChannelAttrs");
+		if ( itAttrs == form().end() )
+		{
+			itAttrs = form().find("Attrs");
+		}
+
+		for(; 
+			itAttrs != form().end() && Poco::icompare(itAttrs->first, "Attrs") == 0;
+			++itAttrs)
+		{
+			attrs->add(itAttrs->second);
+		}
 	}
 
-	ChannelMapper channelMapper(*commandServer());
-	Poco::JSON::Array::Ptr jsonChannels = channelMapper.inquire(filter);
-	set("channels", jsonChannels);
+	ChannelMapper mapper(*commandServer());
+	Poco::JSON::Array::Ptr channels = mapper.inquire(pcfParameters);
+	set("channels", channels);
 	setView(new JSONView());
 }
 

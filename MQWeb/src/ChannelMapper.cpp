@@ -21,8 +21,6 @@
 #include "MQ/Web/ChannelMapper.h"
 #include "MQ/MQException.h"
 
-#include "Poco/JSON/Object.h"
-
 namespace MQ {
 namespace Web {
 
@@ -61,10 +59,12 @@ Poco::JSON::Array::Ptr ChannelMapper::inquire(const Poco::JSON::Object::Ptr& fil
 	Poco::JSON::Array::Ptr channels = new Poco::JSON::Array();
 
 	PCF::Ptr inquireChl = _commandServer.createCommand(MQCMD_INQUIRE_CHANNEL);
+	inquireChl->addParameter(MQCACH_CHANNEL_NAME, filter->optValue<std::string>("ChannelName", "*"));
 
-	inquireChl->addParameter(MQCACH_CHANNEL_NAME, filter->optValue<std::string>("name", "*"));
+	handleIntegerFilter(inquireChl, filter);
+	handleStringFilter(inquireChl, filter);
 
-	std::string channelType = filter->optValue<std::string>("type", "All");
+	std::string channelType = filter->optValue<std::string>("ChannelType", "All");
 	MQLONG channelTypeValue = dictionary()->getDisplayId(MQIACH_CHANNEL_TYPE, channelType);
 	poco_assert_dbg(channelTypeValue != -1);
 	if ( channelTypeValue == - 1 )
@@ -73,10 +73,25 @@ Poco::JSON::Array::Ptr ChannelMapper::inquire(const Poco::JSON::Object::Ptr& fil
 	}
 	inquireChl->addParameter(MQIACH_CHANNEL_TYPE, channelTypeValue);
 
+	if ( filter->has("ChannelAttrs") )
+	{
+		Poco::JSON::Array::Ptr attrs = filter->getArray("ChannelAttrs");
+		if ( !attrs.isNull() && attrs->size() > 0 )
+		{
+			std::vector<MQLONG> numList;
+			for(Poco::JSON::Array::ValueVec::const_iterator it = attrs->begin(); it != attrs->end(); ++it)
+			{
+				MQLONG id = dictionary()->getId(*it);
+				if ( id != -1 ) numList.push_back(id);
+			}
+			if ( numList.size() > 0 ) inquireQ->addParameterList(MQIACF_Q_ATTRS, numList);
+		}
+	}
+
 	PCF::Vector commandResponse;
 	_commandServer.sendCommand(inquireChl, commandResponse);
 
-	bool excludeSystem = filter->optValue("excludeSystem", false);
+	bool excludeSystem = filter->optValue("ExcludeSystem", false);
 
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
