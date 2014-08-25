@@ -12,7 +12,8 @@ This controller can be used to get messages from a queue.
 
 ##browse
 
-The returned JSON object will have a `mqweb` object and a `messages` array.
+The action browse is used to browse one or more messages. The returned JSON object 
+will have a `mqweb` object and a `messages` array.
 The MQMD of each message will be translated into a JSON object. A message Id
 or a correlation id is returned in hexadecimal format. When a WebSphere MQ 
 error occurred there will be no `messages` array, but instead an `error` object 
@@ -34,7 +35,7 @@ The name of a queue. This parameter is required.
   
 A message id in hex format.
 
-##Query Parameters
+###Query Parameters
 
 **Limit** (optional)
 
@@ -51,6 +52,8 @@ When a message has format MQFMT_STRING, a part of the message can be returned.
 
 ##dump
 
+The action dump can be used to browse one message and get the data in hexidecimal,
+ebcdic and ascii format.
 The returned JSON object will have a `mqweb` object and a `message` object.
 The MQMD will be translated to JSON and results in properties on the `message`
 object. The message will also have a `dump` property which contains some arrays
@@ -82,6 +85,11 @@ A message id in hex format. This parameter is required.
 
 ##event
 
+The event action is used to return event messages. The returned JSON object will 
+have a `mqweb` object and an `events` array. Each event item, will have a `message` property 
+with a MQMD that is translated to JSON, it will have an `event` object with the specific event 
+information and a `reason` object.
+
 ###URL Parameters
 
 `/api/message/event/<QueueManager>/<QueueName>/<MessageId>`  
@@ -107,11 +115,4 @@ When no message id is passed, you can limit the number of messages to return.
 ###Example
 
 `/api/message/event/PIGEON/SYSTEM.ADMIN.QGMR.EVENT`  
-
-<div style="clear:both;"> </div>
-
-The returned JSON object will have a `mqweb` object and an `events` array. Each
-event item, will have a `message` property with a MQMD that is translated to
-JSON, it will have an `event` object with the specific event information and a
-`reason` object.
 
