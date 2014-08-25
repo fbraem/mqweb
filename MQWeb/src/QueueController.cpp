@@ -53,8 +53,8 @@ void QueueController::inquire()
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
-		// Second parameter can be a queuename and will result in inquiring 
-		// only that queue and ignores all query parameters.
+		// Second parameter can be a queuename. If this is passed, the
+		// query parameter QName or queueName is ignored.
 		if ( parameters.size() > 1 )
 		{
 			pcfParameters->set("QName", parameters[1]);
@@ -116,7 +116,13 @@ void QueueController::inquire()
 		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
 		pcfParameters->set("QAttrs", attrs);
 
-		for(Poco::Net::NameValueCollection::ConstIterator itAttrs = form().find("Attrs"); 
+		Poco::Net::NameValueCollection::ConstIterator itAttrs = form().find("QAttrs");
+		if ( itAttrs == form().end() )
+		{
+			itAttrs = form().find("Attrs");
+		}
+
+		for(; 
 			itAttrs != form().end() && Poco::icompare(itAttrs->first, "Attrs") == 0;
 			++itAttrs)
 		{
