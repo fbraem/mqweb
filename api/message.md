@@ -10,45 +10,7 @@ MessageController
 The second part of the URI must be `message` to call the MessageController.
 This controller can be used to get messages from a queue.
 
-##Actions
-
-###browse
-
-Name
-: browse
-
-Type
-: JSON
-
-Parameters
-: + **queueManager**
- 
-    The name of the queuemanager
-
-  + **queueName**
-
-    The name of a queue.
-    
-  + **messageId** (optional)
-  
-    A message id in hex format.
-
-Query Parameters
-: + **limit** (optional)
-
-    When no message id is passed, you can limit the number of messages to 
-    return.
-
-  + **teaser** (optional)
-
-    When a message has format MQFMT_STRING, a part of the message can be
-    returned.
-
-Example
-: `/api/message/browse/PIGEON/MQWEB.TEST.Q1`  
-  `/api/message/browse/PIGEON/MQWEB.TEST.Q1?limit=100`
-
-<div style="clear:both;"> </div>
+##browse
 
 The returned JSON object will have a `mqweb` object and a `messages` array.
 The MQMD of each message will be translated into a JSON object. A message Id
@@ -56,31 +18,38 @@ or a correlation id is returned in hexadecimal format. When a WebSphere MQ
 error occurred there will be no `messages` array, but instead an `error` object 
 is returned.
 
-###dump
+###URL Parameters
 
-Name
-: dump
+`/api/message/browse/<QueueManager>/<QueueName>`  
 
-Type
-: JSON
-
-Parameters
-: + **queueManager**
+**QueueManager**
  
-    The name of the queuemanager
+The name of the queuemanager. This parameter is required.
 
-  + **queueName**
+**QueueName**
 
-    The name of a queue.
-    
-  + **messageId**
+The name of a queue. This parameter is required.
+
+**messageId** (optional)
   
-    A message id in hex format.
+A message id in hex format.
 
-Example
-: `/api/message/dump/PIGEON/MQWEB.TEST.Q1/<hex>`  
+##Query Parameters
 
-<div style="clear:both;"> </div>
+**Limit** (optional)
+
+When no message id is passed, you can limit the number of messages to return.
+
+**Teaser** (optional)
+
+When a message has format MQFMT_STRING, a part of the message can be returned.
+
+###Example
+
+`/api/message/browse/PIGEON/MQWEB.TEST.Q1`  
+`/api/message/browse/PIGEON/MQWEB.TEST.Q1?Limit=100`
+
+##dump
 
 The returned JSON object will have a `mqweb` object and a `message` object.
 The MQMD will be translated to JSON and results in properties on the `message`
@@ -91,36 +60,53 @@ contain an array with a ASCII representation of the message data. And the
 `ebcdic` property will contain an array with an EBCIDIC representation of the 
 message data. 
 
-###event
+###URL Parameters
 
-Name
-: event
+`/api/message/dump/<QueueManager>/<Queue>/<MessageId>`  
 
-Type
-: JSON
-
-Parameters
-: + **queueManager**
+**QueueManager**
  
-    The name of the queuemanager
+The name of the queuemanager. This parameter is required.
 
-  + **queueName**
+**QueueName**
 
-    The name of a queue which contains event messages.
+The name of a queue. This parameter is required.
     
-  + **messageId** (optional)
+**MessageId**
   
-    A message id in hex format. When no message id is set, all event messages
-    will be returned.
+A message id in hex format. This parameter is required.
 
-Query Parameters
-: + **limit** (optional)
+###Example
 
-    When no message id is passed, you can limit the number of messages to 
-    return.
+`/api/message/dump/PIGEON/MQWEB.TEST.Q1/414D512053504152524F5720202020202BA4755304000010`  
 
-Example
-: `/api/message/event/PIGEON/SYSTEM.ADMIN.QGMR.EVENT`  
+##event
+
+###URL Parameters
+
+`/api/message/event/<QueueManager>/<QueueName>/<MessageId>`  
+
+**QueueManager**
+ 
+The name of the queuemanager. This parameter is required.
+
+**QueueName**
+
+The name of a queue which contains event messages. This parameter is required.
+    
+**MessageId** (optional)
+  
+A message id in hex format. When no message id is set, all event messages will be returned.
+
+###Query Parameters
+
+**Limit** (optional)
+
+When no message id is passed, you can limit the number of messages to return.
+
+###Example
+
+`/api/message/event/PIGEON/SYSTEM.ADMIN.QGMR.EVENT`  
 
 <div style="clear:both;"> </div>
 
