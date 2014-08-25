@@ -28,6 +28,8 @@ The name of a channel. When this parameter is used, query parameters are ignored
 
 **ChannelType** (optional)
 
+ChannelType must be `All`, `Sender`, `Server`, `Receiver`, `Requester`, `Server-connection`, `Client-connection`, `Cluster-receiver` or `Cluster-sender'. This value is case-sensitive. When this parameter is omitted, `All` is used.
+
 **ChannelName** (optional)
 
 ###Example
