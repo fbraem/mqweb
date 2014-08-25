@@ -30,7 +30,7 @@ The name of the listener. When this parameter is used, query parameters are igno
 
 ###Query Parameters
 
-**ListenerName*
+**ListenerName**
 
 The name of the listener. When this parameter is omitted and there is no URL parameter for
 a listenername, * will be used.
