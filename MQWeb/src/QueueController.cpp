@@ -109,7 +109,20 @@ void QueueController::inquire()
 			pcfParameters->set("Usage", form().get("Usage"));
 		}
 
-		pcfParameters->set("QType", form().get("queueType", "All"));
+		std::string queueType;
+		if ( form().has("queueType") )
+		{
+			queueType = form().get("queueType");
+		}
+		else
+		{
+			queueType = form().get("QType", "");
+		}
+		if ( !queueType.empty() )
+		{
+			pcfParameters->set("QType", form().get("queueType", "All"));
+		}
+
 		pcfParameters->set("ExcludeSystem", form().get("excludeSystem", "false").compare("true") == 0);
 		pcfParameters->set("ExcludeTemp", form().get("excludeTemp", "false").compare("true") == 0);
 
