@@ -26,12 +26,14 @@ documentation to know what parameters can be used. The HTTP method can be GET or
 
 Query parameter names are, as much as possible, based on the names used in the
 WebSphere MQ information center. For example: *QName* will be used for a queuename.
+The name of a query parameter is not case sensitive.
 
 It's also possible to POST an application/json request. The URI is still formed
 with the object type, action and queuemanager name but all other information can be
 posted as a JSON object. This JSON object contains input information for the PFC 
 command. Look at the api documentation to know what properties can be used in 
-this object.
+this object. The name of a property is likely the same as the corresponding 
+query parameter but is now case sensitive!
 
 The answer of an api request is always a JSON object. This JSON object can contain the
 following properties:
