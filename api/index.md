@@ -21,13 +21,14 @@ parameters are passed as part of the path of the URI or as query parameter.
 The first parameter on the URI after the action is always the name of the 
 queuemanager. Other parameters depends on the called action.
 For example: `/api/queue/inquire/PIGEON` will return all queues from the queuemanager 
-PIGEON. The HTTP method can be GET or POST.
+PIGEON. Depending on the object type other input can be passed. Look at the api
+documentation to know what parameters can be used. The HTTP method can be GET or POST.
 
 It's also possible to POST an application/json request. The URI is still formed
 with the object type, action and queuemanager name but all other information can be
-posted as a JSON object. This JSON object must contain a property `filter` which
-is a JSON object that contains input information for the PFC command. Look at the
-api documentation to know what properties can be used in the `filter` object.
+posted as a JSON object. This JSON object contains input information for the PFC 
+command. Look at the api documentation to know what properties can be used in 
+this object.
 
 The answer of an api request is always a JSON object. This JSON object can contain the
 following properties:
