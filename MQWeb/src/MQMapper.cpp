@@ -142,4 +142,22 @@ void MQMapper::handleStringFilter(PCF::Ptr pcf, Poco::JSON::Object::Ptr filter)
 	}
 }
 
+void MQMapper::handleAttrs(PCF::Ptr pcf, Poco::JSON::Object::Ptr filter, const std::string& attr, MQLONG attrId)
+{
+	if ( filter->has(attr) )
+	{
+		Poco::JSON::Array::Ptr attrs = filter->getArray(attr);
+		if ( !attrs.isNull() && attrs->size() > 0 )
+		{
+			std::vector<MQLONG> numList;
+			for(Poco::JSON::Array::ValueVec::const_iterator it = attrs->begin(); it != attrs->end(); ++it)
+			{
+				MQLONG id = dictionary()->getId(*it);
+				if ( id != -1 ) numList.push_back(id);
+			}
+			if ( numList.size() > 0 ) pcf->addParameterList(attrId, numList);
+		}
+	}
+}
+
 }} //  Namespace MQ::Web

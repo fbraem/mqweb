@@ -57,6 +57,9 @@ public:
 	static const Poco::SharedPtr<Dictionary> dictionary(const std::string& objectType);
 		/// Returns the dictionary for the given object type
 
+	void handleAttrs(PCF::Ptr pcf, Poco::JSON::Object::Ptr filter, const std::string& attr, MQLONG attrId);
+		/// Handles the attribute list
+
 	void handleIntegerFilter(PCF::Ptr pcf, Poco::JSON::Object::Ptr filter);
 		/// When IntegerFilterCommand is set, it will add an integer filter to the PCF message
 
