@@ -58,6 +58,14 @@ This parameter is optional. By default the value is set to `false`.
 When value is `true`, all temporary queues will be discarded.
 This parameter is optional. By default the value is set to `false`.
 
+####QAttrs
+
+With the QAttrs parameter you can specify which attributes must be
+returned from the PCF command. Multiple occurences of this parameter
+are possible. The value must be a valid attribute name.
+
+> Attrs is a synonym for QAttrs
+
 ####QName
 
 Only return queues with a name that matches *QName*. By 
@@ -68,7 +76,6 @@ This parameter is ignored when there is a URI parameter for a queuename.
 For compatibility reasons with older versions this parameter can also
 be passed as *QueueName*.
 
-<a name="QType"></a>
 ####QType
   
 Only return the queues of the given type. Possible values are `Local`,
@@ -88,6 +95,9 @@ case-sensitive.
 > is useful to only get information for transmission queues this
 > parameter is added.
 
+> When the QAttrs parameter is used, the Usage attribute must be selected to
+> make this work.
+
 For compatibility reasons with older versions this parameter can also
 be passed as *QueueUsage*.
 
@@ -95,12 +105,15 @@ be passed as *QueueUsage*.
 
 `/api/queue/inquire/PIGEON/MQWEB.TEST.Q1`  
 `/api/queue/inquire/PIGEON/*`  
-`/api/queue/inquire/PIGEON?QueueName=*&QueueDepth=1`
+`/api/queue/inquire/PIGEON?QName=*&CurrentQDepth=1`  
+`/api/queue/inquire/PIGEON?QAttrs=QName&QAttrs=CurrentQDepth`
 
 ###JSON Object
 
 When using a JSON POST request you can post a JSON object with names like the
-query parameters. These are some additional parameters:
+query parameters. *QAttrs* is a JSON array with attributenames as element.
+
+These are some additional parameters:
 
 ####IntegerFilterCommand
 
