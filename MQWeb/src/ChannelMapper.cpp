@@ -84,7 +84,7 @@ Poco::JSON::Array::Ptr ChannelMapper::inquire(const Poco::JSON::Object::Ptr& fil
 				MQLONG id = dictionary()->getId(*it);
 				if ( id != -1 ) numList.push_back(id);
 			}
-			if ( numList.size() > 0 ) inquireQ->addParameterList(MQIACF_Q_ATTRS, numList);
+			if ( numList.size() > 0 ) inquireChl->addParameterList(MQIACF_Q_ATTRS, numList);
 		}
 	}
 
