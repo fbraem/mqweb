@@ -12,61 +12,97 @@ This controller can be used to get information from a queue.
 
 ##inquire
 
-Get information about one or more queues. When a queuename parameter is passed in the 
-URI path only the attributes of the queues which matches the given name will be 
-returned. Query parameters are discarded in this case.
+Get information about one or more queues. This action executes the MQCMD_INQUIRE_Q pcf command.
 
-A filter will be created based on the query parameters when no queuename 
-parameter is passed in the URI path.
-
-The returned JSON object will have a `mqweb` object and a `queues` array. 
-When a WebSphere MQ error occurred there will be no `queues` array, but instead 
-an `error` object is returned.
+The returned JSON object will have a `queues` array. When a WebSphere MQ error occurred 
+there will be no `queues` array, but instead an `error` object is returned.
 
 ###URL Parameters
 
-`/api/queue/inquire/<QueueManager>/<QueueName>`
+`/api/queue/inquire/<QueueManager>/<QName>`
 
-**QueueManager**
+####QueueManager
  
 The name of the queuemanager. This parameter is required.
 
-**QueueName** (optional)
+####QName
 
-The name of a queue.
+The name of a queue. Generic queue names are supported.
+This parameter is optional.
 
-### Query Parameters
+###Query Parameters
 
-**QueueDepth** (optional)
+####CurrentQDepth
 
-Only return queues which have at least *QueueDepth* messages.
+Only return queues which have at least *CurrentQDepth* messages. This is
+actually a shortcut for an *IntegerFilterCommand* : 
 
-**QueueName** (optional)
+    {
+      'Parameter' : 'CurrentQDepth',
+      'Operator' : 'NLT',
+      'FilterValue' : <value>
+    }
 
-Only return queues with a name that matches *QueueName*. By 
+For compatibility reasons with older versions this parameter can also
+be passed as *QueueDepth*.
+
+> Be aware that only one integer/string filter can be used for each call.
+
+####ExcludeSystem
+
+When value is `true`, all queues starting with SYSTEM. will be discarded.
+This parameter is optional. By default the value is set to `false`.
+
+####ExcludeTemp
+
+When value is `true`, all temporary queues will be discarded.
+This parameter is optional. By default the value is set to `false`.
+
+####QName
+
+Only return queues with a name that matches *QName*. By 
 default * is used which matches all queues.
 
-**QueueType** (optional)
+This parameter is ignored when there is a URI parameter for a queuename.
+
+For compatibility reasons with older versions this parameter can also
+be passed as *QueueName*.
+
+<a name="QType"></a>
+####QType
   
 Only return the queues of the given type. Possible values are `Local`,
 `Remote`, `Model`, `Alias`, `Cluster` or `All`. Default is `All`. The
 value is case-sensitive.
 
-**QueueUsage** (optional)
+For compatibility reasons with older versions this parameter can also
+be passed as *QueueType*.
+
+####Usage
 
 Only return queues with the given usage type. Use `normal` or `xmitq`. When
-this parameter is not set, all queues will be returned.
+this parameter is not set, all queues will be returned. The value is not
+case-sensitive.
 
-**ExcludeSystem** (optional)
+> This parameter doesn't actually exist for MQCMD_INQUIRE_Q, but because it
+> is useful to only get information for transmission queues this
+> parameter is added.
 
-When value is `true`, all queues starting with SYSTEM. will be discarded.
-
-**ExcludeTemp** (optional)
-
-When value is `true`, all temporary queues will be discarded.
+For compatibility reasons with older versions this parameter can also
+be passed as *QueueUsage*.
 
 ###Example
 
 `/api/queue/inquire/PIGEON/MQWEB.TEST.Q1`  
 `/api/queue/inquire/PIGEON/*`  
 `/api/queue/inquire/PIGEON?QueueName=*&QueueDepth=1`
+
+###JSON Object
+
+When using a JSON POST request you can post a JSON object with names like the
+query parameters. These are some additional parameters:
+
+####IntegerFilterCommand
+
+####StringFilterCommand
+
