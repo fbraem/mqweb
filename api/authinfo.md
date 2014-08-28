@@ -32,6 +32,11 @@ The name of an authentication information object. When an authentication informa
 part of the URL, this query parameter will be ignored. *name* is a synonym for this parameter. When no
 *AuthInfoName* parameter is passed, * wil be used as default.
 
+####ExcludeSystem
+
+When value is `true`, all authentication information objects starting with SYSTEM. will be discarded.
+This parameter is optional. By default the value is set to `false`.
+
 ###Example
 `/api/authinfo/inquire/PIGEON`  
 `/api/authinfo/inquire/PIGEON/SYSTEM*`  
