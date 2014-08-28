@@ -16,26 +16,48 @@ This controller can be used to get attributes of authentication information obje
 
 `/api/authinfo/inquire/<QueueManager>/<AuthInfoName>`
 
-**QueueManager**
+####QueueManager
 
 The name of the queuemanager. This parameter is required!
 
-**AuthInfoName** (optional)
+####AuthInfoName
   
 The name of an authentication information object. When this parameter is used, the AuthInfoName query parameter is ignored.
+This parameter is optional.
 
 ###Query Parameters
 
-**AuthInfoName** (optional)
+####AuthInfoAttrs
+
+With the *AuthInfoAttrs* parameter you can specify which attributes must be returned from the PCF command. Multiple occurences of this parameter are possible. The value must be a (case-sensitive) valid attribute name.
+
+> Attrs is a synonym for AuthInfoAttrs
+
+####AuthInfoName
 
 The name of an authentication information object. When an authentication information object name is passed as
 part of the URL, this query parameter will be ignored. *name* is a synonym for this parameter. When no
 *AuthInfoName* parameter is passed, * wil be used as default.
 
+####AuthInfoType
+
+Only return authentication information objects of the given type. Possible values are `CRL LDAP`, `OCSP`or `All`.
+Default is `All`. The value is case-sensitive.
+
+####CommandScope
+
+Specifies how the command is executed when the queue manager is a member of a queue-sharing group.
+This parameter applies to z/OS only.
+
 ####ExcludeSystem
 
 When value is `true`, all authentication information objects starting with SYSTEM. will be discarded.
 This parameter is optional. By default the value is set to `false`.
+
+####QSGDisposition
+
+Disposition of the object within the group. Possible values are `Live`, `Copy`, `Group`, `QMgr`, `Private` 
+or `All`. This parameter applies to z/OS only.
 
 ###Example
 `/api/authinfo/inquire/PIGEON`  
