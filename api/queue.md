@@ -145,8 +145,11 @@ be passed as *QueueUsage*.
 
 ###JSON Object
 
-When using a JSON POST request you can post a JSON object with names like the
+When using an application/json POST request you can post a JSON object with names like the
 query parameters.
+
+> All URL parameters and query parameters are ignored except for the URL parameter for
+> the name of the queuemanager.
 
     {
       'QName' : 'T*',
@@ -163,11 +166,12 @@ query parameters.
 
 There are some differences between query parameters and a JSON object:
 
++ JSON property names are case-sensitive
 + *QAttrs* is a JSON array with attributenames as element.
 + Synonyms can't be used, you need to use the name of the attribute
   as described in the query parameters. You can't use *name*, it must be *QName* for example.
 + *CurrentQDepth* can't be used. You need to use an *IntegerFilterCommand* to do the same.
 + A filter is an object: *IntegerFilterCommand* can be used to filter on parameters which has
-  has integer values, while *StringFilterCommand* can be used to filter on parameters with string values.
+  integer values, while *StringFilterCommand* can be used to filter on parameters with string values.
 
 > An *IntegerFilterCommand* can't be used together with a *StringFilterCommand*
