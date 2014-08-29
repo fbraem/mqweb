@@ -57,21 +57,41 @@ This parameter is optional. By default the value is set to `false`.
 ####Filter
 
 Speficies which filter to use: `I` means Integerfilter, `S` means Stringfilter.
-When this is used, Filter_param and Filter_value is required. When a filter can't be build
+*FilterParam* and *FilterValue* are required to create the filter. When a filter can't be build
 because of too little information, it will be silently discarded.
 
-####Filter_op
+####FilterOp
 
 The operator that is being used to evaluate whether the parameter satisfies the filter-value.
 The default is `EQ`.
 
-####Filter_param
+The following values are allowed:
+
++ `GT` : Greater than
++ `LT` : Less than
++ `EQ` : Equal to
++ `NE` : Not equal to
++ `NLT` : Not less than
++ `NGT` : Not greater than
++ `LE` : Less than or equal to
++ `GE` : Greater than or equal to
++ `CT` : Contains
++ `EX` : Excludes
+
+A Stringfilter can use some additional operators:
+
++ `LK` : Matches a generic string
++ `NL` : Does not match a generic string
++ `CTG` : Contains an item which matches a generic string
++ `EXG` : Does not contain any item which matches a generic string.
+
+####FilterParam
 
 The name of the parameter to filter on. The names are based on the names used in the WebSphere MQ information center.
 
-####Filter_value
+####FilterValue
 
-The value to use for filtering. For an IntegerFilter you can also use a string that represents a WebSphere MQ constant.
+The value to use for filtering. When a string is passed for an Integerfilter, a WebSphere MQ constant is assumed.
 
 ####QAttrs
 
@@ -133,7 +153,12 @@ query parameters.
       'QAttrs' : [
         'QName',
         'CurrentQDepth'
-      ]
+      ],
+      'IntegerFilterCommand' : {
+        'Parameter' : 'CurrentQDepth',
+        'Operator' : 'NLT',
+        'FilterValue' : 1
+      }
     }
 
 There are some differences between query parameters and a JSON object:
@@ -142,48 +167,7 @@ There are some differences between query parameters and a JSON object:
 + Synonyms can't be used, you need to use the name of the attribute
   as described in the query parameters. You can't use *name*, it must be *QName* for example.
 + *CurrentQDepth* can't be used. You need to use an *IntegerFilterCommand* to do the same.
-
-These are additional parameters:
-
-####IntegerFilterCommand
-
-*IntegerFilterCommand* can be used to restrict the output from the command by specifying a filter condition.
-The parameter must be any integer type parameter (like *CurrentQDepth*). This property is a JSON object with 
-the following properties:
-
-#####Parameter
-
-The name of the parameter. The names are based on the names used in the WebSphere MQ information center.
-
-#####Operator
-
-The operator that is being used to evaluate whether the parameter satisfies the filter-value. The following
-values are allowed:
-
-+ 'GT' : Greater than
-+ 'LT' : Less than
-+ 'EQ' : Equal to
-+ 'NE' : Not equal to
-+ 'NLT' : Not less than
-+ 'NGT' : Not greater than
-+ 'LE' : Less than or equal to
-+ 'GE' : Greater than or equal to
-+ 'CT' : Contains
-+ 'EX' : Excludes
-
-#####FilterValue
-
-This must be an integer or a string that represents a WebSphere MQ constant.
-
-#####Example
-
-    'IntegerFilterCommand' : {
-      'Parameter' : 'CurrentQDepth',
-      'Operator' : 'NLT',
-      'FilterValue' : 1
-    }
++ A filter is an object: *IntegerFilterCommand* can be used to filter on parameters which has
+  has integer values, while *StringFilterCommand* can be used to filter on parameters with string values.
 
 > An *IntegerFilterCommand* can't be used together with a *StringFilterCommand*
-
-####StringFilterCommand
-
