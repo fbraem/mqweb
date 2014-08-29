@@ -12,6 +12,11 @@ This controller can be used to get attributes of authentication information obje
 
 ##inquire
 
+Get information about one or more authentication information objects. 
+This action executes the MQCMD_INQUIRE_AUTH_INFO pcf command.
+
+The returned JSON object will have a `authinfos` array. When a WebSphere MQ error occurred 
+there will be no `authinfos` array, but instead an `error` object is returned.
 ###URL Parameters
 
 `/api/authinfo/inquire/<QueueManager>/<AuthInfoName>`
@@ -61,4 +66,8 @@ or `All`. This parameter applies to z/OS only.
 
 ###Example
 `/api/authinfo/inquire/PIGEON`  
-`/api/authinfo/inquire/PIGEON/SYSTEM*`  
+`/api/authinfo/inquire/PIGEON/SYSTEM*`
+
+###JSON Object
+
+
