@@ -179,6 +179,6 @@ There are some differences between query parameters and a JSON object:
 + A filter is an object: *IntegerFilterCommand* can be used to filter on parameters which has
   integer values, while *StringFilterCommand* can be used to filter on parameters with string values.
   The filter object has these three properties: Parameter ([FilterParam](#queryFilterParam)), 
-  Operator ([FilterOp](#queryFilterOp)) and ([FilterValue](#queryFilterValue)).
+  Operator ([FilterOp](#queryFilterOp)) and FilterValue ([FilterValue](#queryFilterValue)).
 
 > An *IntegerFilterCommand* can't be used together with a *StringFilterCommand*
