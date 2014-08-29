@@ -178,7 +178,7 @@ There are some differences between query parameters and a JSON object:
 + *CurrentQDepth* can't be used. You need to use an *IntegerFilterCommand* to do the same.
 + A filter is an object: *IntegerFilterCommand* can be used to filter on parameters which has
   integer values, while *StringFilterCommand* can be used to filter on parameters with string values.
-  The filter object has these three properties: Parameter ([FilterParm](#queryFilterParm)), 
-  Operator ([FilterOp](#queryFilterOp)) and ([FilterValue](#queryFilterValue])).
+  The filter object has these three properties: Parameter ([FilterParam](#queryFilterParam)), 
+  Operator ([FilterOp](#queryFilterOp)) and ([FilterValue](#queryFilterValue)).
 
 > An *IntegerFilterCommand* can't be used together with a *StringFilterCommand*
