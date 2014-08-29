@@ -56,13 +56,22 @@ Poco::JSON::Array::Ptr QueueMapper::inquire(const Poco::JSON::Object::Ptr& filte
 {
 	poco_assert_dbg(!filter.isNull());
 
-	Poco::JSON::Array::Ptr jsonQueues = new Poco::JSON::Array();
+	Command command(this, MQCMD_INQUIRE_Q, filter);
 
-	PCF::Ptr inquireQ = _commandServer.createCommand(MQCMD_INQUIRE_Q);
-	inquireQ->addParameter(MQCA_Q_NAME, filter->optValue<std::string>("QName", "*"));
+	// Required Parameters
+	command.addParameter<std::string>(MQCA_Q_NAME, "QName");
 
-	handleIntegerFilter(inquireQ, filter);
-	handleStringFilter(inquireQ, filter);
+	// Optional Parameters
+	command.addParameter<std::string>(MQCA_CF_STRUC_NAME, "CFStructure");
+	command.addParameter<MQLONG>(MQIACF_CLUSTER_INFO, "ClusterInfo");
+	command.addParameter<std::string>(MQCA_CLUSTER_NAME, "ClusterName");
+	command.addParameter<std::string>(MQCA_CLUSTER_NAMELIST, "ClusterNamelist");
+	command.addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	command.addIntegerFilter();
+	command.addParameter<MQLONG>(MQIA_PAGESET_ID, "PageSetId");
+	command.addStringFilter();
+	command.addParameterNumFromString(MQIA_Q_TYPE, "QType");
+	command.addAttributeList(MQIACF_Q_ATTRS, "QAttrs");
 
 	MQLONG usage = -1;
 	if ( filter->has("Usage") )
@@ -79,23 +88,13 @@ Poco::JSON::Array::Ptr QueueMapper::inquire(const Poco::JSON::Object::Ptr& filte
 		}
 	}
 
-	std::string queueType = filter->optValue<std::string>("QType", "All");
-	MQLONG queueTypeValue = dictionary()->getDisplayId(MQIA_Q_TYPE, queueType);
-	poco_assert_dbg(queueTypeValue != -1);
-	if ( queueTypeValue == - 1 )
-	{
-		return jsonQueues;
-	}
-	inquireQ->addParameter(MQIA_Q_TYPE, queueTypeValue);
-
-	handleAttrs(inquireQ, filter, "QAttrs", MQIACF_Q_ATTRS);
-
 	PCF::Vector commandResponse;
-	_commandServer.sendCommand(inquireQ, commandResponse);
+	command.execute(commandResponse);
 
 	bool excludeSystem = filter->optValue("ExcludeSystem", false);
 	bool excludeTemp = filter->optValue("ExcludeTemp", false);
 
+	Poco::JSON::Array::Ptr jsonQueues = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
 		if ( (*it)->isExtendedResponse() ) // Skip extended response

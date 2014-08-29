@@ -59,13 +59,12 @@ Poco::JSON::Array::Ptr ConnectionMapper::inquire(const Poco::JSON::Object::Ptr& 
 {
 	poco_assert_dbg(!filter.isNull());
 
-	Poco::JSON::Array::Ptr connections = new Poco::JSON::Array();
+	Command command(this, MQCMD_INQUIRE_CONNECTION, filter);
 
-	PCF::Ptr inquireConnections = _commandServer.createCommand(MQCMD_INQUIRE_CONNECTION);
-
-	if ( filter->has("id") )
+	// Required parameters
+	if ( filter->has("ConnectionId") )
 	{
-		std::string hexId = filter->get("id");
+		std::string hexId = filter->get("ConnectionId");
 		BufferPtr id = new Buffer(hexId.size() / 2);
 
 		std::istringstream iss(hexId);
@@ -78,17 +77,27 @@ Poco::JSON::Array::Ptr ConnectionMapper::inquire(const Poco::JSON::Object::Ptr& 
 			c = decoder.get();
 		}
 
-		inquireConnections->addParameter(MQBACF_CONNECTION_ID, id);
+		command.pcf()->addParameter(MQBACF_CONNECTION_ID, id);
 	}
 	else
 	{
 		BufferPtr id = new Buffer(0); // Empty buffer
-		inquireConnections->addParameter(MQBACF_GENERIC_CONNECTION_ID, id);
+		command.pcf()->addParameter(MQBACF_GENERIC_CONNECTION_ID, id);
 	}
 
-	PCF::Vector commandResponse;
-	_commandServer.sendCommand(inquireConnections, commandResponse);
+	// Optional parameters
+	//TODO: ByteStringFilter
+	command.addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	command.addAttributeList(MQIACF_CONNECTION_ATTRS, "ConnectionAttrs");
+	command.addParameterNumFromString(MQIACF_CONN_INFO_TYPE, "ConnInfoType");
+	command.addIntegerFilter();
+	command.addStringFilter();
+	command.addParameterNumFromString(MQIA_UR_DISP, "URDisposition");
 
+	PCF::Vector commandResponse;
+	command.execute(commandResponse);
+
+	Poco::JSON::Array::Ptr connections = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
 		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)

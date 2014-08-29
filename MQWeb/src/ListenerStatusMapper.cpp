@@ -56,13 +56,20 @@ Poco::JSON::Array::Ptr ListenerStatusMapper::inquire(const Poco::JSON::Object::P
 {
 	poco_assert_dbg(!filter.isNull());
 
-	Poco::JSON::Array::Ptr statuses = new Poco::JSON::Array();
+	Command command(this, MQCMD_INQUIRE_LISTENER_STATUS, filter);
+	
+	// Required parameters
+	command.addParameter<std::string>(MQCACH_LISTENER_NAME, "ListenerName");
 
-	PCF::Ptr inquireListenerStatus = _commandServer.createCommand(MQCMD_INQUIRE_LISTENER_STATUS);
-	inquireListenerStatus->addParameter(MQCACH_LISTENER_NAME, filter->optValue<std::string>("name", "*"));
+	// Optional parameters
+	command.addIntegerFilter();
+	command.addAttributeList(MQIACF_LISTENER_STATUS_ATTRS, "ListenerStatusAttrs");
+	command.addStringFilter();
 
 	PCF::Vector commandResponse;
-	_commandServer.sendCommand(inquireListenerStatus, commandResponse);
+	command.execute(commandResponse);
+
+	Poco::JSON::Array::Ptr statuses = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
 		if ( (*it)->isExtendedResponse() ) // Skip extended response

@@ -58,33 +58,26 @@ Poco::JSON::Array::Ptr QueueStatusMapper::inquire(const Poco::JSON::Object::Ptr&
 
 	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 
-	PCF::Ptr command = _commandServer.createCommand(MQCMD_INQUIRE_Q_STATUS);
-	command->addParameter(MQCA_Q_NAME, filter->optValue<std::string>("queueName", "*"));
+	Command command(this, MQCMD_INQUIRE_Q_STATUS, filter);
 
-	if ( filter->has("openType") )
-	{
-		std::string type = filter->optValue<std::string>("openType", "All");
-		MQLONG typeValue = dictionary()->getDisplayId(MQIACF_OPEN_TYPE, type);
-		poco_assert_dbg(typeValue != -1);
-		if ( typeValue != MQQSOT_ALL )
-		{
-			command->addParameter(MQIACF_OPEN_TYPE, typeValue);
-		}
-	}
+	// Required parameters
+	command.addParameter<std::string>(MQCA_Q_NAME, "QName");
 
-	if ( filter->has("statusType") )
-	{
-		std::string type = filter->optValue<std::string>("statusType", "Queue Status");
-		MQLONG typeValue = dictionary()->getDisplayId(MQIACF_STATUS_TYPE, type);
-		poco_assert_dbg(typeValue != -1);
-		command->addParameter(MQIACF_STATUS_TYPE, typeValue);
-	}
+	// Optional parameters
+	//TODO: ByteStringFilter
+	command.addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	command.addIntegerFilter();
+	command.addParameterNumFromString(MQIACF_OPEN_TYPE, "OpenType");
+	command.addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
+	command.addAttributeList(MQIACF_Q_STATUS_ATTRS, "QStatusAttrs");
+	command.addParameterNumFromString(MQIACF_STATUS_TYPE, "StatusType");
+	command.addStringFilter();
 
 	PCF::Vector commandResponse;
-	_commandServer.sendCommand(command, commandResponse);
+	command.execute(commandResponse);
 
-	bool excludeSystem = filter->optValue("excludeSystem", false);
-	bool excludeTemp = filter->optValue("excludeTemp", false);
+	bool excludeSystem = filter->optValue("ExcludeSystem", false);
+	bool excludeTemp = filter->optValue("ExcludeTemp", false);
 
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{

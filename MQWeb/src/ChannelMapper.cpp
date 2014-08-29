@@ -56,29 +56,26 @@ Poco::JSON::Array::Ptr ChannelMapper::inquire(const Poco::JSON::Object::Ptr& fil
 {
 	poco_assert_dbg(!filter.isNull());
 
-	Poco::JSON::Array::Ptr channels = new Poco::JSON::Array();
+	Command command(this, MQCMD_INQUIRE_CHANNEL, filter);
 
-	PCF::Ptr inquireChl = _commandServer.createCommand(MQCMD_INQUIRE_CHANNEL);
-	inquireChl->addParameter(MQCACH_CHANNEL_NAME, filter->optValue<std::string>("ChannelName", "*"));
+	// Required Parameters
+	command.addParameter<std::string>(MQCACH_CHANNEL_NAME, "ChannelName");
 
-	handleIntegerFilter(inquireChl, filter);
-	handleStringFilter(inquireChl, filter);
-
-	std::string channelType = filter->optValue<std::string>("ChannelType", "All");
-	MQLONG channelTypeValue = dictionary()->getDisplayId(MQIACH_CHANNEL_TYPE, channelType);
-	poco_assert_dbg(channelTypeValue != -1);
-	if ( channelTypeValue == - 1 )
-	{
-		return channels;
-	}
-	inquireChl->addParameter(MQIACH_CHANNEL_TYPE, channelTypeValue);
-
-	handleAttrs(inquireChl, filter, "ChannelAttrs", MQIACF_CHANNEL_ATTRS);
+	// Optional Parameters
+	command.addAttributeList(MQIACF_CHANNEL_ATTRS, "ChannelAttrs");
+	command.addParameterNumFromString(MQIACH_CHANNEL_TYPE, "ChannelType");
+	command.addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	command.addParameterNumFromString(MQIACH_CHANNEL_DISP, "DefaultChannelDisposition");
+	command.addIntegerFilter();
+	command.addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
+	command.addStringFilter();
 
 	PCF::Vector commandResponse;
-	_commandServer.sendCommand(inquireChl, commandResponse);
+	command.execute(commandResponse);
 
 	bool excludeSystem = filter->optValue("ExcludeSystem", false);
+
+	Poco::JSON::Array::Ptr channels = new Poco::JSON::Array();
 
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{

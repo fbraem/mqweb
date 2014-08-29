@@ -58,17 +58,22 @@ Poco::JSON::Array::Ptr ServiceMapper::inquire(const Poco::JSON::Object::Ptr& fil
 {
 	poco_assert_dbg(!filter.isNull());
 
-	Poco::JSON::Array::Ptr services = new Poco::JSON::Array();
+	Command command(this, MQCMD_INQUIRE_SERVICE, filter);
 
-	PCF::Ptr inquireService = _commandServer.createCommand(MQCMD_INQUIRE_SERVICE);
+	// Required parameters
+	command.addParameter<std::string>(MQCA_SERVICE_NAME, "ServiceName");
 
-	inquireService->addParameter(MQCA_SERVICE_NAME, filter->optValue<std::string>("name", "*"));
+	// Optional parameters
+	command.addIntegerFilter();
+	command.addAttributeList(MQIACF_SERVICE_ATTRS, "ServiceAttrs");
+	command.addStringFilter();
 
 	PCF::Vector commandResponse;
-	_commandServer.sendCommand(inquireService, commandResponse);
+	command.execute(commandResponse);
 
-	bool excludeSystem = filter->optValue("excludeSystem", false);
+	bool excludeSystem = filter->optValue("ExcludeSystem", false);
 
+	Poco::JSON::Array::Ptr services = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
 		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)

@@ -58,10 +58,14 @@ Poco::JSON::Array::Ptr QueueManagerMapper::inquire(const Poco::JSON::Object::Ptr
 {
 	Poco::JSON::Array::Ptr jsonQueueManagers = new Poco::JSON::Array();
 
-	PCF::Ptr inquireQmgr = _commandServer.createCommand(MQCMD_INQUIRE_Q_MGR);
+	Command command(this, MQCMD_INQUIRE_Q_MGR, filter);
+
+	// Optional parameters
+	command.addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	command.addAttributeList(MQIACF_Q_MGR_ATTRS, "QMgrAttrs");
 
 	std::vector<Poco::SharedPtr<PCF> > commandResponse;
-	_commandServer.sendCommand(inquireQmgr, commandResponse);
+	command.execute(commandResponse);
 
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{

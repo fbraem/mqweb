@@ -94,11 +94,13 @@ void QueueController::inquire()
 			{
 				Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
 				filter->set("Parameter", "CurrentQDepth");
-				filter->set("Operator", "NLT"); //Not Less
+				filter->set("Operator", "NLT"); //Not Less##
 				filter->set("FilterValue", queueDepth);
 				pcfParameters->set("IntegerFilterCommand", filter);
 			}
 		}
+
+		handleFilterForm(pcfParameters);
 
 		if ( form().has("queueUsage") )
 		{

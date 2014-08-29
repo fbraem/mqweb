@@ -40,31 +40,77 @@ AuthenticationInformationController::~AuthenticationInformationController()
 
 void AuthenticationInformationController::inquire()
 {
-	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+	Poco::JSON::Object::Ptr pcfParameters;
 
-	std::vector<std::string> parameters = getParameters();
-	// First parameter is queuemanager
-	// Second parameter can be a authentication information name and will result in inquiring 
-	// only that queue and ignores all query parameters.
-	if ( parameters.size() > 1 )
+	if ( data().has("filter") && data().isObject("filter") )
 	{
-		filter->set("authInfoName", parameters[1]);
+		pcfParameters = data().getObject("filter");
 	}
 	else
 	{
-		// Handle query parameters
-		std::string authInfoNameField = form().get("authInfoName", "*");
-		if ( authInfoNameField.empty() )
-		{
-			authInfoNameField = "*";
-		}
-		filter->set("authInfoName", authInfoNameField);
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
 
-		filter->set("excludeSystem", form().get("excludeSystem", "false").compare("true") == 0);
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a authentication information name (generic name is allowed)
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("AuthInfoName", parameters[1]);
+		}
+		else
+		{
+			// Handle query parameters
+			std::string authInfoNameField;
+			if ( form().has("AuthInfoName") )
+			{
+				authInfoNameField = form().get("AuthInfoName");
+			}
+			else if ( form().has("name") )
+			{
+				authInfoNameField = form().get("name");
+			}
+			if ( authInfoNameField.empty() )
+			{
+				authInfoNameField = "*";
+			}
+			pcfParameters->set("AuthInfoName", authInfoNameField);
+		}
+
+		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+		pcfParameters->set("AuthInfoAttrs", attrs);
+		formElementToJSONArray("AuthInfoAttrs", attrs);
+		if ( attrs->size() == 0 ) // Nothing found for AuthInfoAttrs, try Attrs
+		{
+			formElementToJSONArray("Attrs", attrs);
+		}
+		if ( attrs->size() > 0 )
+		{
+			pcfParameters->set("AuthInfoAttrs", attrs);
+		}
+
+		if ( form().has("AuthInfoType") )
+		{
+			pcfParameters->set("AuthInfoType", form().get("AuthInfoType"));
+		}
+
+		if ( form().has("CommandScope") )
+		{
+			pcfParameters->set("CommandScope", form().get("CommandScope"));
+		}
+
+		if ( form().has("QSGDisposition") )
+		{
+			pcfParameters->set("QSGDisposition", form().get("QSGDisposition"));
+		}
+
+		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
+
+		handleFilterForm(pcfParameters);
 	}
 
 	AuthenticationInformationMapper mapper(*commandServer());
-	Poco::JSON::Array::Ptr json = mapper.inquire(filter);
+	Poco::JSON::Array::Ptr json = mapper.inquire(pcfParameters);
 	set("authinfos", json);
 }
 

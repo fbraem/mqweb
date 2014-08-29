@@ -58,17 +58,24 @@ Poco::JSON::Array::Ptr NamelistMapper::inquire(const Poco::JSON::Object::Ptr& fi
 {
 	poco_assert_dbg(!filter.isNull());
 
-	Poco::JSON::Array::Ptr namelists = new Poco::JSON::Array();
+	Command command(this, MQCMD_INQUIRE_NAMELIST, filter);
 
-	PCF::Ptr inquireNamelist = _commandServer.createCommand(MQCMD_INQUIRE_NAMELIST);
+	// Required parameters
+	command.addParameter<std::string>(MQCA_NAMELIST_NAME, "NamelistName");
 
-	inquireNamelist->addParameter(MQCA_NAMELIST_NAME, filter->optValue<std::string>("name", "*"));
+	// Optional parameters
+	command.addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	command.addIntegerFilter();
+	command.addAttributeList(MQIACF_NAMELIST_ATTRS, "NamelistAttrs");
+	command.addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
+	command.addStringFilter();
 
 	PCF::Vector commandResponse;
-	_commandServer.sendCommand(inquireNamelist, commandResponse);
+	command.execute(commandResponse);
 
-	bool excludeSystem = filter->optValue("excludeSystem", false);
+	bool excludeSystem = filter->optValue("ExcludeSystem", false);
 
+	Poco::JSON::Array::Ptr namelists = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
 		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)

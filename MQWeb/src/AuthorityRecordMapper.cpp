@@ -54,14 +54,13 @@ Poco::JSON::Array::Ptr AuthorityRecordMapper::inquire(const Poco::JSON::Object::
 {
 	poco_assert_dbg(!filter.isNull());
 
-	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
+	Command command(this, MQCMD_INQUIRE_AUTH_RECS, filter);
 
-	PCF::Ptr command = _commandServer.createCommand(MQCMD_INQUIRE_AUTH_RECS);
-	
-	if ( filter->has("profileName") ) command->addParameter(MQCACF_AUTH_PROFILE_NAME, filter->optValue<std::string>("profileName", "*"));
-	
+	// Required parameters
+	command.addParameter<std::string>(MQCACF_AUTH_PROFILE_NAME, "ProfileName");
+
 	MQLONG options = 0;
-	Poco::JSON::Array::Ptr optionsValue = filter->getArray("options");
+	Poco::JSON::Array::Ptr optionsValue = filter->getArray("Options");
 	if ( !optionsValue.isNull() )
 	{
 		for(Poco::JSON::Array::ValueVec::const_iterator it = optionsValue->begin(); it != optionsValue->end(); ++it)
@@ -89,38 +88,20 @@ Poco::JSON::Array::Ptr AuthorityRecordMapper::inquire(const Poco::JSON::Object::
 			}
 		}
 	}
-	command->addParameter(MQIACF_AUTH_OPTIONS, options);
+	command.pcf()->addParameter(MQIACF_AUTH_OPTIONS, options);
 
-	std::string objectType = filter->optValue<std::string>("objectType", "All");
-	MQLONG objectTypeValue = dictionary()->getDisplayId(MQIACF_OBJECT_TYPE, objectType);
-	poco_assert_dbg(objectTypeValue != -1);
-	if ( objectTypeValue == - 1 )
-	{
-		return json;
-	}
-	command->addParameter(MQIACF_OBJECT_TYPE, objectTypeValue);
+	command.addParameterNumFromString(MQIACF_OBJECT_TYPE, "ObjectType");
 
-	if ( filter->has("entityName") ) command->addParameter(MQCACF_ENTITY_NAME, filter->optValue<std::string>("entityName", ""));
-
-	if ( filter->has("entityType") )
-	{
-		std::string entityType = filter->optValue<std::string>("entityType", "");
-		if ( !entityType.empty() )
-		{
-			MQLONG entityTypeValue = dictionary()->getDisplayId(MQIACF_ENTITY_TYPE, entityType);
-			poco_assert_dbg(entityTypeValue != -1);
-			if ( entityTypeValue == - 1 )
-			{
-				return json;
-			}
-			command->addParameter(MQIACF_ENTITY_TYPE, entityTypeValue);
-		}
-	}
-	
-	if ( filter->has("serviceComponent") ) command->addParameter(MQCACF_SERVICE_COMPONENT, filter->optValue<std::string>("serviceComponent", ""));
+	// Optional parameters
+	command.addParameter<std::string>(MQCACF_ENTITY_NAME, "EntityName");
+	command.addParameterNumFromString(MQIACF_ENTITY_TYPE, "EntityType");
+	command.addAttributeList(MQIACF_AUTH_PROFILE_ATTRS, "ProfileAttrs");
+	command.addParameter<std::string>(MQCACF_SERVICE_COMPONENT, "ServiceComponent");
 
 	PCF::Vector commandResponse;
-	_commandServer.sendCommand(command, commandResponse);
+	command.execute(commandResponse);
+
+	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{

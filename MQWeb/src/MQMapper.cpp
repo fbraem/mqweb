@@ -88,74 +88,101 @@ const DisplayMap& MQMapper::getDisplayMap(const std::string& objectType, MQLONG 
 	return dict->getDisplayMap(id);
 }
 
-void MQMapper::handleIntegerFilter(PCF::Ptr pcf, Poco::JSON::Object::Ptr filter)
+MQMapper::Command::Command(MQMapper* mapper, MQLONG command, Poco::JSON::Object::Ptr filter)
+: _mapper(mapper)
+, _filter(filter)
 {
-	if ( filter->has("IntegerFilterCommand") )
-	{
-		Poco::JSON::Object::Ptr integerFilterCommand = filter->getObject("IntegerFilterCommand");
-		if ( !integerFilterCommand.isNull() )
-		{
-			std::string parameterName = integerFilterCommand->optValue<std::string>("Parameter", "");
-			MQLONG parameter = dictionary()->getId(parameterName);
-			if ( parameter != -1 )
-			{
-				std::string opString = integerFilterCommand->optValue<std::string>("Operator", "EQ");
-				MQLONG op = getOperator(Poco::toUpper(opString));
-				if ( op == -1 ) op = MQCFOP_EQUAL;
-				
-				Poco::Dynamic::Var value = integerFilterCommand->get("FilterValue");
-				MQLONG filterValue;
-				if ( value.isString() )
-				{
-					// A String is passed ... try to find the MQ integer value
-					filterValue = dictionary()->getDisplayId(parameter, value);
-				}
-				else if ( value.isNumeric() )
-				{
-					filterValue = value;
-				}
-				pcf->addFilter(parameter, op, filterValue);
-			}
-		}
-	}
+	_pcf = _mapper->_commandServer.createCommand(command);
 }
 
-void MQMapper::handleStringFilter(PCF::Ptr pcf, Poco::JSON::Object::Ptr filter)
+MQMapper::Command::~Command()
 {
-	if ( filter->has("StringFilterCommand") )
-	{
-		Poco::JSON::Object::Ptr integerFilterCommand = filter->getObject("StringFilterCommand");
-		if ( !integerFilterCommand.isNull() )
-		{
-			std::string parameterName = integerFilterCommand->optValue<std::string>("Parameter", "");
-			MQLONG parameter = dictionary()->getId(parameterName);
-			if ( parameter != -1 )
-			{
-				std::string opString = integerFilterCommand->optValue<std::string>("Operator", "EQ");
-				MQLONG op = getOperator(Poco::toUpper(opString));
-				if ( op == -1 ) op = MQCFOP_EQUAL;
-				
-				std::string filterValue = integerFilterCommand->optValue<std::string>("FilterValue", "");
-				pcf->addFilter(parameter, op, filterValue);
-			}
-		}
-	}
 }
 
-void MQMapper::handleAttrs(PCF::Ptr pcf, Poco::JSON::Object::Ptr filter, const std::string& attr, MQLONG attrId)
+void MQMapper::Command::addIntegerFilter()
 {
-	if ( filter->has(attr) )
+	Poco::JSON::Object::Ptr integerFilter = _filter->getObject("IntegerFilterCommand");
+	if ( integerFilter.isNull() )
+		return;
+
+	std::string parameterName = integerFilter->optValue<std::string>("Parameter", "");
+	MQLONG parameter = _mapper->dictionary()->getId(parameterName);
+	if ( parameter == -1 )
+		return;
+
+	std::string opString = integerFilter->optValue<std::string>("Operator", "EQ");
+	MQLONG op = getOperator(Poco::toUpper(opString));
+	if ( op == -1 ) op = MQCFOP_EQUAL;
+	
+	Poco::Dynamic::Var value = integerFilter->get("FilterValue");
+	MQLONG filterValue;
+	if ( value.isString() )
 	{
-		Poco::JSON::Array::Ptr attrs = filter->getArray(attr);
+		// A String is passed ... try to find the MQ integer value
+		filterValue = _mapper->dictionary()->getDisplayId(parameter, value);
+	}
+	else if ( value.isNumeric() )
+	{
+		filterValue = value;
+	}
+	_pcf->addFilter(parameter, op, filterValue);
+}
+
+void MQMapper::Command::addStringFilter()
+{
+	Poco::JSON::Object::Ptr stringFilter = _filter->getObject("StringFilterCommand");
+	if ( stringFilter.isNull() )
+		return;
+
+	std::string parameterName = stringFilter->optValue<std::string>("Parameter", "");
+	MQLONG parameter = _mapper->dictionary()->getId(parameterName);
+	if ( parameter == -1 )
+		return;
+
+	std::string opString = stringFilter->optValue<std::string>("Operator", "EQ");
+	MQLONG op = getOperator(Poco::toUpper(opString));
+	if ( op == -1 ) op = MQCFOP_EQUAL;
+	
+	std::string filterValue = stringFilter->optValue<std::string>("FilterValue", "");
+	_pcf->addFilter(parameter, op, filterValue);
+}
+
+void MQMapper::Command::addAttributeList(MQLONG attrId, const std::string& attr)
+{
+	if ( _filter->has(attr) )
+	{
+		Poco::JSON::Array::Ptr attrs = _filter->getArray(attr);
 		if ( !attrs.isNull() && attrs->size() > 0 )
 		{
 			std::vector<MQLONG> numList;
 			for(Poco::JSON::Array::ValueVec::const_iterator it = attrs->begin(); it != attrs->end(); ++it)
 			{
-				MQLONG id = dictionary()->getId(*it);
+				MQLONG id = _mapper->dictionary()->getId(*it);
 				if ( id != -1 ) numList.push_back(id);
 			}
-			if ( numList.size() > 0 ) pcf->addParameterList(attrId, numList);
+			if ( numList.size() > 0 ) _pcf->addParameterList(attrId, numList);
+		}
+	}
+}
+
+void MQMapper::Command::addParameterNumFromString(MQLONG parameter, const std::string& name)
+{
+	Poco::Dynamic::Var value = _filter->get(name);
+	if ( ! value.isEmpty() )
+	{
+		try
+		{
+			std::string stringValue = value.convert<std::string>();
+			MQLONG numValue = _mapper->dictionary()->getDisplayId(parameter, stringValue);
+			poco_assert_dbg(numValue != -1);
+			if ( numValue != - 1 )
+			{
+				_pcf->addParameter(parameter, numValue);
+			}
+		}
+		catch(...)
+		{
+			poco_assert_dbg(false);
 		}
 	}
 }

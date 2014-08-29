@@ -58,28 +58,23 @@ Poco::JSON::Array::Ptr ClusterQueueManagerMapper::inquire(const Poco::JSON::Obje
 {
 	poco_assert_dbg(!filter.isNull());
 
-	Poco::JSON::Array::Ptr clusqmgrs = new Poco::JSON::Array();
+	Command command(this, MQCMD_INQUIRE_CLUSTER_Q_MGR, filter);
 
-	PCF::Ptr inquireClusterQMgr = _commandServer.createCommand(MQCMD_INQUIRE_CLUSTER_Q_MGR);
+	// Required parameters
+	command.addParameter<std::string>(MQCA_CLUSTER_Q_MGR_NAME, "ClusterQmgrName");
 
-	if ( filter->has("clusterName") )
-	{
-		inquireClusterQMgr->addParameter(MQCA_CLUSTER_NAME, filter->optValue<std::string>("name", "*"));
-	}
-
-	if ( filter->has("channelName") )
-	{
-		inquireClusterQMgr->addParameter(MQCACH_CHANNEL_NAME, filter->optValue<std::string>("channelName", "*"));
-	}
-
-	if ( filter->has("clusterQmgrName") )
-	{
-		inquireClusterQMgr->addParameter(MQCA_CLUSTER_Q_MGR_NAME, filter->optValue<std::string>("clusterQmgrName", "*"));
-	}
+	// Optional parameters
+	command.addParameter<std::string>(MQCACH_CHANNEL_NAME, "ChannelName");
+	command.addParameter<std::string>(MQCA_CLUSTER_NAME, "ClusterName");
+	command.addAttributeList(MQIACF_CLUSTER_Q_MGR_ATTRS, "ClusterQMgrAttrs");
+	command.addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	command.addIntegerFilter();
+	command.addStringFilter();
 
 	PCF::Vector commandResponse;
-	_commandServer.sendCommand(inquireClusterQMgr, commandResponse);
+	command.execute(commandResponse);
 
+	Poco::JSON::Array::Ptr clusqmgrs = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
 		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)

@@ -55,16 +55,26 @@ void AuthenticationInformationMapper::copy(const Poco::JSON::Object::Ptr& obj, b
 Poco::JSON::Array::Ptr AuthenticationInformationMapper::inquire(const Poco::JSON::Object::Ptr& filter)
 {
 	poco_assert_dbg(!filter.isNull());
+	
+	Command command(this, MQCMD_INQUIRE_AUTH_INFO, filter);
 
-	Poco::JSON::Array::Ptr jsonAuthInfos = new Poco::JSON::Array();
+	// Required parameters
+	command.addParameter<std::string>(MQCA_AUTH_INFO_NAME, "AuthInfoName");
 
-	PCF::Ptr command = _commandServer.createCommand(MQCMD_INQUIRE_AUTH_INFO);
-	command->addParameter(MQCA_AUTH_INFO_NAME, filter->optValue<std::string>("authInfoName", "*"));
+	// Optional parameters
+	command.addAttributeList(MQIACF_AUTH_INFO_ATTRS, "AuthInfoAttrs");
+	command.addParameterNumFromString(MQIA_AUTH_INFO_TYPE, "AuthInfoType");
+	command.addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	command.addIntegerFilter();
+	command.addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
+	command.addStringFilter();
 
 	PCF::Vector commandResponse;
-	_commandServer.sendCommand(command, commandResponse);
+	command.execute(commandResponse);
 
-	bool excludeSystem = filter->optValue("excludeSystem", false);
+	bool excludeSystem = filter->optValue("ExcludeSystem", false);
+
+	Poco::JSON::Array::Ptr jsonAuthInfos = new Poco::JSON::Array();
 
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{

@@ -56,34 +56,27 @@ void QueueManagerStatusMapper::copy(const Poco::JSON::Object::Ptr& obj, bool rep
 
 Poco::JSON::Array::Ptr QueueManagerStatusMapper::inquire(const Poco::JSON::Object::Ptr& filter)
 {
-	Poco::JSON::Array::Ptr jsonQueueManagerStatuses = new Poco::JSON::Array();
+	Command command(this, MQCMD_INQUIRE_Q_MGR_STATUS, filter);
 
-	PCF::Ptr inquireQmgr = _commandServer.createCommand(MQCMD_INQUIRE_Q_MGR_STATUS);
+	// Optional parameters
+	command.addAttributeList(MQIACF_Q_MGR_STATUS_ATTRS, "QMStatusAttrs");
 
 	std::vector<Poco::SharedPtr<PCF> > commandResponse;
-	_commandServer.sendCommand(inquireQmgr, commandResponse);
+	command.execute(commandResponse);
 
-	if ( commandResponse.size() > 0 )
+	Poco::JSON::Array::Ptr jsonQueueManagerStatuses = new Poco::JSON::Array();
+	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
-		PCF::Vector::iterator it = commandResponse.begin();
-		if ( (*it)->getCompletionCode() != MQCC_OK )
-		{
-			if ( (*it)->getReasonCode() != MQRC_UNKNOWN_OBJECT_NAME )
-			{
-				throw MQException(_commandServer.qmgr().name(), "PCF", (*it)->getCompletionCode(), (*it)->getReasonCode());
-			}
-		}
+		if ( (*it)->isExtendedResponse() ) // Skip extended response
+			continue;
 
-		for(; it != commandResponse.end(); it++)
-		{
-			if ( (*it)->isExtendedResponse() ) // Skip extended response
-				continue;
+		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)
+			continue;
 
-			Poco::JSON::Object::Ptr jsonQmgr = new Poco::JSON::Object();
-			jsonQueueManagerStatuses->add(jsonQmgr);
+		Poco::JSON::Object::Ptr jsonQmgr = new Poco::JSON::Object();
+		jsonQueueManagerStatuses->add(jsonQmgr);
 
-			dictionary()->mapToJSON(**it, jsonQmgr);
-		}
+		dictionary()->mapToJSON(**it, jsonQmgr);
 	}
 
 	return jsonQueueManagerStatuses;

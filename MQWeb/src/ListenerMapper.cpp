@@ -56,26 +56,23 @@ Poco::JSON::Array::Ptr ListenerMapper::inquire(const Poco::JSON::Object::Ptr& fi
 {
 	poco_assert_dbg(!filter.isNull());
 
-	Poco::JSON::Array::Ptr listeners = new Poco::JSON::Array();
+	Command command(this, MQCMD_INQUIRE_LISTENER, filter);
 
-	PCF::Ptr inquireListener = _commandServer.createCommand(MQCMD_INQUIRE_LISTENER);
-	inquireListener->addParameter(MQCACH_LISTENER_NAME, filter->optValue<std::string>("name", "*"));
+	// Required parameters
+	command.addParameter<std::string>(MQCACH_LISTENER_NAME, "ListenerName");
 
-	std::string listenerType = filter->optValue<std::string>("type", "");
-	if ( !listenerType.empty() )
-	{
-		MQLONG listenerTypeValue = dictionary()->getDisplayId(MQIACH_XMIT_PROTOCOL_TYPE, listenerType);
-		if ( listenerTypeValue >= -1 && listenerTypeValue <= 6 )
-		{
-			inquireListener->addParameter(MQIACH_XMIT_PROTOCOL_TYPE, listenerTypeValue);
-		}
-	}
+	// Optional parameters
+	command.addIntegerFilter();
+	command.addAttributeList(MQIACF_LISTENER_ATTRS, "ListenerAttrs");
+	command.addStringFilter();
+	command.addParameterNumFromString(MQIACH_XMIT_PROTOCOL_TYPE, "TransportType");
 
 	PCF::Vector commandResponse;
-	_commandServer.sendCommand(inquireListener, commandResponse);
+	command.execute(commandResponse);
 
-	bool excludeSystem = filter->optValue("excludeSystem", false);
+	bool excludeSystem = filter->optValue("ExcludeSystem", false);
 
+	Poco::JSON::Array::Ptr listeners = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
 		if ( (*it)->isExtendedResponse() ) // Skip extended response

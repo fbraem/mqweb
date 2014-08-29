@@ -58,12 +58,13 @@ Poco::JSON::Array::Ptr ChannelStatusMapper::inquire(const Poco::JSON::Object::Pt
 {
 	poco_assert_dbg(!filter.isNull());
 
-	Poco::JSON::Array::Ptr jsonStatuses = new Poco::JSON::Array();
+	Command command(this, MQCMD_INQUIRE_CHANNEL_STATUS, filter);
 
-	PCF::Ptr inquireChlStatus = _commandServer.createCommand(MQCMD_INQUIRE_CHANNEL_STATUS);
+	// Required parameters
+	command.addParameter<std::string>(MQCACH_CHANNEL_NAME, "ChannelName");
 
-	inquireChlStatus->addParameter(MQCACH_CHANNEL_NAME, filter->optValue<std::string>("name", "*"));
-
+	/*TODO: move to controller!
+	command.addParameterNumFromString(MQIACH_CHANNEL_TYPE, "ChannelType");
 	if ( filter->has("type") )
 	{
 		std::string channelType = filter->optValue<std::string>("type", "All");
@@ -73,19 +74,23 @@ Poco::JSON::Array::Ptr ChannelStatusMapper::inquire(const Poco::JSON::Object::Pt
 		{
 			inquireChlStatus->addFilter(MQIACH_CHANNEL_TYPE, MQCFOP_EQUAL, channelTypeValue);
 		}
-	}
+	}*/
 
-	MQLONG instanceTypeValue = MQOT_CURRENT_CHANNEL;
-	if ( filter->has("instanceType") )
-	{
-		std::string instanceType = filter->optValue<std::string>("type", "Current");
-		instanceTypeValue = dictionary()->getDisplayId(MQIACH_CHANNEL_INSTANCE_TYPE, instanceType);
-		poco_assert_dbg(instanceTypeValue != -1);
-	}
-	inquireChlStatus->addParameter(MQIACH_CHANNEL_INSTANCE_TYPE, instanceTypeValue);
+	// Optional parameters
+	command.addParameterNumFromString(MQIACH_CHANNEL_DISP, "ChannelDisposition");
+	command.addParameter<std::string>(MQCACH_CLIENT_ID, "ClientIdentifier");
+	command.addAttributeList(MQIACH_CHANNEL_INSTANCE_ATTRS, "ChannelInstanceAttrs");
+	command.addParameterNumFromString(MQIACH_CHANNEL_INSTANCE_TYPE, "ChannelInstanceType");
+	command.addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	command.addParameter<std::string>(MQCACH_CONNECTION_NAME, "ConnectionName");
+	command.addIntegerFilter();
+	command.addStringFilter();
+	command.addParameter<std::string>(MQCACH_XMIT_Q_NAME, "XmitQName");
 
 	PCF::Vector commandResponse;
-	_commandServer.sendCommand(inquireChlStatus, commandResponse);
+	command.execute(commandResponse);
+
+	Poco::JSON::Array::Ptr jsonStatuses = new Poco::JSON::Array();
 
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{

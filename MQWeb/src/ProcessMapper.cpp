@@ -58,17 +58,24 @@ Poco::JSON::Array::Ptr ProcessMapper::inquire(const Poco::JSON::Object::Ptr& fil
 {
 	poco_assert_dbg(!filter.isNull());
 
-	Poco::JSON::Array::Ptr processes = new Poco::JSON::Array();
+	Command command(this, MQCMD_INQUIRE_PROCESS, filter);
 
-	PCF::Ptr inquireProcess = _commandServer.createCommand(MQCMD_INQUIRE_PROCESS);
+	// Required parameters
+	command.addParameter<std::string>(MQCA_PROCESS_NAME, "ProcessName");
 
-	inquireProcess->addParameter(MQCA_PROCESS_NAME, filter->optValue<std::string>("name", "*"));
+	// Optional parameters
+	command.addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	command.addIntegerFilter();
+	command.addAttributeList(MQIACF_PROCESS_ATTRS, "ProcessAttrs");
+	command.addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
+	command.addStringFilter();
 
 	PCF::Vector commandResponse;
-	_commandServer.sendCommand(inquireProcess, commandResponse);
+	command.execute(commandResponse);
 
-	bool excludeSystem = filter->optValue("excludeSystem", false);
+	bool excludeSystem = filter->optValue("ExcludeSystem", false);
 
+	Poco::JSON::Array::Ptr processes = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
 		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)
