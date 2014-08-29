@@ -71,6 +71,9 @@ public:
 		/// Called after an action is executed. The default implementation renders
 		/// the associated view. When no view is set, a JSON view will be used 
 
+	void formElementToJSONArray(const std::string& name, Poco::JSON::Array::Ptr arr);
+		/// Stores each element with the given name in a JSON array
+
 	virtual const ActionMap& getActions() const = 0;
 		/// Returns all actions.
 

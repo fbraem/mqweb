@@ -181,6 +181,15 @@ void Controller::render()
 	}
 }
 
+void Controller::formElementToJSONArray(const std::string& name, Poco::JSON::Array::Ptr arr)
+{
+	for(Poco::Net::NameValueCollection::ConstIterator it = form().find(name); 
+		it != form().end() && Poco::icompare(it->first, name) == 0;
+		++it)
+	{
+		arr->add(it->second);
+	}
+}
 
 std::string Controller::htmlize(const std::string &str)
 {
