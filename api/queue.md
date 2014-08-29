@@ -21,8 +21,9 @@ there will be no `queues` array, but instead an `error` object is returned.
 
 `/api/queue/inquire/<QueueManager>/<QName>`
 
+<a name="urlQueueManager"></a>
 ####QueueManager
- 
+
 The name of the queuemanager. This parameter is required.
 
 ####QName
@@ -149,7 +150,7 @@ When using an application/json POST request you can post a JSON object with name
 query parameters.
 
 > All URL parameters and query parameters are ignored except for the URL parameter for
-> the name of the queuemanager.
+> the name of the [queuemanager](#urlQueueManager).
 
     {
       'QName' : 'T*',
