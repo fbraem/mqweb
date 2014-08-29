@@ -59,6 +59,10 @@ public:
 	void afterAction();
 		/// Stops the stopwatch and calls Controller::afterAction
 
+	void handleFilterForm(Poco::JSON::Object::Ptr pcfParameters);
+		/// Creates an IntegerFilterCommand or StringFilterCommand
+		/// when a filter is passed.
+
 	Poco::JSON::Object& mqwebData();
 		/// Returns the JSON object for storing MQWeb data.
 		/// This object can be used to store common data like queuemanager name,

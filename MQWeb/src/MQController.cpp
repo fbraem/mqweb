@@ -212,5 +212,25 @@ void MQController::handle(const std::vector<std::string>& parameters, Poco::Net:
 	}
 }
 
+void MQController::handleFilterForm(Poco::JSON::Object::Ptr pcfParameters)
+{
+	if ( form().has("Filter") && form().has("FilterParam") && form().has("FilterValue") )
+	{
+		Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+		filter->set("Parameter", form().get("FilterParam"));
+		filter->set("Operator", form().get("FilterOp", "EQ"));
+		filter->set("FilterValue", form().get("FilterVlue"));
+
+		std::string filterType = form().get("Filter");
+		if ( Poco::icompare(filterType, "I") == 0 )
+		{
+			pcfParameters->set("IntegerFilterCommand", filter);
+		}
+		else if ( Poco::icompare(filterType, "S") == 0 )
+		{
+			pcfParameters->set("StringFilterCommand", filter);
+		}
+	}
+}
 
 }} // namespace MQ::Web
