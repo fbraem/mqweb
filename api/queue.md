@@ -55,12 +55,14 @@ This parameter is optional. By default the value is set to `false`.
 When value is `true`, all temporary queues will be discarded.
 This parameter is optional. By default the value is set to `false`.
 
+<a name="queryFilter"></a>
 ####Filter
 
 Speficies which filter to use: `I` means Integerfilter, `S` means Stringfilter.
 *FilterParam* and *FilterValue* are required to create the filter. When a filter can't be build
 because of too little information, it will be silently discarded.
 
+<a name="queryFilterOp"></a>
 ####FilterOp
 
 The operator that is being used to evaluate whether the parameter satisfies the filter-value.
@@ -86,10 +88,12 @@ A Stringfilter can use some additional operators:
 + `CTG` : Contains an item which matches a generic string
 + `EXG` : Does not contain any item which matches a generic string.
 
+<a name="queryFilterParam"></a>
 ####FilterParam
 
 The name of the parameter to filter on. The names are based on the names used in the WebSphere MQ information center.
 
+<a name="queryFilterValue"></a>
 ####FilterValue
 
 The value to use for filtering. When a string is passed for an Integerfilter, a WebSphere MQ constant is assumed.
@@ -174,5 +178,7 @@ There are some differences between query parameters and a JSON object:
 + *CurrentQDepth* can't be used. You need to use an *IntegerFilterCommand* to do the same.
 + A filter is an object: *IntegerFilterCommand* can be used to filter on parameters which has
   integer values, while *StringFilterCommand* can be used to filter on parameters with string values.
+  The filter object has these three properties: Parameter ([FilterParm](#queryFilterParm)), 
+  Operator ([FilterOp](#queryFilterOp)) and ([FilterValue](#queryFilterValue])).
 
 > An *IntegerFilterCommand* can't be used together with a *StringFilterCommand*
