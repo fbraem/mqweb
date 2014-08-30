@@ -108,6 +108,27 @@ be passed as *QueueUsage*.
 `/api/queue/inquire/PIGEON?QName=*&CurrentQDepth=1`  
 `/api/queue/inquire/PIGEON?QAttrs=QName&QAttrs=CurrentQDepth`
 
+This sample is a PHP script that inquires all SYSTEM queues from the PIGEON
+queuemanager:
+
+{% highlight php %}
+<?php
+
+	/*
+	 * Inquire all SYSTEM queues from queuemanager PIGEON.
+	 * MQWeb runs on localhost and is listening on port 8081. 
+	 */
+	$url = "http://localhost:8081/api/queue/inquire/PIGEON/SYSTEM*";
+	$curl = curl_init();
+	curl_setopt($curl, CURLOPT_URL, $url);
+	curl_setopt($curl, CURLOPT_HEADER, false);
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+	$response = curl_exec($curl);
+	$data = json_decode($response, true);
+	print_r($data);
+{% endhighlight %}
+
 ###<a name="inquireJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with names like the
 query parameters.
@@ -141,3 +162,28 @@ There are some differences between query parameters and a JSON object:
   Operator ([FilterOp](#inquireQueryFilterOp)) and FilterValue ([FilterValue](#inquireQueryFilterValue)).
 
 > An *IntegerFilterCommand* can't be used together with a *StringFilterCommand*
+
+This sample is a Perl script that inquires all queues starting with `T`:
+
+{% highlight perl %}
+#!/usr/bin/perl
+use strict;
+use warnings;
+use LWP::UserAgent;
+use HTTP::Request::Common;
+
+my $qmgr = shift;
+die("Please pass me the name of a queuemanager as argument") unless defined($qmgr);
+
+my $json = '{ "QName" : "T*" }';
+
+my $ua = LWP::UserAgent->new;
+my $req = POST 'http://localhost:8081/api/queue/inquire/' . $qmgr;
+$req->header( 'Content-Type' => 'application/json' );
+$req->content($json);
+
+my $res = $ua->request($req);
+
+print $res->content();
+
+{% endhighlight %}
