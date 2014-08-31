@@ -63,7 +63,19 @@ Poco::JSON::Array::Ptr QueueMapper::inquire(const Poco::JSON::Object::Ptr& filte
 
 	// Optional Parameters
 	command.addParameter<std::string>(MQCA_CF_STRUC_NAME, "CFStructure");
-	command.addParameter<MQLONG>(MQIACF_CLUSTER_INFO, "ClusterInfo");
+
+	Poco::Dynamic::Var clusterInfo = filter->get("ClusterInfo");
+	if (! clusterInfo.isEmpty() )
+	{
+		try
+		{
+			command.pcf()->addParameter(MQIACF_CLUSTER_INFO, clusterInfo.convert<bool>() == true);
+		}
+		catch(...)
+		{
+			poco_assert_dbg(false);
+		}
+	}
 	command.addParameter<std::string>(MQCA_CLUSTER_NAME, "ClusterName");
 	command.addParameter<std::string>(MQCA_CLUSTER_NAMELIST, "ClusterNamelist");
 	command.addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
@@ -72,6 +84,7 @@ Poco::JSON::Array::Ptr QueueMapper::inquire(const Poco::JSON::Object::Ptr& filte
 	command.addStringFilter();
 	command.addParameterNumFromString(MQIA_Q_TYPE, "QType");
 	command.addAttributeList(MQIACF_Q_ATTRS, "QAttrs");
+	command.addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
 
 	MQLONG usage = -1;
 	if ( filter->has("Usage") )
