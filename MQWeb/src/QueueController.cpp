@@ -62,20 +62,51 @@ void QueueController::inquire()
 		else
 		{
 			// Handle query parameters
-			std::string queueNameField;
+			std::string queueName;
 			if ( form().has("QName") )
 			{
-				queueNameField = form().get("QName");
+				queueName = form().get("QName");
 			}
 			else
 			{
-				queueNameField = form().get("queueName", "*");
+				queueName = form().get("QueueName", "*");
 			}
-			if ( queueNameField.empty() )
+			if ( queueName.empty() )
 			{
-				queueNameField = "*";
+				queueName = "*";
 			}
-			pcfParameters->set("QName", queueNameField);
+			pcfParameters->set("QName", queueName);
+		}
+
+		if ( form().has("ClusterInfo") )
+		{
+			std::string clusterInfo = form().get("ClusterInfo");
+			pcfParameters->set("ClusterInfo", Poco::icompare(clusterInfo, "true") == 0 ? "true" : "false");
+		}
+
+		if ( form().has("ClusterName") )
+		{
+			pcfParameters->set("ClusterName", form().get("ClusterName"));
+		}
+
+		if ( form().has("ClusterNameList") )
+		{
+			pcfParameters->set("ClusterNamelist", form().get("ClusterNamelist"));
+		}
+
+		if ( form().has("CommandScope") )
+		{
+			pcfParameters->set("CommandScope", form().get("CommandScope"));
+		}
+
+		if ( form().has("PageSetId") )
+		{
+			pcfParameters->set("PageSetId", form().get("PageSetId"));
+		}
+
+		if ( form().has("QSGDisposition") )
+		{
+			pcfParameters->set("QSGDisposition", form().get("QSGDisposition"));
 		}
 
 		std::string queueDepthField;
@@ -83,9 +114,9 @@ void QueueController::inquire()
 		{
 			queueDepthField = form().get("CurrentQDepth", "");
 		}
-		else if ( form().has("queueDepth"))
+		else if ( form().has("QueueDepth"))
 		{
-			queueDepthField = form().get("queueDepth", "");
+			queueDepthField = form().get("QueueDepth", "");
 		}
 		if ( !queueDepthField.empty() )
 		{
@@ -102,9 +133,9 @@ void QueueController::inquire()
 
 		handleFilterForm(pcfParameters);
 
-		if ( form().has("queueUsage") )
+		if ( form().has("QueueUsage") )
 		{
-			pcfParameters->set("Usage", form().get("queueUsage"));
+			pcfParameters->set("Usage", form().get("QueueUsage"));
 		}
 		else if ( form().has("Usage") )
 		{
@@ -112,9 +143,9 @@ void QueueController::inquire()
 		}
 
 		std::string queueType;
-		if ( form().has("queueType") )
+		if ( form().has("QueueType") )
 		{
-			queueType = form().get("queueType");
+			queueType = form().get("QueueType");
 		}
 		else
 		{
@@ -122,7 +153,7 @@ void QueueController::inquire()
 		}
 		if ( !queueType.empty() )
 		{
-			pcfParameters->set("QType", form().get("queueType", "All"));
+			pcfParameters->set("QType", queueType);
 		}
 
 		pcfParameters->set("ExcludeSystem", form().get("excludeSystem", "false").compare("true") == 0);
