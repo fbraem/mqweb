@@ -28,9 +28,16 @@ This parameter is optional.
 
 ###<a name="inquireQuery"></a>Query Parameters
 
+####<a name="inquireQueryCFStructure"></a>CFStructure
+Specifies the name of the storage class. This parameter is valid only on z/OS.
+
+####<a name="inquireQueryClusterInfo"></a>ClusterInfo
+When `true` cluster information about queues and other queues in the repository 
+that match the selection criteria is returned. By default this is `false`.
+
 ####<a name="inquireQueryCurrentQDepth"></a>CurrentQDepth
 Only return queues which have at least *CurrentQDepth* messages. This is
-actually a shortcut for a *Filter* : 
+actually a shortcut for a [Filter](#inquireFilter) : 
 
     filter=I&filter_param=CurrentQDepth&filter_op=NLT&filter_value=<value>
 
@@ -136,6 +143,7 @@ query parameters.
 > All URL parameters and query parameters are ignored except for the URL parameter for
 > the name of the [queuemanager](#inquireUrlQueueManager).
 
+{% highlight javascript %}
     {
       'QName' : 'T*',
       'QAttrs' : [
@@ -148,6 +156,7 @@ query parameters.
         'FilterValue' : 1
       }
     }
+{% endhighlight %}
 
 There are some differences between query parameters and a JSON object:
 
