@@ -67,10 +67,15 @@ void QueueController::inquire()
 			{
 				queueName = form().get("QName");
 			}
-			else
+			else if ( form().has("QueueName") )
 			{
-				queueName = form().get("QueueName", "*");
+				queueName = form().get("QueueName");
 			}
+			else if ( form().has("name") )
+			{
+				queueName = form().get("name");
+			}
+
 			if ( queueName.empty() )
 			{
 				queueName = "*";
