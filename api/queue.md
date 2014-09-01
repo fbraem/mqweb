@@ -8,7 +8,7 @@ QueueController
 ===============
 
 The second part of the URI must be `queue` to call the QueueController.
-This controller can be used to get information from a queue.
+At this time, this controller can be used to [inquire](#inquire) information from a queue.
 
 ##<a name="inquire"></a>inquire
 Get information about one or more queues. This action executes the MQCMD_INQUIRE_Q pcf command.
