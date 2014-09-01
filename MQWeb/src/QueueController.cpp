@@ -101,7 +101,11 @@ void QueueController::inquire()
 
 		if ( form().has("PageSetId") )
 		{
-			pcfParameters->set("PageSetId", form().get("PageSetId"));
+			int pageSetId = 0;
+			if ( Poco::NumberParser::tryParse(form().get("PageSetId"), pageSetId) )
+			{
+				pcfParameters->set("PageSetId", pageSetId);
+			}
 		}
 
 		if ( form().has("QSGDisposition") )
@@ -156,8 +160,8 @@ void QueueController::inquire()
 			pcfParameters->set("QType", queueType);
 		}
 
-		pcfParameters->set("ExcludeSystem", form().get("excludeSystem", "false").compare("true") == 0);
-		pcfParameters->set("ExcludeTemp", form().get("excludeTemp", "false").compare("true") == 0);
+		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
+		pcfParameters->set("ExcludeTemp", form().get("ExcludeTemp", "false").compare("true") == 0);
 
 		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
 		pcfParameters->set("QAttrs", attrs);
