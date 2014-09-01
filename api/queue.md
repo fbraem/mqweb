@@ -54,6 +54,9 @@ This parameter is optional. By default the value is set to `false`.
 When value is `true`, all temporary queues will be discarded.
 This parameter is optional. By default the value is set to `false`.
 
+> When the [QAttrs](#inquireQueryQAttrs) parameter is used, the DefinitionType attribute 
+> must be selected to make this work.
+
 ####<a name="inquireQueryFilter"></a>Filter
 Speficies which filter to use: `I` means Integerfilter, `S` means Stringfilter.
 *FilterParam* and *FilterValue* are required to create the filter. When a filter can't be build
