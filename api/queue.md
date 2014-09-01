@@ -81,12 +81,13 @@ are possible. The value must be a valid attribute name.
 
 ####<a name="inquireQueryQName"></a>QName
 Only return queues with a name that matches *QName*. By 
-default * is used which matches all queues.
+default * is used which matches all queues. *Name* is a synonym for this 
+parameter.
 
 This parameter is ignored when there is a URI parameter for a queuename.
 
-For compatibility reasons with older versions this parameter can also
-be passed as *QueueName*.
+>For compatibility reasons with older versions this parameter can also
+>be passed as *QueueName*.
 
 ####<a name="inquireQueryQType"></a>QType
 Only return the queues of the given type. Possible values are `Local`,
