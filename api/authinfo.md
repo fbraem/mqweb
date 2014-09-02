@@ -68,6 +68,54 @@ or `All`. This parameter applies to z/OS only.
 `/api/authinfo/inquire/PIGEON`  
 `/api/authinfo/inquire/PIGEON/SYSTEM*`
 
-###<a name="inquiryJSON"></a>JSON Object
+This sample is a PHP script that inquires all SYSTEM authentication information objects from the PIGEON
+queuemanager:
 
+{% highlight php %}
+<?php
+
+	/*
+	 * Inquire all SYSTEM authentication information objects from queuemanager PIGEON.
+	 * MQWeb runs on localhost and is listening on port 8081. 
+	 */
+	$url = "http://localhost:8081/api/authinfo/inquire/PIGEON/SYSTEM*";
+	$curl = curl_init();
+	curl_setopt($curl, CURLOPT_URL, $url);
+	curl_setopt($curl, CURLOPT_HEADER, false);
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+	$response = curl_exec($curl);
+	$data = json_decode($response, true);
+	print_r($data);
+{% endhighlight %}
+
+###<a name="inquireJSON"></a>JSON Object
+When using an application/json POST request you can post a JSON object with names like the
+query parameters.
+
+> All URL parameters and query parameters are ignored except for the URL parameter for
+> the name of the [queuemanager](#inquireUrlQueueManager).
+
+{% highlight javascript %}
+    {
+      'AuthInfoName' : 'SYSTEM*',
+      'AuthInfoAttrs' : [
+        'AuthInfoName'
+      ]
+    }
+{% endhighlight %}
+
+There are some differences between query parameters and a JSON object:
+
++ JSON property names are case-sensitive
++ [AuthInfoAttrs](#inquireQueryAuthInfoAttrs) is a JSON array with attributenames as element.
++ Synonyms can't be used, you need to use the name of the attribute
+  as described in the query parameters. You can't use *name*, it must be 
+  [AuthInfoName](#inquireQueryAuthInfoName) for example.
++ A filter is an object: *IntegerFilterCommand* can be used to filter on parameters which has
+  integer values, while *StringFilterCommand* can be used to filter on parameters with string values.
+  The filter object has these three properties: Parameter ([FilterParam](#inquireQueryFilterParam)), 
+  Operator ([FilterOp](#inquireQueryFilterOp)) and FilterValue ([FilterValue](#inquireQueryFilterValue)).
+
+> An *IntegerFilterCommand* can't be used together with a *StringFilterCommand*
 
