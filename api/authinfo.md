@@ -59,6 +59,21 @@ This parameter applies to z/OS only.
 When value is `true`, all authentication information objects starting with SYSTEM. will be discarded.
 This parameter is optional. By default the value is set to `false`.
 
+####<a name="inquireQueryFilter"></a>Filter
+Speficies which filter to use: `I` means Integerfilter, `S` means Stringfilter.
+*FilterParam* and *FilterValue* are required to create the filter. When a filter can't be build
+because of too little information, it will be silently discarded.
+
+####<a name="inquireQueryFilterOp"></a>FilterOp
+{% capture filterop %}{% include filterop.md %}{% endcapture %}
+{{ filterop | markdownify }}
+
+####<a name="inquireQueryFilterParam"></a>FilterParam
+The name of the parameter to filter on. The names are based on the names used in the WebSphere MQ information center.
+
+####<a name="inquireQueryFilterValue"></a>FilterValue
+The value to use for filtering. When a string is passed for an Integerfilter, a WebSphere MQ constant is assumed.
+
 ####<a name="inquiryQueryQSGDisposition"></a>QSGDisposition
 
 Disposition of the object within the group. Possible values are `Live`, `Copy`, `Group`, `QMgr`, `Private` 
