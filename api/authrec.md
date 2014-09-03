@@ -25,7 +25,7 @@ there will be no `authrecs` array, but instead an `error` object is returned.
 
 The name of the queuemanager. This parameter is required!
 
-####<a name="inquireURLProfileName"></a>AuthInfoName
+####<a name="inquireURLProfileName"></a>ProfileName
   
 This parameter is the name of the profile for which to retrieve authorizations. Generic profile names are supported.
 When this parameter is used, the [ProfileName](#inquireQueryProfileName) query parameter is ignored. This parameter 
@@ -33,77 +33,47 @@ is optional.
 
 ###<a name="inquireQuery"></a>Query Parameters
 
-####<a name="inqueryQueryAuthInfoAttrs"></a>AuthInfoAttrs
+####<a name="inquireQueryEntityName"></a>EntityName
+Depending on the value of [EntityType](#inquireQueryEntityType) this value means: a principal name or a group name.
 
-With the *AuthInfoAttrs* parameter you can specify which attributes must be returned from the PCF command. Multiple occurences of this parameter are possible. The value must be a (case-sensitive) valid attribute name.
+####<a name="inquireQueryEntityType"></a>EntityType
+Type of the entity: `Group` or `Principal`. The value is case-sensitive.
 
-> Attrs is a synonym for AuthInfoAttrs
+####<a name="inquireQueryObjectType"></a>ObjectType
+The type of object referred to by the profile. Possible values are : `All`, `Authentication Information`, `Channel`, 
+`Client-connection Channel`, `Communication Information`, `Listener`, `Namelist`, `Process`, `Queue`, `Queuemanager`,
+`Remote Queuemanager`, `Service` or `Topic`. The value is case-sensitive.
 
-####<a name="inquiryQueryAuthInfoName"></a>AuthInfoName
+####<a name="inquiryQueryOptions"></a>Options
 
-The name of an authentication information object. When an authentication information object name is passed as
-part of the URL, this query parameter will be ignored. *name* is a synonym for this parameter. When no
-*AuthInfoName* parameter is passed, * wil be used as default.
+Options can be set to control the set of authority records that is returned. Options can be passed multiple times.
+Possible values are:
 
-####<a name="inquiryQueryAuthInfoType"></a>AuthInfoType
++ `Name All Matching` : Return all profiles the names of which match the specified [ProfileName](#inquireQueryProfileName).
++ `Name Explicit` : Return only those profiles the names of which exactly match the [ProfileName](#inquireQueryProfileName).
++ `Entity Explicit` : Return all profiles the entity fields of which match the specified [EntityName](#inquireQueryEntityName).
++ `Entity Set` : Return profiles with the entity of which matches the specified [EntityName](#inquireQueryEntityName) and the profiles pertaining to any groups in which [EntityName](#inquireQueryEntityName) is a member that contribute to the cumulative authority for the specified entity.
++ `Name As Wildcard` : Interpret [ProfileName](#inquireQueryProfileName) as a filter on the profile name of the authority records.
 
-Only return authentication information objects of the given type. Possible values are `CRL LDAP`, `OCSP`or `All`.
-Default is `All`. The value is case-sensitive.
+The values are case sensitive.
 
-####<a name="inquiryQueryAuthInfoName"></a>CommandScope
+####<a name="inqueryQueryProfileAttrs"></a>ProfileAttrs
 
-Specifies how the command is executed when the queue manager is a member of a queue-sharing group.
-This parameter applies to z/OS only.
+With the *ProfileAttrs* parameter you can specify which attributes must be returned from the PCF command. Multiple occurences of this parameter are possible. The value must be a (case-sensitive) valid attribute name.
 
-####<a name="inquiryQueryExcludeSystem"></a>ExcludeSystem
+> Attrs is a synonym for ProfileAttrs
 
-When value is `true`, all authentication information objects starting with SYSTEM. will be discarded.
-This parameter is optional. By default the value is set to `false`.
+####<a name="inquiryQueryProfileName"></a>ProfileName
 
-####<a name="inquireQueryFilter"></a>Filter
-Speficies which filter to use: `I` means Integerfilter, `S` means Stringfilter.
-*FilterParam* and *FilterValue* are required to create the filter. When a filter can't be build
-because of too little information, it will be silently discarded.
+The name of the profile for which to retrieve authorizations. When a [ProfileName](#inquireURLProfileName) is passed as
+part of the URL, this query parameter will be ignored. *Name* is a synonym for this parameter. A profilename is not 
+required when [ObjectType](#inquireQueryObjectType) is `Queuemanager`.
 
-####<a name="inquireQueryFilterOp"></a>FilterOp
-{% capture filterop %}{% include filterop.md %}{% endcapture %}
-{{ filterop | markdownify }}
-
-####<a name="inquireQueryFilterParam"></a>FilterParam
-The name of the parameter to filter on. The names are based on the names used in the WebSphere MQ information center.
-
-####<a name="inquireQueryFilterValue"></a>FilterValue
-The value to use for filtering. When a string is passed for an Integerfilter, a WebSphere MQ constant is assumed.
-
-####<a name="inquiryQueryQSGDisposition"></a>QSGDisposition
-
-Disposition of the object within the group. Possible values are `Live`, `Copy`, `Group`, `QMgr`, `Private` 
-or `All`. This parameter applies to z/OS only.
+####<a name="inquireQueryServiceComponent"></a>ServiceComponent
+Name of the service component.
 
 ###<a name="inquiryExample"></a>Example
-`/api/authinfo/inquire/PIGEON`  
-`/api/authinfo/inquire/PIGEON/SYSTEM*`
-
-This sample is a PHP script that inquires all SYSTEM authentication information objects from the PIGEON
-queuemanager:
-
-{% highlight php %}
-<?php
-
-	/*
-	 * Inquire all SYSTEM authentication information objects from queuemanager PIGEON.
-	 * MQWeb runs on localhost and is listening on port 8081. 
-	 */
-	$url = "http://localhost:8081/api/authinfo/inquire/PIGEON/SYSTEM*";
-	$curl = curl_init();
-	curl_setopt($curl, CURLOPT_URL, $url);
-	curl_setopt($curl, CURLOPT_HEADER, false);
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-	$response = curl_exec($curl);
-	$data = json_decode($response, true);
-	print_r($data);
-{% endhighlight %}
+`/api/authrec/inquire/PIGEON`  
 
 ###<a name="inquireJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with names like the
@@ -114,24 +84,14 @@ query parameters.
 
 {% highlight javascript %}
     {
-      'AuthInfoName' : 'SYSTEM*',
-      'AuthInfoAttrs' : [
-        'AuthInfoName'
-      ]
     }
 {% endhighlight %}
 
 There are some differences between query parameters and a JSON object:
 
 + JSON property names are case-sensitive
-+ [AuthInfoAttrs](#inquireQueryAuthInfoAttrs) is a JSON array with attributenames as element.
++ [ProfileAttrs](#inquireQueryProfileAttrs) is a JSON array with attributenames as element.
++ [Options](#inquireQueryOptions) is a JSON array.
 + Synonyms can't be used, you need to use the name of the attribute
   as described in the query parameters. You can't use *name*, it must be 
-  [AuthInfoName](#inquireQueryAuthInfoName) for example.
-+ A filter is an object: *IntegerFilterCommand* can be used to filter on parameters which has
-  integer values, while *StringFilterCommand* can be used to filter on parameters with string values.
-  The filter object has these three properties: Parameter ([FilterParam](#inquireQueryFilterParam)), 
-  Operator ([FilterOp](#inquireQueryFilterOp)) and FilterValue ([FilterValue](#inquireQueryFilterValue)).
-
-> An *IntegerFilterCommand* can't be used together with a *StringFilterCommand*
-
+  [ProfileName](#inquireQueryProfileName) for example.
