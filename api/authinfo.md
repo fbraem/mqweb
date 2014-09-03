@@ -49,7 +49,7 @@ part of the URL, this query parameter will be ignored. *name* is a synonym for t
 Only return authentication information objects of the given type. Possible values are `CRL LDAP`, `OCSP`or `All`.
 Default is `All`. The value is case-sensitive.
 
-####<a name="inquiryQueryAuthInfoName"></a>CommandScope
+####<a name="inquiryQueryCommandScope"></a>CommandScope
 
 Specifies how the command is executed when the queue manager is a member of a queue-sharing group.
 This parameter applies to z/OS only.
