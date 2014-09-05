@@ -78,7 +78,6 @@ void AuthenticationInformationController::inquire()
 		}
 
 		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
-		pcfParameters->set("AuthInfoAttrs", attrs);
 		formElementToJSONArray("AuthInfoAttrs", attrs);
 		if ( attrs->size() == 0 ) // Nothing found for AuthInfoAttrs, try Attrs
 		{
