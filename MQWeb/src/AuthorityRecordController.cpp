@@ -40,38 +40,73 @@ AuthorityRecordController::~AuthorityRecordController()
 
 void AuthorityRecordController::inquire()
 {
-	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
-
-	std::vector<std::string> parameters = getParameters();
-	// First parameter is queuemanager
-	// Second parameter can be a authentication information name and will result in inquiring 
-	// only that queue and ignores all query parameters.
-	if ( parameters.size() > 1 )
+	if ( qmgr()->zos() )
 	{
-		filter->set("profileName", parameters[1]);
+		// Authority records are not supported on z/OS
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_NOT_IMPLEMENTED, "/authrec/inquire not implemented for z/OS");
+		return;
+	}
+
+	Poco::JSON::Object::Ptr pcfParameters;
+
+	if ( data().has("filter") && data().isObject("filter") )
+	{
+		pcfParameters = data().getObject("filter");
 	}
 	else
 	{
-		// Handle query parameters
-		if ( form().has("profileName") ) filter->set("profileName", form().get("profileName"));
-	}
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
 
-	Poco::JSON::Array::Ptr jsonOptions = new Poco::JSON::Array();
-	filter->set("options", jsonOptions);
-	for(Poco::Net::NameValueCollection::ConstIterator itOptions = form().find("options"); 
-		itOptions != form().end() && itOptions->first == "options"; 
-		++itOptions)
-	{
-		jsonOptions->add(itOptions->second);
-	}
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a authentication information name and will result in inquiring 
+		// only that queue and ignores all query parameters.
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("ProfileName", parameters[1]);
+		}
+		else
+		{
+			// Handle query parameters
+			if ( form().has("ProfileName") ) 
+			{
+				pcfParameters->set("ProfileName", form().get("ProfileName"));
+			} 
+			else if ( form().has("Name") )
+			{
+				pcfParameters->set("ProfileName", form().get("Name"));
+			}
+		}
 
-	if ( form().has("objectType") ) filter->set("objectType", form().get("objectType"));
-	if ( form().has("entityName") ) filter->set("entityName", form().get("entityName"));
-	if ( form().has("entityType") ) filter->set("entityType", form().get("entityType"));
-	if ( form().has("serviceComponent") ) filter->set("serviceComponent", form().get("serviceComponent"));
+		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+		formElementToJSONArray("ProfileAttrs", attrs);
+		if ( attrs->size() == 0 ) // Nothing found for ProfileAttrs, try Attrs
+		{
+			formElementToJSONArray("Attrs", attrs);
+		}
+		if ( attrs->size() > 0 )
+		{
+			pcfParameters->set("ProfileAttrs", attrs);
+		}
+
+		Poco::JSON::Array::Ptr jsonOptions = new Poco::JSON::Array();
+		pcfParameters->set("Options", jsonOptions);
+		for(Poco::Net::NameValueCollection::ConstIterator itOptions = form().find("Options"); 
+			itOptions != form().end() && itOptions->first == "Options"; 
+			++itOptions)
+		{
+			jsonOptions->add(itOptions->second);
+		}
+
+		if ( form().has("ObjectType") ) pcfParameters->set("ObjectType", form().get("ObjectType"));
+		if ( form().has("EntityName") ) pcfParameters->set("EntityName", form().get("EntityName"));
+		if ( form().has("EntityType") ) pcfParameters->set("EntityType", form().get("EntityType"));
+		if ( form().has("ServiceComponent") ) pcfParameters->set("ServiceComponent", form().get("ServiceComponent"));
+	}
 
 	AuthorityRecordMapper mapper(*commandServer());
-	Poco::JSON::Array::Ptr json = mapper.inquire(filter);
+	Poco::JSON::Array::Ptr json = mapper.inquire(pcfParameters);
 	set("authrecs", json);
 }
 
