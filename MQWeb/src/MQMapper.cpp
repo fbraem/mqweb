@@ -20,6 +20,8 @@
  */
 #include "MQ/Web/MQMapper.h"
 
+#include "MQ/MQException.h"
+
 #include "Poco/JSON/Object.h"
 #include "Poco/Logger.h"
 
@@ -183,6 +185,23 @@ void MQMapper::Command::addParameterNumFromString(MQLONG parameter, const std::s
 		catch(...)
 		{
 			poco_assert_dbg(false);
+		}
+	}
+}
+
+void MQMapper::Command::execute(PCF::Vector& response)
+{
+	poco_check_ptr(_pcf);
+	_mapper->_commandServer.sendCommand(_pcf, response);
+
+	if ( response.size() > 0 )
+	{
+		PCF::Vector::const_iterator it = response.begin();
+		if ( (*it)->getCompletionCode() == MQCC_FAILED && (*it)->getReasonCode() > 3000 && (*it)->getReasonCode() < 4000 )
+		{
+			static Poco::SharedPtr<Dictionary> dict = _dictionaryCache.getDictionary("Event");
+			std::string command = dict->getDisplayValue(MQIACF_COMMAND, (*it)->getCommand());
+			throw MQException("PCF", command, (*it)->getCompletionCode(), (*it)->getReasonCode());
 		}
 	}
 }

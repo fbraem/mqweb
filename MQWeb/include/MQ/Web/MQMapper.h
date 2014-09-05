@@ -141,12 +141,6 @@ inline const Poco::SharedPtr<Dictionary> MQMapper::dictionary(const std::string&
 	return _dictionaryCache.getDictionary(objectType);
 }
 
-inline void MQMapper::Command::execute(PCF::Vector& response)
-{
-	poco_check_ptr(_pcf);
-	_mapper->_commandServer.sendCommand(_pcf, response);
-}
-
 inline PCF::Ptr MQMapper::Command::pcf()
 {
 	return _pcf;
