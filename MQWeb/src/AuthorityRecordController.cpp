@@ -93,7 +93,7 @@ void AuthorityRecordController::inquire()
 		Poco::JSON::Array::Ptr jsonOptions = new Poco::JSON::Array();
 		pcfParameters->set("Options", jsonOptions);
 		for(Poco::Net::NameValueCollection::ConstIterator itOptions = form().find("Options"); 
-			itOptions != form().end() && itOptions->first == "Options"; 
+			itOptions != form().end() && Poco::icompare(itOptions->first, "Options") == 0;
 			++itOptions)
 		{
 			jsonOptions->add(itOptions->second);
