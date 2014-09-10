@@ -57,7 +57,6 @@ Poco::JSON::Array::Ptr AuthorityRecordMapper::inquire(const Poco::JSON::Object::
 	Command command(this, MQCMD_INQUIRE_AUTH_RECS, filter);
 
 	// Required parameters
-	command.addParameter<std::string>(MQCACF_AUTH_PROFILE_NAME, "ProfileName");
 
 	MQLONG options = 0;
 	Poco::JSON::Array::Ptr optionsValue = filter->getArray("Options");
@@ -87,8 +86,9 @@ Poco::JSON::Array::Ptr AuthorityRecordMapper::inquire(const Poco::JSON::Object::
 				options |= MQAUTHOPT_NAME_AS_WILDCARD;
 			}
 		}
+		command.pcf()->addParameter(MQIACF_AUTH_OPTIONS, options);
 	}
-	command.pcf()->addParameter(MQIACF_AUTH_OPTIONS, options);
+	command.addParameter<std::string>(MQCACF_AUTH_PROFILE_NAME, "ProfileName");
 
 	command.addParameterNumFromString(MQIACF_OBJECT_TYPE, "ObjectType");
 
