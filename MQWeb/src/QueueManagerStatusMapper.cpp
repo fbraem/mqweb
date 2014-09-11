@@ -19,15 +19,13 @@
  * permissions and limitations under the Licence.
  */
 #include "MQ/Web/QueueManagerStatusMapper.h"
-#include "MQ/MQException.h"
-
-#include "Poco/JSON/Object.h"
 
 namespace MQ {
 namespace Web {
 
 
-QueueManagerStatusMapper::QueueManagerStatusMapper(CommandServer& commandServer) : MQMapper(commandServer, "QueueManagerStatus")
+QueueManagerStatusMapper::QueueManagerStatusMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
+: MQMapper(commandServer, "QueueManagerStatus", input)
 {
 }
 
@@ -36,35 +34,35 @@ QueueManagerStatusMapper::~QueueManagerStatusMapper()
 }
 
 
-void QueueManagerStatusMapper::change(const Poco::JSON::Object::Ptr&obj)
+void QueueManagerStatusMapper::change()
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void QueueManagerStatusMapper::create(const Poco::JSON::Object::Ptr& obj, bool replace)
+void QueueManagerStatusMapper::create(bool replace)
 {
   poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void QueueManagerStatusMapper::copy(const Poco::JSON::Object::Ptr& obj, bool replace)
+void QueueManagerStatusMapper::copy(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-Poco::JSON::Array::Ptr QueueManagerStatusMapper::inquire(const Poco::JSON::Object::Ptr& filter)
+Poco::JSON::Array::Ptr QueueManagerStatusMapper::inquire()
 {
-	Command command(this, MQCMD_INQUIRE_Q_MGR_STATUS, filter);
+	createCommand(MQCMD_INQUIRE_Q_MGR_STATUS);
 
 	// Optional parameters
-	command.addAttributeList(MQIACF_Q_MGR_STATUS_ATTRS, "QMStatusAttrs");
+	addAttributeList(MQIACF_Q_MGR_STATUS_ATTRS, "QMStatusAttrs");
 
 	std::vector<Poco::SharedPtr<PCF> > commandResponse;
-	command.execute(commandResponse);
+	execute(commandResponse);
 
-	Poco::JSON::Array::Ptr jsonQueueManagerStatuses = new Poco::JSON::Array();
+	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
 		if ( (*it)->isExtendedResponse() ) // Skip extended response
@@ -73,13 +71,10 @@ Poco::JSON::Array::Ptr QueueManagerStatusMapper::inquire(const Poco::JSON::Objec
 		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)
 			continue;
 
-		Poco::JSON::Object::Ptr jsonQmgr = new Poco::JSON::Object();
-		jsonQueueManagerStatuses->add(jsonQmgr);
-
-		dictionary()->mapToJSON(**it, jsonQmgr);
+		json->add(createJSON(**it));
 	}
 
-	return jsonQueueManagerStatuses;
+	return json;
 }
 
 }} //  Namespace MQ::Web

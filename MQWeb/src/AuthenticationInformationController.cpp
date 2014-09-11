@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/AuthenticationInformationController.h"
 #include "MQ/Web/AuthenticationInformationMapper.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -108,9 +107,8 @@ void AuthenticationInformationController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 
-	AuthenticationInformationMapper mapper(*commandServer());
-	Poco::JSON::Array::Ptr json = mapper.inquire(pcfParameters);
-	set("authinfos", json);
+	AuthenticationInformationMapper mapper(*commandServer(), pcfParameters);
+	set("authinfos", mapper.inquire());
 }
 
 

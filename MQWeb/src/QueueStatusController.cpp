@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/QueueStatusController.h"
 #include "MQ/Web/QueueStatusMapper.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -65,9 +64,8 @@ void QueueStatusController::inquire()
 	if ( form().has("statusType") ) filter->set("statusType", form().get("statusType"));
 	if ( form().has("openType") ) filter->set("openType", form().get("openType"));
 
-	QueueStatusMapper mapper(*commandServer());
-	Poco::JSON::Array::Ptr json = mapper.inquire(filter);
-	set("statuses", json);
+	QueueStatusMapper mapper(*commandServer(), filter);
+	set("statuses", mapper.inquire());
 }
 
 

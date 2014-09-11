@@ -31,22 +31,22 @@ class QueueManagerStatusMapper : public MQMapper
 {
 public:
 
-	QueueManagerStatusMapper(CommandServer& commandServer);
+	QueueManagerStatusMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input);
 		/// Constructor
 
 	virtual ~QueueManagerStatusMapper();
 		/// Destructor
 
-	void change(const Poco::JSON::Object::Ptr&obj);
+	void change();
 		/// Not implemented. Change QueueManager Status doesn't exist.
 
-	void create(const Poco::JSON::Object::Ptr& obj, bool replace = false);
+	void create(bool replace = false);
 		/// Not implemented. Create QueueManager Status doesn't exist.
 
-	void copy(const Poco::JSON::Object::Ptr& obj, bool replace = false);
+	void copy(bool replace = false);
 		/// Not implemented. Copy QueueManager Status doesn't exist.
 
-	Poco::JSON::Array::Ptr inquire(const Poco::JSON::Object::Ptr& filter);
+	Poco::JSON::Array::Ptr inquire();
 		/// Implements the Inquire Queuemanager Status command.
 
 private:

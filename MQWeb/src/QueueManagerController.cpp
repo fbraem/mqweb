@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/QueueManagerController.h"
 #include "MQ/Web/QueueManagerMapper.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -40,14 +39,12 @@ QueueManagerController::~QueueManagerController()
 
 void QueueManagerController::inquire()
 {
-	QueueManagerMapper queueManagerMapper(*commandServer());
+	QueueManagerMapper mapper(*commandServer(), new Poco::JSON::Object());
 
-	Poco::JSON::Object::Ptr dummyFilter = new Poco::JSON::Object();
-	Poco::JSON::Array::Ptr jsonQueueManagers = queueManagerMapper.inquire(dummyFilter);
-
-	if ( jsonQueueManagers->size() > 0 )
+	Poco::JSON::Array::Ptr json = mapper.inquire();
+	if ( json->size() > 0 )
 	{
-		set("qmgr", jsonQueueManagers->get(0));
+		set("qmgr", json->get(0));
 	}
 }
 

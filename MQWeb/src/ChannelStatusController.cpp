@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/ChannelStatusController.h"
 #include "MQ/Web/ChannelStatusMapper.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -57,10 +56,8 @@ void ChannelStatusController::inquire()
 
 	if ( form().has("instanceType") ) filter->set("instanceType", form().get("instanceType"));
 
-	ChannelStatusMapper channelStatusMapper(*commandServer());
-	Poco::JSON::Array::Ptr statuses = channelStatusMapper.inquire(filter);
-
-	set("statuses", statuses);
+	ChannelStatusMapper channelStatusMapper(*commandServer(), filter);
+	set("statuses", channelStatusMapper.inquire());
 }
 
 

@@ -31,22 +31,22 @@ class ProcessMapper : public MQMapper
 {
 public:
 
-	ProcessMapper(CommandServer& commandServer);
+	ProcessMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input);
 		/// Constructor
 
 	virtual ~ProcessMapper();
 		/// Destructor
 
-	void change(const Poco::JSON::Object::Ptr&obj);
+	void change();
 		/// Implements the change process command. Not implemented yet.
 
-	void create(const Poco::JSON::Object::Ptr& obj, bool replace = false);
+	void create(bool replace = false);
 		/// Implements the create process command. Not implemented yet.
 
-	void copy(const Poco::JSON::Object::Ptr& obj, bool replace = false);
+	void copy(bool replace = false);
 		/// Implements the copy process command. Not implemented yet.
 
-	Poco::JSON::Array::Ptr inquire(const Poco::JSON::Object::Ptr& filter);
+	Poco::JSON::Array::Ptr inquire();
 		/// Implements the inquire process command.
 
 private:

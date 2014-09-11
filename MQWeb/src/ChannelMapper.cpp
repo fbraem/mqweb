@@ -19,13 +19,13 @@
  * permissions and limitations under the Licence.
  */
 #include "MQ/Web/ChannelMapper.h"
-#include "MQ/MQException.h"
 
 namespace MQ {
 namespace Web {
 
 
-ChannelMapper::ChannelMapper(CommandServer& commandServer) : MQMapper(commandServer, "Channel")
+ChannelMapper::ChannelMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
+: MQMapper(commandServer, "Channel", input)
 {
 }
 
@@ -34,48 +34,46 @@ ChannelMapper::~ChannelMapper()
 }
 
 
-void ChannelMapper::change(const Poco::JSON::Object::Ptr&obj)
+void ChannelMapper::change()
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void ChannelMapper::create(const Poco::JSON::Object::Ptr& obj, bool replace)
+void ChannelMapper::create(bool replace)
 {
   poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void ChannelMapper::copy(const Poco::JSON::Object::Ptr& obj, bool replace)
+void ChannelMapper::copy(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-Poco::JSON::Array::Ptr ChannelMapper::inquire(const Poco::JSON::Object::Ptr& filter)
+Poco::JSON::Array::Ptr ChannelMapper::inquire()
 {
-	poco_assert_dbg(!filter.isNull());
-
-	Command command(this, MQCMD_INQUIRE_CHANNEL, filter);
+	createCommand(MQCMD_INQUIRE_CHANNEL);
 
 	// Required Parameters
-	command.addParameter<std::string>(MQCACH_CHANNEL_NAME, "ChannelName");
+	addParameter<std::string>(MQCACH_CHANNEL_NAME, "ChannelName");
 
 	// Optional Parameters
-	command.addAttributeList(MQIACF_CHANNEL_ATTRS, "ChannelAttrs");
-	command.addParameterNumFromString(MQIACH_CHANNEL_TYPE, "ChannelType");
-	command.addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
-	command.addParameterNumFromString(MQIACH_CHANNEL_DISP, "DefaultChannelDisposition");
-	command.addIntegerFilter();
-	command.addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
-	command.addStringFilter();
+	addAttributeList(MQIACF_CHANNEL_ATTRS, "ChannelAttrs");
+	addParameterNumFromString(MQIACH_CHANNEL_TYPE, "ChannelType");
+	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	addParameterNumFromString(MQIACH_CHANNEL_DISP, "DefaultChannelDisposition");
+	addIntegerFilter();
+	addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
+	addStringFilter();
 
 	PCF::Vector commandResponse;
-	command.execute(commandResponse);
+	execute(commandResponse);
 
-	bool excludeSystem = filter->optValue("ExcludeSystem", false);
+	bool excludeSystem = _input->optValue("ExcludeSystem", false);
 
-	Poco::JSON::Array::Ptr channels = new Poco::JSON::Array();
+	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
@@ -92,13 +90,10 @@ Poco::JSON::Array::Ptr ChannelMapper::inquire(const Poco::JSON::Object::Ptr& fil
 			continue;
 		}
 
-		Poco::JSON::Object::Ptr channel = new Poco::JSON::Object();
-		channels->add(channel);
-
-		dictionary()->mapToJSON(**it, channel);
+		json->add(createJSON(**it));
 	}
 
-	return channels;
+	return json;
 }
 
 }} //  Namespace MQ::Web

@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/ListenerStatusController.h"
 #include "MQ/Web/ListenerStatusMapper.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -61,9 +60,8 @@ void ListenerStatusController::inquire()
 		filter->set("name", listenerNameField);
 	}
 
-	ListenerStatusMapper mapper(*commandServer());
-	Poco::JSON::Array::Ptr statuses = mapper.inquire(filter);
-	set("statuses", statuses);
+	ListenerStatusMapper mapper(*commandServer(), filter);
+	set("statuses", mapper.inquire());
 }
 
 

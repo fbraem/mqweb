@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/AuthorityRecordController.h"
 #include "MQ/Web/AuthorityRecordMapper.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -105,9 +104,8 @@ void AuthorityRecordController::inquire()
 		if ( form().has("ServiceComponent") ) pcfParameters->set("ServiceComponent", form().get("ServiceComponent"));
 	}
 
-	AuthorityRecordMapper mapper(*commandServer());
-	Poco::JSON::Array::Ptr json = mapper.inquire(pcfParameters);
-	set("authrecs", json);
+	AuthorityRecordMapper mapper(*commandServer(), pcfParameters);
+	set("authrecs", mapper.inquire());
 }
 
 

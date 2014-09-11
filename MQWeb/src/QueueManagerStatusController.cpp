@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/QueueManagerStatusController.h"
 #include "MQ/Web/QueueManagerStatusMapper.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -47,14 +46,12 @@ void QueueManagerStatusController::inquire()
 		return;
 	}
 
-	QueueManagerStatusMapper queueManagerStatusMapper(*commandServer());
+	QueueManagerStatusMapper mapper(*commandServer(), new Poco::JSON::Object());
+	Poco::JSON::Array::Ptr json = mapper.inquire();
 
-	Poco::JSON::Object::Ptr dummyFilter = new Poco::JSON::Object();
-	Poco::JSON::Array::Ptr jsonQueueManagers = queueManagerStatusMapper.inquire(dummyFilter);
-
-	if ( jsonQueueManagers->size() > 0 )
+	if ( json->size() > 0 )
 	{
-		set("status", jsonQueueManagers->get(0));
+		set("status", json->get(0));
 	}
 }
 

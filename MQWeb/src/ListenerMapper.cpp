@@ -19,13 +19,12 @@
  * permissions and limitations under the Licence.
  */
 #include "MQ/Web/ListenerMapper.h"
-#include "MQ/Web/Dictionary.h"
-#include "MQ/MQException.h"
 
 namespace MQ {
 namespace Web {
 
-ListenerMapper::ListenerMapper(CommandServer& commandServer) : MQMapper(commandServer, "Listener")
+ListenerMapper::ListenerMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input) 
+: MQMapper(commandServer, "Listener", input)
 {
 }
 
@@ -34,45 +33,43 @@ ListenerMapper::~ListenerMapper()
 }
 
 
-void ListenerMapper::change(const Poco::JSON::Object::Ptr&obj)
+void ListenerMapper::change()
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void ListenerMapper::create(const Poco::JSON::Object::Ptr& obj, bool replace)
+void ListenerMapper::create(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void ListenerMapper::copy(const Poco::JSON::Object::Ptr& obj, bool replace)
+void ListenerMapper::copy(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-Poco::JSON::Array::Ptr ListenerMapper::inquire(const Poco::JSON::Object::Ptr& filter)
+Poco::JSON::Array::Ptr ListenerMapper::inquire()
 {
-	poco_assert_dbg(!filter.isNull());
-
-	Command command(this, MQCMD_INQUIRE_LISTENER, filter);
+	createCommand(MQCMD_INQUIRE_LISTENER);
 
 	// Required parameters
-	command.addParameter<std::string>(MQCACH_LISTENER_NAME, "ListenerName");
+	addParameter<std::string>(MQCACH_LISTENER_NAME, "ListenerName");
 
 	// Optional parameters
-	command.addIntegerFilter();
-	command.addAttributeList(MQIACF_LISTENER_ATTRS, "ListenerAttrs");
-	command.addStringFilter();
-	command.addParameterNumFromString(MQIACH_XMIT_PROTOCOL_TYPE, "TransportType");
+	addIntegerFilter();
+	addAttributeList(MQIACF_LISTENER_ATTRS, "ListenerAttrs");
+	addStringFilter();
+	addParameterNumFromString(MQIACH_XMIT_PROTOCOL_TYPE, "TransportType");
 
 	PCF::Vector commandResponse;
-	command.execute(commandResponse);
+	execute(commandResponse);
 
-	bool excludeSystem = filter->optValue("ExcludeSystem", false);
+	bool excludeSystem = _input->optValue("ExcludeSystem", false);
 
-	Poco::JSON::Array::Ptr listeners = new Poco::JSON::Array();
+	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
 		if ( (*it)->isExtendedResponse() ) // Skip extended response
@@ -88,13 +85,10 @@ Poco::JSON::Array::Ptr ListenerMapper::inquire(const Poco::JSON::Object::Ptr& fi
 			continue;
 		}
 
-		Poco::JSON::Object::Ptr listener = new Poco::JSON::Object();
-		listeners->add(listener);
-
-		dictionary()->mapToJSON(**it, listener);
+		json->add(createJSON(**it));
 	}
 
-	return listeners;
+	return json;
 }
 
 }} //  Namespace MQ::Web

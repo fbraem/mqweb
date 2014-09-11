@@ -23,43 +23,42 @@
 namespace MQ {
 namespace Web {
 
-AuthorityRecordMapper::AuthorityRecordMapper(CommandServer& commandServer) : MQMapper(commandServer, "AuthorityRecord")
+AuthorityRecordMapper::AuthorityRecordMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input) 
+: MQMapper(commandServer, "AuthorityRecord", _input)
 {
 }
+
 
 AuthorityRecordMapper::~AuthorityRecordMapper()
 {
 }
 
 
-void AuthorityRecordMapper::change(const Poco::JSON::Object::Ptr&obj)
+void AuthorityRecordMapper::change()
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void AuthorityRecordMapper::create(const Poco::JSON::Object::Ptr& obj, bool replace)
+void AuthorityRecordMapper::create(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void AuthorityRecordMapper::copy(const Poco::JSON::Object::Ptr& obj, bool replace)
+void AuthorityRecordMapper::copy(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-Poco::JSON::Array::Ptr AuthorityRecordMapper::inquire(const Poco::JSON::Object::Ptr& filter)
+Poco::JSON::Array::Ptr AuthorityRecordMapper::inquire()
 {
-	poco_assert_dbg(!filter.isNull());
-
-	Command command(this, MQCMD_INQUIRE_AUTH_RECS, filter);
+	createCommand(MQCMD_INQUIRE_AUTH_RECS);
 
 	// Required parameters
-
 	MQLONG options = 0;
-	Poco::JSON::Array::Ptr optionsValue = filter->getArray("Options");
+	Poco::JSON::Array::Ptr optionsValue = _input->getArray("Options");
 	if ( !optionsValue.isNull() )
 	{
 		for(Poco::JSON::Array::ValueVec::const_iterator it = optionsValue->begin(); it != optionsValue->end(); ++it)
@@ -86,20 +85,19 @@ Poco::JSON::Array::Ptr AuthorityRecordMapper::inquire(const Poco::JSON::Object::
 				options |= MQAUTHOPT_NAME_AS_WILDCARD;
 			}
 		}
-		command.pcf()->addParameter(MQIACF_AUTH_OPTIONS, options);
+		pcf()->addParameter(MQIACF_AUTH_OPTIONS, options);
 	}
-	command.addParameter<std::string>(MQCACF_AUTH_PROFILE_NAME, "ProfileName");
-
-	command.addParameterNumFromString(MQIACF_OBJECT_TYPE, "ObjectType");
+	addParameter<std::string>(MQCACF_AUTH_PROFILE_NAME, "ProfileName");
+	addParameterNumFromString(MQIACF_OBJECT_TYPE, "ObjectType");
 
 	// Optional parameters
-	command.addParameter<std::string>(MQCACF_ENTITY_NAME, "EntityName");
-	command.addParameterNumFromString(MQIACF_ENTITY_TYPE, "EntityType");
-	command.addAttributeList(MQIACF_AUTH_PROFILE_ATTRS, "ProfileAttrs");
-	command.addParameter<std::string>(MQCACF_SERVICE_COMPONENT, "ServiceComponent");
+	addParameter<std::string>(MQCACF_ENTITY_NAME, "EntityName");
+	addParameterNumFromString(MQIACF_ENTITY_TYPE, "EntityType");
+	addAttributeList(MQIACF_AUTH_PROFILE_ATTRS, "ProfileAttrs");
+	addParameter<std::string>(MQCACF_SERVICE_COMPONENT, "ServiceComponent");
 
 	PCF::Vector commandResponse;
-	command.execute(commandResponse);
+	execute(commandResponse);
 
 	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 
@@ -111,10 +109,7 @@ Poco::JSON::Array::Ptr AuthorityRecordMapper::inquire(const Poco::JSON::Object::
 		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)
 			continue;
 
-		Poco::JSON::Object::Ptr object = new Poco::JSON::Object();
-		json->add(object);
-
-		dictionary()->mapToJSON(**it, object);
+		json->add(createJSON(**it));
 	}
 
 	return json;

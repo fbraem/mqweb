@@ -36,16 +36,13 @@ class MQMapper : public Mapper
 	/// It uses the Dictionary class for holding all Websphere MQ fields/values.
 {
 public:
-	MQMapper(CommandServer& commandServer, const std::string& objectType);
+	MQMapper(CommandServer& commandServer, const std::string& objectType, Poco::JSON::Object::Ptr input);
 		/// Constructor
 
 	virtual ~MQMapper();
 		/// Destructor
 
-	const CommandServer& commandServer() const;
-		/// Returns the associated commandserver
-
-	const Poco::SharedPtr<Dictionary> dictionary() const;
+	//const Poco::SharedPtr<Dictionary> dictionary() const;
 		/// Returns the dictionary for the associated object type
 
 	static MQLONG getOperator(const std::string& op);
@@ -62,57 +59,48 @@ public:
 
 protected:
 
-	class Command
-	{
-	public:
-		Command(MQMapper* mapper, MQLONG command, Poco::JSON::Object::Ptr filter);
+	void createCommand(MQLONG command);
 
-		virtual ~Command();
+	Poco::JSON::Object::Ptr createJSON(const PCF& pcf);
 
-		void addAttributeList(MQLONG attrId, const std::string& attr);
-			/// Handles the attribute list
+	void addAttributeList(MQLONG attrId, const std::string& attr);
+		/// Handles the attribute list
 
-		void addIntegerFilter();
-			/// When IntegerFilterCommand is set, it will add an integer filter to the PCF message
+	void addIntegerFilter();
+		/// When IntegerFilterCommand is set, it will add an integer filter to the PCF message
 
-		template<typename T>
-		void addParameter(MQLONG parameter, const std::string& name);
+	template<typename T>
+	void addParameter(MQLONG parameter, const std::string& name);
 
-		void addParameterNumFromString(MQLONG parameter, const std::string& name);
+	void addParameterNumFromString(MQLONG parameter, const std::string& name);
 
-		void addStringFilter();
-			/// When StringFilterCommand is set, it will add an string filter to the PCF message
+	void addStringFilter();
+		/// When StringFilterCommand is set, it will add an string filter to the PCF message
 
-		void execute(PCF::Vector& response);
-			/// Sends the PCF command to the command server
+	void execute(PCF::Vector& response);
+		/// Sends the PCF command to the command server
 
-		PCF::Ptr pcf();
-			/// Returns the PCF command message
+	PCF::Ptr pcf();
 
-	private:
-
-		MQMapper* _mapper;
-
-		PCF::Ptr _pcf;
-
-		Poco::JSON::Object::Ptr _filter;
-	};
+	Poco::JSON::Object::Ptr _input;
 
 private:
 
 	CommandServer& _commandServer;
 
-
 	Poco::SharedPtr<Dictionary> _dictionary;
 
-
 	static DictionaryCache _dictionaryCache;
+
+	PCF::Ptr _pcf;
 };
 
 template<typename T>
-inline void MQMapper::Command::addParameter(MQLONG parameter, const std::string& name)
+inline void MQMapper::addParameter(MQLONG parameter, const std::string& name)
 {
-	Poco::Dynamic::Var value = _filter->get(name);
+	poco_assert_dbg(!_pcf.isNull());
+
+	Poco::Dynamic::Var value = _input->get(name);
 	if (! value.isEmpty() )
 	{
 		try
@@ -125,15 +113,18 @@ inline void MQMapper::Command::addParameter(MQLONG parameter, const std::string&
 		}
 	}
 }
-
-inline const CommandServer& MQMapper::commandServer() const
-{
-	return _commandServer;
-}
-
+/*
 inline const Poco::SharedPtr<Dictionary> MQMapper::dictionary() const
 {
 	return _dictionary;
+}
+*/
+
+inline Poco::JSON::Object::Ptr MQMapper::createJSON(const PCF &pcf)
+{
+	Poco::JSON::Object::Ptr json = new Poco::JSON::Object();
+	_dictionary->mapToJSON(pcf, json);
+	return json;
 }
 
 inline const Poco::SharedPtr<Dictionary> MQMapper::dictionary(const std::string& objectType)
@@ -141,7 +132,12 @@ inline const Poco::SharedPtr<Dictionary> MQMapper::dictionary(const std::string&
 	return _dictionaryCache.getDictionary(objectType);
 }
 
-inline PCF::Ptr MQMapper::Command::pcf()
+inline void MQMapper::createCommand(MQLONG command)
+{
+	_pcf = _commandServer.createCommand(command);
+}
+
+inline PCF::Ptr MQMapper::pcf()
 {
 	return _pcf;
 }

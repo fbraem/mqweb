@@ -57,9 +57,8 @@ void ServiceController::inquire()
 		filter->set("excludeSystem", form().get("excludeSystem", "false").compare("true") == 0);
 	}
 
-	ServiceMapper mapper(*commandServer());
-	Poco::JSON::Array::Ptr json = mapper.inquire(filter);
-	set("services", json);
+	ServiceMapper mapper(*commandServer(), filter);
+	set("services", mapper.inquire());
 }
 
 

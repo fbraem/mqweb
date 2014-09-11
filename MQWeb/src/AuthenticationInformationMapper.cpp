@@ -19,13 +19,12 @@
  * permissions and limitations under the Licence.
  */
 #include "MQ/Web/AuthenticationInformationMapper.h"
-#include "MQ/Web/Dictionary.h"
-#include "MQ/MQException.h"
 
 namespace MQ {
 namespace Web {
 
-AuthenticationInformationMapper::AuthenticationInformationMapper(CommandServer& commandServer) : MQMapper(commandServer, "AuthenticationInformation")
+AuthenticationInformationMapper::AuthenticationInformationMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input) 
+: MQMapper(commandServer, "AuthenticationInformation", input)
 {
 }
 
@@ -34,47 +33,45 @@ AuthenticationInformationMapper::~AuthenticationInformationMapper()
 }
 
 
-void AuthenticationInformationMapper::change(const Poco::JSON::Object::Ptr&obj)
+void AuthenticationInformationMapper::change()
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void AuthenticationInformationMapper::create(const Poco::JSON::Object::Ptr& obj, bool replace)
+void AuthenticationInformationMapper::create(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void AuthenticationInformationMapper::copy(const Poco::JSON::Object::Ptr& obj, bool replace)
+void AuthenticationInformationMapper::copy(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-Poco::JSON::Array::Ptr AuthenticationInformationMapper::inquire(const Poco::JSON::Object::Ptr& filter)
+Poco::JSON::Array::Ptr AuthenticationInformationMapper::inquire()
 {
-	poco_assert_dbg(!filter.isNull());
-	
-	Command command(this, MQCMD_INQUIRE_AUTH_INFO, filter);
+	createCommand(MQCMD_INQUIRE_AUTH_INFO);
 
 	// Required parameters
-	command.addParameter<std::string>(MQCA_AUTH_INFO_NAME, "AuthInfoName");
+	addParameter<std::string>(MQCA_AUTH_INFO_NAME, "AuthInfoName");
 
 	// Optional parameters
-	command.addAttributeList(MQIACF_AUTH_INFO_ATTRS, "AuthInfoAttrs");
-	command.addParameterNumFromString(MQIA_AUTH_INFO_TYPE, "AuthInfoType");
-	command.addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
-	command.addIntegerFilter();
-	command.addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
-	command.addStringFilter();
+	addAttributeList(MQIACF_AUTH_INFO_ATTRS, "AuthInfoAttrs");
+	addParameterNumFromString(MQIA_AUTH_INFO_TYPE, "AuthInfoType");
+	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	addIntegerFilter();
+	addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
+	addStringFilter();
 
 	PCF::Vector commandResponse;
-	command.execute(commandResponse);
+	execute(commandResponse);
 
-	bool excludeSystem = filter->optValue("ExcludeSystem", false);
+	bool excludeSystem = _input->optValue("ExcludeSystem", false);
 
-	Poco::JSON::Array::Ptr jsonAuthInfos = new Poco::JSON::Array();
+	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
@@ -91,13 +88,10 @@ Poco::JSON::Array::Ptr AuthenticationInformationMapper::inquire(const Poco::JSON
 			continue;
 		}
 
-		Poco::JSON::Object::Ptr jsonAuthInfo = new Poco::JSON::Object();
-		jsonAuthInfos->add(jsonAuthInfo);
-
-		dictionary()->mapToJSON(**it, jsonAuthInfo);
+		json->add(createJSON(**it));
 	}
 
-	return jsonAuthInfos;
+	return json;
 }
 
 }} //  Namespace MQ::Web

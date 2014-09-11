@@ -19,15 +19,13 @@
  * permissions and limitations under the Licence.
  */
 #include "MQ/Web/NamelistMapper.h"
-#include "MQ/MQException.h"
-
-#include "Poco/JSON/Object.h"
 
 namespace MQ {
 namespace Web {
 
 
-NamelistMapper::NamelistMapper(CommandServer& commandServer) : MQMapper(commandServer, "Namelist")
+NamelistMapper::NamelistMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input) 
+: MQMapper(commandServer, "Namelist", input)
 {
 }
 
@@ -36,46 +34,44 @@ NamelistMapper::~NamelistMapper()
 }
 
 
-void NamelistMapper::change(const Poco::JSON::Object::Ptr&obj)
+void NamelistMapper::change()
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void NamelistMapper::create(const Poco::JSON::Object::Ptr& obj, bool replace)
+void NamelistMapper::create(bool replace)
 {
   poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void NamelistMapper::copy(const Poco::JSON::Object::Ptr& obj, bool replace)
+void NamelistMapper::copy(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-Poco::JSON::Array::Ptr NamelistMapper::inquire(const Poco::JSON::Object::Ptr& filter)
+Poco::JSON::Array::Ptr NamelistMapper::inquire()
 {
-	poco_assert_dbg(!filter.isNull());
-
-	Command command(this, MQCMD_INQUIRE_NAMELIST, filter);
+	createCommand(MQCMD_INQUIRE_NAMELIST);
 
 	// Required parameters
-	command.addParameter<std::string>(MQCA_NAMELIST_NAME, "NamelistName");
+	addParameter<std::string>(MQCA_NAMELIST_NAME, "NamelistName");
 
 	// Optional parameters
-	command.addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
-	command.addIntegerFilter();
-	command.addAttributeList(MQIACF_NAMELIST_ATTRS, "NamelistAttrs");
-	command.addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
-	command.addStringFilter();
+	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	addIntegerFilter();
+	addAttributeList(MQIACF_NAMELIST_ATTRS, "NamelistAttrs");
+	addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
+	addStringFilter();
 
 	PCF::Vector commandResponse;
-	command.execute(commandResponse);
+	execute(commandResponse);
 
-	bool excludeSystem = filter->optValue("ExcludeSystem", false);
+	bool excludeSystem = _input->optValue("ExcludeSystem", false);
 
-	Poco::JSON::Array::Ptr namelists = new Poco::JSON::Array();
+	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
 		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)
@@ -91,13 +87,10 @@ Poco::JSON::Array::Ptr NamelistMapper::inquire(const Poco::JSON::Object::Ptr& fi
 			continue;
 		}
 
-		Poco::JSON::Object::Ptr namelist = new Poco::JSON::Object();
-		namelists->add(namelist);
-
-		dictionary()->mapToJSON(**it, namelist);
+		json->add(createJSON(**it));
 	}
 
-	return namelists;
+	return json;
 }
 
 }} //  Namespace MQ::Web

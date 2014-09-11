@@ -19,15 +19,13 @@
  * permissions and limitations under the Licence.
  */
 #include "MQ/Web/ServiceMapper.h"
-#include "MQ/MQException.h"
-
-#include "Poco/JSON/Object.h"
 
 namespace MQ {
 namespace Web {
 
 
-ServiceMapper::ServiceMapper(CommandServer& commandServer) : MQMapper(commandServer, "Service")
+ServiceMapper::ServiceMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
+: MQMapper(commandServer, "Service", input)
 {
 }
 
@@ -36,44 +34,42 @@ ServiceMapper::~ServiceMapper()
 }
 
 
-void ServiceMapper::change(const Poco::JSON::Object::Ptr&obj)
+void ServiceMapper::change()
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void ServiceMapper::create(const Poco::JSON::Object::Ptr& obj, bool replace)
+void ServiceMapper::create(bool replace)
 {
   poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void ServiceMapper::copy(const Poco::JSON::Object::Ptr& obj, bool replace)
+void ServiceMapper::copy(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-Poco::JSON::Array::Ptr ServiceMapper::inquire(const Poco::JSON::Object::Ptr& filter)
+Poco::JSON::Array::Ptr ServiceMapper::inquire()
 {
-	poco_assert_dbg(!filter.isNull());
-
-	Command command(this, MQCMD_INQUIRE_SERVICE, filter);
+	createCommand(MQCMD_INQUIRE_SERVICE);
 
 	// Required parameters
-	command.addParameter<std::string>(MQCA_SERVICE_NAME, "ServiceName");
+	addParameter<std::string>(MQCA_SERVICE_NAME, "ServiceName");
 
 	// Optional parameters
-	command.addIntegerFilter();
-	command.addAttributeList(MQIACF_SERVICE_ATTRS, "ServiceAttrs");
-	command.addStringFilter();
+	addIntegerFilter();
+	addAttributeList(MQIACF_SERVICE_ATTRS, "ServiceAttrs");
+	addStringFilter();
 
 	PCF::Vector commandResponse;
-	command.execute(commandResponse);
+	execute(commandResponse);
 
-	bool excludeSystem = filter->optValue("ExcludeSystem", false);
+	bool excludeSystem = _input->optValue("ExcludeSystem", false);
 
-	Poco::JSON::Array::Ptr services = new Poco::JSON::Array();
+	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
 		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)
@@ -88,13 +84,10 @@ Poco::JSON::Array::Ptr ServiceMapper::inquire(const Poco::JSON::Object::Ptr& fil
 			continue;
 		}
 
-		Poco::JSON::Object::Ptr service = new Poco::JSON::Object();
-		services->add(service);
-
-		dictionary()->mapToJSON(**it, service);
+		json->add(createJSON(**it));
 	}
 
-	return services;
+	return json;
 }
 
 }} //  Namespace MQ::Web

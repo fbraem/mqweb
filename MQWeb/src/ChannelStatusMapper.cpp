@@ -19,15 +19,13 @@
  * permissions and limitations under the Licence.
  */
 #include "MQ/Web/ChannelStatusMapper.h"
-#include "MQ/MQException.h"
-
-#include "Poco/JSON/Object.h"
 
 namespace MQ {
 namespace Web {
 
 
-ChannelStatusMapper::ChannelStatusMapper(CommandServer& commandServer) : MQMapper(commandServer, "ChannelStatus")
+ChannelStatusMapper::ChannelStatusMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input) 
+: MQMapper(commandServer, "ChannelStatus", input)
 {
 }
 
@@ -36,35 +34,33 @@ ChannelStatusMapper::~ChannelStatusMapper()
 }
 
 
-void ChannelStatusMapper::change(const Poco::JSON::Object::Ptr&obj)
+void ChannelStatusMapper::change()
 {
   poco_assert_dbg(false); // Not applicable
 }
 
 
-void ChannelStatusMapper::create(const Poco::JSON::Object::Ptr& obj, bool replace)
+void ChannelStatusMapper::create(bool replace)
 {
   poco_assert_dbg(false); // Not applicable
 }
 
 
-void ChannelStatusMapper::copy(const Poco::JSON::Object::Ptr& obj, bool replace)
+void ChannelStatusMapper::copy(bool replace)
 {
   poco_assert_dbg(false); // Not applicable
 }
 
 
-Poco::JSON::Array::Ptr ChannelStatusMapper::inquire(const Poco::JSON::Object::Ptr& filter)
+Poco::JSON::Array::Ptr ChannelStatusMapper::inquire()
 {
-	poco_assert_dbg(!filter.isNull());
-
-	Command command(this, MQCMD_INQUIRE_CHANNEL_STATUS, filter);
+	createCommand(MQCMD_INQUIRE_CHANNEL_STATUS);
 
 	// Required parameters
-	command.addParameter<std::string>(MQCACH_CHANNEL_NAME, "ChannelName");
+	addParameter<std::string>(MQCACH_CHANNEL_NAME, "ChannelName");
 
 	/*TODO: move to controller!
-	command.addParameterNumFromString(MQIACH_CHANNEL_TYPE, "ChannelType");
+	addParameterNumFromString(MQIACH_CHANNEL_TYPE, "ChannelType");
 	if ( filter->has("type") )
 	{
 		std::string channelType = filter->optValue<std::string>("type", "All");
@@ -77,20 +73,20 @@ Poco::JSON::Array::Ptr ChannelStatusMapper::inquire(const Poco::JSON::Object::Pt
 	}*/
 
 	// Optional parameters
-	command.addParameterNumFromString(MQIACH_CHANNEL_DISP, "ChannelDisposition");
-	command.addParameter<std::string>(MQCACH_CLIENT_ID, "ClientIdentifier");
-	command.addAttributeList(MQIACH_CHANNEL_INSTANCE_ATTRS, "ChannelInstanceAttrs");
-	command.addParameterNumFromString(MQIACH_CHANNEL_INSTANCE_TYPE, "ChannelInstanceType");
-	command.addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
-	command.addParameter<std::string>(MQCACH_CONNECTION_NAME, "ConnectionName");
-	command.addIntegerFilter();
-	command.addStringFilter();
-	command.addParameter<std::string>(MQCACH_XMIT_Q_NAME, "XmitQName");
+	addParameterNumFromString(MQIACH_CHANNEL_DISP, "ChannelDisposition");
+	addParameter<std::string>(MQCACH_CLIENT_ID, "ClientIdentifier");
+	addAttributeList(MQIACH_CHANNEL_INSTANCE_ATTRS, "ChannelInstanceAttrs");
+	addParameterNumFromString(MQIACH_CHANNEL_INSTANCE_TYPE, "ChannelInstanceType");
+	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	addParameter<std::string>(MQCACH_CONNECTION_NAME, "ConnectionName");
+	addIntegerFilter();
+	addStringFilter();
+	addParameter<std::string>(MQCACH_XMIT_Q_NAME, "XmitQName");
 
 	PCF::Vector commandResponse;
-	command.execute(commandResponse);
+	execute(commandResponse);
 
-	Poco::JSON::Array::Ptr jsonStatuses = new Poco::JSON::Array();
+	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
@@ -100,12 +96,10 @@ Poco::JSON::Array::Ptr ChannelStatusMapper::inquire(const Poco::JSON::Object::Pt
 		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)
 			continue;
 
-		Poco::JSON::Object::Ptr jsonChannelStatus = new Poco::JSON::Object();
-		dictionary()->mapToJSON(**it, jsonChannelStatus);
-		jsonStatuses->add(jsonChannelStatus);
+		json->add(createJSON(**it));
 	}
 
-	return jsonStatuses;
+	return json;
 }
 
 }} //  Namespace MQ::Web

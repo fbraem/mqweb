@@ -31,7 +31,9 @@ namespace Web {
 DictionaryCache MQMapper::_dictionaryCache;
 
 
-MQMapper::MQMapper(CommandServer& commandServer, const std::string& objectType) : _commandServer(commandServer)
+MQMapper::MQMapper(CommandServer& commandServer, const std::string& objectType, Poco::JSON::Object::Ptr input) 
+  : _commandServer(commandServer)
+  , _input(input)
 {
 	_dictionary = _dictionaryCache.getDictionary(objectType);
 	poco_assert_dbg(!_dictionary.isNull());
@@ -90,25 +92,16 @@ const DisplayMap& MQMapper::getDisplayMap(const std::string& objectType, MQLONG 
 	return dict->getDisplayMap(id);
 }
 
-MQMapper::Command::Command(MQMapper* mapper, MQLONG command, Poco::JSON::Object::Ptr filter)
-: _mapper(mapper)
-, _filter(filter)
+void MQMapper::addIntegerFilter()
 {
-	_pcf = _mapper->_commandServer.createCommand(command);
-}
+	poco_assert_dbg(!_pcf.isNull());
 
-MQMapper::Command::~Command()
-{
-}
-
-void MQMapper::Command::addIntegerFilter()
-{
-	Poco::JSON::Object::Ptr integerFilter = _filter->getObject("IntegerFilterCommand");
+	Poco::JSON::Object::Ptr integerFilter = _input->getObject("IntegerFilterCommand");
 	if ( integerFilter.isNull() )
 		return;
 
 	std::string parameterName = integerFilter->optValue<std::string>("Parameter", "");
-	MQLONG parameter = _mapper->dictionary()->getId(parameterName);
+	MQLONG parameter = _dictionary->getId(parameterName);
 	if ( parameter == -1 )
 		return;
 
@@ -121,7 +114,7 @@ void MQMapper::Command::addIntegerFilter()
 	if ( value.isString() )
 	{
 		// A String is passed ... try to find the MQ integer value
-		filterValue = _mapper->dictionary()->getDisplayId(parameter, value);
+		filterValue = _dictionary->getDisplayId(parameter, value);
 	}
 	else if ( value.isNumeric() )
 	{
@@ -130,14 +123,16 @@ void MQMapper::Command::addIntegerFilter()
 	_pcf->addFilter(parameter, op, filterValue);
 }
 
-void MQMapper::Command::addStringFilter()
+void MQMapper::addStringFilter()
 {
-	Poco::JSON::Object::Ptr stringFilter = _filter->getObject("StringFilterCommand");
+	poco_assert_dbg(!_pcf.isNull());
+
+	Poco::JSON::Object::Ptr stringFilter = _input->getObject("StringFilterCommand");
 	if ( stringFilter.isNull() )
 		return;
 
 	std::string parameterName = stringFilter->optValue<std::string>("Parameter", "");
-	MQLONG parameter = _mapper->dictionary()->getId(parameterName);
+	MQLONG parameter = _dictionary->getId(parameterName);
 	if ( parameter == -1 )
 		return;
 
@@ -149,17 +144,19 @@ void MQMapper::Command::addStringFilter()
 	_pcf->addFilter(parameter, op, filterValue);
 }
 
-void MQMapper::Command::addAttributeList(MQLONG attrId, const std::string& attr)
+void MQMapper::addAttributeList(MQLONG attrId, const std::string& attr)
 {
-	if ( _filter->has(attr) )
+	poco_assert_dbg(!_pcf.isNull());
+
+	if ( _input->has(attr) )
 	{
-		Poco::JSON::Array::Ptr attrs = _filter->getArray(attr);
+		Poco::JSON::Array::Ptr attrs = _input->getArray(attr);
 		if ( !attrs.isNull() && attrs->size() > 0 )
 		{
 			std::vector<MQLONG> numList;
 			for(Poco::JSON::Array::ValueVec::const_iterator it = attrs->begin(); it != attrs->end(); ++it)
 			{
-				MQLONG id = _mapper->dictionary()->getId(*it);
+				MQLONG id = _dictionary->getId(*it);
 				if ( id != -1 ) numList.push_back(id);
 			}
 			if ( numList.size() > 0 ) _pcf->addParameterList(attrId, numList);
@@ -167,15 +164,17 @@ void MQMapper::Command::addAttributeList(MQLONG attrId, const std::string& attr)
 	}
 }
 
-void MQMapper::Command::addParameterNumFromString(MQLONG parameter, const std::string& name)
+void MQMapper::addParameterNumFromString(MQLONG parameter, const std::string& name)
 {
-	Poco::Dynamic::Var value = _filter->get(name);
+	poco_assert_dbg(!_pcf.isNull());
+
+	Poco::Dynamic::Var value = _input->get(name);
 	if ( ! value.isEmpty() )
 	{
 		try
 		{
 			std::string stringValue = value.convert<std::string>();
-			MQLONG numValue = _mapper->dictionary()->getDisplayId(parameter, stringValue);
+			MQLONG numValue = _dictionary->getDisplayId(parameter, stringValue);
 			poco_assert_dbg(numValue != -1);
 			if ( numValue != - 1 )
 			{
@@ -189,18 +188,18 @@ void MQMapper::Command::addParameterNumFromString(MQLONG parameter, const std::s
 	}
 }
 
-void MQMapper::Command::execute(PCF::Vector& response)
+void MQMapper::execute(PCF::Vector& response)
 {
-	poco_check_ptr(_pcf);
-	_mapper->_commandServer.sendCommand(_pcf, response);
+	poco_assert_dbg(!_pcf.isNull());
+	_commandServer.sendCommand(_pcf, response);
 
 	if ( response.size() > 0 )
 	{
 		PCF::Vector::const_iterator it = response.begin();
-		if (    (*it)->getCompletionCode() == MQCC_FAILED 
-		     && (*it)->getReasonCode() > 3000 
-		     && (*it)->getReasonCode() < 4000 
-		     && (*it)->getReasonCode() != MQRCCF_NONE_FOUND )
+		if (     (*it)->getCompletionCode() == MQCC_FAILED 
+			  && (*it)->getReasonCode() > 3000 
+			  && (*it)->getReasonCode() < 4000 
+			  && (*it)->getReasonCode() != MQRCCF_NONE_FOUND )
 		{
 			static Poco::SharedPtr<Dictionary> dict = _dictionaryCache.getDictionary("Event");
 			std::string command = dict->getDisplayValue(MQIACF_COMMAND, (*it)->getCommand());

@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/ProcessController.h"
 #include "MQ/Web/ProcessMapper.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -57,9 +56,8 @@ void ProcessController::inquire()
 		filter->set("excludeSystem", form().get("excludeSystem", "false").compare("true") == 0);
 	}
 
-	ProcessMapper mapper(*commandServer());
-	Poco::JSON::Array::Ptr json = mapper.inquire(filter);
-	set("processes", json);
+	ProcessMapper mapper(*commandServer(), filter);
+	set("processes", mapper.inquire());
 }
 
 

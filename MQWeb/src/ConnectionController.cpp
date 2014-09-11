@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/ConnectionController.h"
 #include "MQ/Web/ConnectionMapper.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -51,9 +50,8 @@ void ConnectionController::inquire()
 		filter->set("id", parameters[1]);
 	}
 
-	ConnectionMapper mapper(*commandServer());
-	Poco::JSON::Array::Ptr json = mapper.inquire(filter);
-	set("connections", json);
+	ConnectionMapper mapper(*commandServer(), filter);
+	set("connections", mapper.inquire());
 }
 
 

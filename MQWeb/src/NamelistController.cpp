@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/NamelistController.h"
 #include "MQ/Web/NamelistMapper.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -57,9 +56,8 @@ void NamelistController::inquire()
 		filter->set("excludeSystem", form().get("excludeSystem", "false").compare("true") == 0);
 	}
 
-	NamelistMapper mapper(*commandServer());
-	Poco::JSON::Array::Ptr json = mapper.inquire(filter);
-	set("namelists", json);
+	NamelistMapper mapper(*commandServer(), filter);
+	set("namelists", mapper.inquire());
 }
 
 

@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/QueueController.h"
 #include "MQ/Web/QueueMapper.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -185,10 +184,8 @@ void QueueController::inquire()
 		}
 	}
 
-	QueueMapper mapper(*commandServer());
-	Poco::JSON::Array::Ptr queues = mapper.inquire(pcfParameters);
-	set("queues", queues);
-	setView(new JSONView());
+	QueueMapper mapper(*commandServer(), pcfParameters);
+	set("queues", mapper.inquire());
 }
 
 

@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/ChannelController.h"
 #include "MQ/Web/ChannelMapper.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -95,10 +94,8 @@ void ChannelController::inquire()
 		}
 	}
 
-	ChannelMapper mapper(*commandServer());
-	Poco::JSON::Array::Ptr channels = mapper.inquire(pcfParameters);
-	set("channels", channels);
-	setView(new JSONView());
+	ChannelMapper mapper(*commandServer(), pcfParameters);
+	set("channels", mapper.inquire());
 }
 
 

@@ -32,16 +32,16 @@ class Mapper
 {
 public:
 
-	virtual void change(const Poco::JSON::Object::Ptr&obj) = 0;
+	virtual void change() = 0;
 
 
-	virtual void create(const Poco::JSON::Object::Ptr& obj, bool replace = false) = 0;
+	virtual void create(bool replace = false) = 0;
 
 
-	virtual void copy(const Poco::JSON::Object::Ptr& obj, bool replace = false) = 0;
+	virtual void copy(bool replace = false) = 0;
 
 
-	virtual Poco::JSON::Array::Ptr inquire(const Poco::JSON::Object::Ptr& filter) = 0;
+	virtual Poco::JSON::Array::Ptr inquire() = 0;
 };
 
 

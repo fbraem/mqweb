@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/ClusterQueueManagerController.h"
 #include "MQ/Web/ClusterQueueManagerMapper.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -59,9 +58,8 @@ void ClusterQueueManagerController::inquire()
 		filter->set("channelName", channelNameField.empty() ? "*" : channelNameField);
 	}
 
-	ClusterQueueManagerMapper mapper(*commandServer());
-	Poco::JSON::Array::Ptr clusqmgrs = mapper.inquire(filter);
-	set("clusqmgrs", clusqmgrs);
+	ClusterQueueManagerMapper mapper(*commandServer(), filter);
+	set("clusqmgrs", mapper.inquire());
 }
 
 

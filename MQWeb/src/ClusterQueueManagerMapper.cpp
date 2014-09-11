@@ -19,15 +19,13 @@
  * permissions and limitations under the Licence.
  */
 #include "MQ/Web/ClusterQueueManagerMapper.h"
-#include "MQ/MQException.h"
-
-#include "Poco/JSON/Object.h"
 
 namespace MQ {
 namespace Web {
 
 
-ClusterQueueManagerMapper::ClusterQueueManagerMapper(CommandServer& commandServer) : MQMapper(commandServer, "ClusterQueueManager")
+ClusterQueueManagerMapper::ClusterQueueManagerMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
+: MQMapper(commandServer, "ClusterQueueManager", input)
 {
 }
 
@@ -36,45 +34,43 @@ ClusterQueueManagerMapper::~ClusterQueueManagerMapper()
 }
 
 
-void ClusterQueueManagerMapper::change(const Poco::JSON::Object::Ptr&obj)
+void ClusterQueueManagerMapper::change()
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void ClusterQueueManagerMapper::create(const Poco::JSON::Object::Ptr& obj, bool replace)
+void ClusterQueueManagerMapper::create(bool replace)
 {
   poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void ClusterQueueManagerMapper::copy(const Poco::JSON::Object::Ptr& obj, bool replace)
+void ClusterQueueManagerMapper::copy(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-Poco::JSON::Array::Ptr ClusterQueueManagerMapper::inquire(const Poco::JSON::Object::Ptr& filter)
+Poco::JSON::Array::Ptr ClusterQueueManagerMapper::inquire()
 {
-	poco_assert_dbg(!filter.isNull());
-
-	Command command(this, MQCMD_INQUIRE_CLUSTER_Q_MGR, filter);
+	createCommand(MQCMD_INQUIRE_CLUSTER_Q_MGR);
 
 	// Required parameters
-	command.addParameter<std::string>(MQCA_CLUSTER_Q_MGR_NAME, "ClusterQmgrName");
+	addParameter<std::string>(MQCA_CLUSTER_Q_MGR_NAME, "ClusterQmgrName");
 
 	// Optional parameters
-	command.addParameter<std::string>(MQCACH_CHANNEL_NAME, "ChannelName");
-	command.addParameter<std::string>(MQCA_CLUSTER_NAME, "ClusterName");
-	command.addAttributeList(MQIACF_CLUSTER_Q_MGR_ATTRS, "ClusterQMgrAttrs");
-	command.addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
-	command.addIntegerFilter();
-	command.addStringFilter();
+	addParameter<std::string>(MQCACH_CHANNEL_NAME, "ChannelName");
+	addParameter<std::string>(MQCA_CLUSTER_NAME, "ClusterName");
+	addAttributeList(MQIACF_CLUSTER_Q_MGR_ATTRS, "ClusterQMgrAttrs");
+	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	addIntegerFilter();
+	addStringFilter();
 
 	PCF::Vector commandResponse;
-	command.execute(commandResponse);
+	execute(commandResponse);
 
-	Poco::JSON::Array::Ptr clusqmgrs = new Poco::JSON::Array();
+	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
 		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)
@@ -83,13 +79,10 @@ Poco::JSON::Array::Ptr ClusterQueueManagerMapper::inquire(const Poco::JSON::Obje
 		if ( (*it)->isExtendedResponse() ) // Skip extended response
 			continue;
 
-		Poco::JSON::Object::Ptr clusqmgr = new Poco::JSON::Object();
-		clusqmgrs->add(clusqmgr);
-
-		dictionary()->mapToJSON(**it, clusqmgr);
+		json->add(createJSON(**it));
 	}
 
-	return clusqmgrs;
+	return json;
 }
 
 }} //  Namespace MQ::Web

@@ -31,22 +31,22 @@ class ConnectionMapper : public MQMapper
 {
 public:
 
-	ConnectionMapper(CommandServer& commandServer);
+	ConnectionMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input);
 		/// Constructor
 
 	virtual ~ConnectionMapper();
 		/// Destructor
 
-	void change(const Poco::JSON::Object::Ptr&obj);
+	void change();
 		/// Not implemented.
 
-	void create(const Poco::JSON::Object::Ptr& obj, bool replace = false);
+	void create(bool replace = false);
 		/// Not implemented.
 
-	void copy(const Poco::JSON::Object::Ptr& obj, bool replace = false);
+	void copy(bool replace = false);
 		/// Not implemented.
 
-	Poco::JSON::Array::Ptr inquire(const Poco::JSON::Object::Ptr& filter);
+	Poco::JSON::Array::Ptr inquire();
 		/// Implements the inquire connection command.
 
 private:

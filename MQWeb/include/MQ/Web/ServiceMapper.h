@@ -31,22 +31,22 @@ class ServiceMapper : public MQMapper
 {
 public:
 
-	ServiceMapper(CommandServer& commandServer);
+	ServiceMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input);
 		/// Constructor
 
 	virtual ~ServiceMapper();
 		/// Destructor
 
-	void change(const Poco::JSON::Object::Ptr&obj);
+	void change();
 		/// Implements the change service command. Not implemented yet.
 
-	void create(const Poco::JSON::Object::Ptr& obj, bool replace = false);
+	void create(bool replace = false);
 		/// Implements the create service command. Not implemented yet.
 
-	void copy(const Poco::JSON::Object::Ptr& obj, bool replace = false);
+	void copy(bool replace = false);
 		/// Implements the copy service command. Not implemented yet.
 
-	Poco::JSON::Array::Ptr inquire(const Poco::JSON::Object::Ptr& filter);
+	Poco::JSON::Array::Ptr inquire();
 		/// Implements the inquire service command.
 
 private:

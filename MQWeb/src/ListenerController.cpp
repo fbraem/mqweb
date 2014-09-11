@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/ListenerController.h"
 #include "MQ/Web/ListenerMapper.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -64,9 +63,8 @@ void ListenerController::inquire()
 		filter->set("excludeSystem", form().get("listenerExcludeSystem", "false").compare("true") == 0);
 	}
 
-	ListenerMapper mapper(*commandServer());
-	Poco::JSON::Array::Ptr listeners = mapper.inquire(filter);
-	set("listeners", listeners);
+	ListenerMapper mapper(*commandServer(), filter);
+	set("listeners", mapper.inquire());
 }
 
 

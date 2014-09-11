@@ -19,13 +19,12 @@
  * permissions and limitations under the Licence.
  */
 #include "MQ/Web/QueueStatusMapper.h"
-#include "MQ/Web/Dictionary.h"
-#include "MQ/MQException.h"
 
 namespace MQ {
 namespace Web {
 
-QueueStatusMapper::QueueStatusMapper(CommandServer& commandServer) : MQMapper(commandServer, "QueueStatus")
+QueueStatusMapper::QueueStatusMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
+: MQMapper(commandServer, "QueueStatus", input)
 {
 }
 
@@ -34,50 +33,48 @@ QueueStatusMapper::~QueueStatusMapper()
 }
 
 
-void QueueStatusMapper::change(const Poco::JSON::Object::Ptr&obj)
+void QueueStatusMapper::change()
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void QueueStatusMapper::create(const Poco::JSON::Object::Ptr& obj, bool replace)
+void QueueStatusMapper::create(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void QueueStatusMapper::copy(const Poco::JSON::Object::Ptr& obj, bool replace)
+void QueueStatusMapper::copy(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-Poco::JSON::Array::Ptr QueueStatusMapper::inquire(const Poco::JSON::Object::Ptr& filter)
+Poco::JSON::Array::Ptr QueueStatusMapper::inquire()
 {
-	poco_assert_dbg(!filter.isNull());
-
-	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
-
-	Command command(this, MQCMD_INQUIRE_Q_STATUS, filter);
+	createCommand(MQCMD_INQUIRE_Q_STATUS);
 
 	// Required parameters
-	command.addParameter<std::string>(MQCA_Q_NAME, "QName");
+	addParameter<std::string>(MQCA_Q_NAME, "QName");
 
 	// Optional parameters
 	//TODO: ByteStringFilter
-	command.addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
-	command.addIntegerFilter();
-	command.addParameterNumFromString(MQIACF_OPEN_TYPE, "OpenType");
-	command.addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
-	command.addAttributeList(MQIACF_Q_STATUS_ATTRS, "QStatusAttrs");
-	command.addParameterNumFromString(MQIACF_STATUS_TYPE, "StatusType");
-	command.addStringFilter();
+	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	addIntegerFilter();
+	addParameterNumFromString(MQIACF_OPEN_TYPE, "OpenType");
+	addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
+	addAttributeList(MQIACF_Q_STATUS_ATTRS, "QStatusAttrs");
+	addParameterNumFromString(MQIACF_STATUS_TYPE, "StatusType");
+	addStringFilter();
 
 	PCF::Vector commandResponse;
-	command.execute(commandResponse);
+	execute(commandResponse);
 
-	bool excludeSystem = filter->optValue("ExcludeSystem", false);
-	bool excludeTemp = filter->optValue("ExcludeTemp", false);
+	bool excludeSystem = _input->optValue("ExcludeSystem", false);
+	bool excludeTemp = _input->optValue("ExcludeTemp", false);
+
+	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
@@ -101,10 +98,7 @@ Poco::JSON::Array::Ptr QueueStatusMapper::inquire(const Poco::JSON::Object::Ptr&
 			continue;
 		}
 
-		Poco::JSON::Object::Ptr jsonStatus = new Poco::JSON::Object();
-		json->add(jsonStatus);
-
-		dictionary()->mapToJSON(**it, jsonStatus);
+		json->add(createJSON(**it));
 	}
 
 	return json;
