@@ -24,7 +24,7 @@ namespace MQ {
 namespace Web {
 
 AuthorityRecordMapper::AuthorityRecordMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input) 
-: MQMapper(commandServer, "AuthorityRecord", _input)
+: MQMapper(commandServer, "AuthorityRecord", input)
 {
 }
 
