@@ -178,25 +178,5 @@ There are some differences between query parameters and a JSON object:
 
 This sample is a Perl script that inquires all queues starting with `T`:
 
-{% highlight perl %}
-#!/usr/bin/perl
-use strict;
-use warnings;
-use LWP::UserAgent;
-use HTTP::Request::Common;
+{% include_relative samples/queue.html %}
 
-my $qmgr = shift;
-die("Please pass me the name of a queuemanager as argument") unless defined($qmgr);
-
-my $json = '{ "QName" : "T*" }';
-
-my $ua = LWP::UserAgent->new;
-my $req = POST 'http://localhost:8081/api/queue/inquire/' . $qmgr;
-$req->header( 'Content-Type' => 'application/json' );
-$req->content($json);
-
-my $res = $ua->request($req);
-
-print $res->content();
-
-{% endhighlight %}
