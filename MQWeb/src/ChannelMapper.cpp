@@ -60,8 +60,8 @@ Poco::JSON::Array::Ptr ChannelMapper::inquire()
 	addParameter<std::string>(MQCACH_CHANNEL_NAME, "ChannelName");
 
 	// Optional Parameters
-	addAttributeList(MQIACF_CHANNEL_ATTRS, "ChannelAttrs");
 	addParameterNumFromString(MQIACH_CHANNEL_TYPE, "ChannelType");
+	addAttributeList(MQIACF_CHANNEL_ATTRS, "ChannelAttrs");
 	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
 	addParameterNumFromString(MQIACH_CHANNEL_DISP, "DefaultChannelDisposition");
 	addIntegerFilter();
