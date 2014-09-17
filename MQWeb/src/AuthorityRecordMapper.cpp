@@ -87,6 +87,8 @@ Poco::JSON::Array::Ptr AuthorityRecordMapper::inquire()
 		}
 		pcf()->addParameter(MQIACF_AUTH_OPTIONS, options);
 	}
+	// When no ProfileName is passed, set to empty string
+	if ( !_input->has("ProfileName") ) _input->set("ProfileName", "");
 	addParameter<std::string>(MQCACF_AUTH_PROFILE_NAME, "ProfileName");
 	addParameterNumFromString(MQIACF_OBJECT_TYPE, "ObjectType");
 
