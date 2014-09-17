@@ -10,38 +10,43 @@ ChannelController
 The second part of the URI must be `channel` to call the ChannelController.
 This controller can be used to get information from a channel.
 
-##inquire
+##<a name="inquire"></a>inquire
 
-###URL Parameters
+###<a name="inquireURL"></a>URL Parameters
+`/api/channel/inquire/<QueueManager>/<ChannelName>/<ChannelType>`
 
-`/api/channel/inquire/<QueueManager>/<ChannelName>`
-
-**QueueManager**
-
+####<a name="inquireURLQueueManager"></a>QueueManager
 The name of the queuemanager. This parameter is required!
 
-**ChannelName** (optional)
-  
-The name of a channel. When this parameter is used, query parameters are ignored.
+####<a name="inquireURLChannelName"></a>ChannelName
+The name of a channel. Generic names are supported. When this parameter is used, 
+query parameters are ignored. This parameter is optional.
 
-###Query Parameters
+####<a name="inquireURLChannelType"></a>ChannelType
+The type of the channel. ChannelType must be `All`, `Sender`, `Server`, `Receiver`, `Requester`, `Server-connection`, `Client-connection`, `Cluster-receiver` or `Cluster-sender`. This value is case-sensitive.
 
-**ChannelType** (optional)
+###<a name="inquireQuery"></a>Query Parameters
 
-ChannelType must be `All`, `Sender`, `Server`, `Receiver`, `Requester`, `Server-connection`, `Client-connection`, `Cluster-receiver` or `Cluster-sender`. This value is case-sensitive. When this parameter is omitted, `All` is used.
+####<a name="inquireQueryChannelAttrs"></a>ChannelAttrs
+With the *ChannelAttrs* parameter you can specify which attributes must be returned from the PCF command. Multiple occurences of this parameter are possible. The value must be a (case-sensitive) valid attribute name.
 
-**ChannelName** (optional)
+####<a name="inquireQueryChannelName"></a>ChannelName
+The name of a channel. Generic names are supported. This parameter is ignored when
+a [channelname](#inquireURLChannelName) is passed as URL parameter. When this parameter
+is omitted, * will be used.
+
+####<a name="inquireQueryChannelType"></a>ChannelType
+ChannelType must be `All`, `Sender`, `Server`, `Receiver`, `Requester`, `Server-connection`, `Client-connection`, `Cluster-receiver` or `Cluster-sender`. This value is case-sensitive. When channel type is passed as 
+[URL parameter](#inquireURLChannelType), this query parameter is ignored.
+
+####<a name="inquireQueryCommandScope"></a>CommandScope
+
+####<a name="inquireQueryQSGDisposition"></a>QSGDisposition
 
 ###Example
 `/api/channel/inquire/PIGEON`  
 `/api/channel/inquire/PIGEON/CL.*`  
-`/api/channel/inquire/PIGEON?channelName=CL.*`
-
-<div style="clear:both"> </div>
-
-When a channelname parameter is passed in the URI path only the attributes of the
-channels which matches the given name will be returned. Query parameters are
-discarded in this case.
+`/api/channel/inquire/PIGEON?ChannelName=CL.*`
 
 A filter will be created based on the query parameters when no channelname 
 parameter is passed in the URI path.
