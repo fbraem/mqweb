@@ -70,7 +70,7 @@ void ChannelController::inquire()
 		{
 			pcfParameters->set("ChannelType", parameters[2]);
 		}
-		else
+		else if ( form().has("ChannelType") )
 		{
 			pcfParameters->set("ChannelType", form().get("ChannelType", "All"));
 		}
@@ -78,20 +78,32 @@ void ChannelController::inquire()
 		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
 
 		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
-		pcfParameters->set("ChannelAttrs", attrs);
-
-		Poco::Net::NameValueCollection::ConstIterator itAttrs = form().find("ChannelAttrs");
-		if ( itAttrs == form().end() )
+		formElementToJSONArray("ChannelAttrs", attrs);
+		if ( attrs->size() == 0 ) // Nothing found for ChannelAttrs, try Attrs
 		{
-			itAttrs = form().find("Attrs");
+			formElementToJSONArray("Attrs", attrs);
+		}
+		if ( attrs->size() > 0 )
+		{
+			pcfParameters->set("ChannelAttrs", attrs);
 		}
 
-		for(; 
-			itAttrs != form().end() && Poco::icompare(itAttrs->first, "Attrs") == 0;
-			++itAttrs)
+		if ( form().has("CommandScope") )
 		{
-			attrs->add(itAttrs->second);
+			pcfParameters->set("CommandScope", form().get("CommandScope"));
 		}
+
+		if ( form().has("QSGDisposition") )
+		{
+			pcfParameters->set("QSGDisposition", form().get("QSGDisposition"));
+		}
+
+		if ( form().has("DefaultChannelDisposition") )
+		{
+			pcfParameters->set("DefaultChannelDisposition", form().get("DefaultChannelDisposition"));
+		}
+
+		handleFilterForm(pcfParameters);
 	}
 
 	ChannelMapper mapper(*commandServer(), pcfParameters);
