@@ -59,7 +59,7 @@ public:
 	void addParameter(MQLONG parameter, BufferPtr buffer);
 		/// Add a byte string parameter.
 
-	void addParameterList(MQLONG parameter, MQLONG *values);
+	void addParameterList(MQLONG parameter, MQLONG *values, unsigned int count);
 		/// Add a numeric list parameter.
 
 	void addParameterList(MQLONG parameter, const std::vector<MQLONG>& values);
