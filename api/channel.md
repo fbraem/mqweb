@@ -118,3 +118,9 @@ There are some differences between query parameters and a JSON object:
   ([FilterValue](#inquireQueryFilterValue)).
 
 > An *IntegerFilterCommand* can't be used together with a *StringFilterCommand*
+
+This sample is a Perl script that inquires all channels starting with `SYSTEM`
+and only returns the channelname and connectionname (if available):
+
+{% include_relative samples/channel_inq.html %}
+
