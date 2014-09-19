@@ -122,5 +122,5 @@ There are some differences between query parameters and a JSON object:
 This sample is a Perl script that inquires all channels starting with `SYSTEM`
 and only returns the channelname and connectionname (if available):
 
-{% include_relative samples/channel_inq.html %}
+{% include_relative samples/channel_inq.pl.html %}
 
