@@ -179,7 +179,7 @@ private:
 
 inline void PCF::addParameterList(MQLONG parameter, const std::vector<MQLONG>& values)
 {
-	addParameterList(parameter, (MQLONG*) &values[0]);
+	addParameterList(parameter, (MQLONG*) &values[0], values.size());
 }
 
 inline int PCF::getCommand() const 
