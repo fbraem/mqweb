@@ -168,15 +168,7 @@ void MQController::handleException(const MQException& mqe)
 	reason->set("code", mqe.reason());
 	reason->set("desc", MQMapper::getReasonString(mqe.reason()));
 
-	if ( isJSON() )
-	{
-		setJSONView();
-	}
-	else
-	{
-		setView(new TemplateView("error.tpl"));
-	}
-
+	setJSONView();
 }
 
 
