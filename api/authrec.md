@@ -11,22 +11,19 @@ The second part of the URI must be `authrec` to call the AuthorityRecordControll
 This controller can be used to get attributes of authority records.
 
 ##<a name="inquire"></a>inquire
-
 Get information about one or more authority records. 
 This action executes the MQCMD_INQUIRE_AUTH_RECS pcf command.
 
 The returned JSON object will have a `authrecs` array. When a WebSphere MQ error occurred 
 there will be no `authrecs` array, but instead an `error` object is returned.
-###<a name="inquireUrl"></a>URL Parameters
 
+###<a name="inquireUrl"></a>URL Parameters
 `/api/authrec/inquire/<QueueManager>/<ProfileName>`
 
 ####<a name="inquireURLQueuemanager"></a>QueueManager
-
 The name of the queuemanager. This parameter is required!
 
 ####<a name="inquireURLProfileName"></a>ProfileName
-  
 This parameter is the name of the profile for which to retrieve authorizations. Generic profile names are supported.
 When this parameter is used, the [ProfileName](#inquireQueryProfileName) query parameter is ignored. This parameter 
 is optional.
@@ -58,13 +55,11 @@ Possible values are:
 The values are case sensitive.
 
 ####<a name="inqueryQueryProfileAttrs"></a>ProfileAttrs
-
 With the *ProfileAttrs* parameter you can specify which attributes must be returned from the PCF command. Multiple occurences of this parameter are possible. The value must be a (case-sensitive) valid attribute name.
 
 > Attrs is a synonym for ProfileAttrs
 
-####<a name="inquiryQueryProfileName"></a>ProfileName
-
+####<a name="inquireQueryProfileName"></a>ProfileName
 The name of the profile for which to retrieve authorizations. When a [ProfileName](#inquireURLProfileName) is passed as
 part of the URL, this query parameter will be ignored. *Name* is a synonym for this parameter. A profilename is not 
 required when [ObjectType](#inquireQueryObjectType) is `Queuemanager`.
@@ -82,11 +77,6 @@ query parameters.
 > All URL parameters and query parameters are ignored except for the URL parameter for
 > the name of the [queuemanager](#inquireUrlQueueManager).
 
-{% highlight javascript %}
-    {
-    }
-{% endhighlight %}
-
 There are some differences between query parameters and a JSON object:
 
 + JSON property names are case-sensitive
@@ -95,3 +85,6 @@ There are some differences between query parameters and a JSON object:
 + Synonyms can't be used, you need to use the name of the attribute
   as described in the query parameters. You can't use *name*, it must be 
   [ProfileName](#inquireQueryProfileName) for example.
+  
+{% include_relative samples/authrec_inq.pl.html %}
+

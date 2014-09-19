@@ -55,6 +55,7 @@ queue depth of a queue will have the name *CurrentQDepth*.
 |Controller|URI path|
 |----------|--------|
 |[AuthenticationInformationController](authinfo.html)|/api/authinfo|
+|[AuthorityRecordController](authrec.html)|/api/authrec|
 |[ChannelController](channel.html)|/api/channel|
 |[ChannelStatusController](chstatus.html)|/api/chstatus|
 |[QueueManagerController](qmgr.html)|/api/qmgr|
