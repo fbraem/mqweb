@@ -10,6 +10,8 @@ AuthorityRecordController
 The second part of the URI must be `authrec` to call the AuthorityRecordController.
 This controller can be used to get attributes of authority records.
 
+> AuthorityRecordController is not available for z/OS.
+
 ##<a name="inquire"></a>inquire
 Get information about one or more authority records. 
 This action executes the MQCMD_INQUIRE_AUTH_RECS pcf command.
@@ -69,6 +71,8 @@ Name of the service component.
 
 ###<a name="inquiryExample"></a>Example
 `/api/authrec/inquire/PIGEON`  
+
+{% include_relative samples/authrec_inq.php.html %}
 
 ###<a name="inquireJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with names like the

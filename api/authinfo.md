@@ -96,12 +96,12 @@ query parameters.
 > the name of the [queuemanager](#inquireUrlQueueManager).
 
 {% highlight javascript %}
-    {
-      'AuthInfoName' : 'SYSTEM*',
-      'AuthInfoAttrs' : [
-        'AuthInfoName'
-      ]
-    }
+{
+  'AuthInfoName' : 'SYSTEM*',
+  'AuthInfoAttrs' : [
+    'AuthInfoName'
+  ]
+}
 {% endhighlight %}
 
 There are some differences between query parameters and a JSON object:
@@ -117,4 +117,9 @@ There are some differences between query parameters and a JSON object:
   Operator ([FilterOp](#inquireQueryFilterOp)) and FilterValue ([FilterValue](#inquireQueryFilterValue)).
 
 > An *IntegerFilterCommand* can't be used together with a *StringFilterCommand*
+
+This is a Perl example that inquires the authentication information objects with
+a name starting with SYSTEM.
+
+{% include_relative samples/authinfo_inq.pl.html %}
 

@@ -37,7 +37,8 @@ possible. The value must be a (case-sensitive) valid attribute name.
 ####<a name="inquireQueryChannelName"></a>ChannelName
 The name of a channel. Generic names are supported. This parameter is ignored 
 when a [channelname](#inquireURLChannelName) is passed as URL parameter. When 
-this parameter is omitted, * will be used.
+this parameter is omitted, * will be used. `name` is a synonym for this 
+parameter.
 
 ####<a name="inquireQueryChannelType"></a>ChannelType
 ChannelType must be `All`, `Sender`, `Server`, `Receiver`, `Requester`, 
@@ -84,6 +85,8 @@ Disposition of the object within the group. Possible values are `Live`, `Copy`,
 `/api/channel/inquire/PIGEON`  
 `/api/channel/inquire/PIGEON/CL.*`  
 `/api/channel/inquire/PIGEON?ChannelName=CL.*`
+
+{% include_relative samples/channel_inq.php.html %}
 
 ###<a name="inquireJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with 
