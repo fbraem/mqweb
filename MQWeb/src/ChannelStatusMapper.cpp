@@ -59,19 +59,6 @@ Poco::JSON::Array::Ptr ChannelStatusMapper::inquire()
 	// Required parameters
 	addParameter<std::string>(MQCACH_CHANNEL_NAME, "ChannelName");
 
-	/*TODO: move to controller!
-	addParameterNumFromString(MQIACH_CHANNEL_TYPE, "ChannelType");
-	if ( filter->has("type") )
-	{
-		std::string channelType = filter->optValue<std::string>("type", "All");
-		MQLONG channelTypeValue = dictionary()->getDisplayId(MQIACH_CHANNEL_TYPE, channelType);
-		poco_assert_dbg(channelTypeValue != -1);
-		if ( channelTypeValue != MQCHT_ALL )
-		{
-			inquireChlStatus->addFilter(MQIACH_CHANNEL_TYPE, MQCFOP_EQUAL, channelTypeValue);
-		}
-	}*/
-
 	// Optional parameters
 	addParameterNumFromString(MQIACH_CHANNEL_DISP, "ChannelDisposition");
 	addParameter<std::string>(MQCACH_CLIENT_ID, "ClientIdentifier");

@@ -38,26 +38,57 @@ ChannelStatusController::~ChannelStatusController()
 
 void ChannelStatusController::inquire()
 {
-	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+	Poco::JSON::Object::Ptr pcfParameters;
 
-	std::vector<std::string> parameters = getParameters();
-	// First parameter is queuemanager
-	// Second parameter can be a channelname and will result in inquiring
-	// only that channel.
-	if ( parameters.size() > 1 )
+	if ( data().has("filter") && data().isObject("filter") )
 	{
-		filter->set("name", parameters[1]);
+		pcfParameters = data().getObject("filter");
 	}
 	else
 	{
-		if ( form().has("name") ) filter->set("name", form().get("name"));
-		if ( form().has("channelType") ) filter->set("channelType", form().get("channelType"));
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a channelname and will result in inquiring
+		// only that channel.
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("ChannelName", parameters[1]);
+		}
+		else
+		{
+			// Handle query parameters
+			std::string channelNameField;
+			if ( form().has("ChannelName") )
+			{
+				channelNameField = form().get("ChannelName");
+			}
+			else if ( form().has("name") )
+			{
+				channelNameField = form().get("name");
+			}
+			if ( channelNameField.empty() )
+			{
+				channelNameField = "*";
+			}
+			pcfParameters->set("ChannelName", channelNameField);
+		}
+
+		if ( form().has("ChannelType") )
+		{
+			Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+			filter->set("Parameter", "ChannelType");
+			filter->set("Operator", "EQ");
+			filter->set("FilterValue", form().get("ChannelType"));
+			pcfParameters->set("StringFilterCommand", filter);
+		};
+
+		if ( form().has("InstanceType") ) pcfParameters->set("InstanceType", form().get("InstanceType"));
 	}
-
-	if ( form().has("instanceType") ) filter->set("instanceType", form().get("instanceType"));
-
-	ChannelStatusMapper channelStatusMapper(*commandServer(), filter);
-	set("statuses", channelStatusMapper.inquire());
+	ChannelStatusMapper mapper(*commandServer(), pcfParameters);
+	set("statuses", mapper.inquire());
 }
 
 
