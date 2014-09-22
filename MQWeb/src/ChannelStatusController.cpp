@@ -85,6 +85,17 @@ void ChannelStatusController::inquire()
 			pcfParameters->set("IntegerFilterCommand", filter);
 		};
 
+		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+		formElementToJSONArray("ChannelInstanceAttrs", attrs);
+		if ( attrs->size() == 0 ) // Nothing found for ChannelInstanceAttrs, try Attrs
+		{
+			formElementToJSONArray("Attrs", attrs);
+		}
+		if ( attrs->size() > 0 )
+		{
+			pcfParameters->set("ChannelInstanceAttrs", attrs);
+		}
+
 		if ( form().has("InstanceType") ) pcfParameters->set("InstanceType", form().get("InstanceType"));
 	}
 	ChannelStatusMapper mapper(*commandServer(), pcfParameters);
