@@ -97,6 +97,11 @@ void ChannelStatusController::inquire()
 		}
 
 		if ( form().has("InstanceType") ) pcfParameters->set("InstanceType", form().get("InstanceType"));
+		if ( form().has("ClientIdentifier") ) pcfParameters->set("ClientIdentifier"), form().get("ClientIdentifier"));
+		if ( form().has("ChannelInstanceType") ) pcfParameters->set("ChannelInstanceType"), form().get("ChannelInstanceType"));
+		if ( form().has("CommandScope") ) pcfParameters->set("CommandScope", form().get("CommandScope"));
+		if ( form().has("ConnectionName") ) pcfParameters->set("ConnectionName", form().get("ConnectionName"));
+		if ( form().has("XmitQName") ) pcfParameters->set("XmitQName", form().get("XmitQName"));
 	}
 	ChannelStatusMapper mapper(*commandServer(), pcfParameters);
 	set("statuses", mapper.inquire());
