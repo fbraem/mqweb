@@ -37,7 +37,7 @@ that match the selection criteria is returned. By default this is `false`.
 
 ####<a name="inquireQueryCurrentQDepth"></a>CurrentQDepth
 Only return queues which have at least *CurrentQDepth* messages. This is
-actually a shortcut for a [Filter](#inquireFilter) : 
+actually a shortcut for a [Filter](#inquireQueryFilter) : 
 
     filter=I&filter_param=CurrentQDepth&filter_op=NLT&filter_value=<value>
 
@@ -54,8 +54,8 @@ This parameter is optional. By default the value is set to `false`.
 When value is `true`, all temporary queues will be discarded.
 This parameter is optional. By default the value is set to `false`.
 
-> When the [QAttrs](#inquireQueryQAttrs) parameter is used, the DefinitionType attribute 
-> must be selected to make this work.
+> When the [QAttrs](#inquireQueryQAttrs) parameter is used, the DefinitionType 
+> attribute must be selected to make this work.
 
 ####<a name="inquireQueryFilter"></a>Filter
 Speficies which filter to use: `I` means Integerfilter, `S` means Stringfilter.
