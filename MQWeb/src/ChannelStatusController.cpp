@@ -82,7 +82,7 @@ void ChannelStatusController::inquire()
 			filter->set("Parameter", "ChannelType");
 			filter->set("Operator", "EQ");
 			filter->set("FilterValue", form().get("ChannelType"));
-			pcfParameters->set("StringFilterCommand", filter);
+			pcfParameters->set("IntegerFilterCommand", filter);
 		};
 
 		if ( form().has("InstanceType") ) pcfParameters->set("InstanceType", form().get("InstanceType"));
