@@ -11,6 +11,12 @@ The second part of the URI must be `channel` to call the ChannelController.
 This controller can be used to get information from a channel.
 
 ##<a name="inquire"></a>inquire
+Get information about one or more queues. This action executes the 
+MQCMD_INQUIRE_CHANNEL pcf command.
+
+The returned JSON object will have a `channels` array. When a WebSphere MQ 
+error occurred there will be no `channels` array, but instead an `error` 
+object is returned.
 
 ###<a name="inquireURL"></a>URL Parameters
 `/api/channel/inquire/<QueueManager>/<ChannelName>/<ChannelType>`
