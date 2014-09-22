@@ -13,3 +13,5 @@ pygmentize -o $1/api/samples/queue_inq.pl.html ./queue_inq.pl
 pygmentize -o $1/api/samples/queue_inq.php.html ./queue_inq.php
 pygmentize -o $1/api/samples/channel_inq.pl.html ./channel_inq.pl
 pygmentize -o $1/api/samples/channel_inq.php.html ./channel_inq.php
+pygmentize -o $1/api/samples/chstatus_inq.pl.html ./chstatus_inq.pl
+pygmentize -o $1/api/samples/chstatus_inq.php.html ./chstatus_inq.php
