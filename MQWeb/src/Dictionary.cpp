@@ -79,7 +79,7 @@ MQLONG Dictionary::getDisplayId(MQLONG id, const std::string& value) const
 	return -1;
 }
 
-void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json) const
+void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, bool alwaysCreate) const
 {
 	std::vector<MQLONG> parameters = pcf.getParameters();
 	for(std::vector<MQLONG>::iterator it = parameters.begin(); it != parameters.end(); ++it)
@@ -87,8 +87,17 @@ void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json) const
 		std::string name = getName(*it);
 		if ( name.empty() )
 		{
-			name = "id_" + Poco::NumberFormatter::format(*it);
+			if ( alwaysCreate )
+			{
+				name = "id_" + Poco::NumberFormatter::format(*it);
+			}
+			else
+			{
+				continue;
+			}
 		}
+
+		if ( json->has(name) ) continue; // Don't overwrite already added properties
 
 		Poco::JSON::Object::Ptr field = new Poco::JSON::Object();
 		json->set(name, field);
