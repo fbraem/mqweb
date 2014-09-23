@@ -518,7 +518,7 @@ void MessageController::event()
 		message.buffer().resize(DEFAULT_EVENT_MESSAGE_SIZE, false);
 		try
 		{
-			q.get(message, MQGMO_BROWSE_NEXT | MQGMO_CONVERT | MQGMO_ACCEPT_TRUNCATED_MSG);
+			q.get(message, MQGMO_BROWSE_NEXT | MQGMO_CONVERT);
 		}
 		catch(MQException& mqe)
 		{
@@ -527,8 +527,7 @@ void MessageController::event()
 				if (! messageId.empty()) throw;
 				break;
 			}
-			else if ( mqe.reason()   == MQRC_TRUNCATED_MSG_FAILED
-				|| mqe.reason() == MQRC_TRUNCATED )
+			else if ( mqe.reason() == MQRC_TRUNCATED_MSG_FAILED )
 			{
 				message.buffer().resize(message.dataLength(), false);
 				message.clear();
@@ -563,9 +562,29 @@ void MessageController::event()
 		std::string reasonCodeStr = MQMapper::getReasonString(message.getReasonCode());
 		jsonReason->set("desc", reasonCodeStr);
 
+		if ( message.hasParameter(MQIACF_OBJECT_TYPE) )
+		{
+			Poco::SharedPtr<Dictionary> dictionary;
+			switch(message.getParameterNum(MQIACF_OBJECT_TYPE))
+			{
+			case MQOT_Q_MGR: dictionary = MQMapper::dictionary("QueueManager"); break;
+			case MQOT_CHANNEL:  dictionary = MQMapper::dictionary("Channel"); break;
+			case MQOT_NAMELIST: dictionary = MQMapper::dictionary("Namelist"); break;
+			case MQOT_PROCESS: dictionary = MQMapper::dictionary("Process"); break;
+			case MQOT_Q: dictionary = MQMapper::dictionary("Queue"); break;
+			case MQOT_LISTENER: dictionary = MQMapper::dictionary("Listener"); break;
+			default:
+				Poco::Logger::get("mq.web").warning("No dictionary set for event. ObjectType $0", message.getParameterNum(MQIACF_OBJECT_TYPE));
+			}
+			if ( !dictionary.isNull() )
+			{
+				dictionary->mapToJSON(message, jsonEvent, false);
+			}
+		}
+
 		Poco::SharedPtr<Dictionary> dictionary = MQMapper::dictionary("Event");
 		poco_assert_dbg(! dictionary.isNull());
-		dictionary->mapToJSON(message, jsonEvent);
+		dictionary->mapToJSON(message, jsonEvent, false);
 
 		count++;
 	}
