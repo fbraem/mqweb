@@ -102,6 +102,8 @@ void ChannelStatusController::inquire()
 		if ( form().has("CommandScope") ) pcfParameters->set("CommandScope", form().get("CommandScope"));
 		if ( form().has("ConnectionName") ) pcfParameters->set("ConnectionName", form().get("ConnectionName"));
 		if ( form().has("XmitQName") ) pcfParameters->set("XmitQName", form().get("XmitQName"));
+
+		handleFilterForm(pcfParameters);
 	}
 	ChannelStatusMapper mapper(*commandServer(), pcfParameters);
 	set("statuses", mapper.inquire());
