@@ -794,6 +794,7 @@ Dictionary channelDictionary = Dictionary()
 		(MQCOMPRESS_ZLIBHIGH, "Zlib High")
 		(MQCOMPRESS_ANY, "Any")
 		(MQCOMPRESS_SYSTEM, "System")
+		(MQCOMPRESS_NOT_AVAILABLE, "Not Available")
 	)
 	(MQIACH_HB_INTERVAL, "HeartbeatInterval")
 #ifdef MQIACH_IN_DOUBT
@@ -1178,6 +1179,9 @@ Dictionary clusterQueueManagerDictionary = Dictionary()
 	(MQCACH_TP_NAME)
 	(MQCA_XMIT_Q_NAME)
 	(MQIACH_XMIT_PROTOCOL_TYPE)
+#ifdef MQIA_USE_DEAD_LETTER_Q
+	(MQIA_USE_DEAD_LETTER_Q)
+#endif
 	(MQCACH_USER_ID)
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
