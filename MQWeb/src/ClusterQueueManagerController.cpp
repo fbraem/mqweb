@@ -53,6 +53,7 @@ void ClusterQueueManagerController::inquire()
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
 		// Second parameter is a clustername
+		// Third parameter is a cluster queuemanager
 		if ( parameters.size() > 1 )
 		{
 			pcfParameters->set("ClusterName", parameters[1]);
@@ -74,8 +75,15 @@ void ClusterQueueManagerController::inquire()
 			}
 		}
 
-		std::string clusterQmgrNameField = form().get("ClusterQmgrName", "*");
-		pcfParameters->set("ClusterQmgrName", clusterQmgrNameField.empty() ? "*" : clusterQmgrNameField);
+		if ( parameters.size() > 2 )
+		{
+			pcfParameters->set("ClusterQMgrName", parameters[2]);
+		}
+		else
+		{
+			std::string clusterQmgrNameField = form().get("ClusterQMgrName", "*");
+			pcfParameters->set("ClusterQMgrName", clusterQmgrNameField.empty() ? "*" : clusterQmgrNameField);
+		}
 
 		if ( form().has("ChannelName") ) pcfParameters->set("ChannelName", form().get("ChannelName"));
 
