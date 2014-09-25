@@ -57,7 +57,7 @@ Poco::JSON::Array::Ptr ClusterQueueManagerMapper::inquire()
 	createCommand(MQCMD_INQUIRE_CLUSTER_Q_MGR);
 
 	// Required parameters
-	addParameter<std::string>(MQCA_CLUSTER_Q_MGR_NAME, "ClusterQmgrName");
+	addParameter<std::string>(MQCA_CLUSTER_Q_MGR_NAME, "ClusterQMgrName");
 
 	// Optional parameters
 	addParameter<std::string>(MQCACH_CHANNEL_NAME, "ChannelName");
