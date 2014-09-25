@@ -1192,8 +1192,9 @@ Dictionary connectionDictionary = Dictionary()
 	(MQIA_APPL_TYPE)
 	(MQBACF_CONNECTION_ID, "ConnectionId")
 	(MQIACF_CONN_INFO_TYPE, "ConnInfoType", DisplayMapInitializer
-		(MQIACF_CONN_INFO_CONN, "Generic Information")
-		(MQIACF_CONN_INFO_HANDLE, "Connection Information")
+		(MQIACF_CONN_INFO_CONN, "Connection")
+		(MQIACF_CONN_INFO_HANDLE, "Handle")
+		(MQIACF_CONN_INFO_ALL, "All")
 	)
 	(MQBACF_GENERIC_CONNECTION_ID, "GenericConnectionId")
 	// Extended Response
