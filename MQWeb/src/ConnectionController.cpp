@@ -39,18 +39,56 @@ ConnectionController::~ConnectionController()
 
 void ConnectionController::inquire()
 {
-	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+	Poco::JSON::Object::Ptr pcfParameters;
 
-	std::vector<std::string> parameters = getParameters();
-	// First parameter is queuemanager
-	// Second parameter can be a connection id and will result in inquiring
-	// only that connection.
-	if ( parameters.size() > 1 )
+	if ( data().has("filter") && data().isObject("filter") )
 	{
-		filter->set("id", parameters[1]);
+		pcfParameters = data().getObject("filter");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a connection id and will result in inquiring
+		// only that connection.
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("ConnectionId", parameters[1]);
+		}
+
+		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+		formElementToJSONArray("ConnectionAttrs", attrs);
+		if ( attrs->size() == 0 ) // Nothing found for ConnectionAttrs, try Attrs
+		{
+			formElementToJSONArray("Attrs", attrs);
+		}
+		if ( attrs->size() > 0 )
+		{
+			pcfParameters->set("ConnectionAttrs", attrs);
+		}
+
+		if ( form().has("CommandScope") )
+		{
+			pcfParameters->set("CommandScope", form().get("CommandScope"));
+		}
+
+		if ( form().has("ConnInfoType") )
+		{
+			pcfParameters->set("ConnInfoType", form().get("ConnInfoType"));
+		}
+
+		if ( form().has("URDisposition") )
+		{
+			pcfParameters->set("URDisposition", form().get("URDisposition"));
+		}
+
+		handleFilterForm(pcfParameters);
 	}
 
-	ConnectionMapper mapper(*commandServer(), filter);
+	ConnectionMapper mapper(*commandServer(), pcfParameters);
 	set("connections", mapper.inquire());
 }
 
