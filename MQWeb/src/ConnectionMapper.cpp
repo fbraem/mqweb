@@ -91,6 +91,14 @@ Poco::JSON::Array::Ptr ConnectionMapper::inquire()
 	addStringFilter();
 	addParameterNumFromString(MQIA_UR_DISP, "URDisposition");
 
+	if ( ! _input->has("ConnectionAttrs") )
+	{
+		// It seems that this is not set by default, so we do
+		// it ourselves.
+		MQLONG attrs[] = { MQIACF_ALL };
+		pcf()->addParameterList(MQIACF_CONNECTION_ATTRS, attrs, 1);
+	}
+
 	PCF::Vector commandResponse;
 	execute(commandResponse);
 
