@@ -17,9 +17,8 @@ The returned JSON object will have a `clusqmgrs` array. When a WebSphere MQ
 error occurred, there will be no `clusqmgrs` array, but instead an `error`
 object is returned.
 
-
 ###<a name="inquireURL"></a>URL Parameters
-`/api/channel/inquire/<QueueManager>/<ClusterName>/<ClusterQMgrName>`
+`/api/clusqmgr/inquire/<QueueManager>/<ClusterName>/<ClusterQMgrName>`
 
 ####<a name="inquireURLQueueManager"></a>QueueManager
 The name of the queuemanager. This parameter is required!
