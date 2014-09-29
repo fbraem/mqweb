@@ -40,7 +40,7 @@ specified channel name. Generic names are supported.
 
 ####<a name="inquireQueryClusterName"></a>ClusterName
 The name of a cluster. Generic names are supported. This parameter is ignored, 
-when a [URL parameter](#inquireQueryClusterName) is used. *name* is a synonym
+when a [URL parameter](#inquireURLClusterName) is used. *name* is a synonym
 for this parameter.
 
 ####<a name="inquireQueryClusterQMgrAttrs"></a>ClusterQMgrAttrs
