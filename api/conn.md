@@ -40,6 +40,8 @@ A hexadecimal representation of a connection id. This parameter is ignored,
 when a [URL parameter](#inquireURLConnectionId) is used.
 
 ####<a name="inquireQueryConnInfoType"></a>ConnInfoType
+Type of connection information to be returned. Possible values are `Connection`,
+`Handle` or `All`. Values are case-sensitive. Default is `Connection`.
 
 ####<a name="inquireQueryCommandScope"></a>CommandScope
 Specifies how the command is executed when the queue manager is a member of a 
@@ -64,7 +66,9 @@ The value to use for filtering. When a string is passed for an Integerfilter,
 a WebSphere MQ constant is assumed.
 
 ####<a name="inquireQueryURDisposition"></a>URDisposition
-
+The unit of recovery disposition associated with a connection (only valid
+on z/OS). Possible values are `All`, `Group` or `Queuemanager`. Values
+are case-sensitive.
 
 ###<a name="inquireExample"></a>Example
 `/api/conn/inquire/PIGEON`  
