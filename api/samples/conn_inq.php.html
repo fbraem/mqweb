@@ -1,0 +1,16 @@
+<div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+	<span class="cm">/*</span>
+<span class="cm">	 * Inquire all connections from queuemanager PIGEON.</span>
+<span class="cm">	 * MQWeb runs on localhost and is listening on port 8081. </span>
+<span class="cm">	 */</span>
+	<span class="nv">$url</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:8081/api/conn/inquire/PIGEON/&quot;</span><span class="p">;</span>
+	<span class="nv">$curl</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
+	<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$url</span><span class="p">);</span>
+	<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>
+	<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+	<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_HTTP_VERSION</span><span class="p">,</span> <span class="nx">CURL_HTTP_VERSION_1_1</span><span class="p">);</span>
+	<span class="nv">$response</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curl</span><span class="p">);</span>
+	<span class="nv">$data</span> <span class="o">=</span> <span class="nx">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>		
+	<span class="nb">print_r</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span>
+</pre></div>
