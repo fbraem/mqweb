@@ -1254,6 +1254,7 @@ Dictionary connectionDictionary = Dictionary()
 		(MQUOWT_XA, "XA")
 	)
 	(MQIA_UR_DISP, "URDisposition", DisplayMapInitializer
+		(MQQSGD_ALL, "All")
 		(MQQSGD_GROUP, "Group")
 		(MQQSGD_Q_MGR, "Queuemanager")
 	)
