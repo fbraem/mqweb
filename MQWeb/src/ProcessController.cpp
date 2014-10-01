@@ -39,24 +39,71 @@ ProcessController::~ProcessController()
 
 void ProcessController::inquire()
 {
-	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+	Poco::JSON::Object::Ptr pcfParameters;
 
-	std::vector<std::string> parameters = getParameters();
-	// First parameter is queuemanager
-	// Second parameter can be a processname and will result in inquiring
-	// only that process.
-	if ( parameters.size() > 1 )
+	if ( data().has("filter") && data().isObject("filter") )
 	{
-		filter->set("name", parameters[1]);
+		pcfParameters = data().getObject("filter");
 	}
 	else
 	{
-		std::string processNameField = form().get("processName", "*");
-		filter->set("name", processNameField.empty() ? "*" : processNameField);
-		filter->set("excludeSystem", form().get("excludeSystem", "false").compare("true") == 0);
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a processname. If this is passed
+		// the query parameter ProcessName is ignored.
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("ProcessName", parameters[1]);
+		}
+		else
+		{
+			// Handle query parameters
+			std::string processNameField;
+			if ( form().has("ProcessName") )
+			{
+				processNameField = form().get("ProcessName");
+			}
+			else if ( form().has("name") )
+			{
+				processNameField = form().get("name");
+			}
+			if ( processNameField.empty() )
+			{
+				processNameField = "*";
+			}
+			pcfParameters->set("ProcessName", processNameField);
+		}
+
+		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
+
+		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+		formElementToJSONArray("ProcessAttrs", attrs);
+		if ( attrs->size() == 0 ) // Nothing found for ProcessAttrs, try Attrs
+		{
+			formElementToJSONArray("Attrs", attrs);
+		}
+		if ( attrs->size() > 0 )
+		{
+			pcfParameters->set("ProcessAttrs", attrs);
+		}
+
+		if ( form().has("CommandScope") )
+		{
+			pcfParameters->set("CommandScope", form().get("CommandScope"));
+		}
+
+		if ( form().has("QSGDisposition") )
+		{
+			pcfParameters->set("QSGDisposition", form().get("QSGDisposition"));
+		}
+
+		handleFilterForm(pcfParameters);
 	}
 
-	ProcessMapper mapper(*commandServer(), filter);
+	ProcessMapper mapper(*commandServer(), pcfParameters);
 	set("processes", mapper.inquire());
 }
 

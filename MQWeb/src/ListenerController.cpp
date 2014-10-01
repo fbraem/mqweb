@@ -39,31 +39,69 @@ ListenerController::~ListenerController()
 
 void ListenerController::inquire()
 {
-	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+	Poco::JSON::Object::Ptr pcfParameters;
 
-	std::vector<std::string> parameters = getParameters();
-	// First parameter is queuemanager
-	// Second parameter can be a listenername and will result in inquiring 
-	// only that listener and ignores all query parameters.
-	if ( parameters.size() > 1 )
+	if ( data().has("filter") && data().isObject("filter") )
 	{
-		filter->set("name", parameters[1]);
+		pcfParameters = data().getObject("filter");
 	}
 	else
 	{
-		// Handle query parameters
-		std::string listenerNameField = form().get("listenerName", "*");
-		if ( listenerNameField.empty() )
-		{
-			listenerNameField = "*";
-		}
-		filter->set("name", listenerNameField);
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
 
-		filter->set("type", form().get("listenerType", "All"));
-		filter->set("excludeSystem", form().get("listenerExcludeSystem", "false").compare("true") == 0);
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a listenername and will result in inquiring 
+		// only that listener.
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("ListenerName", parameters[1]);
+		}
+		else
+		{
+			std::string listenerNameField;
+			if ( form().has("ListenerName") )
+			{
+				listenerNameField = form().get("ListenerName");
+			}
+			else if ( form().has("name") )
+			{
+				listenerNameField = form().get("name");
+			}
+			if ( listenerNameField.empty() )
+			{
+				listenerNameField = "*";
+			}
+			pcfParameters->set("ListenerName", listenerNameField);
+		}
+
+		if ( parameters.size() > 2 )
+		{
+			pcfParameters->set("TransportType", parameters[2]);
+		}
+		else if ( form().has("TransportType") )
+		{
+			pcfParameters->set("TransportType", form().get("TransportType"));
+		}
+
+		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
+
+		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+		formElementToJSONArray("ListenerAttrs", attrs);
+		if ( attrs->size() == 0 ) // Nothing found for ListenerAttrs, try Attrs
+		{
+			formElementToJSONArray("Attrs", attrs);
+		}
+		if ( attrs->size() > 0 )
+		{
+			pcfParameters->set("ListenerAttrs", attrs);
+		}
+
+		handleFilterForm(pcfParameters);
 	}
 
-	ListenerMapper mapper(*commandServer(), filter);
+	ListenerMapper mapper(*commandServer(), pcfParameters);
 	set("listeners", mapper.inquire());
 }
 

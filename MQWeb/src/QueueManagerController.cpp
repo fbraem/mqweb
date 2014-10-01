@@ -39,8 +39,35 @@ QueueManagerController::~QueueManagerController()
 
 void QueueManagerController::inquire()
 {
-	QueueManagerMapper mapper(*commandServer(), new Poco::JSON::Object());
+	Poco::JSON::Object::Ptr pcfParameters;
 
+	if ( data().has("filter") && data().isObject("filter") )
+	{
+		pcfParameters = data().getObject("filter");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
+
+		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+		formElementToJSONArray("QMgrAttrs", attrs);
+		if ( attrs->size() == 0 ) // Nothing found for QMgrAttrs, try Attrs
+		{
+			formElementToJSONArray("Attrs", attrs);
+		}
+		if ( attrs->size() > 0 )
+		{
+			pcfParameters->set("QMgrAttrs", attrs);
+		}
+
+		if ( form().has("CommandScope") )
+		{
+			pcfParameters->set("CommandScope", form().get("CommandScope"));
+		}
+	}
+
+	QueueManagerMapper mapper(*commandServer(), pcfParameters);
 	Poco::JSON::Array::Ptr json = mapper.inquire();
 	if ( json->size() > 0 )
 	{

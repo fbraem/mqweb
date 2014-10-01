@@ -40,24 +40,61 @@ ServiceController::~ServiceController()
 
 void ServiceController::inquire()
 {
-	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+	Poco::JSON::Object::Ptr pcfParameters;
 
-	std::vector<std::string> parameters = getParameters();
-	// First parameter is queuemanager
-	// Second parameter can be a servicename and will result in inquiring
-	// only that serive.
-	if ( parameters.size() > 1 )
+	if ( data().has("filter") && data().isObject("filter") )
 	{
-		filter->set("name", parameters[1]);
+		pcfParameters = data().getObject("filter");
 	}
 	else
 	{
-		std::string serviceNameField = form().get("serviceName", "*");
-		filter->set("name", serviceNameField.empty() ? "*" : serviceNameField);
-		filter->set("excludeSystem", form().get("excludeSystem", "false").compare("true") == 0);
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a servicename. If this is passed
+		// the query parameter ServiceName is ignored.
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("ServiceName", parameters[1]);
+		}
+		else
+		{
+			// Handle query parameters
+			std::string serviceNameField;
+			if ( form().has("ServiceName") )
+			{
+				serviceNameField = form().get("ServiceName");
+			}
+			else if ( form().has("name") )
+			{
+				serviceNameField = form().get("name");
+			}
+			if ( serviceNameField.empty() )
+			{
+				serviceNameField = "*";
+			}
+			pcfParameters->set("ServiceName", serviceNameField);
+		}
+
+		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
+
+		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+		formElementToJSONArray("ServiceAttrs", attrs);
+		if ( attrs->size() == 0 ) // Nothing found for ServiceAttrs, try Attrs
+		{
+			formElementToJSONArray("Attrs", attrs);
+		}
+		if ( attrs->size() > 0 )
+		{
+			pcfParameters->set("ServiceAttrs", attrs);
+		}
+
+		handleFilterForm(pcfParameters);
 	}
 
-	ServiceMapper mapper(*commandServer(), filter);
+	ServiceMapper mapper(*commandServer(), pcfParameters);
 	set("services", mapper.inquire());
 }
 

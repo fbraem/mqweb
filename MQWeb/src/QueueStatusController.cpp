@@ -39,32 +39,80 @@ QueueStatusController::~QueueStatusController()
 
 void QueueStatusController::inquire()
 {
-	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+	Poco::JSON::Object::Ptr pcfParameters;
 
-	std::vector<std::string> parameters = getParameters();
-	// First parameter is queuemanager
-	// Second parameter can be a queuename and will result in inquiring 
-	// only that queue
-	if ( parameters.size() > 1 )
+	if ( data().has("filter") && data().isObject("filter") )
 	{
-		filter->set("queueName", parameters[1]);
+		pcfParameters = data().getObject("filter");
 	}
 	else
 	{
-		if ( form().has("queueName") ) 
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a queuename. If this is passed, the
+		// query parameter QName or queueName is ignored.
+		if ( parameters.size() > 1 )
 		{
-			std::string nameField = form().get("queueName");
-			if ( nameField.empty() ) nameField = "*";
-			filter->set("queueName", nameField);
+			pcfParameters->set("QName", parameters[1]);
 		}
-		filter->set("excludeSystem", form().get("excludeSystem", "false").compare("true") == 0);
-		filter->set("excludeTemp", form().get("excludeTemp", "false").compare("true") == 0);
+		else
+		{
+			// Handle query parameters
+			std::string queueName;
+			if ( form().has("QName") )
+			{
+				queueName = form().get("QName");
+			}
+			else if ( form().has("QueueName") )
+			{
+				queueName = form().get("QueueName");
+			}
+			else if ( form().has("name") )
+			{
+				queueName = form().get("name");
+			}
+
+			if ( queueName.empty() )
+			{
+				queueName = "*";
+			}
+			pcfParameters->set("QName", queueName);
+		}
+
+		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
+		pcfParameters->set("ExcludeTemp", form().get("ExcludeTemp", "false").compare("true") == 0);
+
+		if ( form().has("CommandScope") )
+		{
+			pcfParameters->set("CommandScope", form().get("CommandScope"));
+		}
+		if ( form().has("QSGDisposition") )
+		{
+			pcfParameters->set("QSGDisposition", form().get("QSGDisposition"));
+		}
+
+		if ( form().has("StatusType") ) pcfParameters->set("StatusType", form().get("StatusType"));
+		if ( form().has("OpenType") ) pcfParameters->set("OpenType", form().get("OpenType"));
+
+		handleFilterForm(pcfParameters);
+
+		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+		formElementToJSONArray("QStatusAttrs", attrs);
+		if ( attrs->size() == 0 ) // Nothing found for QStatusAttrs, try Attrs
+		{
+			formElementToJSONArray("Attrs", attrs);
+		}
+		if ( attrs->size() > 0 )
+		{
+			pcfParameters->set("QStatusAttrs", attrs);
+		}
+
 	}
 
-	if ( form().has("statusType") ) filter->set("statusType", form().get("statusType"));
-	if ( form().has("openType") ) filter->set("openType", form().get("openType"));
-
-	QueueStatusMapper mapper(*commandServer(), filter);
+	QueueStatusMapper mapper(*commandServer(), pcfParameters);
 	set("statuses", mapper.inquire());
 }
 

@@ -66,6 +66,8 @@ Poco::JSON::Array::Ptr ListenerStatusMapper::inquire()
 	PCF::Vector commandResponse;
 	execute(commandResponse);
 
+	bool excludeSystem = _input->optValue("ExcludeSystem", false);
+
 	Poco::JSON::Array::Ptr statuses = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
@@ -74,6 +76,13 @@ Poco::JSON::Array::Ptr ListenerStatusMapper::inquire()
 
 		if ( (*it)->getReasonCode() != MQRC_NONE )
 			continue;
+
+		std::string listenerName = (*it)->getParameterString(MQCACH_LISTENER_NAME);
+		if ( excludeSystem
+			&& listenerName.compare(0, 7, "SYSTEM.") == 0 )
+		{
+			continue;
+		}
 
 		statuses->add(createJSON(**it));
 	}

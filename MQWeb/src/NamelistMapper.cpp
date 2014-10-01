@@ -63,6 +63,7 @@ Poco::JSON::Array::Ptr NamelistMapper::inquire()
 	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
 	addIntegerFilter();
 	addAttributeList(MQIACF_NAMELIST_ATTRS, "NamelistAttrs");
+	addParameterNumFromString(MQIA_NAMELIST_TYPE, "NamelistType");
 	addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
 	addStringFilter();
 

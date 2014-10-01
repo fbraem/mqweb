@@ -46,7 +46,30 @@ void QueueManagerStatusController::inquire()
 		return;
 	}
 
-	QueueManagerStatusMapper mapper(*commandServer(), new Poco::JSON::Object());
+	Poco::JSON::Object::Ptr pcfParameters;
+
+	if ( data().has("filter") && data().isObject("filter") )
+	{
+		pcfParameters = data().getObject("filter");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
+
+		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+		formElementToJSONArray("QMStatusAttrs", attrs);
+		if ( attrs->size() == 0 ) // Nothing found for QMStatusAttrs, try Attrs
+		{
+			formElementToJSONArray("Attrs", attrs);
+		}
+		if ( attrs->size() > 0 )
+		{
+			pcfParameters->set("QMStatusAttrs", attrs);
+		}
+	}
+
+	QueueManagerStatusMapper mapper(*commandServer(), pcfParameters);
 	Poco::JSON::Array::Ptr json = mapper.inquire();
 
 	if ( json->size() > 0 )

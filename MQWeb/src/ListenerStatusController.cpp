@@ -39,28 +39,60 @@ ListenerStatusController::~ListenerStatusController()
 
 void ListenerStatusController::inquire()
 {
-	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+	Poco::JSON::Object::Ptr pcfParameters;
 
-	std::vector<std::string> parameters = getParameters();
-	// First parameter is queuemanager
-	// Second parameter can be a listenername and will result in inquiring 
-	// only that listener and ignores all query parameters.
-	if ( parameters.size() > 1 )
+	if ( data().has("filter") && data().isObject("filter") )
 	{
-		filter->set("name", parameters[1]);
+		pcfParameters = data().getObject("filter");
 	}
 	else
 	{
-		// Handle query parameters
-		std::string listenerNameField = form().get("listenerName", "*");
-		if ( listenerNameField.empty() )
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a listenername and will result in inquiring 
+		// only that listener.
+		if ( parameters.size() > 1 )
 		{
-			listenerNameField = "*";
+			pcfParameters->set("ListenerName", parameters[1]);
 		}
-		filter->set("name", listenerNameField);
+		else
+		{
+			std::string listenerNameField;
+			if ( form().has("ListenerName") )
+			{
+				listenerNameField = form().get("ListenerName");
+			}
+			else if ( form().has("name") )
+			{
+				listenerNameField = form().get("name");
+			}
+			if ( listenerNameField.empty() )
+			{
+				listenerNameField = "*";
+			}
+			pcfParameters->set("ListenerName", listenerNameField);
+		}
 	}
 
-	ListenerStatusMapper mapper(*commandServer(), filter);
+	Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+	formElementToJSONArray("ListenerStatusAttrs", attrs);
+	if ( attrs->size() == 0 ) // Nothing found for ListenerStatusAttrs, try Attrs
+	{
+		formElementToJSONArray("Attrs", attrs);
+	}
+	if ( attrs->size() > 0 )
+	{
+		pcfParameters->set("ListenerStatusAttrs", attrs);
+	}
+
+	pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
+
+	handleFilterForm(pcfParameters);
+
+	ListenerStatusMapper mapper(*commandServer(), pcfParameters);
 	set("statuses", mapper.inquire());
 }
 

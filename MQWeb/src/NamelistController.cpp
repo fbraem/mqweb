@@ -39,24 +39,79 @@ NamelistController::~NamelistController()
 
 void NamelistController::inquire()
 {
-	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+	Poco::JSON::Object::Ptr pcfParameters;
 
-	std::vector<std::string> parameters = getParameters();
-	// First parameter is queuemanager
-	// Second parameter can be a namelistname and will result in inquiring
-	// only that namelist.
-	if ( parameters.size() > 1 )
+	if ( data().has("filter") && data().isObject("filter") )
 	{
-		filter->set("name", parameters[1]);
+		pcfParameters = data().getObject("filter");
 	}
 	else
 	{
-		std::string namelistNameField = form().get("namelistName", "*");
-		filter->set("name", namelistNameField.empty() ? "*" : namelistNameField);
-		filter->set("excludeSystem", form().get("excludeSystem", "false").compare("true") == 0);
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a namelistname and will result in inquiring 
+		// only that namelist.
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("NamelistName", parameters[1]);
+		}
+		else
+		{
+			std::string namelistNameField;
+			if ( form().has("NamelistName") )
+			{
+				namelistNameField = form().get("NamelistName");
+			}
+			else if ( form().has("name") )
+			{
+				namelistNameField = form().get("name");
+			}
+			if ( namelistNameField.empty() )
+			{
+				namelistNameField = "*";
+			}
+			pcfParameters->set("NamelistName", namelistNameField);
+		}
+
+		if ( parameters.size() > 2 )
+		{
+			pcfParameters->set("NamelistType", parameters[2]);
+		}
+		else if ( form().has("NamelistType") )
+		{
+			pcfParameters->set("NamelistType", form().get("NamelistType"));
+		}
 	}
 
-	NamelistMapper mapper(*commandServer(), filter);
+	if ( form().has("CommandScope") )
+	{
+		pcfParameters->set("CommandScope", form().get("CommandScope"));
+	}
+
+	if ( form().has("QSGDisposition") )
+	{
+		pcfParameters->set("QSGDisposition", form().get("QSGDisposition"));
+	}
+
+	Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+	formElementToJSONArray("NamelistAttrs", attrs);
+	if ( attrs->size() == 0 ) // Nothing found for ListenerStatusAttrs, try Attrs
+	{
+		formElementToJSONArray("Attrs", attrs);
+	}
+	if ( attrs->size() > 0 )
+	{
+		pcfParameters->set("NamelistAttrs", attrs);
+	}
+
+	handleFilterForm(pcfParameters);
+
+	pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
+
+	NamelistMapper mapper(*commandServer(), pcfParameters);
 	set("namelists", mapper.inquire());
 }
 

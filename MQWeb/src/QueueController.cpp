@@ -168,19 +168,14 @@ void QueueController::inquire()
 		pcfParameters->set("ExcludeTemp", form().get("ExcludeTemp", "false").compare("true") == 0);
 
 		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
-		pcfParameters->set("QAttrs", attrs);
-
-		Poco::Net::NameValueCollection::ConstIterator itAttrs = form().find("QAttrs");
-		if ( itAttrs == form().end() )
+		formElementToJSONArray("QAttrs", attrs);
+		if ( attrs->size() == 0 ) // Nothing found for QAttrs, try Attrs
 		{
-			itAttrs = form().find("Attrs");
+			formElementToJSONArray("Attrs", attrs);
 		}
-
-		for(; 
-			itAttrs != form().end() && Poco::icompare(itAttrs->first, "Attrs") == 0;
-			++itAttrs)
+		if ( attrs->size() > 0 )
 		{
-			attrs->add(itAttrs->second);
+			pcfParameters->set("QAttrs", attrs);
 		}
 	}
 
