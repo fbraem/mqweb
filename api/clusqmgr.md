@@ -85,7 +85,7 @@ Disposition of the object within the group. Possible values are `Live`, `Copy`,
 `/api/clusqmgr/inquire/PIGEON/BIRDS/BLACKBIRD`  
 `/api/clusqmgr/inquire/PIGEON?ClusterName=BIRDS`
 
-{% include_relative samples/clusqmgr_inq.php.html %}
+{% include_relative samples/php/clusqmgr_inq.html %}
 
 ###<a name="inquireJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with 
@@ -119,5 +119,5 @@ There are some differences between query parameters and a JSON object:
 
 > An *IntegerFilterCommand* can't be used together with a *StringFilterCommand*
 
-{% include_relative samples/clusqmgr_inq.pl.html %}
+{% include_relative samples/perl/clusqmgr_inq.html %}
 

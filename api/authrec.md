@@ -72,7 +72,7 @@ Name of the service component.
 ###<a name="inquiryExample"></a>Example
 `/api/authrec/inquire/PIGEON`  
 
-{% include_relative samples/authrec_inq.php.html %}
+{% include_relative samples/php/authrec_inq.html %}
 
 ###<a name="inquireJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with names like the
@@ -90,5 +90,5 @@ There are some differences between query parameters and a JSON object:
   as described in the query parameters. You can't use *name*, it must be 
   [ProfileName](#inquireQueryProfileName) for example.
   
-{% include_relative samples/authrec_inq.pl.html %}
+{% include_relative samples/perl/authrec_inq.html %}
 

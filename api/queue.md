@@ -122,7 +122,7 @@ be passed as *QueueUsage*.
 This sample is a PHP script that inquires all SYSTEM queues from the PIGEON
 queuemanager:
 
-{% include_relative samples/queue_inq.php.html %}
+{% include_relative samples/php/queue_inq.html %}
 
 ###<a name="inquireJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with names like the
@@ -162,5 +162,5 @@ There are some differences between query parameters and a JSON object:
 
 This sample is a Perl script that inquires all queues starting with `T`:
 
-{% include_relative samples/queue_inq.pl.html %}
+{% include_relative samples/perl/queue_inq.html %}
 

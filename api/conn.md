@@ -73,7 +73,7 @@ are case-sensitive.
 ###<a name="inquireExample"></a>Example
 `/api/conn/inquire/PIGEON`  
 
-{% include_relative samples/conn_inq.php.html %}
+{% include_relative samples/php/conn_inq.html %}
 
 ###<a name="inquireJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with 
@@ -96,4 +96,4 @@ There are some differences between query parameters and a JSON object:
 
 > An *IntegerFilterCommand* can't be used together with a *StringFilterCommand*
 
-{% include_relative samples/conn_inq.pl.html %}
+{% include_relative samples/perl/conn_inq.html %}

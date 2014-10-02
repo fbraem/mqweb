@@ -86,7 +86,7 @@ or `All`. This parameter applies to z/OS only.
 This sample is a PHP script that inquires all SYSTEM authentication information objects from the PIGEON
 queuemanager:
 
-{% include_relative samples/authinfo_inq.php.html %}
+{% include_relative samples/php/authinfo_inq.html %}
 
 ###<a name="inquireJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with names like the
@@ -121,5 +121,5 @@ There are some differences between query parameters and a JSON object:
 This is a Perl example that inquires the authentication information objects with
 a name starting with SYSTEM.
 
-{% include_relative samples/authinfo_inq.pl.html %}
+{% include_relative samples/perl/authinfo_inq.html %}
 
