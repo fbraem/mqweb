@@ -1,0 +1,26 @@
+<div class="highlight"><pre><span class="c1">#!/usr/bin/perl</span>
+<span class="k">use</span> <span class="n">strict</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">warnings</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">JSON</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">LWP::</span><span class="n">UserAgent</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">HTTP::Request::</span><span class="n">Common</span><span class="p">;</span>
+
+<span class="k">my</span> <span class="nv">$qmgr</span> <span class="o">=</span> <span class="nb">shift</span><span class="p">;</span>
+<span class="nb">die</span><span class="p">(</span><span class="s">&quot;Please pass me the name of a queuemanager as argument&quot;</span><span class="p">)</span> <span class="k">unless</span> <span class="nb">defined</span><span class="p">(</span><span class="nv">$qmgr</span><span class="p">);</span>
+
+<span class="k">my</span> <span class="nv">$json</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">;</span>
+
+<span class="k">my</span> <span class="nv">%input</span> <span class="o">=</span> <span class="p">(</span> 
+	<span class="s">&#39;ServiceName&#39;</span> <span class="o">=&gt;</span> <span class="s">&#39;*&#39;</span><span class="p">,</span>
+	<span class="s">&#39;ServiceAttrs&#39;</span> <span class="o">=&gt;</span> <span class="p">[</span> <span class="s">&#39;ServiceName&#39;</span> <span class="p">]</span>
+<span class="p">);</span>
+
+<span class="k">my</span> <span class="nv">$ua</span> <span class="o">=</span> <span class="nn">LWP::</span><span class="n">UserAgent</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">;</span>
+<span class="k">my</span> <span class="nv">$req</span> <span class="o">=</span> <span class="n">POST</span> <span class="s">&#39;http://localhost:8081/api/service/inquire/&#39;</span> <span class="o">.</span> <span class="nv">$qmgr</span><span class="p">;</span>    
+<span class="nv">$req</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">(</span> <span class="s">&#39;Content-Type&#39;</span> <span class="o">=&gt;</span> <span class="s">&#39;application/json&#39;</span> <span class="p">);</span>
+<span class="nv">$req</span><span class="o">-&gt;</span><span class="n">content</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="n">encode</span><span class="p">(</span><span class="o">\</span><span class="nv">%input</span><span class="p">));</span>
+
+<span class="k">my</span> <span class="nv">$res</span> <span class="o">=</span> <span class="nv">$ua</span><span class="o">-&gt;</span><span class="n">request</span><span class="p">(</span><span class="nv">$req</span><span class="p">);</span>
+
+<span class="k">print</span> <span class="nv">$json</span><span class="o">-&gt;</span><span class="n">pretty</span><span class="o">-&gt;</span><span class="n">encode</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="n">decode</span><span class="p">(</span><span class="nv">$res</span><span class="o">-&gt;</span><span class="n">content</span><span class="p">()));</span>
+</pre></div>
