@@ -153,9 +153,20 @@ void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, bool a
 				}
 			}
 		}
+		else if ( pcf.isStringList(*it) )
+		{
+			Poco::JSON::Array::Ptr jsonValues = new Poco::JSON::Array();
+			field->set("value", jsonValues);
+
+			std::vector<std::string> strings = pcf.getParameterStringList(*it);
+			for(std::vector<std::string>::iterator vit = strings.begin(); vit != strings.end(); ++vit)
+			{
+				jsonValues->add(*vit);
+			}
+		}
 		else
 		{
-			//TODO:
+			poco_assert_dbg(false);
 		}
 	}
 }
