@@ -12,7 +12,7 @@
 
 	if ( ($response = curl_exec($curl) ) === false ) {
 		$err = curl_error($curl);
-		echo "An HTTP error occurred while getting queue information: $err\n";
+		echo "An HTTP error occurred while inquiring channel information: $err\n";
 	}
 	else {
 		$json = json_decode($response);
