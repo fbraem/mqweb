@@ -1,5 +1,4 @@
 <?php
-
 	/*
 	 * Inquire all server connection channel statuses for queuemanager PIGEON.
 	 * MQWeb runs on localhost and is listening on port 8081. 
@@ -12,12 +11,12 @@
 	
 	if ( ($response = curl_exec($curl)) === false )	{
 		$err = curl_error($curl);
-		echo "An HTTP error occurred while getting queue information: $err\n";
+		echo "An HTTP error occurred while inquiring channel status information: $err\n";
 	}
 	else {
 		$json = json_decode($response);
 		if ( isset($json->error) ) {
-			echo "An MQ error occurred while inquiring queues.\n";
+			echo "An MQ error occurred while inquiring channel statuses.\n";
 			echo "Reason Code: {$json->error->reason->code} - {$json->error->reason->desc}\n";
 		}
 		else {
