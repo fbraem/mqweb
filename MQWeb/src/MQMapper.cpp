@@ -199,7 +199,8 @@ void MQMapper::execute(PCF::Vector& response)
 		if (     (*it)->getCompletionCode() == MQCC_FAILED 
 			  && (*it)->getReasonCode() > 3000 
 			  && (*it)->getReasonCode() < 4000 
-			  && (*it)->getReasonCode() != MQRCCF_NONE_FOUND )
+			  && (*it)->getReasonCode() != MQRCCF_NONE_FOUND
+			  && (*it)->getReasonCode() != MQRCCF_CHL_STATUS_NOT_FOUND )
 		{
 			static Poco::SharedPtr<Dictionary> dict = _dictionaryCache.getDictionary("Event");
 			std::string command = dict->getDisplayValue(MQIACF_COMMAND, (*it)->getCommand());
