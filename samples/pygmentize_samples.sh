@@ -11,6 +11,7 @@ pygmentize -o $1/api/samples/php/authrec_inq.html ./php/authrec_inq.php
 pygmentize -o $1/api/samples/perl/authrec_inq.html ./perl/authrec_inq.pl
 pygmentize -o $1/api/samples/perl/queue_inq.html ./perl/queue_inq.pl
 pygmentize -o $1/api/samples/php/queue_inq.html ./php/queue_inq.php
+pygmentize -o $1/api/samples/ruby/queue_inq.html ./ruby/queue_inq.rb
 pygmentize -o $1/api/samples/perl/channel_inq.html ./perl/channel_inq.pl
 pygmentize -o $1/api/samples/php/channel_inq.html ./php/channel_inq.php
 pygmentize -o $1/api/samples/perl/chstatus_inq.html ./perl/chstatus_inq.pl
