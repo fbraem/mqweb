@@ -8,7 +8,6 @@ QueueController
 ===============
 
 The second part of the URI must be `queue` to call the QueueController.
-At this time, this controller can be used to [inquire](#inquire) information from a queue.
 
 ##<a name="inquire"></a>inquire
 Get information about one or more queues. This action executes the MQCMD_INQUIRE_Q pcf command.
@@ -34,6 +33,10 @@ Specifies the name of the storage class. This parameter is valid only on z/OS.
 ####<a name="inquireQueryClusterInfo"></a>ClusterInfo
 When `true` cluster information about queues and other queues in the repository 
 that match the selection criteria is returned. By default this is `false`.
+
+####<a name="inquireQueryCommandScope"></a>CommandScope
+Specifies how the command is executed when the queue manager is a member of a 
+queue-sharing group. This parameter applies to z/OS only.
 
 ####<a name="inquireQueryCurrentQDepth"></a>CurrentQDepth
 Only return queues which have at least *CurrentQDepth* messages. This is
@@ -72,6 +75,10 @@ The name of the parameter to filter on. The names are based on the names used in
 ####<a name="inquireQueryFilterValue"></a>FilterValue
 The value to use for filtering. When a string is passed for an Integerfilter, a WebSphere MQ constant is assumed.
 
+####<a name="inquireQueryPageSetID"></a>PageSetID
+This parameter specifies that eligible queues are limited to those having the 
+specified *PageSetID* value. This parameter applies to z/OS only.
+
 ####<a name="inquireQueryQAttrs"></a>QAttrs
 With the QAttrs parameter you can specify which attributes must be
 returned from the PCF command. Multiple occurences of this parameter
@@ -88,6 +95,10 @@ This parameter is ignored when there is a URI parameter for a queuename.
 
 >For compatibility reasons with older versions this parameter can also
 >be passed as *QueueName*.
+
+####<a name="inquireQueryQSGDisposition"></a>QSGDisposition
+Disposition of the object within the group. Possible values are `Live`, `Copy`, 
+`Group`, `QMgr`, `Private` or `All`. This parameter applies to z/OS only.
 
 ####<a name="inquireQueryQType"></a>QType
 Only return the queues of the given type. Possible values are `Local`,
