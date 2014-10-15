@@ -1,9 +1,9 @@
 <?php
 	/*
-	 * This sample will show the startdate/time of queuemanager PIGEON.
+	 * This sample will show the description of queuemanager PIGEON.
 	 * MQWeb runs on localhost and is listening on port 8081. 
 	 */
-	$url = "http://localhost:8081/api/qmstatus/inquire/PIGEON";
+	$url = "http://localhost:8081/api/qmgr/inquire/PIGEON";
 
 	$curl = curl_init();
 	curl_setopt($curl, CURLOPT_URL, $url);
@@ -27,16 +27,14 @@
 				. PHP_EOL;
 		}
 		else {
-			if ( isset($json->status) ) {
-				echo $json->status->QMgrName->value
-					. ' started on '
-					. $json->status->StartDate->value
-					. ' '
-					. $json->status->StartTime->value
+			if ( isset($json->qmgr) ) {
+				echo $json->qmgr->QMgrName->value
+					. ' : '
+					. $json->qmgr->QMgrDesc->value
 					. PHP_EOL;
 			}
 			else {
-				echo 'No status found' . PHP_EOL;
+				echo 'No qmgr found' . PHP_EOL;
 			}
 		}
 	}

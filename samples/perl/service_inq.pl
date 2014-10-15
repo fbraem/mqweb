@@ -14,11 +14,15 @@ my %input = (
 	'ServiceName' => '*',
 	'ServiceAttrs' => [ 'ServiceName' ]
 );
+my $content = $json->encode(\%input);    
 
 my $ua = LWP::UserAgent->new;
-my $req = POST 'http://localhost:8081/api/service/inquire/' . $qmgr;    
-$req->header( 'Content-Type' => 'application/json' );
-$req->content($json->encode(\%input));
+my $req = POST 'http://localhost:8081/api/service/inquire/' . $qmgr;
+$req->header(
+	'Content-Type' => 'application/json',
+	'Content-length' => length($content)
+);
+$req->content($content);
 
 my $res = $ua->request($req);
 

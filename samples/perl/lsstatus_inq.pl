@@ -5,8 +5,7 @@ use JSON;
 use LWP::UserAgent;
 use HTTP::Request::Common;
 
-# This sample will show all SYSTEM queues from the given queuemanager and
-# prints the current queue depth if this property exists for the queue.
+# This sample will show the status of all listeners
 
 my $qmgr = shift;
 die("Please pass me the name of a queuemanager as argument") 
@@ -14,17 +13,15 @@ die("Please pass me the name of a queuemanager as argument")
 
 my $json = JSON->new;
 
+# There's no need to set ListenerName to * because this is the default,
+# but we do it here to show how to build the json content.
 my %input = ( 
-	'QName' => 'SYSTEM*',
-	'QAttrs' => [
-		'CurrentQDepth'
-		# No need to add QName, it is always returned
-	]
+	'ListenerName' => '*',
 );
 my $content = $json->encode(\%input);    
 
 my $ua = LWP::UserAgent->new;
-my $req = POST 'http://localhost:8081/api/queue/inquire/' . $qmgr;
+my $req = POST 'http://localhost:8081/api/lsstatus/inquire/' . $qmgr;
 $req->header(
 	'Content-Type' => 'application/json',
 	'Content-length' => length($content)
@@ -35,18 +32,17 @@ my $res = $ua->request($req);
 if ($res->is_success) {
 	my $mqweb = $json->decode($res->content());
 	if ( exists($mqweb->{error}) ) {
-		print "An MQ error occurred while inquiring queues.\n",
-			'Reason Code: ',
+		print "An MQ error occurred while inquiring listener status.\n",
+			'Reason Code: ', 
 			$mqweb->{error}->{reason}->{code},
-			' - ',
+			' - ', 
 			$mqweb->{error}->{reason}->{desc},
 			"\n";
 	}
 	else {
-		foreach my $queue(@{$mqweb->{queues}}) {
-			print $queue->{QName}->{value};
-			print ' : ', $queue->{CurrentQDepth}->{value} 
-				if ( exists($queue->{CurrentQDepth}) );
+		foreach my $status(@{$mqweb->{statuses}}) {
+			print $status->{ListenerName}->{value};
+			print ' : ', $status->{Status}->{display}; 
 			print "\n";
 		}
 	}
@@ -54,3 +50,4 @@ if ($res->is_success) {
 else {
 	die $res->status_line;
 }
+
