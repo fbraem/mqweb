@@ -1,6 +1,8 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+use feature qw(say);
+
 use JSON;
 use LWP::UserAgent;
 use HTTP::Request::Common;
@@ -32,25 +34,21 @@ $req->header(
 $req->content($content);
 
 my $res = $ua->request($req);
-if ($res->is_success) {
-	my $mqweb = $json->decode($res->content());
-	if ( exists($mqweb->{error}) ) {
-		print "An MQ error occurred while inquiring queues.\n",
-			'Reason Code: ',
-			$mqweb->{error}->{reason}->{code},
-			' - ',
-			$mqweb->{error}->{reason}->{desc},
-			"\n";
-	}
-	else {
-		foreach my $queue(@{$mqweb->{queues}}) {
-			print $queue->{QName}->{value};
-			print ' : ', $queue->{CurrentQDepth}->{value} 
-				if ( exists($queue->{CurrentQDepth}) );
-			print "\n";
-		}
-	}
+die $res->status_line unless $res->is_success;
+	
+my $mqweb = $json->decode($res->content());
+if ( exists($mqweb->{error}) ) {
+	say 'An MQ error occurred while inquiring queues.';
+	say 'Reason Code: '
+		, $mqweb->{error}->{reason}->{code}
+		, ' - '
+		, $mqweb->{error}->{reason}->{desc};
 }
 else {
-	die $res->status_line;
+	foreach my $queue(@{$mqweb->{queues}}) {
+		my $output = $queue->{QName}->{value};
+		$output .= ' : ' . $queue->{CurrentQDepth}->{value} 
+			if ( exists($queue->{CurrentQDepth}) );
+		say $output;
+	}
 }
