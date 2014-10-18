@@ -29,7 +29,7 @@
 #include "Poco/SharedPtr.h"
 #include "Poco/DateTime.h"
 
-#include "Poco/Util/ConfigurationView.h"
+#include "Poco/Dynamic/Struct.h"
 
 namespace MQ {
 
@@ -38,7 +38,6 @@ class QueueManager
 {
 public:
 	typedef Poco::SharedPtr<QueueManager> Ptr;
-
 
 	QueueManager(const std::string& name = "");
 		/// Constructor.
@@ -53,13 +52,20 @@ public:
 		/// Connects to the queuemanager. Only use this method when the Websphere
 		/// MQ system is loaded in client mode. Can throw an MQException.
 
-	void connect(const std::string& channel, const std::string& server, const Poco::Util::AbstractConfiguration& ssl);
+	void connect(const std::string& channel, const std::string& server, const Poco::Dynamic::Struct<std::string>& ssl);
 		/// Connects to the queuemanager using a channel that is protected with SSL.
 		/// The configuration for SSL is based on the following properties: keyrepos (required),
 		/// cipherspec, fips, suiteb and certificate_validation_policy (only when
 		/// MQSCO_VERSION_4 is defined).
 		/// Only use this method when MQ system is loaded in client mode. Can
 		/// throw an MQException.
+
+	void connect(const Poco::Dynamic::Struct<std::string>& connectionInformation);
+		/// Connect using the information stored in the Poco::Dynamic::Struct object
+		/// Can throw an MQException
+
+	bool connected() const;
+		/// Returns true when the queuemanager is connected.
 
 	void disconnect();
 		/// Disconnects from the queuemanager. Can throw an MQException.
@@ -113,6 +119,11 @@ inline std::string QueueManager::id() const
 inline std::string QueueManager::commandQueue() const
 {
 	return _commandQueue;
+}
+
+inline bool QueueManager::connected() const
+{
+	return _handle != 0L;
 }
 
 inline bool QueueManager::zos() const
