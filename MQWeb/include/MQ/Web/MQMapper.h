@@ -93,6 +93,8 @@ private:
 	static DictionaryCache _dictionaryCache;
 
 	PCF::Ptr _pcf;
+
+	static Dictionary _operators;
 };
 
 template<typename T>

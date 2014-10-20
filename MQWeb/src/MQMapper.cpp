@@ -30,6 +30,22 @@ namespace Web {
 
 DictionaryCache MQMapper::_dictionaryCache;
 
+Dictionary MQMapper::_operators = Dictionary()
+	(MQCFOP_LESS, "LT")
+	(MQCFOP_LESS | MQCFOP_EQUAL, "LE")
+	(MQCFOP_EQUAL, "EQ")
+	(MQCFOP_GREATER, "GT")
+	(MQCFOP_GREATER | MQCFOP_EQUAL, "GE")
+	(MQCFOP_NOT_LESS, "NLT")
+	(MQCFOP_NOT_EQUAL, "NE")
+	(MQCFOP_NOT_GREATER, "NGT")
+	(MQCFOP_LIKE, "LK")
+	(MQCFOP_NOT_LIKE, "NL")
+	(MQCFOP_CONTAINS, "CT")
+	(MQCFOP_EXCLUDES, "EX")
+	(MQCFOP_CONTAINS_GEN, "CTG")
+	(MQCFOP_EXCLUDES_GEN, "EXG")
+;
 
 MQMapper::MQMapper(CommandServer& commandServer, const std::string& objectType, Poco::JSON::Object::Ptr input) 
   : _commandServer(commandServer)
@@ -59,23 +75,7 @@ std::string MQMapper::getReasonString(MQLONG reasonCode)
 
 MQLONG MQMapper::getOperator(const std::string& op)
 {
-	static Dictionary operators = Dictionary()
-		(MQCFOP_LESS, "LT")
-		(MQCFOP_LESS | MQCFOP_EQUAL, "LE")
-		(MQCFOP_EQUAL, "EQ")
-		(MQCFOP_GREATER, "GT")
-		(MQCFOP_GREATER | MQCFOP_EQUAL, "GE")
-		(MQCFOP_NOT_LESS, "NLT")
-		(MQCFOP_NOT_EQUAL, "NE")
-		(MQCFOP_NOT_GREATER, "NGT")
-		(MQCFOP_LIKE, "LK")
-		(MQCFOP_NOT_LIKE, "NL")
-		(MQCFOP_CONTAINS, "CT")
-		(MQCFOP_EXCLUDES, "EX")
-		(MQCFOP_CONTAINS_GEN, "CTG")
-		(MQCFOP_EXCLUDES_GEN, "EXG")
-	;
-	return operators.getId(op);
+	return _operators.getId(op);
 }
 
 const DisplayMap& MQMapper::getDisplayMap(const std::string& objectType, MQLONG id)
