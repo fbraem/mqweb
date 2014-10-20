@@ -185,7 +185,7 @@ void QueueManager::connect(const std::string& channel, const std::string& server
 		std::map<std::string, MQLONG>::iterator certValPolicyIterator = certValPolicyTable.find(certValPolicy.toString());
 		if ( certValPolicyIterator == certValPolicyTable.end() )
 		{
-			throw Poco::NotFoundException(Poco::format("Unknown Certification Validation Policy: %s", certValPolicy));
+			throw Poco::NotFoundException(Poco::format("Unknown Certification Validation Policy: %s", certValPolicy.toString()));
 		}
 		else
 		{
