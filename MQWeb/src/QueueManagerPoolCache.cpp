@@ -18,50 +18,15 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
+#include "Poco/Util/Application.h"
+
+#include "MQ/MQSubsystem.h"
+
 #include "MQ/Web/QueueManagerPoolCache.h"
 
 namespace MQ {
 namespace Web {
 
-QueueManagerFactory::QueueManagerFactory(const std::string& qmgrName)
-: _qmgrName(qmgrName)
-{
-}
-
-QueueManagerFactory::QueueManagerFactory(const std::string& qmgrName, const Poco::Dynamic::Struct<std::string>& connectionInformation)
-: _qmgrName(qmgrName)
-, _connectionInformation(connectionInformation)
-{
-}
-
-QueueManagerFactory::QueueManagerFactory(const QueueManagerFactory& copy)
-: _qmgrName(copy._qmgrName)
-{
-}
-
-QueueManagerFactory::~QueueManagerFactory()
-{
-}
-
-QueueManager::Ptr QueueManagerFactory::createObject()
-{
-	return new QueueManager(_qmgrName);
-}
-
-void QueueManagerFactory::activateObject(QueueManager::Ptr qmgr)
-{
-	if ( !qmgr->connected() )
-	{
-		if ( _connectionInformation.size() == 0 )
-		{
-			qmgr->connect();
-		}
-		else
-		{
-			qmgr->connect(_connectionInformation);
-		}
-	}
-}
 
 QueueManagerPoolCache::QueueManagerPoolCache()
 {
@@ -71,15 +36,87 @@ QueueManagerPoolCache::~QueueManagerPoolCache()
 {
 }
 
-Poco::SharedPtr<QueueManagerPool> QueueManagerPoolCache::getPool(const std::string& qmgrName)
+Poco::SharedPtr<QueueManagerPoolGuard> QueueManagerPoolCache::getQueueManager(const std::string& qmgrName)
 {
-	return _cache.get(qmgrName);
+	Poco::SharedPtr<QueueManagerPool> pool = _cache.get(qmgrName);
+	if ( pool.isNull() )
+	{
+		Poco::Mutex::ScopedLock lock(_mutex);
+		pool = _cache.get(qmgrName); // Check it again ...
+		if ( pool.isNull() )
+		{
+			pool = createPool(qmgrName);
+			if ( pool.isNull() )
+			{
+				//TODO: throw exception ...
+			}
+		}
+	}
+
+	return new QueueManagerPoolGuard(pool);
 }
 
-Poco::SharedPtr<QueueManagerPool> QueueManagerPoolCache::createPool(const std::string& qmgrName, const Poco::Dynamic::Struct<std::string>& connectionInformation)
+Poco::SharedPtr<QueueManagerPool> QueueManagerPoolCache::createPool(const std::string& qmgrName)
 {
-	QueueManagerFactory qmgrFactory(qmgrName, connectionInformation);
-	Poco::SharedPtr<QueueManagerPool> pool = new QueueManagerPool(qmgrFactory, 10, 20);
+	Poco::SharedPtr<QueueManagerPool> pool;
+
+	MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQSubsystem>();
+	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
+
+	std::string qmgrConfig = "mq.web.qmgr." + qmgrName;
+
+	if ( mqSystem.client() )
+	{
+		Poco::DynamicStruct connectionInformation;
+
+		// In client mode we check for a configuration
+		// When this is not available, we hope that a channel tab file
+		// is configured.
+		std::string qmgrConfigConnection = qmgrConfig + ".connection";
+		if ( config.has(qmgrConfigConnection) )
+		{
+			std::string connection;
+			std::string channel;
+			connectionInformation.insert("connection", config.getString(qmgrConfigConnection));
+			std::string qmgrConfigChannel = qmgrConfig + ".channel";
+			if ( config.has(qmgrConfigChannel) )
+			{
+				connectionInformation.insert("channel", config.getString(qmgrConfigChannel));
+			}
+			else
+			{
+				connectionInformation.insert("channel", config.getString("mq.web.defaultChannel", "SYSTEM.DEF.SVRCONN"));
+			}
+
+			if ( config.has("mq.web.ssl.keyrepos") )
+			{
+				Poco::DynamicStruct ssl;
+				connectionInformation.insert("ssl", ssl);
+
+				Poco::Util::AbstractConfiguration::Keys keys;
+				Poco::AutoPtr<Poco::Util::AbstractConfiguration> sslConfig = config.createView("mq.web.ssl");
+				sslConfig->keys(keys);
+				for(Poco::Util::AbstractConfiguration::Keys::iterator it = keys.begin(); it != keys.end(); ++it)
+				{
+					ssl.insert(*it, config.getString(*it));
+				}
+			}
+
+			QueueManagerFactory qmgrFactory(qmgrName, connectionInformation);
+			pool = new QueueManagerPool(qmgrFactory, 10, 20);
+		}
+		else
+		{
+			QueueManagerFactory qmgrFactory(qmgrName);
+			pool = new QueueManagerPool(qmgrFactory, 10, 20);
+		}
+	}
+	else
+	{
+		QueueManagerFactory qmgrFactory(qmgrName);
+		pool = new QueueManagerPool(qmgrFactory, 10, 20);
+	}
+
 	_cache.add(qmgrName, pool);
 	return pool;
 }

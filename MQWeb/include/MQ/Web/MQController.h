@@ -28,6 +28,7 @@
 #include "MQ/CommandServer.h"
 #include "MQ/MQException.h"
 #include "MQ/Web/Controller.h"
+#include "MQ/Web/QueueManagerPoolCache.h"
 
 namespace MQ {
 namespace Web {
@@ -77,7 +78,10 @@ protected:
 private:
 
 
-	QueueManager::Ptr _qmgr;
+	Poco::SharedPtr<QueueManagerPoolGuard> _qmgrPoolGuard;
+
+
+	Poco::SharedPtr<QueueManager> _qmgr;
 
 
 	CommandServer::Ptr _commandServer;
@@ -87,6 +91,9 @@ private:
 
 
 	Poco::Stopwatch _stopwatch;
+
+
+	static QueueManagerPoolCache _cache;
 };
 
 

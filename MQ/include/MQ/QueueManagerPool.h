@@ -29,22 +29,82 @@
 namespace MQ {
 
 
+class QueueManagerFactory : public Poco::PoolableObjectFactory<QueueManager, QueueManager::Ptr>
+{
+public:
+	QueueManagerFactory(const std::string& qmgrName);
+
+	QueueManagerFactory(const std::string& qmgrName, const Poco::DynamicStruct& connectionInformation);
+
+	QueueManagerFactory(const QueueManagerFactory& factory);
+
+	virtual ~QueueManagerFactory();
+
+	QueueManager::Ptr createObject();
+
+	void activateObject(QueueManager::Ptr qmgr);
+
+private:
+
+	std::string _qmgrName;
+
+	Poco::DynamicStruct _connectionInformation;
+};
+
+
+
 class QueueManagerPool
 	/// This class implements a Queuemanager pool
 {
 public:
-	typedef Poco::PoolableObjectFactory<QueueManager, QueueManager::Ptr> QueueManagerFactory;
-
 	QueueManagerPool(const QueueManagerFactory& factory, std::size_t capacity, std::size_t peakCapacity);
 		/// Constructor.
 
 	virtual ~QueueManagerPool();
 		/// Destructor.
 
+	QueueManager::Ptr getQueueManager();
+
+	void release(QueueManager::Ptr qmgr);
+
 private:
 
 	Poco::ObjectPool<QueueManager, QueueManager::Ptr, QueueManagerFactory> _pool;
 };
+
+inline QueueManager::Ptr QueueManagerPool::getQueueManager()
+{
+	return _pool.borrowObject();
+}
+
+inline void QueueManagerPool::release(QueueManager::Ptr qmgr)
+{
+	_pool.returnObject(qmgr);
+}
+
+
+class QueueManagerPoolGuard
+{
+public:
+	QueueManagerPoolGuard(Poco::SharedPtr<QueueManagerPool> pool);
+
+	~QueueManagerPoolGuard();
+
+	QueueManager::Ptr getQueueManager() const;
+
+private:
+	QueueManagerPoolGuard(const QueueManagerPoolGuard&);
+	QueueManagerPoolGuard& operator= (const QueueManagerPoolGuard&);
+
+	Poco::SharedPtr<QueueManagerPool> _pool;
+
+	QueueManager::Ptr _qmgr;
+};
+
+inline QueueManager::Ptr QueueManagerPoolGuard::getQueueManager() const
+{
+	return _qmgr;
+}
 
 } // Namespace MQ
 

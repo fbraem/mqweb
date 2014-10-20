@@ -24,6 +24,47 @@
 namespace MQ
 {
 
+QueueManagerFactory::QueueManagerFactory(const std::string& qmgrName)
+: _qmgrName(qmgrName)
+{
+}
+
+QueueManagerFactory::QueueManagerFactory(const std::string& qmgrName, const Poco::Dynamic::Struct<std::string>& connectionInformation)
+: _qmgrName(qmgrName)
+, _connectionInformation(connectionInformation)
+{
+}
+
+QueueManagerFactory::QueueManagerFactory(const QueueManagerFactory& copy)
+: _qmgrName(copy._qmgrName)
+, _connectionInformation(copy._connectionInformation)
+{
+}
+
+QueueManagerFactory::~QueueManagerFactory()
+{
+}
+
+QueueManager::Ptr QueueManagerFactory::createObject()
+{
+	return new QueueManager(_qmgrName);
+}
+
+void QueueManagerFactory::activateObject(QueueManager::Ptr qmgr)
+{
+	if ( !qmgr->connected() )
+	{
+		if ( _connectionInformation.size() == 0 )
+		{
+			qmgr->connect();
+		}
+		else
+		{
+			qmgr->connect(_connectionInformation);
+		}
+	}
+}
+
 QueueManagerPool::QueueManagerPool(const QueueManagerFactory& factory, std::size_t capacity, std::size_t peakCapacity)
 : _pool(factory, capacity, peakCapacity)
 {
@@ -32,6 +73,17 @@ QueueManagerPool::QueueManagerPool(const QueueManagerFactory& factory, std::size
 
 QueueManagerPool::~QueueManagerPool()
 {
+}
+
+QueueManagerPoolGuard::QueueManagerPoolGuard(Poco::SharedPtr<QueueManagerPool> pool) 
+	: _pool(pool)
+	, _qmgr(pool->getQueueManager())
+{
+}
+
+QueueManagerPoolGuard::~QueueManagerPoolGuard() 
+{
+	_pool->release(_qmgr);
 }
 
 } // Namespace MQ

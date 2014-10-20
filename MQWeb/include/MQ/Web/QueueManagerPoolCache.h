@@ -29,28 +29,6 @@
 namespace MQ {
 namespace Web {
 
-class QueueManagerFactory : public QueueManagerPool::QueueManagerFactory
-{
-public:
-	QueueManagerFactory(const std::string& qmgrName);
-
-	QueueManagerFactory(const std::string& qmgrName, const Poco::Dynamic::Struct<std::string>& connectionInformation);
-
-	QueueManagerFactory(const QueueManagerFactory& factory);
-
-	virtual ~QueueManagerFactory();
-
-	QueueManager::Ptr createObject();
-
-	void activateObject(QueueManager::Ptr qmgr);
-
-private:
-
-	std::string _qmgrName;
-
-	Poco::Dynamic::Struct<std::string> _connectionInformation;
-};
-
 class QueueManagerPoolCache
 	/// This class implements a cache for queuemanager pools
 {
@@ -62,14 +40,15 @@ public:
 	virtual ~QueueManagerPoolCache();
 		/// Destructor.
 
-	Poco::SharedPtr<QueueManagerPool> getPool(const std::string& qmgrName);
-		/// Get a pool of queuemanagers from the cache.
-
-	Poco::SharedPtr<QueueManagerPool> createPool(const std::string& qmgrName, const Poco::Dynamic::Struct<std::string>& connectionInformation);
+	Poco::SharedPtr<QueueManagerPoolGuard> getQueueManager(const std::string& qmgrName);
 
 private:
 
+	Poco::SharedPtr<QueueManagerPool> createPool(const std::string& qmgrName);
+
 	Poco::ExpireCache<std::string, QueueManagerPool> _cache;
+
+	Poco::Mutex _mutex;
 };
 
 }} // Namespace MQ::Web

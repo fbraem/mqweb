@@ -19,6 +19,7 @@
  * permissions and limitations under the Licence.
  */
 #include "Poco/Util/Application.h"
+#include "Poco/Dynamic/Struct.h"
 #include "Poco/JSON/Object.h"
 
 #include "MQ/MQSubsystem.h"
@@ -32,6 +33,7 @@
 namespace MQ {
 namespace Web {
 
+QueueManagerPoolCache MQController::_cache;
 
 MQController::MQController() : Controller(), _mqwebData(new Poco::JSON::Object())
 {
@@ -55,97 +57,53 @@ void MQController::beforeAction()
 	MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQSubsystem>();
 	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
 
-	const std::vector<std::string>& parameters = getParameters();
-
 	_mqwebData->set("client", mqSystem.client());
 
+	std::string qmgrName;
 	if ( config.hasProperty("mq.web.qmgr") )
 	{
 		// When a queuemanager is passed on the command line, we always
 		// connect to this queuemanager. When the user specified another
 		// queuemanager on the URL, it will be ignored.
-		_qmgr = new QueueManager(config.getString("mq.web.qmgr"));
+		qmgrName = config.getString("mq.web.qmgr");
 	}
 	else
 	{
+		const std::vector<std::string>& parameters = getParameters();
 		if ( parameters.size() > 0 )
 		{
-			_qmgr = new QueueManager(parameters[0]);
+			qmgrName = parameters[0];
 		}
-		else
+		else if ( mqSystem.client() )
 		{
-			if ( mqSystem.client() )
-			{
-				_qmgr = new QueueManager(config.getString("mq.web.defaultQmgr", "*"));
-			}
-			else // In bindings mode we can connect to the default queuemanager
-			{
-				_qmgr = new QueueManager();
-			}
+			qmgrName = config.getString("mq.web.defaultQmgr", "*");
 		}
 	}
 
-	if ( mqSystem.binding() )
-	{
-		_qmgr->connect();
-	}
-	else
-	{
-		// In client mode we check for a configuration
-		// When this is not available, we hope that a channel tab file
-		// is configured.
-		std::string qmgrConfig = "mq.web.qmgr." + _qmgr->name();
-		std::string qmgrConfigConnection = qmgrConfig + ".connection";
-		if ( config.has(qmgrConfigConnection) )
-		{
-			std::string connection;
-			std::string channel;
-			connection = config.getString(qmgrConfigConnection);
-			std::string qmgrConfigChannel = qmgrConfig + ".channel";
-			if ( config.has(qmgrConfigChannel) )
-			{
-				channel = config.getString(qmgrConfigChannel);
-			}
-			else
-			{
-				channel = config.getString("mq.web.defaultChannel", "SYSTEM.DEF.SVRCONN");
-			}
-			if ( config.has("mq.web.ssl.keyrepos") )
-			{
-				Poco::AutoPtr<Poco::Util::AbstractConfiguration> sslConfig = config.createView("mq.web.ssl");
-				_qmgr->connect(channel, connection, *sslConfig.get());
-			}
-			else
-			{
-				_qmgr->connect(channel, connection);
-			}
-		}
-		else // Hope that there is a channel tab file available
-		{
-			_qmgr->connect();
-		}
-	}
+	_qmgrPoolGuard = _cache.getQueueManager(qmgrName);
+	_qmgr = _qmgrPoolGuard->getQueueManager();
+
+	std::string qmgrConfig = "mq.web.qmgr." + qmgrName;
 
 	_mqwebData->set("qmgr", _qmgr->name());
 	_mqwebData->set("zos", _qmgr->zos());
 	_mqwebData->set("qmgrId", _qmgr->id());
 
-	std::string qmgrConfig = "mq.web.qmgr." + _qmgr->name();
-	std::string qmgrConfigModel = qmgrConfig + ".reply";
+	std::string qmgrConfigReplyQ = qmgrConfig + ".reply";
 	
-	std::string modelQ;
-	if ( config.has(qmgrConfigModel) )
+	std::string replyQ;
+	if ( config.has(qmgrConfigReplyQ) )
 	{
-		modelQ = config.getString(qmgrConfigModel);
+		replyQ = config.getString(qmgrConfigReplyQ);
 	}
 	else
 	{
-		modelQ = config.getString("mq.web.reply", "SYSTEM.DEFAULT.MODEL.QUEUE");
+		replyQ = config.getString("mq.web.reply", "SYSTEM.DEFAULT.MODEL.QUEUE");
 	}
-	_mqwebData->set("replyq", modelQ);
+	_mqwebData->set("replyq", replyQ);
 	_mqwebData->set("cmdq", _qmgr->commandQueue());
 
-	_commandServer = new CommandServer(_qmgr, modelQ);
+	_commandServer = new CommandServer(_qmgr, replyQ);
 }
 
 
@@ -168,7 +126,14 @@ void MQController::handleException(const MQException& mqe)
 	reason->set("code", mqe.reason());
 	reason->set("desc", MQMapper::getReasonString(mqe.reason()));
 
-	setJSONView();
+	if ( isJSON() )
+	{
+		setJSONView();
+	}
+	else
+	{
+		setView(new TemplateView("error.tpl"));
+	}
 }
 
 
@@ -196,7 +161,7 @@ void MQController::handle(const std::vector<std::string>& parameters, Poco::Net:
 	catch(MQException& mqe)
 	{
 		handleException(mqe);
-		render();
+		afterAction();
 	}
 	catch(...)
 	{
