@@ -52,7 +52,7 @@ public:
 		/// Connects to the queuemanager. Only use this method when the Websphere
 		/// MQ system is loaded in client mode. Can throw an MQException.
 
-	void connect(const std::string& channel, const std::string& server, const Poco::Dynamic::Struct<std::string>& ssl);
+	void connect(const std::string& channel, const std::string& server, const Poco::DynamicStruct& ssl);
 		/// Connects to the queuemanager using a channel that is protected with SSL.
 		/// The configuration for SSL is based on the following properties: keyrepos (required),
 		/// cipherspec, fips, suiteb and certificate_validation_policy (only when
@@ -60,7 +60,7 @@ public:
 		/// Only use this method when MQ system is loaded in client mode. Can
 		/// throw an MQException.
 
-	void connect(const Poco::Dynamic::Struct<std::string>& connectionInformation);
+	void connect(const Poco::DynamicStruct& connectionInformation);
 		/// Connect using the information stored in the Poco::Dynamic::Struct object
 		/// Can throw an MQException
 
