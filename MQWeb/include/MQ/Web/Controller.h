@@ -86,8 +86,9 @@ public:
 	bool isGet() const;
 		/// Returns true when the HTTP method GET is used.
 
-	bool isJSON() const;
-		/// Returns true when application/json 
+	virtual bool isJSON() const;
+		/// Return true when the view is a JSON view.
+		/// Default is true.
 
 	bool isPost() const;
 		/// Returns true when the HTTP method POST is used.
@@ -202,6 +203,11 @@ inline bool Controller::isGet() const
 	return _request->getMethod().compare("GET") == 0;
 }
 
+
+inline bool Controller::isJSON() const
+{
+	return true;
+}
 
 inline bool Controller::isPost() const
 {

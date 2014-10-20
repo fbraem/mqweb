@@ -136,25 +136,6 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 }
 
 
-bool Controller::isJSON() const
-{
-	bool result = false;
-
-	std::string accept;
-	try
-	{
-		accept = _request->get("Accept");
-		Poco::Net::MediaType mediaType(accept.substr(0, accept.find_first_of(',')));
-		result = mediaType.matches("application", "json");
-	}
-	catch(Poco::NotFoundException&)
-	{
-		// Ignore
-	}
-
-	return result;
-}
-
 void Controller::setJSONView()
 {
 	if ( _form.has("callback") ) setView(new JSONPView(_form.get("callback")));
