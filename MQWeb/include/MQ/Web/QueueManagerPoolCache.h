@@ -29,6 +29,9 @@
 namespace MQ {
 namespace Web {
 
+typedef Poco::ObjectPool<QueueManager, QueueManager::Ptr, QueueManagerFactory> QueueManagerPool;
+typedef PoolGuard<QueueManagerPool, QueueManager> QueueManagerPoolGuard;
+
 class QueueManagerPoolCache
 	/// This class implements a cache for queuemanager pools
 {

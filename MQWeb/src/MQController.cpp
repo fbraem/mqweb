@@ -81,7 +81,7 @@ void MQController::beforeAction()
 	}
 
 	_qmgrPoolGuard = _cache.getQueueManager(qmgrName);
-	_qmgr = _qmgrPoolGuard->getQueueManager();
+	_qmgr = _qmgrPoolGuard->getObject();
 
 	std::string qmgrConfig = "mq.web.qmgr." + qmgrName;
 

@@ -65,25 +65,4 @@ void QueueManagerFactory::activateObject(QueueManager::Ptr qmgr)
 	}
 }
 
-QueueManagerPool::QueueManagerPool(const QueueManagerFactory& factory, std::size_t capacity, std::size_t peakCapacity)
-: _pool(factory, capacity, peakCapacity)
-{
-}
-
-
-QueueManagerPool::~QueueManagerPool()
-{
-}
-
-QueueManagerPoolGuard::QueueManagerPoolGuard(Poco::SharedPtr<QueueManagerPool> pool) 
-	: _pool(pool)
-	, _qmgr(pool->getQueueManager())
-{
-}
-
-QueueManagerPoolGuard::~QueueManagerPoolGuard() 
-{
-	_pool->release(_qmgr);
-}
-
 } // Namespace MQ

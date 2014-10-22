@@ -52,59 +52,32 @@ private:
 };
 
 
-
-class QueueManagerPool
-	/// This class implements a Queuemanager pool
+template<class Pool, class Object>
+class PoolGuard
 {
 public:
-	QueueManagerPool(const QueueManagerFactory& factory, std::size_t capacity, std::size_t peakCapacity);
-		/// Constructor.
+	PoolGuard(Poco::SharedPtr<Pool> pool) : _pool(pool), _object(pool->borrowObject())
+	{
+	}
 
-	virtual ~QueueManagerPool();
-		/// Destructor.
+	~PoolGuard()
+	{
+		if ( ! _object.isNull() ) _pool->returnObject(_object);
+	}
 
-	QueueManager::Ptr getQueueManager();
-
-	void release(QueueManager::Ptr qmgr);
-
-private:
-
-	Poco::ObjectPool<QueueManager, QueueManager::Ptr, QueueManagerFactory> _pool;
-};
-
-inline QueueManager::Ptr QueueManagerPool::getQueueManager()
-{
-	return _pool.borrowObject();
-}
-
-inline void QueueManagerPool::release(QueueManager::Ptr qmgr)
-{
-	_pool.returnObject(qmgr);
-}
-
-
-class QueueManagerPoolGuard
-{
-public:
-	QueueManagerPoolGuard(Poco::SharedPtr<QueueManagerPool> pool);
-
-	~QueueManagerPoolGuard();
-
-	QueueManager::Ptr getQueueManager() const;
+	Poco::SharedPtr<Object> getObject() const
+	{
+		return _object;
+	}
 
 private:
-	QueueManagerPoolGuard(const QueueManagerPoolGuard&);
-	QueueManagerPoolGuard& operator= (const QueueManagerPoolGuard&);
+	PoolGuard(const PoolGuard&);
+	PoolGuard& operator= (const PoolGuard&);
 
-	Poco::SharedPtr<QueueManagerPool> _pool;
+	Poco::SharedPtr<Pool> _pool;
 
-	QueueManager::Ptr _qmgr;
+	Poco::SharedPtr<Object> _object;
 };
-
-inline QueueManager::Ptr QueueManagerPoolGuard::getQueueManager() const
-{
-	return _qmgr;
-}
 
 } // Namespace MQ
 
