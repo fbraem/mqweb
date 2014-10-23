@@ -21,10 +21,10 @@
 
 #include <iostream>
 
-#include "MQ/Queue.h"
-#include "MQ/QueueManager.h"
-#include "MQ/MQException.h"
 #include "MQ/CommandServer.h"
+#include "MQ/QueueManager.h"
+#include "MQ/Queue.h"
+#include "MQ/MQException.h"
 #include "MQ/Message.h"
 #include "MQ/PCF.h"
 
@@ -36,9 +36,9 @@
 namespace MQ
 {
 
-CommandServer::CommandServer(QueueManager::Ptr qmgr, const std::string& modelQueue) 
+CommandServer::CommandServer(QueueManager& qmgr, const std::string& modelQueue) 
 	: _qmgr(qmgr)
-	, _commandQ(qmgr, qmgr->commandQueue())
+	, _commandQ(qmgr, qmgr.commandQueue())
 	, _replyQ(qmgr, modelQueue)
 {
 	_commandQ.open(MQOO_OUTPUT);
@@ -48,7 +48,7 @@ CommandServer::CommandServer(QueueManager::Ptr qmgr, const std::string& modelQue
 
 PCF::Ptr CommandServer::createCommand(MQLONG command) const
 {
-	return new PCF(command, _qmgr->zos());
+	return new PCF(command, _qmgr.zos());
 }
 
 // Throws MQException
@@ -63,7 +63,7 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
 	PCF::Ptr msgResponse;
 	do
 	{
-		msgResponse = new PCF(_qmgr->zos());
+		msgResponse = new PCF(_qmgr.zos());
 		msgResponse->setCorrelationId(*command->getMessageId());
 		msgResponse->buffer().resize(REPLY_MESSAGE_LEN, false);
 

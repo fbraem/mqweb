@@ -31,6 +31,8 @@
 
 #include "Poco/Dynamic/Struct.h"
 
+#include "MQ/CommandServer.h"
+
 namespace MQ {
 
 class QueueManager
@@ -44,6 +46,10 @@ public:
 
 	virtual ~QueueManager();
 		/// Destructor. Disconnects the queuemanager when it is still connected.
+
+	Poco::SharedPtr<CommandServer> commandServer();
+		/// Returns the command server for this queuemanager. A command server
+		/// must be created first with createCommandServer.
 
 	void connect();
 		/// Connects to the queuemanager. Can throw an MQException.
@@ -66,6 +72,10 @@ public:
 
 	bool connected() const;
 		/// Returns true when the queuemanager is connected.
+
+	Poco::SharedPtr<CommandServer> createCommandServer(const std::string& replyQ);
+		/// Create a command server. Once created, you can use commandServer to 
+		/// get the associated command server. Can throw an MQException.
 
 	void disconnect();
 		/// Disconnects from the queuemanager. Can throw an MQException.
@@ -90,6 +100,8 @@ private:
 
 	MQHCONN _handle;
 
+	MQHCONN handle() const;
+
 	std::string _name;
 
 	std::string _id;
@@ -97,6 +109,8 @@ private:
 	std::string _commandQueue;
 
 	MQLONG _applicationType;
+
+	Poco::SharedPtr<CommandServer> _commandServer;
 
 	void inquireQmgrAttrs();
 
@@ -126,9 +140,25 @@ inline bool QueueManager::connected() const
 	return _handle != 0L;
 }
 
+inline MQHCONN QueueManager::handle() const
+{
+	return _handle;
+}
+
 inline bool QueueManager::zos() const
 {
 	return _applicationType == MQPL_ZOS;
+}
+
+inline Poco::SharedPtr<CommandServer> QueueManager::commandServer()
+{
+	return _commandServer;
+}
+
+inline Poco::SharedPtr<CommandServer> QueueManager::createCommandServer(const std::string& replyQ)
+{
+	_commandServer = new CommandServer(*this, replyQ);
+	return _commandServer;
 }
 
 } // Namespace MQ

@@ -29,9 +29,6 @@
 namespace MQ {
 namespace Web {
 
-typedef Poco::ObjectPool<QueueManager, QueueManager::Ptr, QueueManagerFactory> QueueManagerPool;
-typedef PoolGuard<QueueManagerPool, QueueManager> QueueManagerPoolGuard;
-
 class QueueManagerPoolCache
 	/// This class implements a cache for queuemanager pools
 {
@@ -43,7 +40,7 @@ public:
 	virtual ~QueueManagerPoolCache();
 		/// Destructor.
 
-	Poco::SharedPtr<QueueManagerPoolGuard> getQueueManager(const std::string& qmgrName);
+	Poco::SharedPtr<QueueManagerPool> getQueueManagerPool(const std::string& qmgrName);
 
 private:
 

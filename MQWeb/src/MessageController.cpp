@@ -217,7 +217,7 @@ void MessageController::browse()
 
 	Poco::JSON::Array::Ptr jsonMessages = new Poco::JSON::Array();
 
-	Queue q(qmgr(), queueName);
+	Queue q(*qmgr(), queueName);
 	q.open(MQOO_BROWSE);
 
 	int count = 0;
@@ -302,7 +302,7 @@ void MessageController::dump()
 		return;
 	}
 
-	Queue q(qmgr(), queueName);
+	Queue q(*qmgr(), queueName);
 	q.open(MQOO_BROWSE);
 
 	try
@@ -462,7 +462,7 @@ void MessageController::event()
 	}
 
 	std::string queueName = parameters[1];
-	Queue q(qmgr(), queueName);
+	Queue q(*qmgr().get(), queueName);
 	q.open(MQOO_INQUIRE | MQOO_BROWSE | MQBND_BIND_ON_OPEN);
 
 	std::vector<int> intSelectors;

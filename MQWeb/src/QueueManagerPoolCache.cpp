@@ -36,7 +36,7 @@ QueueManagerPoolCache::~QueueManagerPoolCache()
 {
 }
 
-Poco::SharedPtr<QueueManagerPoolGuard> QueueManagerPoolCache::getQueueManager(const std::string& qmgrName)
+Poco::SharedPtr<QueueManagerPool> QueueManagerPoolCache::getQueueManagerPool(const std::string& qmgrName)
 {
 	Poco::SharedPtr<QueueManagerPool> pool = _cache.get(qmgrName);
 	if ( pool.isNull() )
@@ -46,14 +46,10 @@ Poco::SharedPtr<QueueManagerPoolGuard> QueueManagerPoolCache::getQueueManager(co
 		if ( pool.isNull() )
 		{
 			pool = createPool(qmgrName);
-			if ( pool.isNull() )
-			{
-				//TODO: throw exception ...
-			}
 		}
 	}
 
-	return new QueueManagerPoolGuard(pool);
+	return pool;
 }
 
 Poco::SharedPtr<QueueManagerPool> QueueManagerPoolCache::createPool(const std::string& qmgrName)

@@ -45,22 +45,22 @@ QueueManagerFactory::~QueueManagerFactory()
 {
 }
 
-QueueManager::Ptr QueueManagerFactory::createObject()
+TimedQueueManager::Ptr QueueManagerFactory::createObject()
 {
-	return new QueueManager(_qmgrName);
+	return new TimedQueueManager(new QueueManager(_qmgrName));
 }
 
-void QueueManagerFactory::activateObject(QueueManager::Ptr qmgr)
+void QueueManagerFactory::activateObject(TimedQueueManager::Ptr qmgr)
 {
-	if ( !qmgr->connected() )
+	if ( !qmgr->getObject()->connected() )
 	{
 		if ( _connectionInformation.size() == 0 )
 		{
-			qmgr->connect();
+			qmgr->getObject()->connect();
 		}
 		else
 		{
-			qmgr->connect(_connectionInformation);
+			qmgr->getObject()->connect(_connectionInformation);
 		}
 	}
 }

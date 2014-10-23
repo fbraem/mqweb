@@ -78,10 +78,7 @@ protected:
 private:
 
 
-	Poco::SharedPtr<QueueManagerPoolGuard> _qmgrPoolGuard;
-
-
-	Poco::SharedPtr<QueueManager> _qmgr;
+	QueueManagerPoolGuard::Ptr _qmgrPoolGuard;
 
 
 	CommandServer::Ptr _commandServer;
@@ -99,7 +96,7 @@ private:
 
 inline QueueManager::Ptr MQController::qmgr()
 {
-	return _qmgr;
+	return _qmgrPoolGuard->getObject()->getObject();
 }
 
 
