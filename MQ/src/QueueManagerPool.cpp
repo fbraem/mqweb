@@ -45,24 +45,114 @@ QueueManagerFactory::~QueueManagerFactory()
 {
 }
 
-TimedQueueManager::Ptr QueueManagerFactory::createObject()
+QueueManager::Ptr QueueManagerFactory::createObject()
 {
-	return new TimedQueueManager(new QueueManager(_qmgrName));
+	return new QueueManager(_qmgrName);
 }
 
-void QueueManagerFactory::activateObject(TimedQueueManager::Ptr qmgr)
+void QueueManagerFactory::activateObject(QueueManager::Ptr qmgr)
 {
-	if ( !qmgr->getObject()->connected() )
+	if ( !qmgr->connected() )
 	{
 		if ( _connectionInformation.size() == 0 )
 		{
-			qmgr->getObject()->connect();
+			qmgr->connect();
 		}
 		else
 		{
-			qmgr->getObject()->connect(_connectionInformation);
+			qmgr->connect(_connectionInformation);
 		}
 	}
+}
+
+bool QueueManagerFactory::validateObject(QueueManager::Ptr pObject)
+{
+	return true;
+}
+
+void QueueManagerFactory::deactivateObject(QueueManager::Ptr pObject)
+{
+}
+
+void QueueManagerFactory::destroyObject(QueueManager::Ptr pObject)
+{
+}
+
+QueueManagerPool::QueueManagerPool(Poco::SharedPtr<QueueManagerFactory> factory, std::size_t capacity, std::size_t peakCapacity) :
+	_factory(factory),
+	_capacity(capacity),
+	_peakCapacity(peakCapacity),
+	_size(0)
+{
+	poco_assert(capacity <= peakCapacity);
+}
+
+QueueManagerPool::~QueueManagerPool()
+{
+	for (typename std::vector<Poco::SharedPtr<TimedQueueManager> >::iterator it = _pool.begin(); it != _pool.end(); ++it)
+	{
+		_factory->destroyObject((*it)->value()->get());
+	}
+}
+
+QueueManager::Ptr QueueManagerPool::borrowObject()
+{
+	Poco::FastMutex::ScopedLock lock(_mutex);
+
+	if (!_pool.empty())
+	{
+		Poco::SharedPtr<TimedQueueManager> pObject = _pool.back();
+		_pool.pop_back();
+		return activateObject(pObject->value()->get());
+	}
+
+	if (_size < _peakCapacity)
+	{
+		QueueManager::Ptr pObject = _factory->createObject();
+		activateObject(pObject);
+		_size++;
+		return pObject;
+	}
+
+	return 0;
+}
+
+void QueueManagerPool::returnObject(QueueManager::Ptr pObject)
+{
+	Poco::FastMutex::ScopedLock lock(_mutex);
+
+	if (_factory->validateObject(pObject))
+	{
+		_factory->deactivateObject(pObject);
+		if (_pool.size() < _capacity)
+		{
+			Poco::SharedPtr<TimedQueueManager> timed = new TimedQueueManager(pObject);
+			_pool.push_back(timed);
+		}
+		else
+		{
+			_factory->destroyObject(pObject);
+			_size--;
+		}
+	}
+	else
+	{
+		_factory->destroyObject(pObject);
+	}
+}
+
+QueueManager::Ptr QueueManagerPool::activateObject(QueueManager::Ptr pObject)
+{
+	try
+	{
+		_factory->activateObject(pObject);
+	}
+	catch (...)
+	{
+		_factory->destroyObject(pObject);
+		throw;
+	}
+	return pObject;
 }
 
 } // Namespace MQ
