@@ -61,7 +61,7 @@ private:
 	Poco::Timestamp _lastUsed;
 };
 
-typedef TimedObject<QueueManager::Ptr> TimedQueueManager;
+typedef TimedObject<QueueManager> TimedQueueManager;
 
 class QueueManagerFactory
 {

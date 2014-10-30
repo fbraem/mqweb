@@ -91,7 +91,7 @@ QueueManagerPool::~QueueManagerPool()
 {
 	for (typename std::vector<Poco::SharedPtr<TimedQueueManager> >::iterator it = _pool.begin(); it != _pool.end(); ++it)
 	{
-		_factory->destroyObject((*it)->value()->get());
+		_factory->destroyObject((*it)->value());
 	}
 }
 
@@ -103,7 +103,7 @@ QueueManager::Ptr QueueManagerPool::borrowObject()
 	{
 		Poco::SharedPtr<TimedQueueManager> pObject = _pool.back();
 		_pool.pop_back();
-		return activateObject(pObject->value()->get());
+		return activateObject(pObject->value());
 	}
 
 	if (_size < _peakCapacity)
