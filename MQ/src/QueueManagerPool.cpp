@@ -67,7 +67,7 @@ void QueueManagerFactory::activateObject(QueueManager::Ptr qmgr)
 
 bool QueueManagerFactory::validateObject(QueueManager::Ptr pObject)
 {
-	return true;
+	return pObject->connected();
 }
 
 void QueueManagerFactory::deactivateObject(QueueManager::Ptr pObject)
@@ -76,6 +76,7 @@ void QueueManagerFactory::deactivateObject(QueueManager::Ptr pObject)
 
 void QueueManagerFactory::destroyObject(QueueManager::Ptr pObject)
 {
+	pObject->disconnect();
 }
 
 QueueManagerPool::QueueManagerPool(Poco::SharedPtr<QueueManagerFactory> factory,
@@ -172,6 +173,7 @@ void QueueManagerPool::onJanitorTimer(Poco::Timer&)
 		if ( (*it)->idle() > _idleTime )
 		{
 			_factory->destroyObject((*it)->value());
+			_size--;
 			it = _pool.erase(it);
 		}
 		else ++it;
