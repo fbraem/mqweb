@@ -21,10 +21,9 @@
 #ifndef _MQ_QueueManagerPoolCache_h
 #define _MQ_QueueManagerPoolCache_h
 
-#include "Poco/Dynamic/Struct.h"
 #include "Poco/ExpireCache.h"
+#include "Poco/Dynamic/Struct.h"
 #include "MQ/QueueManagerPool.h"
-
 
 namespace MQ {
 namespace Web {
@@ -40,11 +39,11 @@ public:
 	virtual ~QueueManagerPoolCache();
 		/// Destructor.
 
-	Poco::SharedPtr<QueueManagerPool> getQueueManagerPool(const std::string& qmgrName);
+	QueueManagerPool::Ptr getQueueManagerPool(const std::string& qmgrName);
 
 private:
 
-	Poco::SharedPtr<QueueManagerPool> createPool(const std::string& qmgrName);
+	QueueManagerPool::Ptr createPool(const std::string& qmgrName);
 
 	Poco::ExpireCache<std::string, QueueManagerPool> _cache;
 

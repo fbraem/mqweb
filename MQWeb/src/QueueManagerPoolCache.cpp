@@ -36,9 +36,9 @@ QueueManagerPoolCache::~QueueManagerPoolCache()
 {
 }
 
-Poco::SharedPtr<QueueManagerPool> QueueManagerPoolCache::getQueueManagerPool(const std::string& qmgrName)
+QueueManagerPool::Ptr QueueManagerPoolCache::getQueueManagerPool(const std::string& qmgrName)
 {
-	Poco::SharedPtr<QueueManagerPool> pool = _cache.get(qmgrName);
+	QueueManagerPool::Ptr pool = _cache.get(qmgrName);
 	if ( pool.isNull() )
 	{
 		Poco::Mutex::ScopedLock lock(_mutex);
@@ -52,9 +52,9 @@ Poco::SharedPtr<QueueManagerPool> QueueManagerPoolCache::getQueueManagerPool(con
 	return pool;
 }
 
-Poco::SharedPtr<QueueManagerPool> QueueManagerPoolCache::createPool(const std::string& qmgrName)
+QueueManagerPool::Ptr QueueManagerPoolCache::createPool(const std::string& qmgrName)
 {
-	Poco::SharedPtr<QueueManagerPool> pool;
+	QueueManagerPool::Ptr pool;
 
 	MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQSubsystem>();
 	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
@@ -98,19 +98,16 @@ Poco::SharedPtr<QueueManagerPool> QueueManagerPoolCache::createPool(const std::s
 				}
 			}
 
-			QueueManagerFactory qmgrFactory(qmgrName, connectionInformation);
-			pool = new QueueManagerPool(qmgrFactory, 10, 20);
+			pool = new QueueManagerPool(new QueueManagerFactory(qmgrName, connectionInformation), 10, 20);
 		}
 		else
 		{
-			QueueManagerFactory qmgrFactory(qmgrName);
-			pool = new QueueManagerPool(qmgrFactory, 10, 20);
+			pool = new QueueManagerPool(new QueueManagerFactory(qmgrName), 10, 20);
 		}
 	}
 	else
 	{
-		QueueManagerFactory qmgrFactory(qmgrName);
-		pool = new QueueManagerPool(qmgrFactory, 10, 20);
+		pool = new QueueManagerPool(new QueueManagerFactory(qmgrName), 10, 20);
 	}
 
 	_cache.add(qmgrName, pool);

@@ -85,13 +85,19 @@ void MQController::beforeAction()
 	{
 		//TODO: out of memory ???
 	}
-	_qmgrPoolGuard = new QueueManagerPoolGuard(qmgrPool);
+
+	QueueManager::Ptr qmgr = qmgrPool->borrowObject();
+	if ( qmgr.isNull() )
+	{
+		//TODO: out of memory???
+	}
+	_qmgrPoolGuard = new QueueManagerPoolGuard(qmgrPool, qmgr);
 
 	std::string qmgrConfig = "mq.web.qmgr." + qmgrName;
 
-	_mqwebData->set("qmgr", qmgr()->name());
-	_mqwebData->set("zos", qmgr()->zos());
-	_mqwebData->set("qmgrId", qmgr()->id());
+	_mqwebData->set("qmgr", qmgr->name());
+	_mqwebData->set("zos", qmgr->zos());
+	_mqwebData->set("qmgrId", qmgr->id());
 
 	std::string qmgrConfigReplyQ = qmgrConfig + ".reply";
 	
@@ -105,12 +111,12 @@ void MQController::beforeAction()
 		replyQ = config.getString("mq.web.reply", "SYSTEM.DEFAULT.MODEL.QUEUE");
 	}
 	_mqwebData->set("replyq", replyQ);
-	_mqwebData->set("cmdq", qmgr()->commandQueue());
+	_mqwebData->set("cmdq", qmgr->commandQueue());
 
-	_commandServer = qmgr()->commandServer();
+	_commandServer = qmgr->commandServer();
 	if ( _commandServer.isNull() )
 	{
-		_commandServer = qmgr()->createCommandServer(replyQ);
+		_commandServer = qmgr->createCommandServer(replyQ);
 	}
 }
 

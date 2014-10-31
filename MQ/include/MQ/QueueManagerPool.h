@@ -21,6 +21,8 @@
 #ifndef _MQ_QueueManagerPool_h
 #define _MQ_QueueManagerPool_h
 
+#include "Poco/Timer.h"
+
 #include "MQ/QueueManager.h"
 
 namespace MQ {
@@ -44,7 +46,12 @@ public:
 		return _object;
 	}
 
-	Poco::Timestamp lastused()
+	int idle() const
+	{
+		return (int) (_lastUsed.elapsed() / Poco::Timestamp::resolution());
+	}
+
+	Poco::Timestamp lastused() const
 	{
 		return _lastUsed;
 	}
@@ -64,6 +71,7 @@ private:
 typedef TimedObject<QueueManager> TimedQueueManager;
 
 class QueueManagerFactory
+	/// Factory class for creating a queuemanager
 {
 public:
 	QueueManagerFactory(const std::string& qmgrName);
@@ -95,7 +103,12 @@ class QueueManagerPool
 {
 public:
 
-	QueueManagerPool(Poco::SharedPtr<QueueManagerFactory> factory, std::size_t capacity, std::size_t peakCapacity);
+	typedef Poco::SharedPtr<QueueManagerPool> Ptr;
+
+	QueueManagerPool(Poco::SharedPtr<QueueManagerFactory> factory,
+		std::size_t capacity,
+		std::size_t peakCapacity,
+		int idleTime = 60);
 		/// Constructor
 
 	~QueueManagerPool();
@@ -123,6 +136,7 @@ public:
 
 protected:
 	QueueManager::Ptr activateObject(QueueManager::Ptr pObject);
+	void onJanitorTimer(Poco::Timer&);
 
 private:
 	QueueManagerPool();
@@ -135,6 +149,9 @@ private:
 	std::size_t _size;
 	std::vector<Poco::SharedPtr<TimedQueueManager> > _pool;
 	mutable Poco::FastMutex _mutex;
+
+	int _idleTime;
+	Poco::Timer _janitorTimer;
 };
 
 inline std::size_t QueueManagerPool::capacity() const
@@ -169,7 +186,7 @@ public:
 
 	typedef Poco::SharedPtr<PoolGuard<Pool, PObject> > Ptr;
 
-	PoolGuard(Poco::SharedPtr<Pool> pool) : _pool(pool), _object(pool->borrowObject())
+	PoolGuard(Poco::SharedPtr<Pool> pool, PObject object) : _pool(pool), _object(object)
 	{
 	}
 

@@ -78,13 +78,20 @@ void QueueManagerFactory::destroyObject(QueueManager::Ptr pObject)
 {
 }
 
-QueueManagerPool::QueueManagerPool(Poco::SharedPtr<QueueManagerFactory> factory, std::size_t capacity, std::size_t peakCapacity) :
+QueueManagerPool::QueueManagerPool(Poco::SharedPtr<QueueManagerFactory> factory,
+	std::size_t capacity,
+	std::size_t peakCapacity,
+	int idleTime) :
 	_factory(factory),
 	_capacity(capacity),
 	_peakCapacity(peakCapacity),
-	_size(0)
+	_size(0),
+	_idleTime(idleTime),
+	_janitorTimer(1000 * idleTime, 1000 * idleTime / 4)
 {
 	poco_assert(capacity <= peakCapacity);
+	Poco::TimerCallback<QueueManagerPool> callback(*this, &QueueManagerPool::onJanitorTimer);
+	_janitorTimer.start(callback);
 }
 
 QueueManagerPool::~QueueManagerPool()
@@ -153,6 +160,22 @@ QueueManager::Ptr QueueManagerPool::activateObject(QueueManager::Ptr pObject)
 		throw;
 	}
 	return pObject;
+}
+
+void QueueManagerPool::onJanitorTimer(Poco::Timer&)
+{
+	Poco::FastMutex::ScopedLock lock(_mutex);
+
+	std::vector<Poco::SharedPtr<TimedQueueManager> >::iterator it = _pool.begin();
+	while(it != _pool.end())
+	{
+		if ( (*it)->idle() > _idleTime )
+		{
+			_factory->destroyObject((*it)->value());
+			it = _pool.erase(it);
+		}
+		else ++it;
+	}
 }
 
 } // Namespace MQ
