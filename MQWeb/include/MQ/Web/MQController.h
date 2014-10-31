@@ -96,7 +96,7 @@ private:
 
 inline QueueManager::Ptr MQController::qmgr()
 {
-	return _qmgrPoolGuard->getObject()->getObject();
+	return _qmgrPoolGuard->getObject();
 }
 
 
