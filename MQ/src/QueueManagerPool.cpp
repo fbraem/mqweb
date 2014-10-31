@@ -89,7 +89,7 @@ QueueManagerPool::QueueManagerPool(Poco::SharedPtr<QueueManagerFactory> factory,
 
 QueueManagerPool::~QueueManagerPool()
 {
-	for (typename std::vector<Poco::SharedPtr<TimedQueueManager> >::iterator it = _pool.begin(); it != _pool.end(); ++it)
+	for (std::vector<Poco::SharedPtr<TimedQueueManager> >::iterator it = _pool.begin(); it != _pool.end(); ++it)
 	{
 		_factory->destroyObject((*it)->value());
 	}
