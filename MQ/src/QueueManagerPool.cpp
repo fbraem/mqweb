@@ -76,7 +76,13 @@ void QueueManagerFactory::deactivateObject(QueueManager::Ptr pObject)
 
 void QueueManagerFactory::destroyObject(QueueManager::Ptr pObject)
 {
-	pObject->disconnect();
+	try
+	{
+		pObject->disconnect();
+	}
+	catch(...)
+	{
+	}
 }
 
 QueueManagerPool::QueueManagerPool(Poco::SharedPtr<QueueManagerFactory> factory,
