@@ -58,7 +58,7 @@ void QueueManager::connect()
 {
 	MQCNO cno = { MQCNO_DEFAULT };
 	cno.Version = MQCNO_VERSION_2;
-	cno.Options = MQCNO_HANDLE_SHARE_NONE;
+	cno.Options = MQCNO_HANDLE_SHARE_BLOCK;
 
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
 	_handle = mqSystem.functions().connx(_name, &cno);
