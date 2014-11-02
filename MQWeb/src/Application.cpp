@@ -211,6 +211,8 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 	// Stop the HTTPServer
 	srv.stop();
 
+	_qmgrPoolCache.clear();
+
 	return Application::EXIT_OK;
 }
 

@@ -47,7 +47,7 @@ public:
 	virtual ~QueueManager();
 		/// Destructor. Disconnects the queuemanager when it is still connected.
 
-	Poco::SharedPtr<CommandServer> commandServer();
+	CommandServer* commandServer();
 		/// Returns the command server for this queuemanager. A command server
 		/// must be created first with createCommandServer.
 
@@ -73,7 +73,7 @@ public:
 	bool connected() const;
 		/// Returns true when the queuemanager is connected.
 
-	Poco::SharedPtr<CommandServer> createCommandServer(const std::string& replyQ);
+	CommandServer* createCommandServer(const std::string& replyQ);
 		/// Create a command server. Once created, you can use commandServer to 
 		/// get the associated command server. Can throw an MQException.
 
@@ -110,7 +110,7 @@ private:
 
 	MQLONG _applicationType;
 
-	Poco::SharedPtr<CommandServer> _commandServer;
+	CommandServer* _commandServer;
 
 	void inquireQmgrAttrs();
 
@@ -150,12 +150,12 @@ inline bool QueueManager::zos() const
 	return _applicationType == MQPL_ZOS;
 }
 
-inline Poco::SharedPtr<CommandServer> QueueManager::commandServer()
+inline CommandServer* QueueManager::commandServer()
 {
 	return _commandServer;
 }
 
-inline Poco::SharedPtr<CommandServer> QueueManager::createCommandServer(const std::string& replyQ)
+inline CommandServer* QueueManager::createCommandServer(const std::string& replyQ)
 {
 	_commandServer = new CommandServer(*this, replyQ);
 	return _commandServer;

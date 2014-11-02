@@ -30,6 +30,9 @@ namespace Web {
 
 class QueueManagerPoolCache
 	/// This class implements a cache for queuemanager pools
+	/// Create only one instance of this class.
+	/// Make it a private member of the Application class for example
+	/// and use the static instance() method to get this instance.
 {
 public:
 
@@ -39,16 +42,32 @@ public:
 	virtual ~QueueManagerPoolCache();
 		/// Destructor.
 
+	void clear();
+		/// Clear the cache
+
 	QueueManagerPool::Ptr getQueueManagerPool(const std::string& qmgrName);
+		/// Get a QueueManagerPool from the cache
+
+	static QueueManagerPoolCache* instance();
+		/// Returns the only instance of this class
 
 private:
 
 	QueueManagerPool::Ptr createPool(const std::string& qmgrName);
 
+	void setup();
+
 	Poco::ExpireCache<std::string, QueueManagerPool> _cache;
 
 	Poco::Mutex _mutex;
+
+	static QueueManagerPoolCache* _instance;
 };
+
+inline QueueManagerPoolCache* QueueManagerPoolCache::instance()
+{
+	return _instance;
+}
 
 }} // Namespace MQ::Web
 

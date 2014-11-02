@@ -27,13 +27,22 @@
 namespace MQ {
 namespace Web {
 
+QueueManagerPoolCache* QueueManagerPoolCache::_instance = NULL;
 
 QueueManagerPoolCache::QueueManagerPoolCache()
 {
+	setup();
 }
 
 QueueManagerPoolCache::~QueueManagerPoolCache()
 {
+	_instance = NULL;
+}
+
+void QueueManagerPoolCache::setup()
+{
+	poco_assert(_instance == NULL);
+	_instance = this;
 }
 
 QueueManagerPool::Ptr QueueManagerPoolCache::getQueueManagerPool(const std::string& qmgrName)
@@ -50,6 +59,11 @@ QueueManagerPool::Ptr QueueManagerPoolCache::getQueueManagerPool(const std::stri
 	}
 
 	return pool;
+}
+
+void QueueManagerPoolCache::clear()
+{
+	_cache.clear();
 }
 
 QueueManagerPool::Ptr QueueManagerPoolCache::createPool(const std::string& qmgrName)

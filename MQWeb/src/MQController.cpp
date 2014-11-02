@@ -33,9 +33,8 @@
 namespace MQ {
 namespace Web {
 
-QueueManagerPoolCache MQController::_cache;
 
-MQController::MQController() : Controller(), _mqwebData(new Poco::JSON::Object())
+MQController::MQController() : Controller(), _mqwebData(new Poco::JSON::Object()), _commandServer(NULL)
 {
 	set("mqweb", _mqwebData);
 }
@@ -80,7 +79,7 @@ void MQController::beforeAction()
 		}
 	}
 
-	Poco::SharedPtr<QueueManagerPool> qmgrPool = _cache.getQueueManagerPool(qmgrName);
+	Poco::SharedPtr<QueueManagerPool> qmgrPool = QueueManagerPoolCache::instance()->getQueueManagerPool(qmgrName);
 	if ( qmgrPool.isNull() )
 	{
 		//TODO: out of memory ???
@@ -114,7 +113,7 @@ void MQController::beforeAction()
 	_mqwebData->set("cmdq", qmgr->commandQueue());
 
 	_commandServer = qmgr->commandServer();
-	if ( _commandServer.isNull() )
+	if ( _commandServer == NULL )
 	{
 		_commandServer = qmgr->createCommandServer(replyQ);
 	}

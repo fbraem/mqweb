@@ -47,7 +47,7 @@ public:
 	QueueManager::Ptr qmgr();
 		/// Returns the associated queuemanager
 
-	CommandServer::Ptr commandServer();
+	CommandServer* commandServer();
 		/// Returns the associated command server
 
 	void handleException(const MQException& mqe);
@@ -81,16 +81,13 @@ private:
 	QueueManagerPoolGuard::Ptr _qmgrPoolGuard;
 
 
-	CommandServer::Ptr _commandServer;
+	CommandServer* _commandServer;
 
 
 	Poco::JSON::Object::Ptr _mqwebData;
 
 
 	Poco::Stopwatch _stopwatch;
-
-
-	static QueueManagerPoolCache _cache;
 };
 
 
@@ -100,7 +97,7 @@ inline QueueManager::Ptr MQController::qmgr()
 }
 
 
-inline CommandServer::Ptr MQController::commandServer()
+inline CommandServer* MQController::commandServer()
 {
 	return _commandServer;
 }

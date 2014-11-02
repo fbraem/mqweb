@@ -33,7 +33,8 @@ namespace MQ
 QueueManager::QueueManager(const std::string& name)
 :	 _handle(0),
 	_name(name),
-	_applicationType(0)
+	_applicationType(0),
+	_commandServer(NULL)
 {
 }
 
@@ -255,6 +256,13 @@ void QueueManager::disconnect()
 {
 	if ( _handle != 0 )
 	{
+		// Release the command server now, so queues are closed correctly.
+		if ( _commandServer != NULL )
+		{
+			delete _commandServer;
+			_commandServer = NULL;
+		}
+
 		MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
 		mqSystem.functions().disc(&_handle);
 		_handle = 0;
