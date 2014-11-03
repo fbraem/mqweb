@@ -75,10 +75,14 @@ public:
 
 	CommandServer* createCommandServer(const std::string& replyQ);
 		/// Create a command server. Once created, you can use commandServer to 
-		/// get the associated command server. Can throw an MQException.
+		/// get the associated command server. Can throw an MQException. The
+		/// QueueManager instance is responsible for the CommandServer object
+		/// and will destroy it when the queuemanager is disconnected.
 
 	void disconnect();
 		/// Disconnects from the queuemanager. Can throw an MQException.
+		/// When a CommandServer object is owned by this queuemanager, it will
+		/// be destroyed.
 
 	std::string name() const;
 		/// Returns the name of the queuemanager. The name is always inquired
