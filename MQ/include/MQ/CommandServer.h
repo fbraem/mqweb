@@ -38,12 +38,18 @@ class CommandServer
 	/// Class for sending PCF commands to a queuemanager
 {
 public:
+	std::string commandQName() const;
+		/// Returns the name of the command queue.
+
 	PCF::Ptr createCommand(MQLONG command) const;
 		/// Returns a shared pointer to a PCF object for the given command.
 
 	void sendCommand(PCF::Ptr& command, PCF::Vector& response);
 		/// Sends the command to the queuemanager. The response is returned
 		/// as a vector of PCF objects. Can throw a MQException.
+
+	std::string replyQName() const;
+		/// Returns the name of the reply queue.
 
 private:
 	CommandServer(QueueManager& qmgr, const std::string& modelQueue);
@@ -61,6 +67,15 @@ private:
 	friend class QueueManager;
 };
 
+inline std::string CommandServer::commandQName() const
+{
+	return _commandQ.name();
+}
+
+inline std::string CommandServer::replyQName() const
+{
+	return _replyQ.name();
+}
 
 } // namespace MQ
 
