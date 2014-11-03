@@ -6,6 +6,8 @@
   - Add inquire authentication information (authinfo)
   - Add inquire authority record (authrec)
   - Support for JSONP
+  - Allow to run without mq.web.templates / mq.web.static configuration
+  - Add connection pooling
 
 0.0.10
   - queueExcludeSystem/queueExcludeTemp renamed into excludeSystem/excludeTemp
