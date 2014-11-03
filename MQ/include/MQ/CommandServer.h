@@ -45,8 +45,6 @@ public:
 		/// Sends the command to the queuemanager. The response is returned
 		/// as a vector of PCF objects. Can throw a MQException.
 
-	typedef Poco::SharedPtr<CommandServer> Ptr;
-
 private:
 	CommandServer(QueueManager& qmgr, const std::string& modelQueue);
 		/// Constructor.
