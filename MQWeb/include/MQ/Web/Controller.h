@@ -68,7 +68,11 @@ public:
 		/// Called before an action is executed.
 
 	virtual void afterAction();
-		/// Called after an action is executed.
+		/// Called after an action is executed. The default implementation renders
+		/// the associated view. When no view is set, a JSON view will be used 
+
+	void formElementToJSONArray(const std::string& name, Poco::JSON::Array::Ptr arr);
+		/// Stores each element with the given name in a JSON array
 
 	virtual const ActionMap& getActions() const = 0;
 		/// Returns all actions.
@@ -82,8 +86,9 @@ public:
 	bool isGet() const;
 		/// Returns true when the HTTP method GET is used.
 
-	bool isJSON() const;
-		/// Returns true when application/json 
+	virtual bool isJSON() const;
+		/// Return true when the view is a JSON view.
+		/// Default is true.
 
 	bool isPost() const;
 		/// Returns true when the HTTP method POST is used.
@@ -96,6 +101,9 @@ public:
 
 	Poco::Net::HTTPServerResponse& response();
 		/// Returns the HTTP response
+
+	void setJSONView();
+		/// Checks for JSONP or JSON request and creates the corresponding view class
 
 	void setResponseStatus(Poco::Net::HTTPServerResponse::HTTPStatus status);
 		/// Sets the HTTP response status. This will send the response to the client.
@@ -151,11 +159,10 @@ private:
 
 inline void Controller::afterAction()
 {
-	//default: render the view if one is set
-	if ( !_view.isNull() )
-	{
-		render();
-	}
+	// When no view is set yet, we assume JSON
+	if ( _view.isNull() ) setJSONView();
+
+	render();
 }
 
 
@@ -196,6 +203,11 @@ inline bool Controller::isGet() const
 	return _request->getMethod().compare("GET") == 0;
 }
 
+
+inline bool Controller::isJSON() const
+{
+	return true;
+}
 
 inline bool Controller::isPost() const
 {

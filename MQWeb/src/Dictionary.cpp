@@ -1,7 +1,7 @@
 /*
  * Copyright 2010 MQWeb - Franky Braem
  *
- * Licensed under the EUPL, Version 1.1 or  as soon they
+ * Licensed under the EUPL, Version 1.1 or - as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the
@@ -79,7 +79,7 @@ MQLONG Dictionary::getDisplayId(MQLONG id, const std::string& value) const
 	return -1;
 }
 
-void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json) const
+void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, bool alwaysCreate) const
 {
 	std::vector<MQLONG> parameters = pcf.getParameters();
 	for(std::vector<MQLONG>::iterator it = parameters.begin(); it != parameters.end(); ++it)
@@ -87,8 +87,17 @@ void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json) const
 		std::string name = getName(*it);
 		if ( name.empty() )
 		{
-			name = "id_" + Poco::NumberFormatter::format(*it);
+			if ( alwaysCreate )
+			{
+				name = "id_" + Poco::NumberFormatter::format(*it);
+			}
+			else
+			{
+				continue;
+			}
 		}
+
+		if ( json->has(name) ) continue; // Don't overwrite already added properties
 
 		Poco::JSON::Object::Ptr field = new Poco::JSON::Object();
 		json->set(name, field);
@@ -144,9 +153,20 @@ void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json) const
 				}
 			}
 		}
+		else if ( pcf.isStringList(*it) )
+		{
+			Poco::JSON::Array::Ptr jsonValues = new Poco::JSON::Array();
+			field->set("value", jsonValues);
+
+			std::vector<std::string> strings = pcf.getParameterStringList(*it);
+			for(std::vector<std::string>::iterator vit = strings.begin(); vit != strings.end(); ++vit)
+			{
+				jsonValues->add(*vit);
+			}
+		}
 		else
 		{
-			//TODO:
+			poco_assert_dbg(false);
 		}
 	}
 }

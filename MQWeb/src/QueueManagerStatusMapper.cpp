@@ -1,7 +1,7 @@
 /*
  * Copyright 2010 MQWeb - Franky Braem
  *
- * Licensed under the EUPL, Version 1.1 or  as soon they
+ * Licensed under the EUPL, Version 1.1 or - as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the
@@ -19,15 +19,13 @@
  * permissions and limitations under the Licence.
  */
 #include "MQ/Web/QueueManagerStatusMapper.h"
-#include "MQ/MQException.h"
-
-#include "Poco/JSON/Object.h"
 
 namespace MQ {
 namespace Web {
 
 
-QueueManagerStatusMapper::QueueManagerStatusMapper(CommandServer& commandServer) : MQMapper(commandServer, "QueueManagerStatus")
+QueueManagerStatusMapper::QueueManagerStatusMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
+: MQMapper(commandServer, "QueueManagerStatus", input)
 {
 }
 
@@ -36,57 +34,47 @@ QueueManagerStatusMapper::~QueueManagerStatusMapper()
 }
 
 
-void QueueManagerStatusMapper::change(const Poco::JSON::Object::Ptr&obj)
+void QueueManagerStatusMapper::change()
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void QueueManagerStatusMapper::create(const Poco::JSON::Object::Ptr& obj, bool replace)
+void QueueManagerStatusMapper::create(bool replace)
 {
   poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void QueueManagerStatusMapper::copy(const Poco::JSON::Object::Ptr& obj, bool replace)
+void QueueManagerStatusMapper::copy(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-Poco::JSON::Array::Ptr QueueManagerStatusMapper::inquire(const Poco::JSON::Object::Ptr& filter)
+Poco::JSON::Array::Ptr QueueManagerStatusMapper::inquire()
 {
-	Poco::JSON::Array::Ptr jsonQueueManagerStatuses = new Poco::JSON::Array();
+	createCommand(MQCMD_INQUIRE_Q_MGR_STATUS);
 
-	PCF::Ptr inquireQmgr = _commandServer.createCommand(MQCMD_INQUIRE_Q_MGR_STATUS);
+	// Optional parameters
+	addAttributeList(MQIACF_Q_MGR_STATUS_ATTRS, "QMStatusAttrs");
 
 	std::vector<Poco::SharedPtr<PCF> > commandResponse;
-	_commandServer.sendCommand(inquireQmgr, commandResponse);
+	execute(commandResponse);
 
-	if ( commandResponse.size() > 0 )
+	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
+	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
-		PCF::Vector::iterator it = commandResponse.begin();
-		if ( (*it)->getCompletionCode() != MQCC_OK )
-		{
-			if ( (*it)->getReasonCode() != MQRC_UNKNOWN_OBJECT_NAME )
-			{
-				throw MQException(_commandServer.qmgr().name(), "PCF", (*it)->getCompletionCode(), (*it)->getReasonCode());
-			}
-		}
+		if ( (*it)->isExtendedResponse() ) // Skip extended response
+			continue;
 
-		for(; it != commandResponse.end(); it++)
-		{
-			if ( (*it)->isExtendedResponse() ) // Skip extended response
-				continue;
+		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)
+			continue;
 
-			Poco::JSON::Object::Ptr jsonQmgr = new Poco::JSON::Object();
-			jsonQueueManagerStatuses->add(jsonQmgr);
-
-			dictionary()->mapToJSON(**it, jsonQmgr);
-		}
+		json->add(createJSON(**it));
 	}
 
-	return jsonQueueManagerStatuses;
+	return json;
 }
 
 }} //  Namespace MQ::Web

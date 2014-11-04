@@ -19,13 +19,12 @@
  * permissions and limitations under the Licence.
  */
 #include "MQ/Web/ListenerStatusMapper.h"
-#include "MQ/Web/Dictionary.h"
-#include "MQ/MQException.h"
 
 namespace MQ {
 namespace Web {
 
-ListenerStatusMapper::ListenerStatusMapper(CommandServer& commandServer) : MQMapper(commandServer, "ListenerStatus")
+ListenerStatusMapper::ListenerStatusMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input) 
+: MQMapper(commandServer, "ListenerStatus", input)
 {
 }
 
@@ -34,35 +33,42 @@ ListenerStatusMapper::~ListenerStatusMapper()
 }
 
 
-void ListenerStatusMapper::change(const Poco::JSON::Object::Ptr&obj)
+void ListenerStatusMapper::change()
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void ListenerStatusMapper::create(const Poco::JSON::Object::Ptr& obj, bool replace)
+void ListenerStatusMapper::create(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void ListenerStatusMapper::copy(const Poco::JSON::Object::Ptr& obj, bool replace)
+void ListenerStatusMapper::copy(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-Poco::JSON::Array::Ptr ListenerStatusMapper::inquire(const Poco::JSON::Object::Ptr& filter)
+Poco::JSON::Array::Ptr ListenerStatusMapper::inquire()
 {
-	poco_assert_dbg(!filter.isNull());
+	createCommand(MQCMD_INQUIRE_LISTENER_STATUS);
+	
+	// Required parameters
+	addParameter<std::string>(MQCACH_LISTENER_NAME, "ListenerName");
 
-	Poco::JSON::Array::Ptr statuses = new Poco::JSON::Array();
-
-	PCF::Ptr inquireListenerStatus = _commandServer.createCommand(MQCMD_INQUIRE_LISTENER_STATUS);
-	inquireListenerStatus->addParameter(MQCACH_LISTENER_NAME, filter->optValue<std::string>("name", "*"));
+	// Optional parameters
+	addIntegerFilter();
+	addAttributeList(MQIACF_LISTENER_STATUS_ATTRS, "ListenerStatusAttrs");
+	addStringFilter();
 
 	PCF::Vector commandResponse;
-	_commandServer.sendCommand(inquireListenerStatus, commandResponse);
+	execute(commandResponse);
+
+	bool excludeSystem = _input->optValue("ExcludeSystem", false);
+
+	Poco::JSON::Array::Ptr statuses = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
 		if ( (*it)->isExtendedResponse() ) // Skip extended response
@@ -71,10 +77,14 @@ Poco::JSON::Array::Ptr ListenerStatusMapper::inquire(const Poco::JSON::Object::P
 		if ( (*it)->getReasonCode() != MQRC_NONE )
 			continue;
 
-		Poco::JSON::Object::Ptr status = new Poco::JSON::Object();
-		statuses->add(status);
+		std::string listenerName = (*it)->getParameterString(MQCACH_LISTENER_NAME);
+		if ( excludeSystem
+			&& listenerName.compare(0, 7, "SYSTEM.") == 0 )
+		{
+			continue;
+		}
 
-		dictionary()->mapToJSON(**it, status);
+		statuses->add(createJSON(**it));
 	}
 
 	return statuses;

@@ -21,6 +21,7 @@
 #include <sstream>
 
 #include "MQ/Web/Controller.h"
+#include "MQ/Web/JSONPView.h"
 #include "MQ/MQSubsystem.h"
 
 #include "Poco/Util/Application.h"
@@ -28,7 +29,7 @@
 #include "Poco/StreamCopier.h"
 #include "Poco/URI.h"
 
-#include "Poco/JSON/TemplateCache.h"
+#include "Poco/JSON/Parser.h"
 
 namespace MQ
 {
@@ -79,7 +80,33 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 		}
 	}
 
-	_form.load(request, request.stream(), *this);
+	std::string contentType = request.getContentType();
+	if ( contentType == "application/json" )
+	{
+		Poco::JSON::Parser parser;
+		try
+		{
+			Poco::Dynamic::Var json = parser.parse(request.stream());
+			if ( ! json.isEmpty() && json.type() == typeid(Poco::JSON::Object::Ptr) )
+			{
+				_data->set("filter", json.extract<Poco::JSON::Object::Ptr>());
+			}
+		}
+		catch(Poco::JSON::JSONException& jsone)
+		{
+			// Make sure everything is read, otherwise this can result
+			// in Bad Request error in the next call.
+			Poco::NullOutputStream nos;
+			Poco::StreamCopier::copyStream(request.stream(), nos);
+
+			setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "JSON error occurred: " + jsone.displayText());
+			return;
+		}
+	}
+	else
+	{
+		_form.load(request, request.stream(), *this);
+	}
 
 	// Make sure everything is read, otherwise this can result
 	// in Bad Request error in the next call.
@@ -109,25 +136,12 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 }
 
 
-bool Controller::isJSON() const
+void Controller::setJSONView()
 {
-	bool result = false;
-
-	std::string accept;
-	try
-	{
-		accept = _request->get("Accept");
-		Poco::Net::MediaType mediaType(accept.substr(0, accept.find_first_of(',')));
-		result = mediaType.matches("application", "json");
-	}
-	catch(Poco::NotFoundException&)
-	{
-		// Ignore
-	}
-
-	return result;
+	if ( _form.has("callback") ) setView(new JSONPView(_form.get("callback")));
+	else if ( _form.has("jsonp") ) setView(new JSONPView(_form.get("jsonp")));
+	else setView(new JSONView());
 }
-
 
 void Controller::render()
 {
@@ -148,6 +162,15 @@ void Controller::render()
 	}
 }
 
+void Controller::formElementToJSONArray(const std::string& name, Poco::JSON::Array::Ptr arr)
+{
+	for(Poco::Net::NameValueCollection::ConstIterator it = form().find(name); 
+		it != form().end() && Poco::icompare(it->first, name) == 0;
+		++it)
+	{
+		arr->add(it->second);
+	}
+}
 
 std::string Controller::htmlize(const std::string &str)
 {

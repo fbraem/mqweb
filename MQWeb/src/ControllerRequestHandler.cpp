@@ -1,7 +1,7 @@
 /*
  * Copyright 2010 MQWeb - Franky Braem
  *
- * Licensed under the EUPL, Version 1.1 or  as soon they
+ * Licensed under the EUPL, Version 1.1 or - as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the
@@ -20,15 +20,22 @@
  */
 #include "MQ/Web/ControllerRequestHandler.h"
 #include "MQ/Web/WebController.h"
+#include "MQ/Web/AuthenticationInformationController.h"
+#include "MQ/Web/AuthorityRecordController.h"
+#include "MQ/Web/ChannelController.h"
+#include "MQ/Web/ChannelStatusController.h"
+#include "MQ/Web/ClusterQueueManagerController.h"
+#include "MQ/Web/ConnectionController.h"
+#include "MQ/Web/ListenerController.h"
+#include "MQ/Web/ListenerStatusController.h"
+#include "MQ/Web/MessageController.h"
+#include "MQ/Web/NamelistController.h"
+#include "MQ/Web/ProcessController.h"
 #include "MQ/Web/QueueController.h"
 #include "MQ/Web/QueueManagerController.h"
 #include "MQ/Web/QueueManagerStatusController.h"
-#include "MQ/Web/ChannelController.h"
-#include "MQ/Web/ChannelStatusController.h"
-#include "MQ/Web/MessageController.h"
-#include "MQ/Web/ListenerController.h"
-#include "MQ/Web/ListenerStatusController.h"
-#include "MQ/Web/ClusterQueueManagerController.h"
+#include "MQ/Web/QueueStatusController.h"
+#include "MQ/Web/ServiceController.h"
 
 #include "Poco/URI.h"
 
@@ -112,6 +119,13 @@ void ControllerRequestHandler::registerControllers()
 	_controllerFactory.registerClass<ListenerController>("listener");
 	_controllerFactory.registerClass<ListenerStatusController>("lsstatus");
 	_controllerFactory.registerClass<ClusterQueueManagerController>("clusqmgr");
+	_controllerFactory.registerClass<ConnectionController>("conn");
+	_controllerFactory.registerClass<NamelistController>("nl");
+	_controllerFactory.registerClass<ProcessController>("process");
+	_controllerFactory.registerClass<ServiceController>("service");
+	_controllerFactory.registerClass<QueueStatusController>("qstatus");
+	_controllerFactory.registerClass<AuthenticationInformationController>("authinfo");
+	_controllerFactory.registerClass<AuthorityRecordController>("authrec");
 }
 
 

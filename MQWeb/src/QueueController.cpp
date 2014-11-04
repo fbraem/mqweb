@@ -18,11 +18,8 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include "Poco/Net/HTMLForm.h"
-
 #include "MQ/Web/QueueController.h"
 #include "MQ/Web/QueueMapper.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -42,47 +39,148 @@ QueueController::~QueueController()
 
 void QueueController::inquire()
 {
-	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+	Poco::JSON::Object::Ptr pcfParameters;
 
-	std::vector<std::string> parameters = getParameters();
-	// First parameter is queuemanager
-	// Second parameter can be a queuename and will result in inquiring 
-	// only that queue and ignores all query parameters.
-	if ( parameters.size() > 1 )
+	if ( data().has("filter") && data().isObject("filter") )
 	{
-		filter->set("name", parameters[1]);
+		pcfParameters = data().getObject("filter");
 	}
 	else
 	{
-		// Handle query parameters
-		std::string queueNameField = form().get("queueName", "*");
-		if ( queueNameField.empty() )
-		{
-			queueNameField = "*";
-		}
-		filter->set("name", queueNameField);
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
 
-		std::string queueDepthField = form().get("queueDepth", "");
-		int queueDepth = 0;
-		if ( Poco::NumberParser::tryParse(queueDepthField, queueDepth) )
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a queuename. If this is passed, the
+		// query parameter QName or queueName is ignored.
+		if ( parameters.size() > 1 )
 		{
-			filter->set("qdepth", queueDepth);
+			pcfParameters->set("QName", parameters[1]);
+		}
+		else
+		{
+			// Handle query parameters
+			std::string queueName;
+			if ( form().has("QName") )
+			{
+				queueName = form().get("QName");
+			}
+			else if ( form().has("QueueName") )
+			{
+				queueName = form().get("QueueName");
+			}
+			else if ( form().has("name") )
+			{
+				queueName = form().get("name");
+			}
+
+			if ( queueName.empty() )
+			{
+				queueName = "*";
+			}
+			pcfParameters->set("QName", queueName);
 		}
 
-		if ( form().has("queueUsage") )
+		if ( form().has("ClusterInfo") )
 		{
-			filter->set("usage", form().get("queueUsage"));
+			std::string clusterInfo = form().get("ClusterInfo");
+			pcfParameters->set("ClusterInfo", Poco::icompare(clusterInfo, "true") == 0 ? "true" : "false");
 		}
 
-		filter->set("type", form().get("queueType", "All"));
-		filter->set("excludeSystem", form().get("excludeSystem", "false").compare("true") == 0);
-		filter->set("excludeTemp", form().get("excludeTemp", "false").compare("true") == 0);
+		if ( form().has("ClusterName") )
+		{
+			pcfParameters->set("ClusterName", form().get("ClusterName"));
+		}
+
+		if ( form().has("ClusterNameList") )
+		{
+			pcfParameters->set("ClusterNamelist", form().get("ClusterNamelist"));
+		}
+
+		if ( form().has("CommandScope") )
+		{
+			pcfParameters->set("CommandScope", form().get("CommandScope"));
+		}
+
+		if ( form().has("PageSetId") )
+		{
+			int pageSetId = 0;
+			if ( Poco::NumberParser::tryParse(form().get("PageSetId"), pageSetId) )
+			{
+				pcfParameters->set("PageSetId", pageSetId);
+			}
+		}
+
+		if ( form().has("QSGDisposition") )
+		{
+			pcfParameters->set("QSGDisposition", form().get("QSGDisposition"));
+		}
+
+		std::string queueDepthField;
+		if ( form().has("CurrentQDepth") )
+		{
+			queueDepthField = form().get("CurrentQDepth", "");
+		}
+		else if ( form().has("QueueDepth"))
+		{
+			queueDepthField = form().get("QueueDepth", "");
+		}
+		if ( !queueDepthField.empty() )
+		{
+			int queueDepth = 0;
+			if ( Poco::NumberParser::tryParse(queueDepthField, queueDepth) )
+			{
+				Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+				filter->set("Parameter", "CurrentQDepth");
+				filter->set("Operator", "NLT"); //Not Less##
+				filter->set("FilterValue", queueDepth);
+				pcfParameters->set("IntegerFilterCommand", filter);
+			}
+		}
+
+		handleFilterForm(pcfParameters);
+
+		if ( form().has("QueueUsage") )
+		{
+			pcfParameters->set("Usage", form().get("QueueUsage"));
+		}
+		else if ( form().has("Usage") )
+		{
+			pcfParameters->set("Usage", form().get("Usage"));
+		}
+
+		std::string queueType;
+		if ( form().has("QueueType") )
+		{
+			queueType = form().get("QueueType");
+		}
+		else
+		{
+			queueType = form().get("QType", "");
+		}
+		if ( !queueType.empty() )
+		{
+			pcfParameters->set("QType", queueType);
+		}
+
+		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
+		pcfParameters->set("ExcludeTemp", form().get("ExcludeTemp", "false").compare("true") == 0);
+
+		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+		formElementToJSONArray("QAttrs", attrs);
+		if ( attrs->size() == 0 ) // Nothing found for QAttrs, try Attrs
+		{
+			formElementToJSONArray("Attrs", attrs);
+		}
+		if ( attrs->size() > 0 )
+		{
+			pcfParameters->set("QAttrs", attrs);
+		}
 	}
 
-	QueueMapper mapper(*commandServer());
-	Poco::JSON::Array::Ptr queues = mapper.inquire(filter);
-	set("queues", queues);
-	setView(new JSONView());
+	QueueMapper mapper(*commandServer(), pcfParameters);
+	set("queues", mapper.inquire());
 }
 
 

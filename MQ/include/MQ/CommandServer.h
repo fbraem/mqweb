@@ -25,7 +25,6 @@
 #include <cmqc.h>
 #include <vector>
 
-#include "MQ/QueueManager.h"
 #include "MQ/Queue.h"
 #include "MQ/PCF.h"
 
@@ -33,12 +32,14 @@
 
 namespace MQ {
 
+class QueueManager;
+
 class CommandServer
 	/// Class for sending PCF commands to a queuemanager
 {
 public:
-	CommandServer(QueueManager::Ptr qmgr, const std::string& modelQueue);
-		/// Constructor.
+	std::string commandQName() const;
+		/// Returns the name of the command queue.
 
 	PCF::Ptr createCommand(MQLONG command) const;
 		/// Returns a shared pointer to a PCF object for the given command.
@@ -47,26 +48,33 @@ public:
 		/// Sends the command to the queuemanager. The response is returned
 		/// as a vector of PCF objects. Can throw a MQException.
 
-	const QueueManager& qmgr() const;
-		/// Returns the associated queuemanager
-
-
-	typedef Poco::SharedPtr<CommandServer> Ptr;
-
+	std::string replyQName() const;
+		/// Returns the name of the reply queue.
 
 private:
-	QueueManager::Ptr _qmgr;
+	CommandServer(QueueManager& qmgr, const std::string& modelQueue);
+		/// Constructor.
+
+	CommandServer(const CommandServer& copy);
+	CommandServer& operator = (const  CommandServer& copy);
+
+	QueueManager& _qmgr;
 
 	Queue _commandQ;
 
 	Queue _replyQ;
+
+	friend class QueueManager;
 };
 
-
-inline const QueueManager& CommandServer::qmgr() const
+inline std::string CommandServer::commandQName() const
 {
-	poco_assert_dbg(!_qmgr.isNull()); // Can't be null
-	return *_qmgr.get();
+	return _commandQ.name();
+}
+
+inline std::string CommandServer::replyQName() const
+{
+	return _replyQ.name();
 }
 
 } // namespace MQ

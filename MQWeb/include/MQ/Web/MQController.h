@@ -28,6 +28,7 @@
 #include "MQ/CommandServer.h"
 #include "MQ/MQException.h"
 #include "MQ/Web/Controller.h"
+#include "MQ/Web/QueueManagerPoolCache.h"
 
 namespace MQ {
 namespace Web {
@@ -46,7 +47,7 @@ public:
 	QueueManager::Ptr qmgr();
 		/// Returns the associated queuemanager
 
-	CommandServer::Ptr commandServer();
+	CommandServer* commandServer();
 		/// Returns the associated command server
 
 	void handleException(const MQException& mqe);
@@ -58,6 +59,10 @@ public:
 
 	void afterAction();
 		/// Stops the stopwatch and calls Controller::afterAction
+
+	void handleFilterForm(Poco::JSON::Object::Ptr pcfParameters);
+		/// Creates an IntegerFilterCommand or StringFilterCommand
+		/// when a filter is passed.
 
 	Poco::JSON::Object& mqwebData();
 		/// Returns the JSON object for storing MQWeb data.
@@ -73,10 +78,10 @@ protected:
 private:
 
 
-	QueueManager::Ptr _qmgr;
+	QueueManagerPoolGuard::Ptr _qmgrPoolGuard;
 
 
-	CommandServer::Ptr _commandServer;
+	CommandServer* _commandServer;
 
 
 	Poco::JSON::Object::Ptr _mqwebData;
@@ -88,11 +93,11 @@ private:
 
 inline QueueManager::Ptr MQController::qmgr()
 {
-	return _qmgr;
+	return _qmgrPoolGuard->getObject();
 }
 
 
-inline CommandServer::Ptr MQController::commandServer()
+inline CommandServer* MQController::commandServer()
 {
 	return _commandServer;
 }

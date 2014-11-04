@@ -29,6 +29,8 @@
 
 #include "Poco/JSON/TemplateCache.h"
 
+#include "MQ/Web/QueueManagerPoolCache.h"
+
 class MQWebApplication : public Poco::Util::ServerApplication
 	/// The MQWeb server application
 {
@@ -65,6 +67,12 @@ private:
 
 
 	Poco::JSON::TemplateCache _cache;
+		/// Only one TemplaceCache object is allowed. The best place to define it
+		/// is here.
+
+	MQ::Web::QueueManagerPoolCache _qmgrPoolCache;
+		/// Only one QueueManagerPoolCache object is allowed. The best place to
+		/// define it is here.
 };
 
 #endif //  _MQWeb_Application_H

@@ -1,7 +1,7 @@
 /*
  * Copyright 2010 MQWeb - Franky Braem
  *
- * Licensed under the EUPL, Version 1.1 or  as soon they
+ * Licensed under the EUPL, Version 1.1 or - as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the
@@ -19,15 +19,13 @@
  * permissions and limitations under the Licence.
  */
 #include "MQ/Web/QueueManagerMapper.h"
-#include "MQ/MQException.h"
-
-#include "Poco/JSON/Object.h"
 
 namespace MQ {
 namespace Web {
 
 
-QueueManagerMapper::QueueManagerMapper(CommandServer& commandServer) : MQMapper(commandServer, "QueueManager")
+QueueManagerMapper::QueueManagerMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
+: MQMapper(commandServer, "QueueManager", input)
 {
 }
 
@@ -36,45 +34,46 @@ QueueManagerMapper::~QueueManagerMapper()
 }
 
 
-void QueueManagerMapper::change(const Poco::JSON::Object::Ptr&obj)
+void QueueManagerMapper::change()
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void QueueManagerMapper::create(const Poco::JSON::Object::Ptr& obj, bool replace)
+void QueueManagerMapper::create(bool replace)
 {
   poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void QueueManagerMapper::copy(const Poco::JSON::Object::Ptr& obj, bool replace)
+void QueueManagerMapper::copy(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-Poco::JSON::Array::Ptr QueueManagerMapper::inquire(const Poco::JSON::Object::Ptr& filter)
+Poco::JSON::Array::Ptr QueueManagerMapper::inquire()
 {
-	Poco::JSON::Array::Ptr jsonQueueManagers = new Poco::JSON::Array();
+	createCommand(MQCMD_INQUIRE_Q_MGR);
 
-	PCF::Ptr inquireQmgr = _commandServer.createCommand(MQCMD_INQUIRE_Q_MGR);
+	// Optional parameters
+	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	addAttributeList(MQIACF_Q_MGR_ATTRS, "QMgrAttrs");
 
 	std::vector<Poco::SharedPtr<PCF> > commandResponse;
-	_commandServer.sendCommand(inquireQmgr, commandResponse);
+	execute(commandResponse);
+
+	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
 		if ( (*it)->isExtendedResponse() ) // Skip extended response
 			continue;
 
-		Poco::JSON::Object::Ptr jsonQmgr = new Poco::JSON::Object();
-		jsonQueueManagers->add(jsonQmgr);
-
-		dictionary()->mapToJSON(**it, jsonQmgr);
+		json->add(createJSON(**it));
 	}
 
-	return jsonQueueManagers;
+	return json;
 }
 
 }} //  Namespace MQ::Web

@@ -1,7 +1,7 @@
 /*
  * Copyright 2010 MQWeb - Franky Braem
  *
- * Licensed under the EUPL, Version 1.1 or  as soon they
+ * Licensed under the EUPL, Version 1.1 or - as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the
@@ -19,15 +19,13 @@
  * permissions and limitations under the Licence.
  */
 #include "MQ/Web/ChannelMapper.h"
-#include "MQ/MQException.h"
-
-#include "Poco/JSON/Object.h"
 
 namespace MQ {
 namespace Web {
 
 
-ChannelMapper::ChannelMapper(CommandServer& commandServer) : MQMapper(commandServer, "Channel")
+ChannelMapper::ChannelMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
+: MQMapper(commandServer, "Channel", input)
 {
 }
 
@@ -36,47 +34,46 @@ ChannelMapper::~ChannelMapper()
 }
 
 
-void ChannelMapper::change(const Poco::JSON::Object::Ptr&obj)
+void ChannelMapper::change()
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void ChannelMapper::create(const Poco::JSON::Object::Ptr& obj, bool replace)
+void ChannelMapper::create(bool replace)
 {
   poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void ChannelMapper::copy(const Poco::JSON::Object::Ptr& obj, bool replace)
+void ChannelMapper::copy(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-Poco::JSON::Array::Ptr ChannelMapper::inquire(const Poco::JSON::Object::Ptr& filter)
+Poco::JSON::Array::Ptr ChannelMapper::inquire()
 {
-	poco_assert_dbg(!filter.isNull());
+	createCommand(MQCMD_INQUIRE_CHANNEL);
 
-	Poco::JSON::Array::Ptr channels = new Poco::JSON::Array();
+	// Required Parameters
+	addParameter<std::string>(MQCACH_CHANNEL_NAME, "ChannelName");
 
-	PCF::Ptr inquireChl = _commandServer.createCommand(MQCMD_INQUIRE_CHANNEL);
-
-	inquireChl->addParameter(MQCACH_CHANNEL_NAME, filter->optValue<std::string>("name", "*"));
-
-	std::string channelType = filter->optValue<std::string>("type", "All");
-	MQLONG channelTypeValue = dictionary()->getDisplayId(MQIACH_CHANNEL_TYPE, channelType);
-	poco_assert_dbg(channelTypeValue != -1);
-	if ( channelTypeValue == - 1 )
-	{
-		return channels;
-	}
-	inquireChl->addParameter(MQIACH_CHANNEL_TYPE, channelTypeValue);
+	// Optional Parameters
+	addParameterNumFromString(MQIACH_CHANNEL_TYPE, "ChannelType");
+	addAttributeList(MQIACF_CHANNEL_ATTRS, "ChannelAttrs");
+	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	addParameterNumFromString(MQIACH_CHANNEL_DISP, "DefaultChannelDisposition");
+	addIntegerFilter();
+	addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
+	addStringFilter();
 
 	PCF::Vector commandResponse;
-	_commandServer.sendCommand(inquireChl, commandResponse);
+	execute(commandResponse);
 
-	bool excludeSystem = filter->optValue("excludeSystem", false);
+	bool excludeSystem = _input->optValue("ExcludeSystem", false);
+
+	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
@@ -93,13 +90,10 @@ Poco::JSON::Array::Ptr ChannelMapper::inquire(const Poco::JSON::Object::Ptr& fil
 			continue;
 		}
 
-		Poco::JSON::Object::Ptr channel = new Poco::JSON::Object();
-		channels->add(channel);
-
-		dictionary()->mapToJSON(**it, channel);
+		json->add(createJSON(**it));
 	}
 
-	return channels;
+	return json;
 }
 
 }} //  Namespace MQ::Web

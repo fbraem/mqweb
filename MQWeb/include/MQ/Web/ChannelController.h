@@ -51,12 +51,12 @@ public:
 		///   Possible values: 
 		///  excludeSystem: When 'true', don't return system channels
 		///
-		/// Query parameters are ignored when a queueName is passed in the URI path.
+		/// Query parameters are ignored when a channelName is passed in the URI path.
 		///
 		/// The returned JSON object can contain following properties:
 		///  mqweb : An object with information about the MQWeb application and request.
-		///  queues : An array with all matching queues. This is always an array (even when a queuename is passed in the URI path).
-		///   When an MQ error occurs there will be no queues property.
+		///  queues : An array with all matching channels. This is always an array (even when a channelname is passed in the URI path).
+		///   When an MQ error occurs there will be no channels property.
 		///  error: An object describing the MQ error (only returned on error).
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;

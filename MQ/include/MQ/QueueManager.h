@@ -29,7 +29,9 @@
 #include "Poco/SharedPtr.h"
 #include "Poco/DateTime.h"
 
-#include "Poco/Util/ConfigurationView.h"
+#include "Poco/Dynamic/Struct.h"
+
+#include "MQ/CommandServer.h"
 
 namespace MQ {
 
@@ -39,12 +41,15 @@ class QueueManager
 public:
 	typedef Poco::SharedPtr<QueueManager> Ptr;
 
-
 	QueueManager(const std::string& name = "");
 		/// Constructor.
 
 	virtual ~QueueManager();
 		/// Destructor. Disconnects the queuemanager when it is still connected.
+
+	CommandServer* commandServer();
+		/// Returns the command server for this queuemanager. A command server
+		/// must be created first with createCommandServer.
 
 	void connect();
 		/// Connects to the queuemanager. Can throw an MQException.
@@ -53,7 +58,7 @@ public:
 		/// Connects to the queuemanager. Only use this method when the Websphere
 		/// MQ system is loaded in client mode. Can throw an MQException.
 
-	void connect(const std::string& channel, const std::string& server, const Poco::Util::AbstractConfiguration& ssl);
+	void connect(const std::string& channel, const std::string& server, const Poco::DynamicStruct& ssl);
 		/// Connects to the queuemanager using a channel that is protected with SSL.
 		/// The configuration for SSL is based on the following properties: keyrepos (required),
 		/// cipherspec, fips, suiteb and certificate_validation_policy (only when
@@ -61,8 +66,23 @@ public:
 		/// Only use this method when MQ system is loaded in client mode. Can
 		/// throw an MQException.
 
+	void connect(const Poco::DynamicStruct& connectionInformation);
+		/// Connect using the information stored in the Poco::Dynamic::Struct object
+		/// Can throw an MQException
+
+	bool connected() const;
+		/// Returns true when the queuemanager is connected.
+
+	CommandServer* createCommandServer(const std::string& replyQ);
+		/// Create a command server. Once created, you can use commandServer to 
+		/// get the associated command server. Can throw an MQException. The
+		/// QueueManager instance is responsible for the CommandServer object
+		/// and will destroy it when the queuemanager is disconnected.
+
 	void disconnect();
 		/// Disconnects from the queuemanager. Can throw an MQException.
+		/// When a CommandServer object is owned by this queuemanager, it will
+		/// be destroyed.
 
 	std::string name() const;
 		/// Returns the name of the queuemanager. The name is always inquired
@@ -84,6 +104,8 @@ private:
 
 	MQHCONN _handle;
 
+	MQHCONN handle() const;
+
 	std::string _name;
 
 	std::string _id;
@@ -91,6 +113,8 @@ private:
 	std::string _commandQueue;
 
 	MQLONG _applicationType;
+
+	CommandServer* _commandServer;
 
 	void inquireQmgrAttrs();
 
@@ -115,9 +139,30 @@ inline std::string QueueManager::commandQueue() const
 	return _commandQueue;
 }
 
+inline bool QueueManager::connected() const
+{
+	return _handle != 0L;
+}
+
+inline MQHCONN QueueManager::handle() const
+{
+	return _handle;
+}
+
 inline bool QueueManager::zos() const
 {
 	return _applicationType == MQPL_ZOS;
+}
+
+inline CommandServer* QueueManager::commandServer()
+{
+	return _commandServer;
+}
+
+inline CommandServer* QueueManager::createCommandServer(const std::string& replyQ)
+{
+	_commandServer = new CommandServer(*this, replyQ);
+	return _commandServer;
 }
 
 } // Namespace MQ

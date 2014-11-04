@@ -49,7 +49,21 @@ class MQWebTest(unittest.TestCase):
 			conn.request('GET', url, "", MQWebTest.headers)
 			res = conn.getresponse()
 			data = json.loads(res.read())
-		except:
+		except httplib.HTTPException as e:
+			print 'Exception Caught: ' + e.errno + e.strerror
+			self.assertFalse(True, "Can't connect to MQWeb: " + self.mqWebHost + ":" + self.mqWebPort + ' (qmgr: ' + self.qmgr + ')')
+
+		return data
+		
+	def appJSON(self, url, filter):
+		print 'Trying to connect to ' + url
+		try:
+			conn = httplib.HTTPConnection(self.mqWebHost, self.mqWebPort)
+			conn.request('POST', url, json.dumps(filter), MQWebTest.headers)
+			res = conn.getresponse()
+			data = json.loads(res.read())
+		except httplib.HTTPException as e:
+			print 'Exception Caught: ' + e.errno + e.strerror
 			self.assertFalse(True, "Can't connect to MQWeb: " + self.mqWebHost + ":" + self.mqWebPort + ' (qmgr: ' + self.qmgr + ')')
 
 		return data

@@ -18,10 +18,8 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#include "MQ/Web/MQController.h"
 #include "MQ/Web/ClusterQueueManagerController.h"
 #include "MQ/Web/ClusterQueueManagerMapper.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -41,29 +39,72 @@ ClusterQueueManagerController::~ClusterQueueManagerController()
 
 void ClusterQueueManagerController::inquire()
 {
-	Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+	Poco::JSON::Object::Ptr pcfParameters;
 
-	std::vector<std::string> parameters = getParameters();
-	// First parameter is queuemanager
-	// Second parameter is a clustername
-	if ( parameters.size() > 1 )
+	if ( data().has("filter") && data().isObject("filter") )
 	{
-		filter->set("clusterName", parameters[1]);
+		pcfParameters = data().getObject("filter");
 	}
 	else
 	{
-		std::string clusterNameField = form().get("clusterName", "*");
-		filter->set("clusterName", clusterNameField.empty() ? "*" : clusterNameField);
-		std::string clusterQmgrNameField = form().get("clusterQmgrName", "*");
-		filter->set("clusterQmgrName", clusterQmgrNameField.empty() ? "*" : clusterQmgrNameField);
-		std::string channelNameField = form().get("channelName", "*");
-		filter->set("channelName", channelNameField.empty() ? "*" : channelNameField);
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter is a clustername
+		// Third parameter is a cluster queuemanager
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("ClusterName", parameters[1]);
+		}
+		else
+		{
+			std::string clusterNameField;
+			if ( form().has("ClusterName") )
+			{
+				clusterNameField = form().get("ClusterName");
+			}
+			else if ( form().has("name") )
+			{
+				clusterNameField = form().get("name");
+			}
+			if ( !clusterNameField.empty() )
+			{
+				pcfParameters->set("ClusterName", clusterNameField);
+			}
+		}
+
+		if ( parameters.size() > 2 )
+		{
+			pcfParameters->set("ClusterQMgrName", parameters[2]);
+		}
+		else
+		{
+			std::string clusterQmgrNameField = form().get("ClusterQMgrName", "*");
+			pcfParameters->set("ClusterQMgrName", clusterQmgrNameField.empty() ? "*" : clusterQmgrNameField);
+		}
+
+		if ( form().has("ChannelName") ) pcfParameters->set("ChannelName", form().get("ChannelName"));
+
+		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+		formElementToJSONArray("ClusterQMgrAttrs", attrs);
+		if ( attrs->size() == 0 ) // Nothing found for ClusterQMgrAttrs, try Attrs
+		{
+			formElementToJSONArray("Attrs", attrs);
+		}
+		if ( attrs->size() > 0 )
+		{
+			pcfParameters->set("ClusterQMgrAttrs", attrs);
+		}
+
+		if ( form().has("CommandScope") ) pcfParameters->set("CommandScope", form().get("CommandScope"));
+
+		handleFilterForm(pcfParameters);
 	}
 
-	ClusterQueueManagerMapper mapper(*commandServer());
-	Poco::JSON::Array::Ptr clusqmgrs = mapper.inquire(filter);
-	set("clusqmgrs", clusqmgrs);
-	setView(new JSONView());
+	ClusterQueueManagerMapper mapper(*commandServer(), pcfParameters);
+	set("clusqmgrs", mapper.inquire());
 }
 
 

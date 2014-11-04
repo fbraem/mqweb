@@ -19,6 +19,7 @@
  * permissions and limitations under the Licence.
  */
 #include "Poco/Util/Application.h"
+#include "Poco/Dynamic/Struct.h"
 #include "Poco/JSON/Object.h"
 
 #include "MQ/MQSubsystem.h"
@@ -33,7 +34,7 @@ namespace MQ {
 namespace Web {
 
 
-MQController::MQController() : Controller(), _mqwebData(new Poco::JSON::Object())
+MQController::MQController() : Controller(), _mqwebData(new Poco::JSON::Object()), _commandServer(NULL)
 {
 	set("mqweb", _mqwebData);
 }
@@ -55,97 +56,68 @@ void MQController::beforeAction()
 	MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQSubsystem>();
 	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
 
-	const std::vector<std::string>& parameters = getParameters();
-
 	_mqwebData->set("client", mqSystem.client());
 
+	std::string qmgrName;
 	if ( config.hasProperty("mq.web.qmgr") )
 	{
 		// When a queuemanager is passed on the command line, we always
 		// connect to this queuemanager. When the user specified another
 		// queuemanager on the URL, it will be ignored.
-		_qmgr = new QueueManager(config.getString("mq.web.qmgr"));
+		qmgrName = config.getString("mq.web.qmgr");
 	}
 	else
 	{
+		const std::vector<std::string>& parameters = getParameters();
 		if ( parameters.size() > 0 )
 		{
-			_qmgr = new QueueManager(parameters[0]);
+			qmgrName = parameters[0];
+		}
+		else if ( mqSystem.client() )
+		{
+			qmgrName = config.getString("mq.web.defaultQmgr", "*");
+		}
+	}
+
+	Poco::SharedPtr<QueueManagerPool> qmgrPool = QueueManagerPoolCache::instance()->getQueueManagerPool(qmgrName);
+	if ( qmgrPool.isNull() )
+	{
+		//TODO: out of memory ???
+	}
+
+	QueueManager::Ptr qmgr = qmgrPool->borrowObject();
+	if ( qmgr.isNull() )
+	{
+		//TODO: out of memory???
+	}
+	_qmgrPoolGuard = new QueueManagerPoolGuard(qmgrPool, qmgr);
+
+	_mqwebData->set("qmgr", qmgr->name());
+	_mqwebData->set("zos", qmgr->zos());
+	_mqwebData->set("qmgrId", qmgr->id());
+
+	_commandServer = qmgr->commandServer();
+	if ( _commandServer == NULL )
+	{
+		std::string qmgrConfigReplyQ = "mq.web.qmgr." + qmgrName + ".reply";
+
+		std::string replyQ;
+		if ( config.has(qmgrConfigReplyQ) )
+		{
+			replyQ = config.getString(qmgrConfigReplyQ);
 		}
 		else
 		{
-			if ( mqSystem.client() )
-			{
-				_qmgr = new QueueManager(config.getString("mq.web.defaultQmgr", "*"));
-			}
-			else // In bindings mode we can connect to the default queuemanager
-			{
-				_qmgr = new QueueManager();
-			}
+			replyQ = config.getString("mq.web.reply", "SYSTEM.DEFAULT.MODEL.QUEUE");
 		}
+		_commandServer = qmgr->createCommandServer(replyQ);
 	}
 
-	if ( mqSystem.binding() )
+	if ( _commandServer != NULL )
 	{
-		_qmgr->connect();
+		_mqwebData->set("replyq", _commandServer->replyQName());
+		_mqwebData->set("cmdq", _commandServer->commandQName());
 	}
-	else
-	{
-		// In client mode we check for a configuration
-		// When this is not available, we hope that a channel tab file
-		// is configured.
-		std::string qmgrConfig = "mq.web.qmgr." + _qmgr->name();
-		std::string qmgrConfigConnection = qmgrConfig + ".connection";
-		if ( config.has(qmgrConfigConnection) )
-		{
-			std::string connection;
-			std::string channel;
-			connection = config.getString(qmgrConfigConnection);
-			std::string qmgrConfigChannel = qmgrConfig + ".channel";
-			if ( config.has(qmgrConfigChannel) )
-			{
-				channel = config.getString(qmgrConfigChannel);
-			}
-			else
-			{
-				channel = config.getString("mq.web.defaultChannel", "SYSTEM.DEF.SVRCONN");
-			}
-			if ( config.has("mq.web.ssl.keyrepos") )
-			{
-				Poco::AutoPtr<Poco::Util::AbstractConfiguration> sslConfig = config.createView("mq.web.ssl");
-				_qmgr->connect(channel, connection, *sslConfig.get());
-			}
-			else
-			{
-				_qmgr->connect(channel, connection);
-			}
-		}
-		else // Hope that there is a channel tab file available
-		{
-			_qmgr->connect();
-		}
-	}
-
-	_mqwebData->set("qmgr", _qmgr->name());
-	_mqwebData->set("zos", _qmgr->zos());
-	_mqwebData->set("qmgrId", _qmgr->id());
-
-	std::string qmgrConfig = "mq.web.qmgr." + _qmgr->name();
-	std::string qmgrConfigModel = qmgrConfig + ".reply";
-	
-	std::string modelQ;
-	if ( config.has(qmgrConfigModel) )
-	{
-		modelQ = config.getString(qmgrConfigModel);
-	}
-	else
-	{
-		modelQ = config.getString("mq.web.reply", "SYSTEM.DEFAULT.MODEL.QUEUE");
-	}
-	_mqwebData->set("replyq", modelQ);
-	_mqwebData->set("cmdq", _qmgr->commandQueue());
-
-	_commandServer = new CommandServer(_qmgr, modelQ);
 }
 
 
@@ -170,13 +142,12 @@ void MQController::handleException(const MQException& mqe)
 
 	if ( isJSON() )
 	{
-		setView(new JSONView());
+		setJSONView();
 	}
 	else
 	{
 		setView(new TemplateView("error.tpl"));
 	}
-
 }
 
 
@@ -204,7 +175,7 @@ void MQController::handle(const std::vector<std::string>& parameters, Poco::Net:
 	catch(MQException& mqe)
 	{
 		handleException(mqe);
-		render();
+		afterAction();
 	}
 	catch(...)
 	{
@@ -212,5 +183,25 @@ void MQController::handle(const std::vector<std::string>& parameters, Poco::Net:
 	}
 }
 
+void MQController::handleFilterForm(Poco::JSON::Object::Ptr pcfParameters)
+{
+	if ( form().has("Filter") && form().has("FilterParam") && form().has("FilterValue") )
+	{
+		Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+		filter->set("Parameter", form().get("FilterParam"));
+		filter->set("Operator", form().get("FilterOp", "EQ"));
+		filter->set("FilterValue", form().get("FilterVlue"));
+
+		std::string filterType = form().get("Filter");
+		if ( Poco::icompare(filterType, "I") == 0 )
+		{
+			pcfParameters->set("IntegerFilterCommand", filter);
+		}
+		else if ( Poco::icompare(filterType, "S") == 0 )
+		{
+			pcfParameters->set("StringFilterCommand", filter);
+		}
+	}
+}
 
 }} // namespace MQ::Web

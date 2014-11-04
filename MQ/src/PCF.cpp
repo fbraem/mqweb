@@ -91,6 +91,7 @@ std::string PCF::getParameterString(MQLONG parameter) const
 	{
 		MQCFST* pcfParam = (MQCFST*) &buffer()[it->second];
 		std::string result(pcfParam->String, pcfParam->StringLength);
+		if ( result[0] == '\0' ) result.resize(0);
 		return Poco::trimRightInPlace(result);
 	}
 	else if ( *pcfType == MQCFT_BYTE_STRING )
@@ -256,11 +257,24 @@ void PCF::addParameter(MQLONG parameter, MQLONG value)
 	header->ParameterCount++;
 }
 
-
-void PCF::addParameterList(MQLONG parameter, MQLONG *values)
+void PCF::addParameter(MQLONG parameter, BufferPtr value)
 {
-	int count = (sizeof values / sizeof values[0]);
-	int strucLength = MQCFIL_STRUC_LENGTH_FIXED + count * 4;
+	MQLONG structLength = ((MQCFST_STRUC_LENGTH_FIXED + value->sizeBytes()) / 4 + 1) * 4;
+	_pointers[parameter] = buffer().size();
+	buffer().resize(buffer().size() + structLength);
+	MQCFBS* pcfParam = (MQCFBS*) &buffer()[_pointers[parameter]];
+	pcfParam->Type           = MQCFT_BYTE_STRING;
+	pcfParam->StrucLength    = structLength;
+	pcfParam->Parameter      = parameter;
+	pcfParam->StringLength   = value->sizeBytes();
+	memcpy(pcfParam->String, value->begin(), pcfParam->StringLength);
+	MQCFH* header = (MQCFH*) (MQBYTE*) &buffer()[0];
+	header->ParameterCount++;
+}
+
+void PCF::addParameterList(MQLONG parameter, MQLONG *values, unsigned int count)
+{
+	int strucLength = MQCFIL_STRUC_LENGTH_FIXED + count * sizeof(MQLONG);
 	_pointers[parameter] = buffer().size();
 	buffer().resize(buffer().size() + strucLength);
 	MQCFIL *pcfIntegerList = (MQCFIL *) &buffer()[_pointers[parameter]];
@@ -268,7 +282,7 @@ void PCF::addParameterList(MQLONG parameter, MQLONG *values)
 	pcfIntegerList->Type        = MQCFT_INTEGER_LIST;
 	pcfIntegerList->StrucLength = strucLength;
 	pcfIntegerList->Parameter   = parameter;
-	pcfIntegerList->Values[0]   = *values;
+	for(int i = 0; i < count; ++i) pcfIntegerList->Values[i] = values[i];
 	MQCFH* header = (MQCFH*) (MQBYTE*) &buffer()[0];
 	header->ParameterCount++;
 }

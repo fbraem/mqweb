@@ -41,6 +41,8 @@ public:
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions
 
+	bool isJSON() const;
+
 	void qmgr();
 
 	void queue();
@@ -70,6 +72,11 @@ inline const Controller::ActionMap& WebController::getActions() const
 			("message", static_cast<ActionFn>(&WebController::message))
 		;
 	return actions;
+}
+
+inline bool WebController::isJSON() const
+{
+	return false;
 }
 
 } } // Namespace MQ::Web

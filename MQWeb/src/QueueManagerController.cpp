@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/QueueManagerController.h"
 #include "MQ/Web/QueueManagerMapper.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -40,15 +39,39 @@ QueueManagerController::~QueueManagerController()
 
 void QueueManagerController::inquire()
 {
-	QueueManagerMapper queueManagerMapper(*commandServer());
+	Poco::JSON::Object::Ptr pcfParameters;
 
-	Poco::JSON::Object::Ptr dummyFilter = new Poco::JSON::Object();
-	Poco::JSON::Array::Ptr jsonQueueManagers = queueManagerMapper.inquire(dummyFilter);
-
-	if ( jsonQueueManagers->size() > 0 )
+	if ( data().has("filter") && data().isObject("filter") )
 	{
-		set("qmgr", jsonQueueManagers->get(0));
-		setView(new JSONView());
+		pcfParameters = data().getObject("filter");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
+
+		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+		formElementToJSONArray("QMgrAttrs", attrs);
+		if ( attrs->size() == 0 ) // Nothing found for QMgrAttrs, try Attrs
+		{
+			formElementToJSONArray("Attrs", attrs);
+		}
+		if ( attrs->size() > 0 )
+		{
+			pcfParameters->set("QMgrAttrs", attrs);
+		}
+
+		if ( form().has("CommandScope") )
+		{
+			pcfParameters->set("CommandScope", form().get("CommandScope"));
+		}
+	}
+
+	QueueManagerMapper mapper(*commandServer(), pcfParameters);
+	Poco::JSON::Array::Ptr json = mapper.inquire();
+	if ( json->size() > 0 )
+	{
+		set("qmgr", json->get(0));
 	}
 }
 

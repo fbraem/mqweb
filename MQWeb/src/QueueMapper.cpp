@@ -19,13 +19,12 @@
  * permissions and limitations under the Licence.
  */
 #include "MQ/Web/QueueMapper.h"
-#include "MQ/Web/Dictionary.h"
-#include "MQ/MQException.h"
 
 namespace MQ {
 namespace Web {
 
-QueueMapper::QueueMapper(CommandServer& commandServer) : MQMapper(commandServer, "Queue")
+QueueMapper::QueueMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
+: MQMapper(commandServer, "Queue", input)
 {
 }
 
@@ -34,66 +33,78 @@ QueueMapper::~QueueMapper()
 }
 
 
-void QueueMapper::change(const Poco::JSON::Object::Ptr&obj)
+void QueueMapper::change()
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void QueueMapper::create(const Poco::JSON::Object::Ptr& obj, bool replace)
+void QueueMapper::create(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-void QueueMapper::copy(const Poco::JSON::Object::Ptr& obj, bool replace)
+void QueueMapper::copy(bool replace)
 {
 	poco_assert_dbg(false); // Not yet implemented
 }
 
 
-Poco::JSON::Array::Ptr QueueMapper::inquire(const Poco::JSON::Object::Ptr& filter)
+Poco::JSON::Array::Ptr QueueMapper::inquire()
 {
-	poco_assert_dbg(!filter.isNull());
+	createCommand(MQCMD_INQUIRE_Q);
 
-	Poco::JSON::Array::Ptr jsonQueues = new Poco::JSON::Array();
+	// Required Parameters
+	addParameter<std::string>(MQCA_Q_NAME, "QName");
 
-	PCF::Ptr inquireQ = _commandServer.createCommand(MQCMD_INQUIRE_Q);
-	inquireQ->addParameter(MQCA_Q_NAME, filter->optValue<std::string>("name", "*"));
-	if ( filter->has("qdepth") )
+	// Optional Parameters
+	addParameter<std::string>(MQCA_CF_STRUC_NAME, "CFStructure");
+
+	Poco::Dynamic::Var clusterInfo = _input->get("ClusterInfo");
+	if (! clusterInfo.isEmpty() )
 	{
-		inquireQ->addFilter(MQIA_CURRENT_Q_DEPTH, MQCFOP_NOT_LESS, filter->getValue<int>("qdepth"));
+		try
+		{
+			pcf()->addParameter(MQIACF_CLUSTER_INFO, clusterInfo.convert<bool>() == true);
+		}
+		catch(...)
+		{
+			poco_assert_dbg(false);
+		}
 	}
+	addParameter<std::string>(MQCA_CLUSTER_NAME, "ClusterName");
+	addParameter<std::string>(MQCA_CLUSTER_NAMELIST, "ClusterNamelist");
+	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	addIntegerFilter();
+	addParameter<MQLONG>(MQIA_PAGESET_ID, "PageSetId");
+	addStringFilter();
+	addParameterNumFromString(MQIA_Q_TYPE, "QType");
+	addAttributeList(MQIACF_Q_ATTRS, "QAttrs");
+	addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
 
 	MQLONG usage = -1;
-	if ( filter->has("usage") )
+	if ( _input->has("Usage") )
 	{
-		std::string usageValue = filter->optValue<std::string>("usage", "");
-		if ( usageValue.compare("xmitq") == 0 )
+		std::string usageValue = _input->optValue<std::string>("Usage", "");
+		if (   Poco::icompare(usageValue, "Transmission") == 0
+			|| Poco::icompare(usageValue, "XmitQ") == 0 )
 		{
 			usage = MQUS_TRANSMISSION;
 		}
-		else if ( usageValue.compare("normal") == 0 )
+		else if ( Poco::icompare(usageValue, "Normal") == 0 )
 		{
 			usage = MQUS_NORMAL;
 		}
 	}
 
-	std::string queueType = filter->optValue<std::string>("type", "All");
-	MQLONG queueTypeValue = dictionary()->getDisplayId(MQIA_Q_TYPE, queueType);
-	poco_assert_dbg(queueTypeValue != -1);
-	if ( queueTypeValue == - 1 )
-	{
-		return jsonQueues;
-	}
-	inquireQ->addParameter(MQIA_Q_TYPE, queueTypeValue);
-
 	PCF::Vector commandResponse;
-	_commandServer.sendCommand(inquireQ, commandResponse);
+	execute(commandResponse);
 
-	bool excludeSystem = filter->optValue("excludeSystem", false);
-	bool excludeTemp = filter->optValue("excludeTemp", false);
+	bool excludeSystem = _input->optValue("ExcludeSystem", false);
+	bool excludeTemp = _input->optValue("ExcludeTemp", false);
 
+	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
 		if ( (*it)->isExtendedResponse() ) // Skip extended response
@@ -125,13 +136,10 @@ Poco::JSON::Array::Ptr QueueMapper::inquire(const Poco::JSON::Object::Ptr& filte
 			continue;
 		}
 
-		Poco::JSON::Object::Ptr jsonQueue = new Poco::JSON::Object();
-		jsonQueues->add(jsonQueue);
-
-		dictionary()->mapToJSON(**it, jsonQueue);
+		json->add(createJSON(**it));
 	}
 
-	return jsonQueues;
+	return json;
 }
 
 }} //  Namespace MQ::Web

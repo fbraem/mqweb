@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/QueueManagerStatusController.h"
 #include "MQ/Web/QueueManagerStatusMapper.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {
@@ -47,15 +46,35 @@ void QueueManagerStatusController::inquire()
 		return;
 	}
 
-	QueueManagerStatusMapper queueManagerStatusMapper(*commandServer());
+	Poco::JSON::Object::Ptr pcfParameters;
 
-	Poco::JSON::Object::Ptr dummyFilter = new Poco::JSON::Object();
-	Poco::JSON::Array::Ptr jsonQueueManagers = queueManagerStatusMapper.inquire(dummyFilter);
-
-	if ( jsonQueueManagers->size() > 0 )
+	if ( data().has("filter") && data().isObject("filter") )
 	{
-		set("status", jsonQueueManagers->get(0));
-		setView(new JSONView());
+		pcfParameters = data().getObject("filter");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
+
+		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+		formElementToJSONArray("QMStatusAttrs", attrs);
+		if ( attrs->size() == 0 ) // Nothing found for QMStatusAttrs, try Attrs
+		{
+			formElementToJSONArray("Attrs", attrs);
+		}
+		if ( attrs->size() > 0 )
+		{
+			pcfParameters->set("QMStatusAttrs", attrs);
+		}
+	}
+
+	QueueManagerStatusMapper mapper(*commandServer(), pcfParameters);
+	Poco::JSON::Array::Ptr json = mapper.inquire();
+
+	if ( json->size() > 0 )
+	{
+		set("status", json->get(0));
 	}
 }
 

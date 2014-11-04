@@ -33,7 +33,8 @@ namespace MQ
 QueueManager::QueueManager(const std::string& name)
 :	 _handle(0),
 	_name(name),
-	_applicationType(0)
+	_applicationType(0),
+	_commandServer(NULL)
 {
 }
 
@@ -58,7 +59,7 @@ void QueueManager::connect()
 {
 	MQCNO cno = { MQCNO_DEFAULT };
 	cno.Version = MQCNO_VERSION_2;
-	cno.Options = MQCNO_HANDLE_SHARE_NONE;
+	cno.Options = MQCNO_HANDLE_SHARE_BLOCK;
 
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
 	_handle = mqSystem.functions().connx(_name, &cno);
@@ -70,7 +71,7 @@ void QueueManager::connect(const std::string& channel, const std::string& server
 {
 	MQCNO cno = { MQCNO_DEFAULT };
 	cno.Version = MQCNO_VERSION_2;
-	cno.Options = MQCNO_HANDLE_SHARE_NONE;
+	cno.Options = MQCNO_HANDLE_SHARE_BLOCK;
 
 	MQCD cd = { MQCD_CLIENT_CONN_DEFAULT };
 	strncpy(cd.ChannelName, channel.c_str(), MQ_CHANNEL_NAME_LENGTH);
@@ -85,7 +86,32 @@ void QueueManager::connect(const std::string& channel, const std::string& server
 }
 
 
-void QueueManager::connect(const std::string& channel, const std::string& server, const Poco::Util::AbstractConfiguration& ssl)
+void QueueManager::connect(const Poco::DynamicStruct& connectionInformation)
+{
+	if ( connectionInformation.contains("ssl") )
+	{
+		Poco::Dynamic::Var ssl  = connectionInformation["ssl"];
+		if ( ssl.isStruct() )
+		{
+			connect(connectionInformation["channel"],
+				connectionInformation["connection"],
+				ssl.extract<Poco::Dynamic::Struct<std::string> >());
+		}
+	}
+	else
+	{
+		if ( connectionInformation.contains("channel") && connectionInformation.contains("connection") )
+		{
+			connect(connectionInformation["channel"], connectionInformation["connection"]);
+		}
+		else
+		{
+			connect();
+		}
+	}
+}
+
+void QueueManager::connect(const std::string& channel, const std::string& server, const Poco::DynamicStruct& ssl)
 {
 	MQCNO cno = { MQCNO_DEFAULT };
 
@@ -94,32 +120,37 @@ void QueueManager::connect(const std::string& channel, const std::string& server
 	connection pointer and SSL configuration options are used 
 	*/
 	cno.Version = MQCNO_VERSION_4;
-	cno.Options = MQCNO_HANDLE_SHARE_NONE;
+	cno.Options = MQCNO_HANDLE_SHARE_BLOCK;
 
 	MQCD cd = { MQCD_CLIENT_CONN_DEFAULT };
 	strncpy(cd.ChannelName, channel.c_str(), MQ_CHANNEL_NAME_LENGTH);
 	strncpy(cd.ConnectionName, server.c_str(), MQ_CONN_NAME_LENGTH);
-	
-	if ( ssl.has("cipherspec") )
+
+	if ( ssl.contains("cipherspec") )
 	{
-		strncpy(cd.SSLCipherSpec, ssl.getString("cipherspec").c_str(), MQ_SSL_CIPHER_SPEC_LENGTH);
+		strncpy(cd.SSLCipherSpec, ssl["cipherspec"].toString().c_str(), MQ_SSL_CIPHER_SPEC_LENGTH);
 		cd.Version = MQCD_VERSION_7; // SSL requires MQCD version 7 or later
 	}
+
 	cd.TransportType = MQXPT_TCP;
 	cno.ClientConnPtr = &cd;
 
 	MQSCO sco = { MQSCO_DEFAULT };
 	MQAIR authInfoRec = { MQAIR_DEFAULT };
 
-	strncpy(sco.KeyRepository, ssl.getString("keyrepos").c_str(), MQ_SSL_KEY_REPOSITORY_LENGTH);
+	Poco::Dynamic::Var keyrepos = ssl["keyrepos"];
+	strncpy(sco.KeyRepository, keyrepos.toString().c_str(), MQ_SSL_KEY_REPOSITORY_LENGTH);
 
-	if ( ssl.getBool("fips", false) )
+	if ( ssl.contains("fips") )
 	{
-		sco.FipsRequired = MQSSL_FIPS_YES;
-		sco.Version = MQSCO_VERSION_2; // A version 2 MQSCO supports FipsRequired
+		if ( ssl["fips"].convert<bool>() )
+		{
+			sco.FipsRequired = MQSSL_FIPS_YES;
+			sco.Version = MQSCO_VERSION_2; // A version 2 MQSCO supports FipsRequired
+		}
 	}
 
-	if ( ssl.has("suiteb") ) 
+	if ( ssl.contains("suiteb") )
 	{
 		static std::map<std::string, MQLONG> suiteBTable;
 		if ( suiteBTable.size() == 0 )
@@ -131,8 +162,7 @@ void QueueManager::connect(const std::string& channel, const std::string& server
 
 		sco.Version = MQSCO_VERSION_3; /* A version 3 MQSCO supports Suite B encryption policy */
 
-		std::string suiteb = ssl.getString("suiteb");
-		Poco::StringTokenizer tokenizer(suiteb, ",", Poco::StringTokenizer::TOK_TRIM);
+		Poco::StringTokenizer tokenizer(ssl["suiteb"].toString(), ",", Poco::StringTokenizer::TOK_TRIM);
 		int n = 0;
 		for(Poco::StringTokenizer::Iterator it = tokenizer.begin(); it != tokenizer.end() && n < 4; ++it, ++n)
 		{
@@ -149,7 +179,7 @@ void QueueManager::connect(const std::string& channel, const std::string& server
 	}
 
 #ifdef MQSCO_VERSION_4
-	if ( ssl.has("certificate_validation_policy") )
+	if ( ssl.contains("certificate_validation_policy") )
 	{
 		static std::map<std::string, MQLONG> certValPolicyTable;
 		if ( certValPolicyTable.size() == 0 )
@@ -160,7 +190,7 @@ void QueueManager::connect(const std::string& channel, const std::string& server
 
 		sco.Version = MQSCO_VERSION_4; /* A version 4 MQSCO supports certificate validation policy */
 
-		std::string certValPolicy = ssl.getString("certificate_validation_policy");
+		std::string certValPolicy = ssl["certificate_validation_policy"].toString();
 		std::map<std::string, MQLONG>::iterator certValPolicyIterator = certValPolicyTable.find(certValPolicy);
 		if ( certValPolicyIterator == certValPolicyTable.end() )
 		{
@@ -172,15 +202,13 @@ void QueueManager::connect(const std::string& channel, const std::string& server
 		}
 	}
 #endif
-	if ( ssl.has("ocsp_url") )
+	if ( ssl.contains("ocsp_url") )
 	{
-		std::string ocsp = ssl.getString("ocsp_url");
-
 		/* OCSP requires MQAIR version 2 or later */
 		authInfoRec.Version = MQAIR_VERSION_2;
 		authInfoRec.AuthInfoType = MQAIT_OCSP;
 
-		strncpy(authInfoRec.OCSPResponderURL, ocsp.c_str(), MQ_AUTH_INFO_OCSP_URL_LENGTH);
+		strncpy(authInfoRec.OCSPResponderURL, ssl["ocsp_url"].toString().c_str(), MQ_AUTH_INFO_OCSP_URL_LENGTH);
 
 		/* The MQSCO must point to the MQAIR */
 		sco.AuthInfoRecCount = 1;
@@ -228,6 +256,13 @@ void QueueManager::disconnect()
 {
 	if ( _handle != 0 )
 	{
+		// Release the command server now, so queues are closed correctly.
+		if ( _commandServer != NULL )
+		{
+			delete _commandServer;
+			_commandServer = NULL;
+		}
+
 		MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
 		mqSystem.functions().disc(&_handle);
 		_handle = 0;

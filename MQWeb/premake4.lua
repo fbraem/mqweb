@@ -100,5 +100,6 @@ if ( poco_static ) then
     links {
               "pthread"
             , "dl"
+            , "rt"
           }
 end
