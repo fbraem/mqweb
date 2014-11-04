@@ -11,21 +11,32 @@
 
 	<span class="k">if</span> <span class="p">(</span> <span class="p">(</span><span class="nv">$response</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curl</span><span class="p">))</span> <span class="o">===</span> <span class="k">false</span> <span class="p">)</span>	<span class="p">{</span>
 		<span class="nv">$err</span> <span class="o">=</span> <span class="nb">curl_error</span><span class="p">(</span><span class="nv">$curl</span><span class="p">);</span>
-		<span class="k">echo</span> <span class="s2">&quot;An HTTP error occurred while inquiring queuemanager status: </span><span class="si">$err</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+		<span class="k">echo</span> <span class="s1">&#39;An HTTP error occurred while inquiring queuemanager status: &#39;</span>
+			<span class="o">.</span> <span class="nv">$err</span>
+			<span class="o">.</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
 	<span class="p">}</span>
 	<span class="k">else</span> <span class="p">{</span>
 		<span class="nv">$json</span> <span class="o">=</span> <span class="nx">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="p">);</span>
 		<span class="k">if</span> <span class="p">(</span> <span class="nb">isset</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">error</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
-			<span class="k">echo</span> <span class="s2">&quot;An MQ error occurred while inquiring queuemanager status.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-			<span class="k">echo</span> <span class="s2">&quot;Reason Code: </span><span class="si">{</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">error</span><span class="o">-&gt;</span><span class="na">reason</span><span class="o">-&gt;</span><span class="na">code</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">error</span><span class="o">-&gt;</span><span class="na">reason</span><span class="o">-&gt;</span><span class="na">desc</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+			<span class="k">echo</span> <span class="s1">&#39;An MQ error occurred while inquiring queuemanager status.&#39;</span>
+				<span class="o">.</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+			<span class="k">echo</span> <span class="s1">&#39;Reason Code: &#39;</span>
+				<span class="o">.</span> <span class="nv">$json</span><span class="o">-&gt;</span><span class="na">error</span><span class="o">-&gt;</span><span class="na">reason</span><span class="o">-&gt;</span><span class="na">code</span>
+				<span class="o">.</span> <span class="s1">&#39; - &#39;</span>
+				<span class="o">.</span> <span class="nv">$json</span><span class="o">-&gt;</span><span class="na">error</span><span class="o">-&gt;</span><span class="na">reason</span><span class="o">-&gt;</span><span class="na">desc</span>
+				<span class="o">.</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
 		<span class="p">}</span>
 		<span class="k">else</span> <span class="p">{</span>
 			<span class="k">if</span> <span class="p">(</span> <span class="nb">isset</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">status</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
-				<span class="k">echo</span> <span class="s2">&quot;</span><span class="si">{</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">status</span><span class="o">-&gt;</span><span class="na">QMgrName</span><span class="o">-&gt;</span><span class="na">value</span><span class="si">}</span><span class="s2"> started on </span><span class="si">{</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">status</span><span class="o">-&gt;</span><span class="na">StartDate</span><span class="o">-&gt;</span><span class="na">value</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">status</span><span class="o">-&gt;</span><span class="na">StartTime</span><span class="o">-&gt;</span><span class="na">value</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+				<span class="k">echo</span> <span class="nv">$json</span><span class="o">-&gt;</span><span class="na">status</span><span class="o">-&gt;</span><span class="na">QMgrName</span><span class="o">-&gt;</span><span class="na">value</span>
+					<span class="o">.</span> <span class="s1">&#39; started on &#39;</span>
+					<span class="o">.</span> <span class="nv">$json</span><span class="o">-&gt;</span><span class="na">status</span><span class="o">-&gt;</span><span class="na">StartDate</span><span class="o">-&gt;</span><span class="na">value</span>
+					<span class="o">.</span> <span class="s1">&#39; &#39;</span>
+					<span class="o">.</span> <span class="nv">$json</span><span class="o">-&gt;</span><span class="na">status</span><span class="o">-&gt;</span><span class="na">StartTime</span><span class="o">-&gt;</span><span class="na">value</span>
+					<span class="o">.</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
 			<span class="p">}</span>
-			<span class="k">else</span>
-			<span class="p">{</span>
-				<span class="k">echo</span> <span class="s2">&quot;No status found</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+			<span class="k">else</span> <span class="p">{</span>
+				<span class="k">echo</span> <span class="s1">&#39;No status found&#39;</span> <span class="o">.</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
 			<span class="p">}</span>
 		<span class="p">}</span>
 	<span class="p">}</span>
