@@ -2,7 +2,6 @@
 layout: default
 title: MQWeb &bull; ChannelController
 api: true
-hideSidebar: true
 ---
 ChannelController
 =================

@@ -2,7 +2,6 @@
 layout: default
 title: MQWeb &bull; ClusterQueueManagerController
 api: true
-hideSidebar: true
 ---
 ClusterQueueManagerController
 =============================

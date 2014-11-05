@@ -2,7 +2,6 @@
 layout: default
 title: MQWeb &bull; QueueController
 api: true
-hideSidebar: true
 ---
 QueueController
 ===============

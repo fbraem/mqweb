@@ -5,8 +5,7 @@
   {% include header.html %}
 
   <div id="site_content">
-    {% if page.hideSidebar %}
-    {% else %}
+    {% if page.showSidebar %}
       {% include sidebar.html %}
     {% endif %}
     {{ content }}

@@ -2,6 +2,7 @@
 layout: default
 title: MQWeb &bull; Features
 features: true
+showSidebar: true
 ---
 Features
 ========

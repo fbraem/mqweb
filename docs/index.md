@@ -2,6 +2,7 @@
 layout: default
 title: MQWeb &bull; Documentation
 doc: true
+showSidebar: true
 ---
 
 Documentation

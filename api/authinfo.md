@@ -2,7 +2,6 @@
 layout: default
 title: MQWeb &bull; AuthenticationInformationController
 api: true
-hideSidebar: true
 ---
 AuthenticationInformationController
 ===================================
