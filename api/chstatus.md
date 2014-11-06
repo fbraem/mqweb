@@ -2,7 +2,6 @@
 layout: default
 title: MQWeb &bull; ChannelStatusController
 api: true
-hideSidebar: true
 ---
 ChannelStatusController
 =======================

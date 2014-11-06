@@ -2,7 +2,6 @@
 layout: default
 title: MQWeb &bull; ListenerStatusController
 api: true
-hideSidebar: true
 ---
 ListenerStatusController
 ========================

@@ -2,7 +2,6 @@
 layout: default
 title: MQWeb &bull; ConnectionController
 api: true
-hideSidebar: true
 ---
 ConnectionController
 ====================

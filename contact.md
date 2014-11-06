@@ -2,6 +2,7 @@
 layout: default
 title: MQWeb &bull; Contact Information
 contact: true
+showSidebar: true
 ---
 Contact Information
 ===================

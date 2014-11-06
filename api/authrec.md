@@ -2,7 +2,6 @@
 layout: default
 title: MQWeb &bull; AuthorityRecordController
 api: true
-hideSidebar: true
 ---
 AuthorityRecordController
 =========================

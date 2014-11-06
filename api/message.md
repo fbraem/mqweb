@@ -2,7 +2,6 @@
 layout: default
 title: MQWeb &bull; MessageController
 api: true
-hideSidebar: true
 ---
 MessageController
 =================
