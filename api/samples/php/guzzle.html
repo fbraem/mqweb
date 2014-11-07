@@ -1,0 +1,13 @@
+<div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="c1">// Don&#39;t forget to install Guzzle before running this sample!</span>
+<span class="c1">// All info: http://docs.guzzlephp.org/</span>
+
+<span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Guzzle\Http\Client</span><span class="p">;</span>
+
+<span class="c1">// Create a client and provide a base URL</span>
+<span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Client</span><span class="p">(</span><span class="s1">&#39;http://localhost:8081&#39;</span><span class="p">);</span>
+<span class="nv">$data</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;api/queue/inquire/PIGEON&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">send</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">json</span><span class="p">();</span>
+<span class="nb">print_r</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span>
+</pre></div>

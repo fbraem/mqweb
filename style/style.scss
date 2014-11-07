@@ -2,10 +2,6 @@
 ---
 $font-stack: Helvetica, arial, freesans, clean, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
 
-code, pre {
-  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
-}
-
 html { 
   height: 100%;
 }
@@ -70,16 +66,13 @@ h6 {
   font-size: 1em;
 }
 
-a, a:hover { 
+a:hover { 
   outline: none;
   text-decoration: underline;
 }
 
-a:hover { 
+a { 
   text-decoration: none;
-}
-
-a {
   color: #4183c4;
 }
 
@@ -361,24 +354,41 @@ ul#menu li a:hover, ul#menu li.selected a, ul#menu li.selected a:hover {
 }
   
 table { 
-  margin: 10px 0 30px 0;
+  overflow: auto;
+  margin-left: auto;
+  margin-right: auto;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border-color: gray;
 }
 
-table tr th, table tr td { 
-  background: #3B3B3B;
-  color: #FFF;
-  padding: 7px 4px;
-  text-align: left;
+thead {
+  vertical-align: middle;
+  border-color: inhirit;
 }
-  
-table tr td { 
-  background: #F0EFE2;
-  color: #47433F;
-  border-top: 1px solid #FFF;
+
+table th {
+  font-weight: bold;
+}
+
+table th, table td {
+  padding: 6px 13px;
+  border: 1px solid #ddd;  
+}
+
+tr {
+  background-color: #fff;
+  border-top: 1px solid #ccc;
+}
+
+tr:nth-child(2n) {
+  background-color: #f8f8f8;
 }
 
 pre {
-  padding: 10px;
+  padding-left: 10px;
+  padding-top: 10px;
+  padding-right: 10px;
   background-color: lightgray;
   margin-bottom: 15px;
   border-left: 5px solid gray;
@@ -386,7 +396,7 @@ pre {
   font-size: 85%;
 }
 
-code { 
+p code, li code { 
   font-size: 1.20em;
   padding: 0;
   padding-top: 0.2em;
@@ -397,6 +407,10 @@ code {
   border-radius: 3px;
 }
 
+div.highlight pre {
+  padding-bottom:15px;
+}
+
 code:after, code:before {
   letter-spacing: -0.2em;
   content: "\00a0";
@@ -404,6 +418,10 @@ code:after, code:before {
 
 pre code {
   background-color: lightgray;
+}
+
+code, pre {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
 }
 
 li p {

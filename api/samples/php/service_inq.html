@@ -1,36 +1,36 @@
 <div class="highlight"><pre><span class="cp">&lt;?php</span>
-	<span class="cm">/*</span>
-<span class="cm">	 * This sample will show all SYSTEM services.</span>
-<span class="cm">	 * MQWeb runs on localhost and is listening on port 8081. </span>
-<span class="cm">	 */</span>
-	<span class="nv">$url</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:8081/api/service/inquire/PIGEON/SYSTEM*&quot;</span><span class="p">;</span>
+  <span class="cm">/*</span>
+<span class="cm">   * This sample will show all SYSTEM services.</span>
+<span class="cm">   * MQWeb runs on localhost and is listening on port 8081. </span>
+<span class="cm">   */</span>
+  <span class="nv">$url</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:8081/api/service/inquire/PIGEON/SYSTEM*&quot;</span><span class="p">;</span>
 
-	<span class="nv">$curl</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
-	<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$url</span><span class="p">);</span>
-	<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="nv">$curl</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
+  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$url</span><span class="p">);</span>
+  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
 
-	<span class="k">if</span> <span class="p">(</span> <span class="p">(</span><span class="nv">$response</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curl</span><span class="p">))</span> <span class="o">===</span> <span class="k">false</span> <span class="p">)</span>	<span class="p">{</span>
-		<span class="nv">$err</span> <span class="o">=</span> <span class="nb">curl_error</span><span class="p">(</span><span class="nv">$curl</span><span class="p">);</span>
-		<span class="k">echo</span> <span class="s2">&quot;An HTTP error occurred while getting service information: </span><span class="si">$err</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-	<span class="p">}</span>
-	<span class="k">else</span> <span class="p">{</span>
-		<span class="nv">$json</span> <span class="o">=</span> <span class="nx">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="p">);</span>
-		<span class="k">if</span> <span class="p">(</span> <span class="nb">isset</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">error</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
-			<span class="k">echo</span> <span class="s2">&quot;An MQ error occurred while inquiring services.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-			<span class="k">echo</span> <span class="s2">&quot;Reason Code: </span><span class="si">{</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">error</span><span class="o">-&gt;</span><span class="na">reason</span><span class="o">-&gt;</span><span class="na">code</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">error</span><span class="o">-&gt;</span><span class="na">reason</span><span class="o">-&gt;</span><span class="na">desc</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-		<span class="p">}</span>
-		<span class="k">else</span> <span class="p">{</span>
-			<span class="k">if</span> <span class="p">(</span> <span class="nb">isset</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">services</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">services</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
-				<span class="k">foreach</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">services</span> <span class="k">as</span> <span class="nv">$service</span><span class="p">)</span>
-				<span class="p">{</span>
-					<span class="k">echo</span> <span class="nv">$service</span><span class="o">-&gt;</span><span class="na">ServiceName</span><span class="o">-&gt;</span><span class="na">value</span><span class="p">;</span>
-					<span class="k">echo</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-				<span class="p">}</span>
-			<span class="p">}</span>
-			<span class="k">else</span>
-			<span class="p">{</span>
-				<span class="k">echo</span> <span class="s2">&quot;No services found</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-			<span class="p">}</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
+  <span class="k">if</span> <span class="p">(</span> <span class="p">(</span><span class="nv">$response</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curl</span><span class="p">))</span> <span class="o">===</span> <span class="k">false</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="nv">$err</span> <span class="o">=</span> <span class="nb">curl_error</span><span class="p">(</span><span class="nv">$curl</span><span class="p">);</span>
+    <span class="k">echo</span> <span class="s2">&quot;An HTTP error occurred while getting service information: </span><span class="si">$err</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">else</span> <span class="p">{</span>
+    <span class="nv">$json</span> <span class="o">=</span> <span class="nx">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="nb">isset</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">error</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="k">echo</span> <span class="s2">&quot;An MQ error occurred while inquiring services.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+      <span class="k">echo</span> <span class="s2">&quot;Reason Code: </span><span class="si">{</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">error</span><span class="o">-&gt;</span><span class="na">reason</span><span class="o">-&gt;</span><span class="na">code</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">error</span><span class="o">-&gt;</span><span class="na">reason</span><span class="o">-&gt;</span><span class="na">desc</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span> <span class="nb">isset</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">services</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">services</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
+        <span class="k">foreach</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">services</span> <span class="k">as</span> <span class="nv">$service</span><span class="p">)</span>
+        <span class="p">{</span>
+          <span class="k">echo</span> <span class="nv">$service</span><span class="o">-&gt;</span><span class="na">ServiceName</span><span class="o">-&gt;</span><span class="na">value</span><span class="p">;</span>
+          <span class="k">echo</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="k">else</span>
+      <span class="p">{</span>
+        <span class="k">echo</span> <span class="s2">&quot;No services found</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
 </pre></div>

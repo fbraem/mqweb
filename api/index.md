@@ -12,9 +12,10 @@ and to return the answer in JSON format.
 
 Each WebSphere MQ object type will have its own controller. The URI determines 
 which controller will handle the request and which action will be called. The 
-URI always starts with *api*, the second part of the URI selects the controller 
+URI always starts with `api`, the second part of the URI selects the controller 
 and the third part defines the action. For example: the URI `/api/queue/inquire` 
-will call the inquire action on the *QueueController*. 
+will call the [inquire](queue.html#inquire) action on the 
+[QueueController](queue.html). 
 
 An action needs some parameters to know which WebSphere MQ object to use. These 
 parameters are passed as part of the path of the URI or as query parameter. 
@@ -25,7 +26,7 @@ PIGEON. Depending on the object type other input can be passed. Look at the api
 documentation to know what parameters can be used. The HTTP method can be GET or POST.
 
 Query parameter names are, as much as possible, based on the names used in the
-WebSphere MQ information center. For example: *QName* will be used for a queuename.
+WebSphere MQ information center. For example: `QName` will be used for a queuename.
 The name of a query parameter is not case sensitive.
 
 It's also possible to POST an application/json request. The URI is still formed
@@ -38,19 +39,25 @@ query parameter but is now case sensitive!
 The answer of an api request is always a JSON object. This JSON object can contain the
 following properties:
 
-+ mqweb
-+ filter
-+ error
-+ and an array or object depending on the WebSphere MQ object type
++ `mqweb`
 
-*mqweb* contains general information about the api call. *filter* contains the data
-which is used as input for the PCF command. This can be useful to debug a GET/POST
-request. *error* is only returned when a WebSphere MQ error occurred. The array or
-object containing the WebSphere MQ data is only returned when no error occurred.
+  Contains general information about the api call.
+
++ `filter`
+
+  Contains the data which is used as input for the PCF command. This can be 
+  useful to debug a GET/POST request.
+
++ `error`
+
+  Only returned when a WebSphere MQ error occurred.
+
++ An array or object depending on the WebSphere MQ object type (only returned when 
+  no error occurred).
 
 Properties of WebSphere MQ objects are always returned with the name as documented 
 in the WebSphere MQ information center. For example: The property of the current 
-queue depth of a queue will have the name *CurrentQDepth*.
+queue depth of a queue will have the name `CurrentQDepth`.
 
 |Controller|URI path|
 |----------|--------|

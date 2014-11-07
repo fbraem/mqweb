@@ -170,7 +170,8 @@ There are some differences between query parameters and a JSON object:
 
 > An *IntegerFilterCommand* can't be used together with a *StringFilterCommand*
 
-This sample is a Perl script that inquires all queues starting with `T`:
+This sample is a Perl script that inquires all SYSTEM queues and shows the 
+current depth of these queues:
 
 {% include_relative samples/perl/queue_inq.html %}
 
