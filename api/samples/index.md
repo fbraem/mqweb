@@ -130,13 +130,19 @@ With [PHP](http://php.net/) you can use the
       {% include_relative php/queue_inq.html %}
     </div>
   </div>
+  <div class="accordion-section">
+    <a class="accordion-section-title" href="#accordion-php-12">Inquire (with Guzzle)</a>
+    <div id="accordion-php-12" class="accordion-section-content">
+      {% include_relative php/guzzle.html %}
+    </div>
+  </div>
 </div>
 
 ###Services
 <div class="accordion">
   <div class="accordion-section">
-    <a class="accordion-section-title" href="#accordion-php-12">Inquire</a>
-    <div id="accordion-php-12" class="accordion-section-content">
+    <a class="accordion-section-title" href="#accordion-php-13">Inquire</a>
+    <div id="accordion-php-13" class="accordion-section-content">
       {% include_relative php/service_inq.html %}
     </div>
   </div>
