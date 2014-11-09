@@ -6,7 +6,6 @@ doc_configure: true
 
 Configure MQWeb
 ===============
-
 When MQWeb is launched it will look for a configuration file. The configuration 
 file must be located in the same directory as the executable or a parent 
 directory of it, and must have the same base name as the executable, with one 
@@ -34,7 +33,6 @@ configure it:
     
 Connection Mode
 ---------------
-
 By default mqweb connects in bindings mode. This can be changed by setting the 
 mq.mode property to 'client' and to configure Websphere MQ client or mqweb.
 
@@ -44,33 +42,28 @@ A connection in client mode can be done in two different ways: configuring
 WebSphere MQ client or adding connection configurations in the configuration 
 file:
 
-1. Configure Websphere MQ Client
+###Option 1: Configure Websphere MQ Client
+To connect to a queuemanager use a client channel definition table and set the 
+environment variables `MQCHLLIB` and `MQCHLTAB`, or use `mqclient.ini` and set 
+`ChannelDefinitionFile` and `ChannelDefinitionDirectory`.
 
-   To connect to a queuemanager use a client channel definition table and set the 
-   environment variables *MQCHLLIB* and *MQCHLTAB*, or use *mqclient.ini* and set 
-   *ChannelDefinitionFile* and *ChannelDefinitionDirectory*.
+> On Windows the environment variable `MQCLNTCF` must point to mqclient.ini. 
 
-   > On Windows the environment variable MQCLNTCF must point to mqclient.ini. 
+When only one queuemanager is used `MQSERVER` can be used.
 
-   When only one queuemanager is used MQSERVER can be used.
+###Option 2: Configure MQWeb
+Add mq.web.qmgr properties as follows:
 
-2. Configure MQWeb
+    mq.web.qmgr.<qmgrName>.connection=<host>(<port>)
+    mq.web.qmgr.<qmgrName>.channel=<channelName>
 
-   Add mq.web.qmgr properties as follows:
-
-       mq.web.qmgr.<qmgrName>.connection=<host>(<port>)
-       mq.web.qmgr.<qmgrName>.channel=<channelName>
-
-   Where &lt;qmgrName&gt; is the name of the queuemanager, &lt;host&gt; the server where
-   the queuemanager is running. &lt;port&gt; is the port of the listener and
-   &lt;channelName&gt; is the name of the server connection channel. When no channel
-   property is set, *SYSTEM.DEFAULT.SVRCONN* will be used as default.
-
-   > The default channel should be *SYSTEM.DEF.SVRCONN*. This will be solved in version 0.0.10
+Where &lt;qmgrName&gt; is the name of the queuemanager, &lt;host&gt; the server where
+the queuemanager is running. &lt;port&gt; is the port of the listener and
+&lt;channelName&gt; is the name of the server connection channel. When no channel
+property is set, `SYSTEM.DEF.SVRCONN` will be used as default.
 
 Default Queuemanager
 --------------------
-
 When no name is passed in the URL, mqweb will try to connect to the default
 queuemanager. In bindings mode this is done by connecting with a blank
 queuemanager name. In client mode this can be configured by setting
@@ -82,7 +75,6 @@ is configured.
 
 Reply Queue
 -----------
-
 To get the replies from the command server, MQWeb needs a queue where the replies
 are put. By default a temporary queue based on the model queue 
 SYSTEM.DEFAULT.MODEL.QUEUE is used, but this behaviour can be changed by setting 
@@ -96,6 +88,43 @@ or
 
 When you define your own local reply queue, make sure the queue is shareable and
 don't forget to apply security settings.
+
+Connection Pooling
+------------------
+
+MQWeb creates a connection pool for each queuemanager.
+
+When a queuemanager is requested from the pool:
+
+If a queuemanager is available from the pool, an queuemanager from the pool is 
+removed from the pool and returned. Otherwise, if the peak capacity of the pool 
+has not yet been reached, a new queuemanager is created, connected and returned.
+If the peak capacity has already been reached, no queuemanager is returned
+and a HTTP_INTERNAL_SERVER_ERROR is returned to the client.
+
+When a queuemanager is returned to the pool: If the queuemanager is still 
+connected and the number of queuemanagers in the pool is below the capacity, 
+the queuemanager is added back to the pool. Otherwise it is disconnected.
+
+Each pool has a timer that checks for unused queuemanagers. When a queuemanager
+is idle for some configured time, it will be removed from the pool.
+
+The following properties are available to configure the connection pool:
+
++ `mq.web.<qmgr>.pool.capacity` or `mq.web.pool.capacity`
+
+  The capacity of the pool. When the pool reaches this size and a queuemanager
+  is returned to the pool, the queuemanager will be disconnected.
+
++ `mq.web.<qmgr>.pool.peakcapacity` or `mq.web.pool.peakcapacity`
+
+  The peak capacity of the pool. As long as the size of the pool is smaller
+  then this value, a connection to the queuemanager is created and returned.
+
++ `mq.web.<qmgr>.pool.idle` or `mq.web.pool.idle` 
+
+  The maximum idle time of the queuemanager. When a queuemanager is unused
+  for the given time, it will be disconnected and removed from the pool.
 
 Logging
 -------
