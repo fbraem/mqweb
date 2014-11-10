@@ -11,7 +11,7 @@ die("Please pass me the name of a queuemanager as argument") unless defined($qmg
 my $json = JSON->new;
 
 my %input = ( 
-	'ClusterQmgrName' => '*',
+	'ClusterQMgrName' => '*',
   'ClusterName' => 'SONGBIRDS'
 );
 
