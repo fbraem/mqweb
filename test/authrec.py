@@ -1,5 +1,4 @@
 import unittest
-import json
 from testbase import MQWebTest
 
 '''
@@ -42,7 +41,7 @@ class TestAuthorityRecordActions(MQWebTest):
 
 		data = self.appJSON('/api/authrec/inquire/' + self.qmgr, filter)
 		self.assertFalse('mqweb' not in data, 'No mqweb data returned')
-		print json.dumps(data, indent=4)
+
 		if 'error' in data:
 			self.assertFalse(True, 'Received a WebSphere MQ error:' 
 				+ str(data['error']['reason']['code']))

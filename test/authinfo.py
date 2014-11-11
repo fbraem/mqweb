@@ -1,5 +1,4 @@
 import unittest
-import json
 from testbase import MQWebTest
 
 '''
