@@ -1,5 +1,4 @@
 import unittest
-import json
 from testbase import MQWebTest
 
 '''
@@ -22,7 +21,7 @@ class TestQueueActions(MQWebTest):
 			self.assertFalse(True, 'Received a WebSphere MQ error:' + 
 				str(data['error']['reason']['code']))
 
-		self.assertFalse('queues' not in data, 'No queues returned')
+		self.assertFalse('queues' not in data, 'No information returned')
 		self.assertFalse(len(data['queues']) == 0, 
 			'Empty JSON array returned. ' + 
 			'Does MQWeb have permission to view this information?')
@@ -45,7 +44,7 @@ class TestQueueActions(MQWebTest):
 			self.assertFalse(True, 'Received a WebSphere MQ error:' 
 				+ str(data['error']['reason']['code']))
         
-		self.assertFalse('queues' not in data, 'No queues returned')
+		self.assertFalse('queues' not in data, 'No information returned')
 		self.assertFalse(len(data['queues']) == 0, 
 			'Empty JSON array returned. ' + 
 			'Does MQWeb have permission to view this information?')
