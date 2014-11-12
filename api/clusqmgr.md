@@ -24,7 +24,7 @@ The name of the queuemanager. This parameter is required!
 
 ####<a name="inquireURLClusterName"></a>ClusterName
 The name of a cluster. Generic names are supported. When this parameter is used, 
-the query parameter for [Cluster](#inquireQueryClusterName) is ignored.
+the query parameter for [ClusterName](#inquireQueryClusterName) is ignored.
 
 ####<a name="inquireURLClusterQMgrName"></a>ClusterQMgrName
 The name of a queuemanager that is part of the cluster. Generic names are 
