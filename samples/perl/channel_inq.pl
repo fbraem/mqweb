@@ -32,7 +32,7 @@ $req->header(
 	'Content-Type' => 'application/json',
 	'Content-length' => length($content)
 );
-$req->content($json->encode(\%input));
+$req->content($content);
 
 my $res = $ua->request($req);
 die $res->status_line unless $res->is_success;
