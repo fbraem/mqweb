@@ -1,6 +1,8 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+use feature qw(say);
+
 use JSON;
 use LWP::UserAgent;
 use HTTP::Request::Common;
@@ -13,11 +15,30 @@ my $json = JSON->new;
 my %input = ( 
 );
 
+my $content = $json->encode(\%input);    
+
 my $ua = LWP::UserAgent->new;
 my $req = POST 'http://localhost:8081/api/qmstatus/inquire/' . $qmgr;    
-$req->header( 'Content-Type' => 'application/json' );
-$req->content($json->encode(\%input));
+$req->header(
+	'Content-Type' => 'application/json',
+	'Content-length' => length($content)
+);
+$req->content($content);
 
 my $res = $ua->request($req);
+die $res->status_line unless $res->is_success;
 
-print $json->pretty->encode($json->decode($res->content()));
+my $mqweb = $json->decode($res->content());
+if ( exists($mqweb->{error}) ) {
+	say 'An MQ error occurred while inquiring queuemanager status.';
+	say	'Reason Code: ',
+		$mqweb->{error}->{reason}->{code},
+		' - ',
+		$mqweb->{error}->{reason}->{desc};
+}
+else {
+	say $mqweb->{status}->{QMgrName}->{value},
+		' : ', 
+		$mqweb->{status}->{QMgrStatus}->{display};
+}
+

@@ -29,25 +29,21 @@ $req->header(
 $req->content($content);
 
 my $res = $ua->request($req);
-if ($res->is_success) {
-	my $mqweb = $json->decode($res->content());
-	if ( exists($mqweb->{error}) ) {
-		print "An MQ error occurred while inquiring listener status.\n",
-			'Reason Code: ', 
-			$mqweb->{error}->{reason}->{code},
-			' - ', 
-			$mqweb->{error}->{reason}->{desc},
-			"\n";
-	}
-	else {
-		foreach my $status(@{$mqweb->{statuses}}) {
-			print $status->{ListenerName}->{value};
-			print ' : ', $status->{Status}->{display}; 
-			print "\n";
-		}
-	}
-}
+die $res->status_line unless $res->is_success;
+
+my $mqweb = $json->decode($res->content());
+if ( exists($mqweb->{error}) ) {
+	say 'An MQ error occurred while inquiring listener status.';
+	say 'Reason Code: '
+		, $mqweb->{error}->{reason}->{code}
+		, ' - '
+		, $mqweb->{error}->{reason}->{desc};
+}}
 else {
-	die $res->status_line;
+	foreach my $status(@{$mqweb->{statuses}}) {
+		print $status->{ListenerName}->{value};
+		print ' : ', $status->{Status}->{display}; 
+		print "\n";
+	}
 }
 
