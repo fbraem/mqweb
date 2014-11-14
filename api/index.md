@@ -90,6 +90,7 @@ Controllers
 |[ChannelController](channel.html)|/api/channel|
 |[ChannelStatusController](chstatus.html)|/api/chstatus|
 |[ClusterQueueManagerController](clusqmgr.html)|/api/clusqmgr|
+|[ConnectionController](conn.html)|/api/conn|
 |[QueueManagerController](qmgr.html)|/api/qmgr|
 |[QueueManagerStatusController](qmstatus.html)|/api/qmstatus|
 |[QueueController](queue.html)|/api/queue|
