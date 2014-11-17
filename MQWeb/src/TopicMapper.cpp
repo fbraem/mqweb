@@ -57,7 +57,7 @@ Poco::JSON::Array::Ptr TopicMapper::inquire()
 	createCommand(MQCMD_INQUIRE_TOPIC);
 
 	// Required parameters
-	addParameter<std::string>(MQCA_PROCESS_NAME, "TopicName");
+	addParameter<std::string>(MQCA_TOPIC_NAME, "TopicName");
 
 	// Optional parameters
 	Poco::Dynamic::Var clusterInfo = _input->get("ClusterInfo");
@@ -77,7 +77,7 @@ Poco::JSON::Array::Ptr TopicMapper::inquire()
 	addIntegerFilter();
 	addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
 	addStringFilter();
-	addAttributeList(MQIACF_PROCESS_ATTRS, "TopicAttrs");
+	addAttributeList(MQIACF_TOPIC_ATTRS, "TopicAttrs");
 	addParameterNumFromString(MQIA_TOPIC_TYPE, "TopicType");
 
 	PCF::Vector commandResponse;
@@ -94,9 +94,9 @@ Poco::JSON::Array::Ptr TopicMapper::inquire()
 		if ( (*it)->isExtendedResponse() ) // Skip extended response
 			continue;
 
-		std::string processName = (*it)->getParameterString(MQCA_PROCESS_NAME);
+		std::string topicName = (*it)->getParameterString(MQCA_TOPIC_NAME);
 		if (   excludeSystem
-			&& processName.compare(0, 7, "SYSTEM.") == 0 )
+			&& topicName.compare(0, 7, "SYSTEM.") == 0 )
 		{
 			continue;
 		}

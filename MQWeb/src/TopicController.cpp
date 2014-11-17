@@ -1,7 +1,7 @@
 /*
  * Copyright 2010 MQWeb - Franky Braem
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they
+ * Licensed under the EUPL, Version 1.1 or Â– as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the
@@ -61,20 +61,20 @@ void TopicController::inquire()
 		else
 		{
 			// Handle query parameters
-			std::string processNameField;
+			std::string topicNameField;
 			if ( form().has("TopicName") )
 			{
-				processNameField = form().get("TopicName");
+				topicNameField = form().get("TopicName");
 			}
 			else if ( form().has("name") )
 			{
-				processNameField = form().get("name");
+				topicNameField = form().get("name");
 			}
-			if ( processNameField.empty() )
+			if ( topicNameField.empty() )
 			{
-				processNameField = "*";
+				topicNameField = "*";
 			}
-			pcfParameters->set("TopicName", processNameField);
+			pcfParameters->set("TopicName", topicNameField);
 		}
 
 		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
@@ -87,13 +87,13 @@ void TopicController::inquire()
 
 		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
 		formElementToJSONArray("TopicAttrs", attrs);
-		if ( attrs->size() == 0 ) // Nothing found for ProcessAttrs, try Attrs
+		if ( attrs->size() == 0 ) // Nothing found for TopicAttrs, try Attrs
 		{
 			formElementToJSONArray("Attrs", attrs);
 		}
 		if ( attrs->size() > 0 )
 		{
-			pcfParameters->set("ProcessAttrs", attrs);
+			pcfParameters->set("TopicAttrs", attrs);
 		}
 
 		if ( form().has("CommandScope") )
