@@ -82,7 +82,8 @@ Poco::JSON::Array::Ptr SubscriptionMapper::inquire()
 	// Optional parameters
 	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
 	addParameter<MQLONG>(MQIACF_DURABLE_SUBSCRIPTION, "Durable");
-	addAttributeList(MQIACF_PROCESS_ATTRS, "SubscriptionAttrs");
+	addAttributeList(MQIACF_SUB_ATTRS, "SubscriptionAttrs");
+	addParameterNumFromString(MQIACF_SUB_TYPE, "SubscriptionType");
 
 	PCF::Vector commandResponse;
 	execute(commandResponse);
