@@ -77,6 +77,11 @@ void SubscriptionController::inquire()
 		{
 			pcfParameters->set("SubId", form().get("SubId"));
 		}
+		
+		if ( form().has("SubscriptionType") )
+		{
+			pcfParameters->set("SubscriptionType", form().get("SubscriptionType"));
+		}
 
 		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
 		formElementToJSONArray("SubcriptionAttrs", attrs);
