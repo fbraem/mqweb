@@ -56,7 +56,7 @@ void SubscriptionMapper::copy(bool replace)
 
 Poco::JSON::Array::Ptr SubscriptionMapper::inquire()
 {
-	createCommand(MQCMD_INQUIRE_TOPIC);
+	createCommand(MQCMD_INQUIRE_SUBSCRIPTION);
 
 	// Required parameters
 	addParameter<std::string>(MQCACF_SUB_NAME, "SubName");
