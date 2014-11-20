@@ -27,7 +27,7 @@ namespace Web {
 
 
 SubscriptionMapper::SubscriptionMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input) 
-: MQMapper(commandServer, "Topic", input)
+: MQMapper(commandServer, "Sub", input)
 {
 }
 
