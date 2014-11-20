@@ -1,7 +1,7 @@
 /*
  * Copyright 2010 MQWeb - Franky Braem
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they
+ * Licensed under the EUPL, Version 1.1 or - as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the
@@ -77,21 +77,21 @@ void SubscriptionController::inquire()
 		{
 			pcfParameters->set("SubId", form().get("SubId"));
 		}
-		
+
 		if ( form().has("SubscriptionType") )
 		{
 			pcfParameters->set("SubscriptionType", form().get("SubscriptionType"));
 		}
 
 		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
-		formElementToJSONArray("SubcriptionAttrs", attrs);
-		if ( attrs->size() == 0 ) // Nothing found for SubscriptionAttrs, try Attrs
+		formElementToJSONArray("SubAttrs", attrs);
+		if ( attrs->size() == 0 ) // Nothing found for SubAttrs, try Attrs
 		{
 			formElementToJSONArray("Attrs", attrs);
 		}
 		if ( attrs->size() > 0 )
 		{
-			pcfParameters->set("SubscriptionAttrs", attrs);
+			pcfParameters->set("SubAttrs", attrs);
 		}
 
 		if ( form().has("CommandScope") )
