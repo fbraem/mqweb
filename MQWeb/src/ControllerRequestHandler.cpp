@@ -37,6 +37,7 @@
 #include "MQ/Web/QueueStatusController.h"
 #include "MQ/Web/ServiceController.h"
 #include "MQ/Web/SubscriptionController.h"
+#include "MQ/Web/SubscriptionStatusController.h"
 #include "MQ/Web/TopicController.h"
 
 #include "Poco/URI.h"
@@ -129,6 +130,7 @@ void ControllerRequestHandler::registerControllers()
 	_controllerFactory.registerClass<AuthenticationInformationController>("authinfo");
 	_controllerFactory.registerClass<AuthorityRecordController>("authrec");
 	_controllerFactory.registerClass<SubscriptionController>("sub");
+	_controllerFactory.registerClass<SubscriptionStatusController>("sbstatus");
 	_controllerFactory.registerClass<TopicController>("topic");
 }
 
