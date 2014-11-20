@@ -118,5 +118,18 @@ is needed because the event action inquires the current depth of the queue.
 
 Channels
 --------
+MQWeb can be used to display channel or channelstatus objects. The
+following permissions are necessary:
 
-TODO
+    SET AUTHREC PROFILE(**) +
+    GROUP('mqweb') +
+    OBJTYPE(CHANNEL) +
+    AUTHADD(DSP)
+
+There is also a need for permissions on the cluster transmission 
+queues, when the status of cluster sender channels is inquired.
+
+    SET AUTHREC PROFILE(SYSTEM.CLUSTER.TRANSMIT.QUEUE) +
+    GROUP('mqweb') +
+    OBJTYPE(QUEUE) +
+    AUTHADD(INQ)
