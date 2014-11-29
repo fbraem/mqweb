@@ -39,6 +39,7 @@
 #include "MQ/Web/SubscriptionController.h"
 #include "MQ/Web/SubscriptionStatusController.h"
 #include "MQ/Web/TopicController.h"
+#include "MQ/Web/TopicStatusController.h"
 
 #include "Poco/URI.h"
 
@@ -132,6 +133,7 @@ void ControllerRequestHandler::registerControllers()
 	_controllerFactory.registerClass<SubscriptionController>("sub");
 	_controllerFactory.registerClass<SubscriptionStatusController>("sbstatus");
 	_controllerFactory.registerClass<TopicController>("topic");
+	_controllerFactory.registerClass<TopicStatusController>("tpstatus");
 }
 
 
