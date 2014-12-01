@@ -37,7 +37,7 @@ using namespace Poco::Net;
 using namespace Poco::Util;
 
 
-MQWebApplication::MQWebApplication(): _helpRequested(false)
+MQWebApplication::MQWebApplication(): _helpRequested(false), _tm(_tmThreadPool)
 {
 	addSubsystem(new MQ::MQSubsystem());
 }
@@ -210,6 +210,10 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 	waitForTerminationRequest();
 	// Stop the HTTPServer
 	srv.stop();
+
+	// Cancel all launched tasks and wait for them to end ...
+	_tm.cancelAll();
+	_tm.joinAll();
 
 	_qmgrPoolCache.clear();
 

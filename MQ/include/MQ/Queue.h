@@ -70,12 +70,20 @@ private:
 
 	MQHOBJ _handle;
 
+	MQHOBJ handle() const;
+
 	MQOD _od;
 
 	static MQOD _initialOD;
 
 	friend class QueueManager;
+	friend class MessageConsumer;
 };
+
+inline MQHOBJ Queue::handle() const
+{
+	return _handle;
+}
 
 inline std::string Queue::name() const
 {

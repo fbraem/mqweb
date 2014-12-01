@@ -21,6 +21,7 @@
 #include "MQ/Web/RequestHandlerFactory.h"
 #include "MQ/Web/StaticRequestHandler.h"
 #include "MQ/Web/DenyRequestHandler.h"
+#include "MQ/Web/WebSocketRequestHandler.h"
 #include "MQ/Web/ControllerRequestHandler.h"
 
 #include "Poco/Logger.h"
@@ -49,6 +50,12 @@ Poco::Net::HTTPRequestHandler* RequestHandlerFactory::createRequestHandler(const
 	if ( ! filter(request) )
 	{
 		return new DenyRequestHandler();
+	}
+
+	// Check for a websocket ...
+	if ( request.find("Upgrade") != request.end() && Poco::icompare(request["Upgrade"], "websocket") == 0 )
+	{
+		return new WebSocketRequestHandler();
 	}
 
 	if ( ! uri.compare(0, staticURI.size(), staticURI) 
