@@ -62,23 +62,17 @@ Poco::JSON::Array::Ptr ConnectionMapper::inquire()
 	if ( _input->has("ConnectionId") )
 	{
 		std::string hexId = _input->get("ConnectionId");
-		BufferPtr id = new Buffer(hexId.size() / 2);
-
-		std::istringstream iss(hexId);
-		Poco::HexBinaryDecoder decoder(iss);
-		int c = decoder.get();
-		int i = 0;
-		while (c != -1 && i < id->size())
+		if ( hexId.length() > MQ_CONNECTION_ID_LENGTH )
 		{
-			id[i++] = (unsigned char) c;
-			c = decoder.get();
+			hexId.erase(MQ_CONNECTION_ID_LENGTH);
 		}
+		Buffer::Ptr id = new Buffer(hexId);
 
 		pcf()->addParameter(MQBACF_CONNECTION_ID, id);
 	}
 	else
 	{
-		BufferPtr id = new Buffer(0); // Empty buffer
+		Buffer::Ptr id = new Buffer(); // Empty buffer
 		pcf()->addParameter(MQBACF_GENERIC_CONNECTION_ID, id);
 	}
 

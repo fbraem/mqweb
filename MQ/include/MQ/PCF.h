@@ -56,7 +56,7 @@ public:
 	void addParameter(MQLONG parameter, MQLONG value);
 		/// Add a numeric parameter.
 
-	void addParameter(MQLONG parameter, BufferPtr buffer);
+	void addParameter(MQLONG parameter, Buffer::Ptr buffer);
 		/// Add a byte string parameter.
 
 	void addParameterList(MQLONG parameter, MQLONG *values, unsigned int count);
@@ -124,7 +124,7 @@ public:
 		/// Poco::NotFoundException will be thrown when the parameter isn't found.
 		/// Poco::BadCastException will be thrown when the parameter doesn't contain a string or byte string value.
 
-	BufferPtr getParameterByteString(MQLONG parameter) const;
+	Buffer::Ptr getParameterByteString(MQLONG parameter) const;
 		/// Returns the byte string value as a buffer.
 		/// Poco::NotFoundException will be thrown when the parameter isn't found.
 		/// Poco::BadCastException will be thrown when the parameter doesn't contain a byte string value.
@@ -184,19 +184,19 @@ inline void PCF::addParameterList(MQLONG parameter, const std::vector<MQLONG>& v
 
 inline int PCF::getCommand() const 
 {
-	MQCFH* header = (MQCFH*)(MQBYTE*) &buffer()[0];
+	MQCFH* header = (MQCFH*)(MQBYTE*) buffer().data();
 	return header->Command; 
 }
 
 inline int PCF::getCompletionCode() const 
 { 
-	MQCFH* header = (MQCFH*)(MQBYTE*) &buffer()[0];
+	MQCFH* header = (MQCFH*)(MQBYTE*) buffer().data();
 	return header->CompCode; 
 }
 
 inline int PCF::getReasonCode() const 
 { 
-	MQCFH* header = (MQCFH*)(MQBYTE*) &buffer()[0];
+	MQCFH* header = (MQCFH*)(MQBYTE*) buffer().data();
 	return header->Reason; 
 }
 
@@ -207,7 +207,7 @@ inline bool PCF::isByteString(MQLONG parameter) const
 
 inline bool PCF::isExtendedResponse() const
 {
-	MQCFH* header = (MQCFH*)(MQBYTE*) &buffer()[0];
+	MQCFH* header = (MQCFH*)(MQBYTE*) buffer().data();
 	return header->Type == MQCFT_XR_SUMMARY; 
 }
 
@@ -219,7 +219,7 @@ inline bool PCF::hasParameter(MQLONG parameter) const
 
 inline bool PCF::isLast() const
 {
-	MQCFH* header = (MQCFH*)(MQBYTE*) &buffer()[0];
+	MQCFH* header = (MQCFH*)(MQBYTE*) buffer().data();
 	return header->Control == MQCFC_LAST;
 }
 
@@ -249,7 +249,7 @@ inline bool PCF::isType(MQLONG parameter, MQLONG type) const
 	std::map<MQLONG, int>::const_iterator it = _pointers.find(parameter);
 	if ( it != _pointers.end() )
 	{
-		MQLONG *pcfType = (MQLONG*) &buffer()[it->second];
+		MQLONG *pcfType = (MQLONG*) buffer().data(it->second);
 		return *pcfType == type;
 	}
 	return false;

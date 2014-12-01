@@ -41,17 +41,22 @@ class Message
 public:
 	Message(int size = 0);
 		/// Constructor. Creates a message with a buffer of the given size.
+
+	explicit Message(const MQBYTE* buffer, MQLONG size);
+		/// Constructor. Note: Message doesn't own the buffer. In this case
+		/// the Buffer class only acts as a wrapper around the externally
+		/// supplied memory.
 	
 	Buffer& buffer();
 		/// Returns the buffer used for storing the content of the message.
-	
+
 	const Buffer& buffer() const;
 		/// Returns a const reference to the content of the message.
 	
 	void clear();
 		/// Clears the content and the fields of the message.
 
-	BufferPtr getAccountingToken() const;
+	Buffer::Ptr getAccountingToken() const;
 		/// Gets the accounting token
 
 	std::string getAccountingTokenHex() const;
@@ -75,7 +80,7 @@ public:
 	MQLONG backoutCount() const;
 		// Returns the backout counter
 
-	BufferPtr getCorrelationId() const;
+	Buffer::Ptr getCorrelationId() const;
 		/// Returns a copy of the correlation id in a buffer
 
 	std::string getCorrelationIdHex() const;
@@ -123,7 +128,7 @@ public:
 	void setFormat(const std::string& format);
 		/// Sets the format
 
-	BufferPtr getGroupId() const;
+	Buffer::Ptr getGroupId() const;
 		/// Returns the group identifier
 
 	std::string getGroupIdHex() const;
@@ -144,19 +149,19 @@ public:
 	void setMsgFlags(MQLONG flags);
 		/// Sets the message flags
 
-	BufferPtr getMessageId() const;
+	Buffer::Ptr getMessageId();
 		/// Returns a the message id as a Buffer
 
-	std::string getMessageIdHex() const;
+	Buffer::Ptr getMessageId() const;
+		/// Returns a the message id as a Buffer
+
+//	std::string getMessageIdHex() const;
 		/// Returns the message id in a hex format
 
-	bool isEmptyMessageId() const;
-		/// Returns true when the message id contains only 0-bytes
-
-	void setMessageId(const Buffer& buffer);
+//	void setMessageId(const Buffer& buffer);
 		/// Sets the message id from a buffer
 
-	void setMessageId(const std::string& hex);
+//	void setMessageId(const std::string& hex);
 		/// Sets the message id from a hex string
 
 	MQLONG getMsgSeqNumber() const;
@@ -234,9 +239,6 @@ public:
 	std::string getUser() const;
 		/// Returns the name of the user
 
-	static std::string getBufferAsHex(const MQBYTE* buffer, long size);
-		/// Returns a buffer content as hex
-
 private:
 
 	Buffer _buffer;
@@ -253,9 +255,7 @@ private:
 
 	friend class Queue;
 
-	static void copyBuffer(MQBYTE* target, const Buffer& buffer, long maxSize);
-
-	static bool isEmptyBuffer(const MQBYTE* buffer, long size);
+	friend class MessageConsumer;
 
 	static void setBufferFromHex(MQBYTE* buffer, long size, const std::string& hex);
 };
@@ -263,18 +263,18 @@ private:
 
 inline std::string Message::getAccountingTokenHex() const
 {
-	return getBufferAsHex(_md.AccountingToken, MQ_ACCOUNTING_TOKEN_LENGTH);
+	return Buffer((const MQBYTE*) _md.AccountingToken, MQ_ACCOUNTING_TOKEN_LENGTH).toHex();
 }
 
 
 inline void Message::setAccountingToken(const Buffer& buffer)
 {
-	copyBuffer(_md.AccountingToken, buffer, MQ_ACCOUNTING_TOKEN_LENGTH);
+	buffer.copyTo(_md.AccountingToken, MQ_ACCOUNTING_TOKEN_LENGTH);
 }
 
-inline BufferPtr Message::getAccountingToken() const
+inline Buffer::Ptr Message::getAccountingToken() const
 {
-	return new Buffer(_md.AccountingToken, MQ_ACCOUNTING_TOKEN_LENGTH);
+	return new Buffer((const MQBYTE*) _md.AccountingToken, MQ_ACCOUNTING_TOKEN_LENGTH);
 }
 
 
@@ -337,15 +337,15 @@ inline void Message::setCodedCharSetId(MQLONG ccsid)
 }
 
 
-inline BufferPtr Message::getCorrelationId() const
+inline Buffer::Ptr Message::getCorrelationId() const
 {
-	return new Buffer(_md.CorrelId, MQ_CORREL_ID_LENGTH);
+	return new Buffer((const MQBYTE*) _md.CorrelId, MQ_CORREL_ID_LENGTH);
 }
 
 
 inline std::string Message::getCorrelationIdHex() const
 {
-	return getBufferAsHex(_md.CorrelId, MQ_CORREL_ID_LENGTH);
+	return Buffer((const MQBYTE*) _md.CorrelId, MQ_CORREL_ID_LENGTH).toHex();
 }
 
 
@@ -357,19 +357,20 @@ inline MQLONG Message::dataLength() const
 
 inline bool Message::isEmptyCorrelationId() const
 {
-	return isEmptyBuffer(_md.CorrelId, MQ_CORREL_ID_LENGTH);
+	return Buffer(_md.CorrelId, MQ_CORREL_ID_LENGTH).hasAllNullBytes();
 }
 
 
 inline void Message::setCorrelationId(const Buffer& buffer)
 {
-	copyBuffer(_md.CorrelId, buffer, MQ_CORREL_ID_LENGTH);
+	buffer.copyTo(_md.CorrelId, MQ_CORREL_ID_LENGTH);
 }
 
 
 inline void Message::setCorrelationId(const std::string& hex)
 {
-	setBufferFromHex(_md.CorrelId, MQ_CORREL_ID_LENGTH, hex);
+	Buffer b(hex);
+	b.copyTo(_md.CorrelId, MQ_CORREL_ID_LENGTH);
 }
 
 
@@ -427,33 +428,34 @@ inline MQMD* Message::md()
 }
 
 
-inline BufferPtr Message::getGroupId() const
+inline Buffer::Ptr Message::getGroupId() const
 {
-	return new Buffer(_md.GroupId, MQ_GROUP_ID_LENGTH);
+	return new Buffer((const MQBYTE*) _md.GroupId, MQ_GROUP_ID_LENGTH);
 }
 
 
 inline bool Message::isEmptyGroupId() const
 {
-	return isEmptyBuffer(_md.GroupId, MQ_GROUP_ID_LENGTH);
+	return Buffer(_md.GroupId, MQ_GROUP_ID_LENGTH).hasAllNullBytes();
 }
 
 
 inline void Message::setGroupId(const Buffer& buffer)
 {
-	copyBuffer(_md.GroupId, buffer, MQ_GROUP_ID_LENGTH);
+	buffer.copyTo(_md.GroupId, MQ_GROUP_ID_LENGTH);
 }
 
 
 inline void Message::setGroupId(const std::string& hex)
 {
-	setBufferFromHex(_md.GroupId, MQ_GROUP_ID_LENGTH, hex);
+	Buffer b(hex);
+	b.copyTo(_md.GroupId, MQ_GROUP_ID_LENGTH);
 }
 
 
 inline std::string Message::getGroupIdHex() const
 {
-	return getBufferAsHex(_md.GroupId, MQ_GROUP_ID_LENGTH);
+	return Buffer((const MQBYTE*) _md.GroupId, MQ_GROUP_ID_LENGTH).toHex();
 }
 
 
@@ -469,33 +471,34 @@ inline void Message::setMsgFlags(MQLONG flags)
 }
 
 
-inline BufferPtr Message::getMessageId() const
+inline Buffer::Ptr Message::getMessageId()
 {
 	return new Buffer(_md.MsgId, MQ_MSG_ID_LENGTH);
 }
 
 
-inline bool Message::isEmptyMessageId() const
+inline Buffer::Ptr Message::getMessageId() const
 {
-	return isEmptyBuffer(_md.MsgId, MQ_MSG_ID_LENGTH);
+	return new Buffer(_md.MsgId, MQ_MSG_ID_LENGTH);
 }
 
+/*
 inline void Message::setMessageId(const Buffer& buffer)
 {
-	copyBuffer(_md.MsgId, buffer, MQ_MSG_ID_LENGTH);
+	buffer.copyTo(_md.MsgId, MQ_MSG_ID_LENGTH);
 }
-
 
 inline void Message::setMessageId(const std::string& hex)
 {
-	setBufferFromHex(_md.MsgId, MQ_MSG_ID_LENGTH, hex);
+	Buffer b(hex);
+	b.copyTo(_md.MsgId, MQ_MSG_ID_LENGTH);
 }
-
 
 inline std::string Message::getMessageIdHex() const
 {
-	return getBufferAsHex(_md.MsgId, MQ_MSG_ID_LENGTH);
+	return Buffer((const MQBYTE*) _md.MsgId, MQ_MSG_ID_LENGTH).toHex();
 }
+*/
 
 
 inline MQLONG Message::getMsgSeqNumber() const

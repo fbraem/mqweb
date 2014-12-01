@@ -226,7 +226,8 @@ void MessageController::browse()
 		Message msg(teaser);
 		if ( ! messageId.empty() )
 		{
-			msg.setMessageId(messageId);
+			msg.getMessageId()->fromHex(messageId);
+//			msg.setMessageId(messageId);
 		}
 
 		try
@@ -258,7 +259,7 @@ void MessageController::browse()
 			{
 				msg.buffer().resize(msg.dataLength());
 			}
-			data = std::string(msg.buffer().begin(), msg.buffer().end());
+			data = msg.buffer().toString();
 			if ( teaser < msg.dataLength() )
 			{
 				data += " ...";
@@ -293,7 +294,7 @@ void MessageController::dump()
 
 	try
 	{
-		message.setMessageId(messageId);
+		message.getMessageId()->fromHex(messageId);
 	}
 	catch(Poco::DataFormatException&)
 	{
@@ -320,7 +321,7 @@ void MessageController::dump()
 			if ( size > 1024 * 16) size = 1024 * 16;
 			message.buffer().resize(size);
 			message.clear();
-			message.setMessageId(messageId);
+			message.getMessageId()->fromHex(messageId);
 
 			try
 			{
@@ -350,7 +351,7 @@ void MessageController::dump()
 	Poco::HexBinaryEncoder hexEncoder(oss);
 	hexEncoder.rdbuf()->setLineLength(0);
 	hexEncoder.rdbuf()->setUppercase(true);
-	hexEncoder.write((const char*) &message.buffer()[0], message.buffer().size());
+	hexEncoder.write((const char*) message.buffer().data(), message.buffer().size());
 
 	std::string fullHex = oss.str();
 	Poco::JSON::Object::Ptr jsonMessageDump = new Poco::JSON::Object();
@@ -391,7 +392,7 @@ void MessageController::dump()
 	int row = 0;
 	for(int i = 0; i < message.buffer().size(); ++i)
 	{
-		char ebcdic = EBCDIC_translate_ASCII[message.buffer()[i]];
+		char ebcdic = EBCDIC_translate_ASCII[message.buffer().chr(i)];
 
 		oss << (isprint((unsigned char) ebcdic) ? ebcdic : '.');
 		if ( (i + 1) % 16 == 0 )
@@ -418,7 +419,7 @@ void MessageController::dump()
 	row = 0;
 	for(int i = 0; i < message.buffer().size(); ++i)
 	{
-		oss << (isprint(message.buffer()[i]) ? (char) message.buffer()[i] : '.');
+		oss << (isprint(message.buffer().chr(i)) ? (char) message.buffer().chr(i) : '.');
 		if ( (i + 1) % 16 == 0 )
 		{
 			jsonMessageDump = jsonDump->getObject(row++);
@@ -505,7 +506,7 @@ void MessageController::event()
 		{
 			try
 			{
-				message.setMessageId(messageId);
+				message.getMessageId()->fromHex(messageId);
 			}
 			catch(Poco::DataFormatException&)
 			{
@@ -533,7 +534,7 @@ void MessageController::event()
 				message.clear();
 				if ( !messageId.empty() )
 				{
-					message.setMessageId(messageId);
+					message.getMessageId()->fromHex(messageId);
 				}
 				q.get(message, MQGMO_BROWSE_NEXT | MQGMO_CONVERT);
 			}
@@ -616,7 +617,7 @@ void MessageController::mapMessageToJSON(const Message& message, Poco::JSON::Obj
 	obj.set("Format", message.getFormat());
 	obj.set("Priority", message.getPriority());
 	obj.set("Persistence", message.getPersistence());
-	obj.set("MsgId", message.getMessageIdHex());
+	obj.set("MsgId", message.getMessageId()->toHex());
 	obj.set("CorrelId", message.getCorrelationIdHex());
 	obj.set("BackoutCount", message.backoutCount());
 	obj.set("ReplyToQ", message.getReplyToQueue());

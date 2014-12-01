@@ -41,56 +41,10 @@ Message::Message(int size)
 {
 }
 
-
-std::string Message::getBufferAsHex(const MQBYTE* buffer, long size)
+Message::Message(const MQBYTE* buffer, MQLONG size)
+	: _buffer(buffer, size)
 {
-	std::ostringstream oss;
-
-	Poco::HexBinaryEncoder hexEncoder(oss);
-	hexEncoder.rdbuf()->setLineLength(0);
-	hexEncoder.rdbuf()->setUppercase(true);
-	hexEncoder.write((const char*) buffer, size);
-	hexEncoder.close();
-
-	return oss.str();
 }
-
-
-void Message::setBufferFromHex(MQBYTE* buffer, long size, const std::string& hex)
-{
-	std::istringstream iss(hex);
-	Poco::HexBinaryDecoder decoder(iss);
-	int c = decoder.get();
-	int i = 0;
-	while (c != -1 && i < size)
-	{
-		buffer[i++] = (unsigned char) c;
-		c = decoder.get();
-	}
-}
-
-
-void Message::copyBuffer(MQBYTE* target, const Buffer& buffer, long maxSize)
-{
- 	std::memset(target, 0, maxSize);
-	std::memcpy(target, 
-				buffer.begin(), 
-				buffer.size() > maxSize ? maxSize : buffer.size());
-}
-
-
-bool Message::isEmptyBuffer(const MQBYTE* buffer, long size)
-{
-	for(long i = 0; i < size; i++)
-	{
-		if ( buffer[i] != 0 )
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
 
 Poco::DateTime Message::getPutDate() const
 {
