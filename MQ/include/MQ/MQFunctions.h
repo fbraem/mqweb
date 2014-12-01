@@ -33,28 +33,34 @@
 namespace MQ {
 
 
-typedef void (*ConnFn)(PMQCHAR, PMQHCONN, PMQLONG, PMQLONG);
+typedef void (*ConnFn)(MQCHAR*, MQHCONN*, MQLONG*, MQLONG*);
 
 
-typedef void (*ConnxFn)(PMQCHAR, PMQCNO, PMQHCONN, PMQLONG, PMQLONG);
+typedef void (*ConnxFn)(MQCHAR*, MQCNO*, MQHCONN*, MQLONG*, MQLONG*);
 
 
-typedef void (*OpenFn)(MQHCONN, PMQOD, MQLONG, PMQHOBJ, PMQLONG, PMQLONG);
+typedef void (*OpenFn)(MQHCONN, MQOD*, MQLONG, MQHOBJ*, MQLONG*, MQLONG*);
 
 
-typedef void (*PutFn) (MQHCONN, MQHOBJ, PMQMD, PMQPMO, MQLONG, PMQBYTE, PMQLONG, PMQLONG);
+typedef void (*PutFn) (MQHCONN, MQHOBJ, MQMD*, MQPMO*, MQLONG, MQBYTE*, MQLONG*, MQLONG*);
 
 
-typedef void (*GetFn) (MQHCONN, MQHOBJ, PMQMD, PMQGMO, MQLONG, PMQBYTE, PMQLONG, PMQLONG, PMQLONG);
+typedef void (*GetFn) (MQHCONN, MQHOBJ, MQMD*, MQGMO*, MQLONG, MQBYTE*, MQLONG*, MQLONG*, MQLONG*);
 
 
-typedef void (*CloseFn)(MQHCONN, PMQHOBJ, MQLONG, PMQLONG, PMQLONG);
+typedef void (*CloseFn)(MQHCONN, MQHOBJ*, MQLONG, MQLONG*, MQLONG*);
 
 
-typedef void (*DiscFn)(PMQHCONN, PMQLONG, PMQLONG);
+typedef void (*DiscFn)(MQHCONN*, MQLONG*, MQLONG*);
 
 
-typedef void (*InqFn)(MQHCONN, MQHOBJ, MQLONG, PMQLONG, MQLONG, PMQLONG, MQLONG, PMQCHAR, PMQLONG, PMQLONG);
+typedef void (*InqFn)(MQHCONN, MQHOBJ, MQLONG, MQLONG*, MQLONG, MQLONG*, MQLONG, MQCHAR*, MQLONG*, MQLONG*);
+
+
+typedef void (*CbFn)(MQHCONN, MQLONG, MQCBD*, MQHOBJ, MQMD*, MQGMO*, MQLONG*, MQLONG*);
+
+
+typedef void (*CtlFn)(MQHCONN, MQLONG, MQCTLO*, MQLONG*, MQLONG*);
 
 class MQFunctions
 	/// Helper class for calling Websphere MQ functions dynamically. Depending on the loaded library
@@ -78,53 +84,65 @@ public:
 	MQHCONN conn(const std::string& qmgrName);
 		/// Calls MQCONN. Can throw an MQException.
 
-	void conn(PMQCHAR qmgrName, PMQHCONN hconn, PMQLONG cc, PMQLONG rc);
+	void conn(MQCHAR* qmgrName, MQHCONN* hconn, MQLONG* cc, MQLONG* rc);
 		/// Calls MQCONN. Doesn't throw an MQException.
 
-	void connx(PMQCHAR qmgrName, PMQCNO connectOpts, PMQHCONN hconn, PMQLONG cc, PMQLONG rc);
+	void connx(MQCHAR* qmgrName, MQCNO* connectOpts, MQHCONN* hconn, MQLONG* cc, MQLONG* rc);
 		/// Calls MQCONNX. Doesn't throw an MQException.
 
-	MQHCONN connx(const std::string& qmgrName, PMQCNO connectOpts);
+	MQHCONN connx(const std::string& qmgrName, MQCNO* connectOpts);
 		/// Calls MQCONNX. Can throw an MQException.
 
-	void open(MQHCONN conn, PMQOD od, MQLONG options, PMQHOBJ obj, PMQLONG cc, PMQLONG rc);
+	void open(MQHCONN conn, MQOD* od, MQLONG options, MQHOBJ* obj, MQLONG* cc, MQLONG* rc);
 		/// Calls MQOPEN. Doesn't throw an MQException.
 
-	MQHOBJ open(MQHCONN conn, PMQOD od, MQLONG options);
+	MQHOBJ open(MQHCONN conn, MQOD* od, MQLONG options);
 		/// Calls MQOPEN. Can throw an MQException.
 
-	void put(MQHCONN conn, MQHOBJ obj, PMQMD md, PMQPMO options, MQLONG size, PMQBYTE buffer, PMQLONG cc, PMQLONG rc);
+	void put(MQHCONN conn, MQHOBJ obj, MQMD* md, MQPMO* options, MQLONG size, MQBYTE* buffer, MQLONG* cc, MQLONG* rc);
 		/// Calls MQPUT. Doesn't throw an MQException.
 
-	void put(MQHCONN conn, MQHOBJ obj, PMQMD md, PMQPMO options, MQLONG size, PMQBYTE buffer);
+	void put(MQHCONN conn, MQHOBJ obj, MQMD* md, MQPMO* options, MQLONG size, MQBYTE* buffer);
 		/// Calls MQPUT. Can throw an MQException.
 
-	void get(MQHCONN conn, MQHOBJ obj, PMQMD md, PMQGMO options, MQLONG size, PMQBYTE buffer, PMQLONG dataLength, PMQLONG cc, PMQLONG rc);
+	void get(MQHCONN conn, MQHOBJ obj, MQMD* md, MQGMO* options, MQLONG size, MQBYTE* buffer, MQLONG* dataLength, MQLONG* cc, MQLONG* rc);
 		/// Calls MQGET. Doesn't throw an MQException.
 
-	void get(MQHCONN conn, MQHOBJ obj, PMQMD md, PMQGMO options, MQLONG size, PMQBYTE buffer, PMQLONG dataLength);
+	void get(MQHCONN conn, MQHOBJ obj, MQMD* md, MQGMO* options, MQLONG size, MQBYTE* buffer, MQLONG* dataLength);
 		/// Calls MQGET. Can throw an MQException.
 
-	void close(MQHCONN conn, MQHOBJ* obj, MQLONG options, PMQLONG cc, PMQLONG rc);
+	void close(MQHCONN conn, MQHOBJ* obj, MQLONG options, MQLONG* cc, MQLONG* rc);
 		/// Calls MQCLOSE. Doesn't throw an MQException.
 
 	void close(MQHCONN conn, MQHOBJ* obj, MQLONG options);
 		/// Calls MQCLOSE. Can throw an MQException.
 
-	void disc(PMQHCONN conn, PMQLONG cc, PMQLONG rc);
+	void disc(MQHCONN* conn, MQLONG* cc, MQLONG* rc);
 		/// Calls MQDISC. Doesn't throw an MQException.
 
-	void disc(PMQHCONN conn);
+	void disc(MQHCONN* conn);
 		/// Calls MQDISC. Can throw an MQException.
 
-	void inq(MQHCONN conn, MQHOBJ obj, MQLONG selectorCount, PMQLONG selectors, MQLONG intAttrCount, PMQLONG intAttrs, MQLONG charAttrLength, PMQCHAR charAttrs, PMQLONG cc, PMQLONG rc);
+	void inq(MQHCONN conn, MQHOBJ obj, MQLONG selectorCount, MQLONG* selectors, MQLONG intAttrCount, MQLONG* intAttrs, MQLONG charAttrLength, MQCHAR* charAttrs, MQLONG* cc, MQLONG* rc);
 		/// Calls MQINQ. Doesn't throw an MQException.
 
-	void inq(MQHCONN conn, MQHOBJ obj, MQLONG selectorCount, PMQLONG selectors, MQLONG intAttrCount, PMQLONG intAttrs, MQLONG charAttrLength, PMQCHAR charAttrs);
+	void inq(MQHCONN conn, MQHOBJ obj, MQLONG selectorCount, MQLONG* selectors, MQLONG intAttrCount, MQLONG* intAttrs, MQLONG charAttrLength, MQCHAR* charAttrs);
 		/// Calls MQCLOSE. Can throw an MQException.
 
 	void inq(MQHCONN conn, MQHOBJ obj, const std::vector<int>& intSelectors, const std::map<int, int>& charSelectors, std::map<int, int>& intResult, std::map<int, std::string>& charResult);
 		/// Calls MQCLOSE. Can throw an MQException.
+
+	void cb(MQHCONN conn, MQLONG operation, MQCBD* callbackDesc, MQHOBJ obj, MQMD* md, MQGMO* gmo, MQLONG* cc, MQLONG* rc);
+		/// Calls MQCB. Doesn't throw an MQException.
+
+	void cb(MQHCONN conn, MQLONG operation, MQCBD* callbackDesc, MQHOBJ obj, MQMD* md, MQGMO* gmo);
+		/// Calls MQCB. Can throw an MQException.
+
+	void ctl(MQHCONN conn, MQLONG operation, MQCTLO* options, MQLONG* cc, MQLONG* rc);
+		/// Calls MQCTL. Doesn't throw an MQException.
+
+	void ctl(MQHCONN conn, MQLONG operation, MQCTLO* options);
+		/// Calls MQCTL. Can throw an MQException.
 
 private:
 	Poco::SharedLibrary _dll;
@@ -145,7 +163,11 @@ private:
 
 	InqFn _inqFn;
 
-	void trace(const std::string& subject, const std::string& function, PMQLONG cc, PMQLONG rc);
+	CbFn _cbFn;
+
+	CtlFn _ctlFn;
+
+	void trace(const std::string& subject, const std::string& function, MQLONG* cc, MQLONG* rc);
 };
 
 inline bool MQFunctions::isOk() const

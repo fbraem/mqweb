@@ -67,9 +67,11 @@ void MQFunctions::loadLibrary(const std::string& mqLibrary)
 	_getFn = (GetFn) _dll.getSymbol("MQGET");
 	_discFn = (DiscFn) _dll.getSymbol("MQDISC");
 	_inqFn = (InqFn) _dll.getSymbol("MQINQ");
+	_cbFn = (CbFn) _dll.getSymbol("MQCB");
+	_ctlFn = (CtlFn) _dll.getSymbol("MQCTL");
 }
 
-void MQFunctions::conn(char* qmgrName, MQHCONN* hconn, PMQLONG cc, PMQLONG rc)
+void MQFunctions::conn(char* qmgrName, MQHCONN* hconn, MQLONG* cc, MQLONG* rc)
 {
 	poco_assert_dbg(_connFn != NULL);
 
@@ -98,7 +100,7 @@ MQHCONN MQFunctions::conn(const std::string& qmgrName)
 }
 
 
-void MQFunctions::connx(char* qmgrName, MQCNO* connectOpts, MQHCONN* hconn, PMQLONG cc, PMQLONG rc)
+void MQFunctions::connx(char* qmgrName, MQCNO* connectOpts, MQHCONN* hconn, MQLONG* cc, MQLONG* rc)
 {
 	poco_assert_dbg(_connxFn != NULL);
 
@@ -126,7 +128,7 @@ MQHCONN MQFunctions::connx(const std::string& qmgrName, MQCNO* connectOpts)
 	return qmgr;
 }
 
-void MQFunctions::open(MQHCONN conn, MQOD* od, MQLONG options, MQHOBJ* obj, PMQLONG cc, PMQLONG rc)
+void MQFunctions::open(MQHCONN conn, MQOD* od, MQLONG options, MQHOBJ* obj, MQLONG* cc, MQLONG* rc)
 {
 	poco_assert_dbg(_openFn != NULL);
 
@@ -172,7 +174,7 @@ MQHOBJ MQFunctions::open(MQHCONN conn, MQOD* od, MQLONG options)
 	return obj;
 }
 
-void MQFunctions::put(MQHCONN conn, MQHOBJ obj, MQMD* md, MQPMO* options, MQLONG size, MQBYTE* buffer, PMQLONG cc, PMQLONG rc)
+void MQFunctions::put(MQHCONN conn, MQHOBJ obj, MQMD* md, MQPMO* options, MQLONG size, MQBYTE* buffer, MQLONG* cc, MQLONG* rc)
 {
 	poco_assert_dbg(_putFn != NULL);
 
@@ -195,7 +197,7 @@ void MQFunctions::put(MQHCONN conn, MQHOBJ obj, MQMD* md, MQPMO* options, MQLONG
 }
 
 
-void MQFunctions::get(MQHCONN conn, MQHOBJ obj, MQMD* md, MQGMO* options, MQLONG size, MQBYTE* buffer, PMQLONG dataLength, PMQLONG cc, PMQLONG rc)
+void MQFunctions::get(MQHCONN conn, MQHOBJ obj, MQMD* md, MQGMO* options, MQLONG size, MQBYTE* buffer, MQLONG* dataLength, MQLONG* cc, MQLONG* rc)
 {
 	poco_assert_dbg(_getFn != NULL);
 
@@ -204,7 +206,7 @@ void MQFunctions::get(MQHCONN conn, MQHOBJ obj, MQMD* md, MQGMO* options, MQLONG
 	trace("", "MQGET", cc, rc);
 }
 
-void MQFunctions::get(MQHCONN conn, MQHOBJ obj, MQMD* md, MQGMO* options, MQLONG size, MQBYTE* buffer, PMQLONG dataLength)
+void MQFunctions::get(MQHCONN conn, MQHOBJ obj, MQMD* md, MQGMO* options, MQLONG size, MQBYTE* buffer, MQLONG* dataLength)
 {
 	MQLONG cc = MQCC_OK;
 	MQLONG rc = MQRC_NONE;
@@ -217,7 +219,7 @@ void MQFunctions::get(MQHCONN conn, MQHOBJ obj, MQMD* md, MQGMO* options, MQLONG
 	}
 }
 
-void MQFunctions::close(MQHCONN conn, MQHOBJ* obj, MQLONG options, PMQLONG cc, PMQLONG rc)
+void MQFunctions::close(MQHCONN conn, MQHOBJ* obj, MQLONG options, MQLONG* cc, MQLONG* rc)
 {
 	poco_assert_dbg(_closeFn != NULL);
 
@@ -238,7 +240,7 @@ void MQFunctions::close(MQHCONN conn, MQHOBJ* obj, MQLONG options)
 	}
 }
 
-void MQFunctions::disc(PMQHCONN conn, PMQLONG cc, PMQLONG rc)
+void MQFunctions::disc(PMQHCONN conn, MQLONG* cc, MQLONG* rc)
 {
 	poco_assert_dbg(_discFn != NULL);
 
@@ -259,7 +261,7 @@ void MQFunctions::disc(PMQHCONN conn)
 	}
 }
 
-void MQFunctions::inq(MQHCONN conn, MQHOBJ obj, MQLONG selectorCount, PMQLONG selectors, MQLONG intAttrCount, PMQLONG intAttrs, MQLONG charAttrLength, PMQCHAR charAttrs, PMQLONG cc, PMQLONG rc)
+void MQFunctions::inq(MQHCONN conn, MQHOBJ obj, MQLONG selectorCount, MQLONG* selectors, MQLONG intAttrCount, MQLONG* intAttrs, MQLONG charAttrLength, PMQCHAR charAttrs, MQLONG* cc, MQLONG* rc)
 {
 	poco_assert_dbg(_inqFn != NULL);
 
@@ -268,7 +270,7 @@ void MQFunctions::inq(MQHCONN conn, MQHOBJ obj, MQLONG selectorCount, PMQLONG se
 	trace("", "MQINQ", cc, rc);
 }
 
-void MQFunctions::inq(MQHCONN conn, MQHOBJ obj, MQLONG selectorCount, PMQLONG selectors, MQLONG intAttrCount, PMQLONG intAttrs, MQLONG charAttrLength, PMQCHAR charAttrs)
+void MQFunctions::inq(MQHCONN conn, MQHOBJ obj, MQLONG selectorCount, MQLONG* selectors, MQLONG intAttrCount, MQLONG* intAttrs, MQLONG charAttrLength, PMQCHAR charAttrs)
 {
 	MQLONG cc = MQCC_OK;
 	MQLONG rc = MQRC_NONE;
@@ -316,7 +318,49 @@ void MQFunctions::inq(MQHCONN conn, MQHOBJ obj, const std::vector<int>& intSelec
 	}
 }
 
-void MQFunctions::trace(const std::string& subject, const std::string& function, PMQLONG cc, PMQLONG rc)
+void MQFunctions::cb(MQHCONN conn, MQLONG operation, MQCBD* callbackDesc, MQHOBJ obj, MQMD* md, MQGMO* gmo, MQLONG* cc, MQLONG* rc)
+{
+	poco_assert_dbg(_cbFn != NULL);
+
+	_cbFn(conn, operation, callbackDesc, obj, md, gmo, cc, rc);
+
+	trace("", "MQCB", cc, rc);
+}
+
+void MQFunctions::cb(MQHCONN conn, MQLONG operation, MQCBD* callbackDesc, MQHOBJ obj, MQMD* md, MQGMO* gmo)
+{
+	MQLONG cc = MQCC_OK;
+	MQLONG rc = MQRC_NONE;
+
+	cb(conn, operation, callbackDesc, obj, md, gmo, &cc, &rc);
+	if ( cc != MQCC_OK )
+	{
+		throw MQException("", "MQCB", cc, rc);
+	}
+}
+
+void MQFunctions::ctl(MQHCONN conn, MQLONG operation, MQCTLO* options, MQLONG* cc, MQLONG* rc)
+{
+	poco_assert_dbg(_ctlFn != NULL);
+
+	_ctlFn(conn, operation, options, cc, rc);
+
+	trace("", "MQCTL", cc, rc);
+}
+
+void MQFunctions::ctl(MQHCONN conn, MQLONG operation, MQCTLO* options)
+{
+	MQLONG cc = MQCC_OK;
+	MQLONG rc = MQRC_NONE;
+
+	ctl(conn, operation, options, &cc, &rc);
+	if ( cc != MQCC_OK )
+	{
+		throw MQException("", "MQCTL", cc, rc);
+	}
+}
+
+void MQFunctions::trace(const std::string& subject, const std::string& function, MQLONG* cc, MQLONG* rc)
 {
 	Poco::Logger& logger = Poco::Logger::get("mq");
 	if ( logger.trace() )
