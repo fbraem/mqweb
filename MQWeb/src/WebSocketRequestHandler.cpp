@@ -26,8 +26,10 @@
 #include "MQ/QueueManagerPool.h"
 #include "MQ/Web/QueueManagerPoolCache.h"
 
+#include "Poco/URI.h"
 #include "Poco/Net/WebSocket.h"
 #include "Poco/Net/NetException.h"
+#include "Poco/Net/HTTPServerRequest.h"
 #include "Poco/Net/HTTPServerResponse.h"
 #include "Poco/Task.h"
 
@@ -109,13 +111,24 @@ WebSocketRequestHandler::WebSocketRequestHandler() : HTTPRequestHandler()
 
 void WebSocketRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
 {
-	std::string qmgrName = "EAGLE";
+	Poco::URI uri(request.getURI());
+
+	std::vector<std::string> paths;
+	uri.getPathSegments(paths);
+
+	if ( paths.size() < 2 )
+	{
+		response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "Missing path parameters");
+		response.setContentLength(0);
+		response.send();
+		return;
+	}
 
 	try
 	{
 		Poco::SharedPtr<Poco::Net::WebSocket> ws = new Poco::Net::WebSocket(request, response);
 		MQWebApplication& app = (MQWebApplication&) MQWebApplication::instance();
-		app.taskManager().start(new MessageConsumerTask(ws, "EAGLE", "WEBSOCKET.Q01"));
+		app.taskManager().start(new MessageConsumerTask(ws, paths[0], paths[1]));
 	}
 	catch (Poco::Net::WebSocketException& exc)
 	{
