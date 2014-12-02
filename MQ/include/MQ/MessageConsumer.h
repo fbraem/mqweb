@@ -72,12 +72,9 @@ public:
 		SUSPENDED
 	};
 
-	void setMessageId(const Buffer& buffer);
+	Buffer::Ptr messageId();
 
-	void setMessageId(const std::string& hex);
-
-	void setCorrelId(const std::string& hex);
-
+	Buffer::Ptr correlId();
 
 private:
 
@@ -88,8 +85,6 @@ private:
 
 	Queue _queue;
 
-	MQCBD _cbd;
-
 	MQMD _md;
 
 	MQGMO _gmo;
@@ -98,23 +93,19 @@ private:
 
 	Notifiable* _callee;
 
-	static MQCBD _initialCBD;
-
 	static MQGMO _initialGMO;
 };
 
-inline void MessageConsumer::setMessageId(const Buffer& buffer)
+inline Buffer::Ptr MessageConsumer::messageId()
 {
-	buffer.copyTo(_md.MsgId, MQ_MSG_ID_LENGTH);
-	_gmo.MatchOptions |= MQMO_MATCH_MSG_ID;
+	return new Buffer(_md.MsgId, MQ_MSG_ID_LENGTH);
 }
 
-
-inline void MessageConsumer::setMessageId(const std::string& hex)
+inline Buffer::Ptr MessageConsumer::correlId()
 {
-	Message::setBufferFromHex(_md.MsgId, MQ_MSG_ID_LENGTH, hex);
-	_gmo.MatchOptions |= MQMO_MATCH_MSG_ID;
+	return new Buffer(_md.CorrelId, MQ_CORREL_ID_LENGTH);
 }
+
 
 } // namespace QM
 

@@ -50,27 +50,44 @@ public:
 		/// Destructor
 
 	unsigned char chr(std::size_t pos = 0) const;
+		/// Returns the character on the given position
 
 	void clear();
 		/// Clears the buffer
 
 	void copyTo(MQBYTE* target, std::size_t size) const;
+		/// Copies the buffer to the target
 
-	unsigned char* data(std::size_t pos = 0);
+	MQBYTE* data(std::size_t pos = 0);
+		/// Returns a pointer to the given position
 
-	const unsigned char* data(std::size_t pos = 0) const;
+	const MQBYTE* data(std::size_t pos = 0) const;
+		/// Returns a pointer to the given position (const version)
 
 	bool hasAllNullBytes() const;
+		/// Returns true when all bytes are null bytes
 
 	size_t size() const;
+		/// Returns the size
 
 	std::string toString() const;
+		/// Constructs a string from the buffer
 
 	void fromHex(const std::string& hex);
+		/// Decodes the hexadecimal string and fills the 
+		/// buffer until the size of the buffer is reached.
+
+	void set(const Buffer& buffer);
+		/// Copies the content of the buffer into this buffer.
+
+	void set(const Buffer::Ptr& buffer);
+		/// Copies the content of the buffer into this buffer.
 
 	std::string toHex() const;
+		/// Encodes the buffer as hex
 
-	void resize(std::size_t sizen, bool preserveContent = true);
+	void resize(std::size_t size, bool preserveContent = true);
+		/// Resizes the buffer
 
 private:
 
@@ -80,7 +97,7 @@ private:
 	Poco::Buffer<MQBYTE> _buffer;
 };
 
-inline unsigned char Buffer::chr(std::size_t pos) const
+inline MQBYTE Buffer::chr(std::size_t pos) const
 {
 	poco_assert_dbg(pos < _buffer.size());
 	return _buffer[pos];
@@ -99,13 +116,13 @@ inline void Buffer::copyTo(MQBYTE* target, std::size_t size) const
 				_buffer.size() > size ? size : _buffer.size());
 }
 
-inline const unsigned char* Buffer::data(std::size_t pos) const
+inline const MQBYTE* Buffer::data(std::size_t pos) const
 {
 	poco_assert_dbg(pos < _buffer.size());
 	return &_buffer[pos];
 }
 
-inline unsigned char* Buffer::data(std::size_t pos)
+inline MQBYTE* Buffer::data(std::size_t pos)
 {
 	poco_assert_dbg(pos < _buffer.size());
 	return &_buffer[pos];
@@ -121,6 +138,16 @@ inline bool Buffer::hasAllNullBytes() const
 		}
 	}
 	return true;
+}
+
+inline void Buffer::set(const Buffer& buffer)
+{
+	_buffer.assign(buffer.data(), buffer.size());
+}
+
+inline void Buffer::set(const Buffer::Ptr& buffer)
+{
+	_buffer.assign(buffer->data(), buffer->size());
 }
 
 inline size_t Buffer::size() const

@@ -226,8 +226,7 @@ void MessageController::browse()
 		Message msg(teaser);
 		if ( ! messageId.empty() )
 		{
-			msg.getMessageId()->fromHex(messageId);
-//			msg.setMessageId(messageId);
+			msg.messageId()->fromHex(messageId);
 		}
 
 		try
@@ -294,7 +293,7 @@ void MessageController::dump()
 
 	try
 	{
-		message.getMessageId()->fromHex(messageId);
+		message.messageId()->fromHex(messageId);
 	}
 	catch(Poco::DataFormatException&)
 	{
@@ -321,7 +320,7 @@ void MessageController::dump()
 			if ( size > 1024 * 16) size = 1024 * 16;
 			message.buffer().resize(size);
 			message.clear();
-			message.getMessageId()->fromHex(messageId);
+			message.messageId()->fromHex(messageId);
 
 			try
 			{
@@ -506,7 +505,7 @@ void MessageController::event()
 		{
 			try
 			{
-				message.getMessageId()->fromHex(messageId);
+				message.messageId()->fromHex(messageId);
 			}
 			catch(Poco::DataFormatException&)
 			{
@@ -534,7 +533,7 @@ void MessageController::event()
 				message.clear();
 				if ( !messageId.empty() )
 				{
-					message.getMessageId()->fromHex(messageId);
+					message.messageId()->fromHex(messageId);
 				}
 				q.get(message, MQGMO_BROWSE_NEXT | MQGMO_CONVERT);
 			}
@@ -617,13 +616,13 @@ void MessageController::mapMessageToJSON(const Message& message, Poco::JSON::Obj
 	obj.set("Format", message.getFormat());
 	obj.set("Priority", message.getPriority());
 	obj.set("Persistence", message.getPersistence());
-	obj.set("MsgId", message.getMessageId()->toHex());
-	obj.set("CorrelId", message.getCorrelationIdHex());
+	obj.set("MsgId", message.messageId()->toHex());
+	obj.set("CorrelId", message.correlationId()->toHex());
 	obj.set("BackoutCount", message.backoutCount());
 	obj.set("ReplyToQ", message.getReplyToQueue());
 	obj.set("ReplyToQmgr", message.getReplyToQMgr());
 	obj.set("UserIdentifier", message.getUser());
-	obj.set("AccountingToken", message.getAccountingTokenHex());
+	obj.set("AccountingToken", message.accountingToken()->toHex());
 	obj.set("ApplIdentityData", message.getApplIdentityData());
 
 	const DisplayMap& applTypes = MQMapper::getDisplayMap("QueueStatus", MQIA_APPL_TYPE);
@@ -633,7 +632,7 @@ void MessageController::mapMessageToJSON(const Message& message, Poco::JSON::Obj
 	obj.set("PutApplName", message.getPutApplName());
 	obj.set("PutDate", Poco::DateTimeFormatter::format(message.getPutDate(), "%d-%m-%Y %H:%M:%S"));
 	obj.set("ApplOriginData", message.getApplOriginData());
-	obj.set("GroupId", message.getGroupIdHex());
+	obj.set("GroupId", message.groupId()->toHex());
 	obj.set("MsgSeqNumber", message.getMsgSeqNumber());
 	obj.set("Offset", message.getOffset());
 	obj.set("MsgFlags", message.getMsgFlags());

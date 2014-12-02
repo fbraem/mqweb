@@ -64,7 +64,7 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
 	do
 	{
 		msgResponse = new PCF(_qmgr.zos());
-		msgResponse->setCorrelationId(*command->getMessageId());
+		msgResponse->correlationId()->set(command->messageId());
 		msgResponse->buffer().resize(REPLY_MESSAGE_LEN, false);
 
 		try
@@ -83,7 +83,7 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
 				
 				msgResponse->buffer().resize(msgResponse->dataLength(), false);
 				msgResponse->clear();
-				msgResponse->setCorrelationId(*command->getMessageId());
+				msgResponse->correlationId()->set(command->messageId());
 				_replyQ.get(*msgResponse.get(), MQGMO_CONVERT | MQGMO_NO_SYNCPOINT);
 			}
 			else

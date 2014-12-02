@@ -28,13 +28,11 @@
 namespace MQ
 {
 
-MQCBD MessageConsumer::_initialCBD = { MQCBD_DEFAULT };
 MQGMO MessageConsumer::_initialGMO = { MQGMO_DEFAULT };
 
 MessageConsumer::MessageConsumer(QueueManager& qmgr, const std::string& queueName, Notifiable* callee)
 	: _qmgr(qmgr)
 	, _queue(qmgr, queueName)
-	, _cbd(_initialCBD)
 	, _md(Message::_initialMD)
 	, _gmo(MessageConsumer::_initialGMO)
 	, _state(DIRTY)
@@ -60,24 +58,22 @@ MessageConsumer::~MessageConsumer()
 
 void MessageConsumer::setup()
 {
-	// Register the callback
-	_cbd.CallbackFunction = (MQPTR) MessageConsumer::consume;
-	_cbd.CallbackArea = this;
+	MQCBD cbd = { MQCBD_DEFAULT };
+	cbd.CallbackFunction = (MQPTR) MessageConsumer::consume;
+	cbd.CallbackArea = this;
 
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
-	mqSystem.functions().cb(_qmgr.handle(), MQOP_REGISTER, &_cbd, _queue.handle(), &_md, &_gmo);
+	mqSystem.functions().cb(_qmgr.handle(), MQOP_REGISTER, &cbd, _queue.handle(), &_md, &_gmo);
 
 	_state = READY;
 }
 
 void MessageConsumer::clear()
 {
-	// Register the callback
-	_cbd.CallbackFunction = (MQPTR) MessageConsumer::consume;
-	_cbd.CallbackArea = this;
+	MQCBD cbd = { MQCBD_DEFAULT };
 
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
-	mqSystem.functions().cb(_qmgr.handle(), MQOP_DEREGISTER, &_cbd, _queue.handle(), &_md, &_gmo);
+	mqSystem.functions().cb(_qmgr.handle(), MQOP_DEREGISTER, &cbd, _queue.handle(), &_md, &_gmo);
 
 	_state = DIRTY;
 }

@@ -96,12 +96,12 @@ void Queue::get(Message& msg, MQLONG options, long wait)
 {
 	MQGMO gmo = { MQGMO_DEFAULT };
 
-	if ( ! msg.getMessageId()->hasAllNullBytes() )
+	if ( ! msg.messageId()->hasAllNullBytes() )
 	{
 		gmo.MatchOptions |= MQMO_MATCH_MSG_ID;
 	}
 
-	if ( ! msg.isEmptyCorrelationId() )
+	if ( ! msg.correlationId()->hasAllNullBytes() )
 	{
 		gmo.MatchOptions |= MQMO_MATCH_CORREL_ID;
 	}
