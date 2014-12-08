@@ -105,7 +105,7 @@ void MessageConsumer::stop()
 
 void MessageConsumer::consume(MQHCONN conn, MQMD* md, MQGMO* gmo, MQBYTE* buffer, MQCBC* context)
 {
-	Message msg(buffer, context->BufferLength);
+	Message msg(buffer, context->DataLength);
 
 	MessageConsumer* consumer = (MessageConsumer*)context->CallbackArea;
 	consumer->_callee->onMessage(msg);
