@@ -45,6 +45,10 @@ public:
 	{
 		poco_assert_dbg(! queueManagerPoolGuard.isNull());
 
+		Poco::Timespan ts(600, 0);
+		_ws->setReceiveTimeout(ts);
+		_ws->setSendTimeout(ts);
+
 		QueueManager::Ptr qmgr = queueManagerPoolGuard->getObject();
 		_consumer = new MessageConsumer(*qmgr, queueName, this);
 	}
@@ -73,10 +77,16 @@ public:
 	{
 		_consumer->start();
 
-		while(!sleep(5000))
+		char buffer[1024];
+		int n;
+		int flags;
+		do
 		{
+			n = _ws->receiveFrame(buffer, sizeof(buffer), flags);
 			std::cout << "Number of messages: so far ... " << _count << std::endl;
 		}
+		while (n > 0 && (flags & Poco::Net::WebSocket::FRAME_OP_BITMASK) != Poco::Net::WebSocket::FRAME_OP_CLOSE);
+		std::cout << "WebSocket connection closed." << std::endl;
 	}
 
 	void onMessage(const Message& msg)
