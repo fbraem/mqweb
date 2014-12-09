@@ -85,7 +85,7 @@ public:
 			n = _ws->receiveFrame(buffer, sizeof(buffer), flags);
 			std::cout << "Number of messages: so far ... " << _count << std::endl;
 		}
-		while (n > 0 && (flags & Poco::Net::WebSocket::FRAME_OP_BITMASK) != Poco::Net::WebSocket::FRAME_OP_CLOSE);
+		while (n > 0 || (flags & Poco::Net::WebSocket::FRAME_OP_BITMASK) != Poco::Net::WebSocket::FRAME_OP_CLOSE);
 		std::cout << "WebSocket connection closed." << std::endl;
 	}
 
