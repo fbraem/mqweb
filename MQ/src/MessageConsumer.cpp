@@ -72,6 +72,11 @@ void MessageConsumer::clear()
 {
 	MQCBD cbd = { MQCBD_DEFAULT };
 
+	if ( _state == STARTED )
+	{
+		stop();
+	}
+
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
 	mqSystem.functions().cb(_qmgr.handle(), MQOP_DEREGISTER, &cbd, _queue.handle(), &_md, &_gmo);
 
