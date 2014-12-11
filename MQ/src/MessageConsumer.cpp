@@ -30,13 +30,12 @@ namespace MQ
 
 MQGMO MessageConsumer::_initialGMO = { MQGMO_DEFAULT };
 
-MessageConsumer::MessageConsumer(QueueManager& qmgr, const std::string& queueName, Notifiable* callee)
+MessageConsumer::MessageConsumer(QueueManager& qmgr, const std::string& queueName)
 	: _qmgr(qmgr)
 	, _queue(qmgr, queueName)
 	, _md(Message::_initialMD)
 	, _gmo(MessageConsumer::_initialGMO)
 	, _state(DIRTY)
-	, _callee(callee)
 {
 	_queue.open(MQOO_INPUT_SHARED | MQOO_FAIL_IF_QUIESCING);
 }
@@ -110,10 +109,11 @@ void MessageConsumer::stop()
 
 void MessageConsumer::consume(MQHCONN conn, MQMD* md, MQGMO* gmo, MQBYTE* buffer, MQCBC* context)
 {
-	Message msg(buffer, context->DataLength);
+	Poco::SharedPtr<Message> msg = new Message(buffer, context->DataLength);
+	memcpy(msg->md(), md, sizeof(MQMD));
 
-	MessageConsumer* consumer = (MessageConsumer*)context->CallbackArea;
-	consumer->_callee->onMessage(msg);
+	MessageConsumer* consumer = reinterpret_cast<MessageConsumer*>(context->CallbackArea);
+	consumer->message.notify(consumer, msg);
 }
 
 }

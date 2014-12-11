@@ -32,19 +32,13 @@ namespace MQ
 
 class MessageConsumer
 	/// Implemenst a message consumer.
-	/// Notifiable::onMessage will be called when a message is received.
 	/// Note: the message buffer is only valid (the Message class doesn't
-	/// own it) when used in the onMessage call. If you need it after this 
+	/// own it) when used in the callback. If you need it after this 
 	/// call, you need to copy it!
 {
 public:
 
-	class Notifiable {
-	public:
-		virtual void onMessage(const Message& msg) = 0;
-	};
-
-	MessageConsumer(QueueManager& qmgr, const std::string& queueName, Notifiable* callee);
+	MessageConsumer(QueueManager& qmgr, const std::string& queueName);
 		/// Constructor. Can throw a MQException.
 
 	virtual ~MessageConsumer();
@@ -76,6 +70,10 @@ public:
 
 	Buffer::Ptr correlId();
 
+	typedef Poco::BasicEvent<Poco::SharedPtr<Message> > Event;
+
+	Event message;
+
 private:
 
 	static void consume(MQHCONN conn, MQMD* md, MQGMO* gmo, MQBYTE* buffer, MQCBC* context);
@@ -90,8 +88,6 @@ private:
 	MQGMO _gmo;
 
 	State _state;
-
-	Notifiable* _callee;
 
 	static MQGMO _initialGMO;
 };
