@@ -37,7 +37,7 @@
 namespace MQ {
 namespace Web {
 
-class MessageConsumerTask : public Poco::Task, public MessageConsumer::Notifiable
+class MessageConsumerTask : public Poco::Task
 {
 public:
 	MessageConsumerTask(Poco::SharedPtr<Poco::Net::WebSocket> ws, QueueManagerPoolGuard::Ptr queueManagerPoolGuard, const std::string& queueName) 
@@ -50,15 +50,19 @@ public:
 		_ws->setSendTimeout(ts);
 
 		QueueManager::Ptr qmgr = queueManagerPoolGuard->getObject();
-		_consumer = new MessageConsumer(*qmgr, queueName, this);
+		_consumer = new MessageConsumer(*qmgr, queueName);
+		_consumer->message+= Poco::delegate(this, &MessageConsumerTask::onMessage);
 	}
 
 	virtual ~MessageConsumerTask()
 	{
+		_consumer->message-= Poco::delegate(this, &MessageConsumerTask::onMessage);
 	}
 
 	void cancel()
 	{
+		poco_debug(_logger, "MessageConsumerTask cancelling ...");
+
 		try
 		{
 			_consumer->stop();
@@ -71,6 +75,8 @@ public:
 		_ws->close();
 
 		Poco::Task::cancel();
+
+		poco_debug(_logger, "MessageConsumerTask cancelled.");
 	}
 
 	void runTask()
@@ -83,16 +89,18 @@ public:
 		do
 		{
 			n = _ws->receiveFrame(buffer, sizeof(buffer), flags);
-			std::cout << "Number of messages: so far ... " << _count << std::endl;
+			poco_trace_f1(_logger, "Number of messages: so far %d", _count);
 		}
 		while (n > 0 || (flags & Poco::Net::WebSocket::FRAME_OP_BITMASK) != Poco::Net::WebSocket::FRAME_OP_CLOSE);
-		std::cout << "WebSocket connection closed." << std::endl;
+		poco_debug(_logger, "WebSocket connection closed.");
 	}
 
-	void onMessage(const Message& msg)
+	void onMessage(const void* pSender, Poco::SharedPtr<Message>& msg)
 	{
+		poco_trace_f1(_logger, "A message received %s", msg->messageId()->toHex());
+
 		_count++;
-		std::string messageContent = msg.buffer().toString();
+		std::string messageContent = msg->buffer().toString();
 		try
 		{
 			_ws->sendFrame(messageContent.c_str(), messageContent.size(), Poco::Net::WebSocket::FRAME_TEXT);
@@ -111,7 +119,11 @@ private:
 	Poco::SharedPtr<MessageConsumer> _consumer;
 
 	int _count;
+
+	static Poco::Logger& _logger;
 };
+
+Poco::Logger& MessageConsumerTask::_logger = Poco::Logger::get("mq.web");
 
 WebSocketRequestHandler::WebSocketRequestHandler() : HTTPRequestHandler()
 {
