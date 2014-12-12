@@ -1,3 +1,12 @@
+0.0.12
+  - Add inquire topic
+  - Add inquire topicstatus (tpstatus)
+  - Add inquire subscription (sub)
+  - Add inquire subscription status (sbstatus)
+  - Add suspend cluster qmgr
+  - Add resume cluster qmgr
+  - First steps in adding websocket for getting messages
+  
 0.0.11
   - Add inquire connection (conn)
   - Add inquire namelist (nl)
