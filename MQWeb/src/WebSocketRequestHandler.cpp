@@ -61,7 +61,8 @@ public:
 
 	void cancel()
 	{
-		poco_debug(_logger, "MessageConsumerTask cancelling ...");
+		Poco::Logger& logger = Poco::Logger::get("mq.web");
+		poco_debug(logger, "MessageConsumerTask cancelling ...");
 
 		try
 		{
@@ -76,11 +77,13 @@ public:
 
 		Poco::Task::cancel();
 
-		poco_debug(_logger, "MessageConsumerTask cancelled.");
+		poco_debug(logger, "MessageConsumerTask cancelled.");
 	}
 
 	void runTask()
 	{
+		Poco::Logger& logger = Poco::Logger::get("mq.web");
+
 		_consumer->start();
 
 		char buffer[1024];
@@ -89,15 +92,16 @@ public:
 		do
 		{
 			n = _ws->receiveFrame(buffer, sizeof(buffer), flags);
-			poco_trace_f1(_logger, "Number of messages: so far %d", _count);
+			poco_trace_f1(logger, "Number of messages: so far %d", _count);
 		}
 		while (n > 0 || (flags & Poco::Net::WebSocket::FRAME_OP_BITMASK) != Poco::Net::WebSocket::FRAME_OP_CLOSE);
-		poco_debug(_logger, "WebSocket connection closed.");
+		poco_debug(logger, "WebSocket connection closed.");
 	}
 
 	void onMessage(const void* pSender, Poco::SharedPtr<Message>& msg)
 	{
-		poco_trace_f1(_logger, "A message received %s", msg->messageId()->toHex());
+		Poco::Logger& logger = Poco::Logger::get("mq.web");
+		poco_trace_f1(logger, "A message received %s", msg->messageId()->toHex());
 
 		_count++;
 		std::string messageContent = msg->buffer().toString();
@@ -120,10 +124,7 @@ private:
 
 	int _count;
 
-	static Poco::Logger& _logger;
 };
-
-Poco::Logger& MessageConsumerTask::_logger = Poco::Logger::get("mq.web");
 
 WebSocketRequestHandler::WebSocketRequestHandler() : HTTPRequestHandler()
 {
