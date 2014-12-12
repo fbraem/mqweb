@@ -19,6 +19,7 @@
 * permissions and limitations under the Licence.
 */
 #include "MQ/MQSubsystem.h"
+#include "MQ/Web/Version.h"
 #include "MQ/Web/Application.h"
 #include "MQ/Web/RequestHandlerFactory.h"
 
@@ -85,18 +86,23 @@ void MQWebApplication::defineOptions(Poco::Util::OptionSet& options)
 		.repeatable(false));
 
 	options.addOption(
+	Option("version", "v", "display version")
+		.required(false)
+		.repeatable(false));
+
+	options.addOption(
 	Option("qmgr", "m", "connect only to this queuemanager")
 		.required(false)
 		.repeatable(false)
 		.binding("mq.web.qmgr")
-		.argument("name"));
+		.argument("<name>"));
 
 	options.addOption(
 	Option("port", "p", "Port for HTTP listener")
 		.required(false)
 		.repeatable(false)
 		.binding("mq.web.port")
-		.argument("port"));
+		.argument("<port>"));
 }
 
 void MQWebApplication::handleOption(const std::string& name, const std::string& value)
@@ -107,6 +113,11 @@ void MQWebApplication::handleOption(const std::string& name, const std::string& 
 	{
 		_helpRequested = true;
 	}
+
+	if ( name == "version" )
+	{
+		_versionRequested = true;
+	}
 }
 
 void MQWebApplication::displayHelp()
@@ -116,6 +127,12 @@ void MQWebApplication::displayHelp()
 	helpFormatter.setUsage("OPTIONS");
 	helpFormatter.setHeader("A web server for managing Websphere MQ.");
 	helpFormatter.format(std::cout);
+	displayVersion();
+}
+
+void MQWebApplication::displayVersion()
+{
+	std::cout << MQWEB_COMPLETE_VERSION << std::endl;
 }
 
 int MQWebApplication::main(const std::vector<std::string>& args)
@@ -123,6 +140,12 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 	if (_helpRequested)
 	{
 		displayHelp();
+		return Application::EXIT_OK;
+	}
+
+	if (_versionRequested)
+	{
+		displayVersion();
 		return Application::EXIT_OK;
 	}
 
