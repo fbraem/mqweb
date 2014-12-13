@@ -7,7 +7,7 @@ use JSON;
 use LWP::UserAgent;
 use HTTP::Request::Common;
 
-# Suspend a queuemanager in a cluster
+# Resume a queuemanager in a cluster
 
 my $qmgr = shift;
 die("Please pass me the name of a queuemanager as argument") 
@@ -25,7 +25,7 @@ my %input = (
 my $content = $json->encode(\%input);    
 
 my $ua = LWP::UserAgent->new;
-my $req = POST 'http://localhost:8081/api/clusqmgr/suspend/' . $qmgr;    
+my $req = POST 'http://localhost:8081/api/clusqmgr/resume/' . $qmgr;    
 $req->header(
 	'Content-Type' => 'application/json',
 	'Content-length' => length($content)
@@ -37,13 +37,13 @@ my $res = $ua->request($req);
 my $mqweb = $json->decode($res->content());
 
 if ( exists($mqweb->{error}) ) {
-	say 'An MQ error occurred while suspending queuemanager.';
+	say 'An MQ error occurred while resuming queuemanager.';
 	say 'Reason Code: '
 		, $mqweb->{error}->{reason}->{code}
 		, ' - '
 		, $mqweb->{error}->{reason}->{desc};
 }
 else {
-	say $qmgr, " is suspended in cluster ", $cluster;
+	say $qmgr, " is resumed in cluster ", $cluster;
 }
 
