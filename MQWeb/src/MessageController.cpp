@@ -392,7 +392,6 @@ void MessageController::dump()
 			jsonMessageDump = jsonDump->getObject(row++);
 			if ( !jsonMessageDump.isNull() )
 			{
-				//jsonMessageDump->set("ebcdic", htmlize(oss.str()));
 				jsonMessageDump->set("ebcdic", oss.str());
 				oss.str("");
 			}
@@ -401,9 +400,7 @@ void MessageController::dump()
 	jsonMessageDump = jsonDump->getObject(row);
 	if ( !jsonMessageDump.isNull() )
 	{
-		//jsonMessageDump->set("ebcdic", htmlize(oss.str()));
 		jsonMessageDump->set("ebcdic", oss.str());
-		oss.str("");
 	}
 
 	//ASCII
@@ -417,7 +414,6 @@ void MessageController::dump()
 			jsonMessageDump = jsonDump->getObject(row++);
 			if ( !jsonMessageDump.isNull() )
 			{
-				//jsonMessageDump->set("ascii", htmlize(oss.str()));
 				jsonMessageDump->set("ascii", oss.str());
 				oss.str("");
 			}
@@ -426,9 +422,7 @@ void MessageController::dump()
 	jsonMessageDump = jsonDump->getObject(row);
 	if ( !jsonMessageDump.isNull() )
 	{
-		//jsonMessageDump->set("ascii", htmlize(oss.str()));
 		jsonMessageDump->set("ascii", oss.str());
-		oss.str("");
 	}
 
 	mapMessageToJSON(message, *jsonMessage);
