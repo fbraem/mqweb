@@ -24,7 +24,6 @@
 
 #include "Poco/DateTimeFormatter.h"
 #include "Poco/Logger.h"
-#include "Poco/HexBinaryEncoder.h"
 
 #include "MQ/Web/MessageController.h"
 #include "MQ/Web/MQMapper.h"
@@ -346,13 +345,7 @@ void MessageController::dump()
 	Poco::JSON::Array::Ptr jsonDump = new Poco::JSON::Array();
 	jsonMessage->set("dump", jsonDump);
 
-	std::ostringstream oss;
-	Poco::HexBinaryEncoder hexEncoder(oss);
-	hexEncoder.rdbuf()->setLineLength(0);
-	hexEncoder.rdbuf()->setUppercase(true);
-	hexEncoder.write((const char*) message.buffer().data(), message.buffer().size());
-
-	std::string fullHex = oss.str();
+	std::string fullHex = message.buffer().toHex();
 	Poco::JSON::Object::Ptr jsonMessageDump = new Poco::JSON::Object();
 	jsonMessageDump->set("position", "00000000");
 	jsonDump->add(jsonMessageDump);
@@ -387,7 +380,7 @@ void MessageController::dump()
 	jsonMessageDump->set("hex", hexPart);
 
 	//EBCDIC
-	oss.str("");
+	std::ostringstream oss;
 	int row = 0;
 	for(int i = 0; i < message.buffer().size(); ++i)
 	{
