@@ -38,7 +38,7 @@ using namespace Poco::Net;
 using namespace Poco::Util;
 
 
-MQWebApplication::MQWebApplication(): _helpRequested(false), _tm(_tmThreadPool)
+MQWebApplication::MQWebApplication(): _helpRequested(false), _versionRequested(false), _tm(_tmThreadPool)
 {
 	addSubsystem(new MQ::MQSubsystem());
 }
