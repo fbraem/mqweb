@@ -63,6 +63,9 @@ With [PHP](http://php.net/) you can use the
 ###Services
 {% include accordion_sample.html language="php" id="service_php_1" title="Inquire" sample="service_inq" %}
 
+###Topics
+{% include accordion_sample.html language="php" id="topic_php_1" title="Inquire" sample="topic_inq" %}
+
 ##<a name="Perl"></a>Perl
 With [Perl](https://www.perl.org/) you can use
 [LWP](http://search.cpan.org/dist/libwww-perl/lib/LWP.pm) together with
@@ -105,6 +108,9 @@ or any other [http client](https://www.google.be/#q=perl+http+client) implementa
 
 ###Services
 {% include accordion_sample.html language="perl" id="service_perl_1" title="Inquire" sample="service_inq" %}
+
+###Topics
+{% include accordion_sample.html language="perl" id="topic_perl_1" title="Inquire" sample="topic_inq" %}
 
 ##<a name="Ruby"></a>Ruby
 The Ruby Standard Library contains [Net/HTTP](http://ruby-doc.org/stdlib/libdoc/net/http/rdoc/)
