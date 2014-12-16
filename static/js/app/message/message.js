@@ -98,9 +98,7 @@ mqWebApp.controller('MessageDumpController', ['$scope', '$routeParams', 'mqWebMe
 	$scope.message = null;
 	$scope.error = null;
 	$scope.http_rc = 0;
-	$scope.ascii = true;
-	$scope.ebcdic = true;
-	
+
 	$scope.load = function() {
 		$scope.loading = true;
 		mqWebMessage.dump($routeParams.msgid)
