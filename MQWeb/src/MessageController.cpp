@@ -379,36 +379,17 @@ void MessageController::dump()
 	}
 	jsonMessageDump->set("hex", hexPart);
 
-	//EBCDIC
 	std::ostringstream oss;
 	int row = 0;
 	for(int i = 0; i < message.buffer().size(); ++i)
 	{
-		char ebcdic = EBCDIC_translate_ASCII[message.buffer().chr(i)];
-
-		oss << (isprint((unsigned char) ebcdic) ? ebcdic : '.');
-		if ( (i + 1) % 16 == 0 )
+		char ascii = (char) message.buffer().chr(i);
+		if ( message.getCodedCharSetId() == 500 ) //EBCDIC
 		{
-			jsonMessageDump = jsonDump->getObject(row++);
-			if ( !jsonMessageDump.isNull() )
-			{
-				jsonMessageDump->set("ebcdic", oss.str());
-				oss.str("");
-			}
+			ascii = EBCDIC_translate_ASCII[ascii];
 		}
-	}
-	jsonMessageDump = jsonDump->getObject(row);
-	if ( !jsonMessageDump.isNull() )
-	{
-		jsonMessageDump->set("ebcdic", oss.str());
-	}
 
-	//ASCII
-	oss.str("");
-	row = 0;
-	for(int i = 0; i < message.buffer().size(); ++i)
-	{
-		oss << (isprint(message.buffer().chr(i)) ? (char) message.buffer().chr(i) : '.');
+		oss << (isprint((unsigned char) ascii) ? ascii : '.');
 		if ( (i + 1) % 16 == 0 )
 		{
 			jsonMessageDump = jsonDump->getObject(row++);
@@ -424,7 +405,6 @@ void MessageController::dump()
 	{
 		jsonMessageDump->set("ascii", oss.str());
 	}
-
 	mapMessageToJSON(message, *jsonMessage);
 
 	set("message", jsonMessage);
