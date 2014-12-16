@@ -2771,6 +2771,15 @@ Dictionary subStatusDictionary = Dictionary()
 	(MQCA_TOPIC_STRING)
 ;
 
+Dictionary authorityServiceDictionary = Dictionary()
+	(MQIACF_INTERFACE_VERSION, "InterfaceVersion")
+	(MQCACF_SERVICE_COMPONENT, "ServiceComponent")
+	(MQIACF_USER_ID_SUPPORT, "UserIDSupport", DisplayMapInitializer
+		(MQUIDSUPP_YES, "Yes")
+		(MQUIDSUPP_YES, "No")
+	)
+;
+
 class MQDictionary : public Poco::Util::Application
 {
 public:
@@ -2887,6 +2896,7 @@ int main(const std::vector<std::string>& args)
 	store(session, ++oid, "AuthorityRecord", authorityRecordDictionary);
 	store(session, ++oid, "Sub", subDictionary);
 	store(session, ++oid, "SubStatus", subStatusDictionary);
+	store(session, ++oid, "AuthorityService", authorityServiceDictionary);
 	return Application::EXIT_OK;
 }
 
