@@ -98,4 +98,5 @@ Controllers
 |[ListenerStatusController](lsstatus.html)|/api/lsstatus|
 |[MessageController](message.html)|/api/message|
 |[TopicController](topic.html)|/api/topic|
+|[TopicStatusController](tpstatus.html)|/api/tpstatus|
 
