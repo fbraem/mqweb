@@ -41,9 +41,6 @@ if ( exists($mqweb->{error}) ) {
 }
 else {
 	foreach my $topic(@{$mqweb->{topics}}) {
-		my $output = $topic->{QName}->{value};
-		$output .= ' : ' . $topic->{CurrentQDepth}->{value} 
-			if ( exists($topic->{CurrentQDepth}) );
-		say $output;
+		say $topic->{TopicName}->{value};
 	}
 }
