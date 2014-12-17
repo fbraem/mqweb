@@ -120,8 +120,7 @@ There are some differences between query parameters and a JSON object:
 
 > An *IntegerFilterCommand* can't be used together with a *StringFilterCommand*
 
-This sample is a Perl script that inquires all SYSTEM topics and shows the 
-current depth of these topics:
+This sample is a Perl script that inquires all topics:
 
 {% include_relative samples/perl/topic_inq.html %}
 
