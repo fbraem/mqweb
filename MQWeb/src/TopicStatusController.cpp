@@ -78,9 +78,9 @@ void TopicStatusController::inquire()
 			pcfParameters->set("CommandScope", form().get("CommandScope"));
 		}
 
-		if ( form().has("TopicStatusType") )
+		if ( form().has("StatusType") )
 		{
-			pcfParameters->set("TopicStatusType", form().get("TopicStatusType"));
+			pcfParameters->set("StatusType", form().get("StatusType"));
 		}
 
 		handleFilterForm(pcfParameters);
