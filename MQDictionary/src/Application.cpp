@@ -1406,8 +1406,50 @@ Dictionary topicDictionary = Dictionary()
 	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
 ;
 
-Dictionary eventDictionary = Dictionary()
+Dictionary topicStatusDictionary = Dictionary()
+	(MQCA_CLUSTER_NAME)
+	(MQIA_TOPIC_DEF_PERSISTENCE)
+	(MQIA_DEF_PUT_RESPONSE_TYPE)
+	(MQIA_DEF_PRIORITY)
+	(MQIA_DURABLE_SUB)
+	(MQIA_INHIBIT_PUB)
+	(MQIA_INHIBIT_SUB)
 	(MQCA_ADMIN_TOPIC_NAME, "AdminTopicNames")
+	(MQCA_MODEL_DURABLE_Q)
+	(MQCA_MODEL_NON_DURABLE_Q)
+	(MQIA_PM_DELIVERY)
+	(MQIA_NPM_DELIVERY)
+	(MQIACF_RETAINED_PUBLICATION, "RetainedPublication")
+	(MQIA_PUB_COUNT, "PublishCount")
+	(MQIA_SUB_COUNT, "SubscriptionCount")
+	(MQIA_SUB_SCOPE)
+	(MQIA_PUB_SCOPE)
+#ifdef MQIA_USE_DEAD_LETTER_Q
+	(MQIA_USE_DEAD_LETTER_Q)
+#endif	
+	(MQBACF_SUB_ID)
+	(MQCACF_SUB_USER_ID, "SubscriptionUserId")
+	(MQIACF_DURABLE_SUBSCRIPTION, "Durable", DisplayMapInitializer
+		(MQSUB_DURABLE_YES, "Yes")
+		(MQSUB_DURABLE_NO, "No")
+	)
+	(MQIACF_SUB_TYPE, "SubscriptionType", DisplayMapInitializer
+		(MQSUBTYPE_PROXY, "Proxy")
+		(MQSUBTYPE_ADMIN, "Admin")
+		(MQSUBTYPE_API, "API")
+	)
+	(MQCA_RESUME_DATE, "ResumeDate")
+	(MQCA_RESUME_TIME, "ResumeTime")
+	(MQCACF_LAST_MSG_DATE, "LastMessageDate")
+	(MQCACF_LAST_MSG_TIME, "LastMessageTime")
+	(MQCACF_LAST_PUB_DATE, "LastPublicationDate")
+	(MQCACF_LAST_PUB_TIME, "LastPublicationTime")
+	(MQIACF_PUBLISH_COUNT, "NumberOfPublishes")
+	(MQBACF_CONNECTION_ID)
+;
+
+Dictionary eventDictionary = Dictionary()
+	(MQCA_ADMIN_TOPIC_NAME)
 	(MQIA_APPL_TYPE)
 	(MQCACF_APPL_NAME, "ApplName")
 	(MQCA_AUTH_INFO_NAME, "AuthInfoName")
@@ -2709,10 +2751,7 @@ Dictionary subDictionary = Dictionary()
 		(MQDOPT_DEFINED, "Defined")
 	)
 #endif
-	(MQIACF_DURABLE_SUBSCRIPTION, "Durable", DisplayMapInitializer
-		(MQSUB_DURABLE_YES, "Yes")
-		(MQSUB_DURABLE_NO, "No")
-	)
+	(MQIACF_DURABLE_SUBSCRIPTION)
 	(MQIACF_EXPIRY, "Expiry")
 	(MQBACF_ACCOUNTING_TOKEN, "PublishedAccountingToken")
 	(MQCACF_APPL_IDENTITY_DATA, "PublishedApplicationIdentityData")
@@ -2740,11 +2779,7 @@ Dictionary subDictionary = Dictionary()
 		(MQTSCOPE_ALL, "All")
 		(MQTSCOPE_QMGR, "QMgr")
 	)
-	(MQIACF_SUB_TYPE, "SubscriptionType", DisplayMapInitializer
-		(MQSUBTYPE_PROXY, "Proxy")
-		(MQSUBTYPE_ADMIN, "Admin")
-		(MQSUBTYPE_API, "API")
-	)
+	(MQIACF_SUB_TYPE)
 	(MQCACF_SUB_USER_ID, "SubscriptionUser")
 	(MQCA_TOPIC_NAME)
 	(MQCA_TOPIC_STRING)
@@ -2757,13 +2792,13 @@ Dictionary subDictionary = Dictionary()
 ;
 
 Dictionary subStatusDictionary = Dictionary()
-	(MQBACF_CONNECTION_ID, "ActiveConnection")
+	(MQBACF_CONNECTION_ID)
 	(MQIACF_DURABLE_SUBSCRIPTION)
-	(MQCACF_LAST_MSG_DATE, "LastMessageDate")
-	(MQCACF_LAST_MSG_TIME, "LastMessageTime")
+	(MQCACF_LAST_MSG_DATE)
+	(MQCACF_LAST_MSG_TIME)
 	(MQIACF_PUBLISH_COUNT, "NumberMsgs")
-	(MQCA_RESUME_DATE, "ResumeDate")
-	(MQCA_RESUME_TIME, "ResumeTime")
+	(MQCA_RESUME_DATE)
+	(MQCA_RESUME_TIME)
 	(MQBACF_SUB_ID)
 	(MQCACF_SUB_NAME)
 	(MQCACF_SUB_USER_ID)
@@ -2779,6 +2814,7 @@ Dictionary authorityServiceDictionary = Dictionary()
 		(MQUIDSUPP_YES, "No")
 	)
 ;
+
 
 class MQDictionary : public Poco::Util::Application
 {
@@ -2887,6 +2923,7 @@ int main(const std::vector<std::string>& args)
 	store(session, ++oid, "Listener", listenerDictionary);
 	store(session, ++oid, "ListenerStatus", listenerStatusDictionary);
 	store(session, ++oid, "Topic", topicDictionary);
+	store(session, ++oid, "TopicStatus", topicStatusDictionary);
 	store(session, ++oid, "Event", eventDictionary);
 	store(session, ++oid, "Reason", reasonDictionary);
 	store(session, ++oid, "Namelist", namelistDictionary);
