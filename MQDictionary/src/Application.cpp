@@ -420,7 +420,7 @@ Dictionary queueManagerStatusDictionary = Dictionary()
 	)
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary queueDictionary = Dictionary()
@@ -601,7 +601,7 @@ Dictionary queueDictionary = Dictionary()
 	(MQCA_XMIT_Q_NAME, "XmitQName")
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary queueStatusDictionary = Dictionary()
@@ -723,7 +723,7 @@ Dictionary queueStatusDictionary = Dictionary()
 	(MQCACF_USER_IDENTIFIER, "UserIdentifier")
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary channelDictionary = Dictionary()
@@ -900,7 +900,7 @@ Dictionary channelDictionary = Dictionary()
 	(MQCACH_XMIT_Q_NAME, "XmitQName")
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary channelStatusDictionary = Dictionary()
@@ -1077,7 +1077,7 @@ Dictionary channelStatusDictionary = Dictionary()
 	(MQIACH_XMITQ_TIME_INDICATOR, "XQTime")
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary clusterQueueManagerDictionary = Dictionary()
@@ -1192,7 +1192,7 @@ Dictionary clusterQueueManagerDictionary = Dictionary()
 	(MQCACH_USER_ID)
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary connectionDictionary = Dictionary()
@@ -1265,7 +1265,7 @@ Dictionary connectionDictionary = Dictionary()
 	(MQCACF_USER_IDENTIFIER)
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary listenerDictionary = Dictionary()
@@ -1292,7 +1292,7 @@ Dictionary listenerDictionary = Dictionary()
 	(MQIACH_XMIT_PROTOCOL_TYPE)
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary listenerStatusDictionary = Dictionary()
@@ -1318,12 +1318,14 @@ Dictionary listenerStatusDictionary = Dictionary()
 		(MQSVC_STATUS_STARTING, "Starting")
 		(MQSVC_STATUS_RUNNING, "Running")
 		(MQSVC_STATUS_STOPPING, "Stopping")
+		(MQSVC_STATUS_RETRYING, "Retrying")
+		(MQSVC_STATUS_STOPPED, "Stopped")
 	)
 	(MQCACH_TP_NAME)
 	(MQIACH_XMIT_PROTOCOL_TYPE)
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary topicDictionary = Dictionary()
@@ -1403,7 +1405,7 @@ Dictionary topicDictionary = Dictionary()
 	)
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary topicStatusDictionary = Dictionary()
@@ -2641,7 +2643,7 @@ Dictionary processDictionary = Dictionary()
 	(MQCA_USER_DATA, "UserData")
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary serviceDictionary = Dictionary()
@@ -2666,7 +2668,7 @@ Dictionary serviceDictionary = Dictionary()
 	(MQCA_SERVICE_STOP_COMMAND, "StopCommand")
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary authenticationInformationDictionary = Dictionary()
@@ -2686,7 +2688,7 @@ Dictionary authenticationInformationDictionary = Dictionary()
 	(MQIA_QSG_DISP)
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary authorityRecordDictionary = Dictionary()
@@ -2730,7 +2732,7 @@ Dictionary authorityRecordDictionary = Dictionary()
 	(MQCA_Q_MGR_NAME)
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary subDictionary = Dictionary()
@@ -2815,6 +2817,38 @@ Dictionary authorityServiceDictionary = Dictionary()
 	)
 ;
 
+Dictionary channelInitiatorDictionary = Dictionary()
+	(MQIACH_ACTIVE_CHL, "ActiveChannels")
+	(MQIACH_ACTIVE_CHL_MAX, "ActiveChannelsMax")
+	(MQIACH_ACTIVE_CHL_PAUSED, "ActiveChannelsPaused")
+	(MQIACH_ACTIVE_CHL_RETRY, "ActiveChannelsRetrying")
+	(MQIACH_ACTIVE_CHL_STARTED, "ActiveChannelsStarted")
+	(MQIACH_ACTIVE_CHL_STOPPED, "ActiveChannelsStopped")
+	(MQIACH_ADAPS_MAX, "AdaptersMax")
+	(MQIACH_ADAPS_STARTED, "AdaptersStarted")
+	(MQIACF_CHINIT_STATUS)
+	(MQIACH_CURRENT_CHL, "CurrentChannels")
+	(MQIACH_CURRENT_CHL_LU62, "CurrentChannelsLU62")
+	(MQIACH_CURRENT_CHL_MAX, "CurrentChannelsMax")
+	(MQIACH_CURRENT_CHL_TCP, "CurrentChannelsLTCP")
+	(MQIACH_DISPS_MAX, "DispatchersMax")
+	(MQIACH_DISPS_STARTED, "DispatchersStarted")
+	(MQIACH_SSLTASKS_MAX, "SSLTasksMax")
+	(MQIACH_SSLTASKS_STARTED, "SSLTasksStarted")
+	(MQCACH_TCP_NAME, "TCPName")
+	(MQIACH_INBOUND_DISP, "InboundDisposition", DisplayMapInitializer
+		(MQINBD_GROUP, "Group")
+		(MQINBD_Q_MGR, "Qmgr")
+	)
+	(MQCACH_IP_ADDRESS)
+	(MQIACH_LISTENER_STATUS)
+	(MQCACH_LU_NAME, "LUName")
+	(MQIACH_PORT_NUMBER, "Port")
+	(MQIACH_XMIT_PROTOCOL_TYPE)
+	// Extended Response
+	(MQBACF_RESPONSE_ID)
+	(MQCACF_RESPONSE_Q_MGR_NAME)
+;
 
 class MQDictionary : public Poco::Util::Application
 {
@@ -2934,6 +2968,7 @@ int main(const std::vector<std::string>& args)
 	store(session, ++oid, "Sub", subDictionary);
 	store(session, ++oid, "SubStatus", subStatusDictionary);
 	store(session, ++oid, "AuthorityService", authorityServiceDictionary);
+	store(session, ++oid, "ChannelInitiator", channelInitiatorDictionary);
 	return Application::EXIT_OK;
 }
 
