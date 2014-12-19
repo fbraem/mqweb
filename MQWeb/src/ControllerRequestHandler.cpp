@@ -24,6 +24,7 @@
 #include "MQ/Web/AuthorityRecordController.h"
 #include "MQ/Web/AuthorityServiceController.h"
 #include "MQ/Web/ChannelController.h"
+#include "MQ/Web/ChannelInitiatorController.h"
 #include "MQ/Web/ChannelStatusController.h"
 #include "MQ/Web/ClusterQueueManagerController.h"
 #include "MQ/Web/ConnectionController.h"
@@ -136,6 +137,7 @@ void ControllerRequestHandler::registerControllers()
 	_controllerFactory.registerClass<TopicController>("topic");
 	_controllerFactory.registerClass<TopicStatusController>("tpstatus");
 	_controllerFactory.registerClass<AuthorityServiceController>("authservice");
+	_controllerFactory.registerClass<ChannelInitiatorController>("chinit");
 }
 
 
