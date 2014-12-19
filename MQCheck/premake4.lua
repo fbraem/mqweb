@@ -38,7 +38,7 @@ project "MQCheck"
   configuration { }
   
     libdirs { 
-                poco_dir .. "/lib"
+              poco_lib_dir
             }
 
     -- Set the include paths
@@ -53,17 +53,19 @@ project "MQCheck"
 
   configuration "Debug"
     links { 
-              "PocoUtild"
-            , "PocoXMLd" 
+    		  "mqd"
+            , "PocoUtild"
+            , "PocoXMLd"
+            , "PocoJSONd" 
             , "PocoFoundationd"
-            , "mqd"
           }
   configuration "Release"
     links { 
-              "PocoUtil"
-            , "PocoXML" 
+    		  "mq"
+            , "PocoUtil"
+            , "PocoXML"
+            , "PocoJSON" 
             , "PocoFoundation"
-            , "mq"
           }
 
   configuration "windows"
@@ -81,3 +83,10 @@ project "MQCheck"
             , "iphlpapi"
           }
 
+if ( poco_static ) then
+  configuration "linux"
+    links {
+              "pthread"
+            , "dl"
+          }
+end
