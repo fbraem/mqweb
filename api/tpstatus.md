@@ -17,7 +17,7 @@ occurred there will be no `statuses` array, but instead an `error` object is
 returned.
 
 ###<a name="inquireUrl"></a>URL Parameters
-`/api/topic/inquire/<QueueManager>/<TopicString>`
+`/api/tpstatus/inquire/<QueueManager>/<TopicString>`
 
 ####<a name="inquireUrlQueueManager"></a>QueueManager
 The name of the queuemanager. This parameter is required.
