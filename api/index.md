@@ -88,6 +88,7 @@ Controllers
 |[AuthenticationInformationController](authinfo.html)|/api/authinfo|
 |[AuthorityRecordController](authrec.html)|/api/authrec|
 |[ChannelController](channel.html)|/api/channel|
+|[ChannelInitiatorController](chinit.html)|/api/chinit|
 |[ChannelStatusController](chstatus.html)|/api/chstatus|
 |[ClusterQueueManagerController](clusqmgr.html)|/api/clusqmgr|
 |[ConnectionController](conn.html)|/api/conn|
