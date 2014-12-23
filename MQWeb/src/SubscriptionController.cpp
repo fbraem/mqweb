@@ -83,6 +83,8 @@ void SubscriptionController::inquire()
 			pcfParameters->set("SubscriptionType", form().get("SubscriptionType"));
 		}
 
+		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
+
 		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
 		formElementToJSONArray("SubAttrs", attrs);
 		if ( attrs->size() == 0 ) // Nothing found for SubAttrs, try Attrs
