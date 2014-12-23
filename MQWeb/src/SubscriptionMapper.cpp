@@ -82,6 +82,8 @@ Poco::JSON::Array::Ptr SubscriptionMapper::inquire()
 	PCF::Vector commandResponse;
 	execute(commandResponse);
 
+	bool excludeSystem = _input->optValue("ExcludeSystem", false);
+
 	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
@@ -90,6 +92,15 @@ Poco::JSON::Array::Ptr SubscriptionMapper::inquire()
 
 		if ( (*it)->isExtendedResponse() ) // Skip extended response
 			continue;
+
+		if ( excludeSystem )
+		{
+			std::string subName = (*it)->getParameterString(MQCACF_SUB_NAME);
+			if ( subName.compare(0, 7, "SYSTEM.") == 0 )
+			{
+				continue;
+			}
+		}
 
 		json->add(createJSON(**it));
 	}
