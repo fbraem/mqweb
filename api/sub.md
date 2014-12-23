@@ -77,7 +77,7 @@ value is allowed. This parameter is optional and can't be used together with
 This parameter is ignored when there is a URI parameter for a 
 [SubName](#inquireUrlSubName).
 
-####<a name="inquireQuerySubType"></a>SubType
+####<a name="inquireQuerySubcriptionType"></a>SubcriptionType
 Only return the subscriptions of the given type. Possible values are `Admin`,
 `API`, `Proxy`, `User` or `All`. Default is `All`. The value is case-sensitive.
 
