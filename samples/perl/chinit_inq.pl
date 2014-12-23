@@ -7,7 +7,7 @@ use JSON;
 use LWP::UserAgent;
 use HTTP::Request::Common;
 
-# Get channel initiation information
+# Get channel initiatior information
 
 my $qmgr = shift;
 die("Please pass me the name of a queuemanager as argument")
