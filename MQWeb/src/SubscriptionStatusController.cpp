@@ -91,7 +91,7 @@ void SubscriptionStatusController::inquire()
 		}
 		if ( attrs->size() > 0 )
 		{
-			pcfParameters->set("StatAttrs", attrs);
+			pcfParameters->set("StatusAttrs", attrs);
 		}
 
 		if ( form().has("CommandScope") )
