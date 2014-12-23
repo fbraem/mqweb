@@ -100,4 +100,5 @@ Controllers
 |[MessageController](message.html)|/api/message|
 |[TopicController](topic.html)|/api/topic|
 |[TopicStatusController](tpstatus.html)|/api/tpstatus|
+|[SubController](sub.html)|/api/sub|
 
