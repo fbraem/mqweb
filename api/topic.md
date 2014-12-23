@@ -58,7 +58,7 @@ in the WebSphere MQ information center.
 The value to use for filtering. When a string is passed for an Integerfilter, 
 a WebSphere MQ constant is assumed.
 
-####<a name="inquireQueryQAttrs"></a>TopicAttrs
+####<a name="inquireQueryTopicAttrs"></a>TopicAttrs
 With the TopicAttrs parameter you can specify which attributes must be
 returned from the PCF command. Multiple occurences of this parameter
 are possible. The value must be a valid attribute name.
