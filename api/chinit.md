@@ -10,7 +10,8 @@ The second part of the URI must be `chinit` to call the
  running on z/OS.
 
 ##<a name="inquire"></a>inquire
-Get info about the channel initiator.
+Get info about the channel initiator. This api executes the MQCMD_INQUIRE_CHANNEL_INIT
+pcf command.
 
 The returned JSON object will have a `response` array.
 
