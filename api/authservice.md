@@ -53,7 +53,6 @@ There are some differences between query parameters and a JSON object:
 + JSON property names are case-sensitive
 + [AuthServiceAttrs](#inqueryQueryAuthServiceAttrs) is a JSON array with 
   attributenames as element.
-+ [Options](#inquireQueryOptions) is a JSON array.
 + Synonyms can't be used, you need to use the name of the attribute
   as described in the query parameters.
   
