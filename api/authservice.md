@@ -19,7 +19,7 @@ error occurred there will be no `authservices` array, but instead an `error`
 object is returned.
 
 ###<a name="inquireUrl"></a>URL Parameters
-`/api/authservice/inquire/<QueueManager>
+`/api/authservice/inquire/<QueueManager>`
 
 ####<a name="inquireURLQueuemanager"></a>QueueManager
 The name of the queuemanager. This parameter is required!
