@@ -87,6 +87,7 @@ Controllers
 |----------|--------|
 |[AuthenticationInformationController](authinfo.html)|/api/authinfo|
 |[AuthorityRecordController](authrec.html)|/api/authrec|
+|[AuthorityServiceController](authservice.html)|/api/authservice|
 |[ChannelController](channel.html)|/api/channel|
 |[ChannelInitiatorController](chinit.html)|/api/chinit|
 |[ChannelStatusController](chstatus.html)|/api/chstatus|
