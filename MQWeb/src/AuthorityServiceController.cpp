@@ -71,7 +71,7 @@ void AuthorityServiceController::inquire()
 	}
 
 	AuthorityServiceMapper mapper(*commandServer(), pcfParameters);
-	set("authinfos", mapper.inquire());
+	set("authservices", mapper.inquire());
 }
 
 
