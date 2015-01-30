@@ -50,7 +50,7 @@ public:
 		_ws->setSendTimeout(ts);
 
 		QueueManager::Ptr qmgr = queueManagerPoolGuard->getObject();
-		_consumer = new MessageConsumer(*qmgr, queueName);
+		_consumer = new MessageConsumer(*qmgr, queueName, MessageConsumer::BROWSE);
 		_consumer->message+= Poco::delegate(this, &MessageConsumerTask::onMessage);
 	}
 
@@ -126,6 +126,10 @@ private:
 
 };
 
+Poco::ThreadPool WebSocketRequestHandler::_tmThreadPool;
+
+Poco::TaskManager WebSocketRequestHandler::_tm(WebSocketRequestHandler::_tmThreadPool);
+
 WebSocketRequestHandler::WebSocketRequestHandler() : HTTPRequestHandler()
 {
 }
@@ -167,7 +171,7 @@ void WebSocketRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& reques
 	{
 		Poco::SharedPtr<Poco::Net::WebSocket> ws = new Poco::Net::WebSocket(request, response);
 		MQWebApplication& app = (MQWebApplication&) MQWebApplication::instance();
-		app.taskManager().start(new MessageConsumerTask(ws, qmgrPoolGuard, paths[1]));
+		_tm.start(new MessageConsumerTask(ws, qmgrPoolGuard, paths[1]));
 	}
 	catch (Poco::Net::WebSocketException& exc)
 	{
@@ -185,6 +189,13 @@ void WebSocketRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& reques
 			break;
 		}
 	}
+}
+
+void WebSocketRequestHandler::cancel()
+{
+	// Cancel all launched tasks and wait for them to end ...
+	_tm.cancelAll();
+	_tm.joinAll();
 }
 
 }} // Namespace MQ::Web

@@ -22,6 +22,7 @@
 #include "MQ/Web/Version.h"
 #include "MQ/Web/Application.h"
 #include "MQ/Web/RequestHandlerFactory.h"
+#include "MQ/Web/WebSocketRequestHandler.h"
 
 #include "Poco/Net/HTTPServer.h"
 #include "Poco/Net/HTTPServerParams.h"
@@ -38,7 +39,9 @@ using namespace Poco::Net;
 using namespace Poco::Util;
 
 
-MQWebApplication::MQWebApplication(): _helpRequested(false), _versionRequested(false), _tm(_tmThreadPool)
+MQWebApplication::MQWebApplication()
+: _helpRequested(false)
+, _versionRequested(false)
 {
 	addSubsystem(new MQ::MQSubsystem());
 }
@@ -234,9 +237,7 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 	// Stop the HTTPServer
 	srv.stop();
 
-	// Cancel all launched tasks and wait for them to end ...
-	_tm.cancelAll();
-	_tm.joinAll();
+	MQ::Web::WebSocketRequestHandler::cancel();
 
 	_qmgrPoolCache.clear();
 

@@ -29,8 +29,6 @@
 
 #include "Poco/JSON/TemplateCache.h"
 
-#include "Poco/TaskManager.h"
-
 #include "MQ/Web/QueueManagerPoolCache.h"
 
 class MQWebApplication : public Poco::Util::ServerApplication
@@ -43,9 +41,6 @@ public:
 
 	~MQWebApplication();
 		/// Destructor
-
-	Poco::TaskManager& taskManager();
-		/// Returns the taskmanager
 
 protected:
 
@@ -82,16 +77,6 @@ private:
 	MQ::Web::QueueManagerPoolCache _qmgrPoolCache;
 		/// Only one QueueManagerPoolCache object is allowed. The best place to
 		/// define it is here.
-
-	Poco::ThreadPool _tmThreadPool;
-
-	Poco::TaskManager _tm;
-		/// Taskmanager for handling tasks (used by websocket for now)
 };
-
-inline Poco::TaskManager& MQWebApplication::taskManager()
-{
-	return _tm;
-}
 
 #endif //  _MQWeb_Application_H
