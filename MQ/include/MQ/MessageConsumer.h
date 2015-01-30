@@ -38,24 +38,35 @@ class MessageConsumer
 {
 public:
 
-	MessageConsumer(QueueManager& qmgr, const std::string& queueName);
+	enum Action
+	{
+		BROWSE,
+		GET
+	};
+
+	MessageConsumer(QueueManager& qmgr, const std::string& queueName, Action action = BROWSE);
 		/// Constructor. Can throw a MQException.
 
 	virtual ~MessageConsumer();
 		/// Destructor. The callback will be cleared when this is not done yet.
 
-	void setup();
-		/// Registers the consumer. Can throw a MQException.
+	Action action() const;
 
 	void clear();
 		/// Deregisters the consumer. When a consumer is active, it will be stopped.
 		/// Can throw a MQException.
 
+	Buffer::Ptr correlId();
+
+	Buffer::Ptr messageId();
+
+	void setup();
+		/// Registers the consumer. Can throw a MQException.
+		/// When this is not called before calling start, it will be called
+		/// automatically.
+
 	void start();
 		/// Starts the consumer. Can throw a MQException.
-
-	void stop();
-		/// Stops the consumer. Can throw a MQException.
 
 	enum State
 	{
@@ -66,9 +77,10 @@ public:
 		SUSPENDED
 	};
 
-	Buffer::Ptr messageId();
+	State state() const;
 
-	Buffer::Ptr correlId();
+	void stop();
+		/// Stops the consumer. Can throw a MQException.
 
 	typedef Poco::BasicEvent<Poco::SharedPtr<Message> > Event;
 
@@ -83,6 +95,8 @@ private:
 
 	Queue _queue;
 
+	Action _action;
+
 	MQMD _md;
 
 	MQGMO _gmo;
@@ -91,6 +105,11 @@ private:
 
 	static MQGMO _initialGMO;
 };
+
+inline MessageConsumer::Action MessageConsumer::action() const
+{
+	return _action;
+}
 
 inline Buffer::Ptr MessageConsumer::messageId()
 {
@@ -102,6 +121,10 @@ inline Buffer::Ptr MessageConsumer::correlId()
 	return new Buffer(_md.CorrelId, MQ_CORREL_ID_LENGTH);
 }
 
+inline MessageConsumer::State MessageConsumer::state() const
+{
+	return _state;
+}
 
 } // namespace QM
 
