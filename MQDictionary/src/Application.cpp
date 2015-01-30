@@ -2798,6 +2798,9 @@ Dictionary subStatusDictionary = Dictionary()
 	(MQIACF_DURABLE_SUBSCRIPTION)
 	(MQCACF_LAST_MSG_DATE)
 	(MQCACF_LAST_MSG_TIME)
+#ifdef MQIACF_MESSAGE_COUNT
+	(MQIACF_MESSAGE_COUNT, "MessageCount")
+#endif
 	(MQIACF_PUBLISH_COUNT, "NumberMsgs")
 	(MQCA_RESUME_DATE)
 	(MQCA_RESUME_TIME)
@@ -2806,6 +2809,9 @@ Dictionary subStatusDictionary = Dictionary()
 	(MQCACF_SUB_USER_ID)
 	(MQIACF_SUB_TYPE)
 	(MQCA_TOPIC_STRING)
+#ifdef MQIACF_MCAST_REL_INDICATOR
+	(MQIACF_MCAST_REL_INDICATOR, "MCastRelIndicator")
+#endif
 ;
 
 Dictionary authorityServiceDictionary = Dictionary()
