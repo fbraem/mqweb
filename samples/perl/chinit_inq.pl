@@ -44,13 +44,13 @@ else {
 			my $ip = '';
 			if ( exists ($response->{IPAddress}) ) {
 				$ip = $response->{IPAddress}->{value};
-			}	else {
+			} else {
 				$ip = '?';
 			}
 			$ip .= ':';
 			if ( exists ($response->{Port}) ) {
 				$ip .= $response->{Port}->{value};
-			}	else {
+			} else {
 				$ip .= '?';
 			}
 
