@@ -24,7 +24,7 @@ namespace MQ {
 namespace Web {
 
 AuthorityServiceMapper::AuthorityServiceMapper(CommandServer& commandServer, Poco::JSON::Object::Ptr input) 
-: MQMapper(commandServer, "AuthorityServiceMapper", input)
+: MQMapper(commandServer, "AuthorityService", input)
 {
 }
 
