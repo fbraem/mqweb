@@ -2813,7 +2813,7 @@ Dictionary authorityServiceDictionary = Dictionary()
 	(MQCACF_SERVICE_COMPONENT, "ServiceComponent")
 	(MQIACF_USER_ID_SUPPORT, "UserIDSupport", DisplayMapInitializer
 		(MQUIDSUPP_YES, "Yes")
-		(MQUIDSUPP_YES, "No")
+		(MQUIDSUPP_NO, "No")
 	)
 ;
 
