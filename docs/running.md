@@ -95,5 +95,11 @@ while replacing `/mqweb` with `/api`.
 When SELinux is activated make sure Apache is allowed to connect to the network:
 
     /usr/sbin/setsebool httpd_can_network_connect 1
-    
 
+> When MQWeb can't start because it can't load a shared object file 
+> (libmqm_r.so for example), use ldconfig to create the necessary links to the
+> shared libraries. Create a `mq.conf` file in `/etc/ld.so.conf.d` and run
+> `ldconfig` to update the shared library cache. When you have the same problems
+> for POCO libraries, use `ldd` on the mqweb executable to see where it is
+> looking for the POCO libraries (if POCO is build dynamically and not installed
+> in the standard folders) and do the same to configure POCO.
