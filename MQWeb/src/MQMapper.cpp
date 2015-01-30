@@ -160,8 +160,13 @@ void MQMapper::addAttributeList(MQLONG attrId, const std::string& attr)
 		if ( !attrs.isNull() && attrs->size() > 0 )
 		{
 			std::vector<MQLONG> numList;
+			
 			for(Poco::JSON::Array::ValueVec::const_iterator it = attrs->begin(); it != attrs->end(); ++it)
 			{
+				if ( Poco::icompare(it->toString(), "All") == 0 )
+				{
+					numList.push_back(MQIACF_ALL);
+				}
 				MQLONG id = _dictionary->getId(*it);
 				if ( id != -1 ) numList.push_back(id);
 			}
