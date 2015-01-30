@@ -31,10 +31,6 @@ queue-sharing group. This parameter applies to z/OS only.
 
 `/api/chinit/inquire/PIGEON`  
 
-This sample is a PHP script that inquires the channel initiator:
-
-{% include_relative samples/php/chinit_inq.html %}
-
 ###<a name="inquireJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with 
 names like the query parameters.

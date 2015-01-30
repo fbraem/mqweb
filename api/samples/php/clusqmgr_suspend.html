@@ -15,7 +15,7 @@
     <span class="k">echo</span> <span class="s1">&#39;An HTTP error occurred while suspending: &#39;</span><span class="p">,</span> <span class="nv">$err</span><span class="p">,</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
   <span class="p">}</span>
   <span class="k">else</span> <span class="p">{</span>
-    <span class="nv">$json</span> <span class="o">=</span> <span class="nx">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="p">);</span>
+    <span class="nv">$json</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="p">);</span>
     <span class="k">if</span> <span class="p">(</span> <span class="nb">isset</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">error</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
       <span class="k">echo</span> <span class="s1">&#39;An MQ error occurred while suspending.&#39;</span><span class="p">,</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
       <span class="k">echo</span> <span class="s1">&#39;Reason Code: &#39;</span><span class="p">,</span>

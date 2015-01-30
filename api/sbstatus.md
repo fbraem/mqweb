@@ -81,7 +81,7 @@ Only return the subscriptions of the given type. Possible values are `Admin`,
 This sample is a PHP script that inquires all statuses from a
  queuemanager:
 
-{% include_relative samples/php/sbstatus_inq.html %}
+{% include_relative samples/php/substatus_inq.html %}
 
 ###<a name="inquireJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with 
@@ -111,4 +111,4 @@ There are some differences between query parameters and a JSON object:
 
 This sample is a Perl script that inquires all statuses:
 
-{% include_relative samples/perl/sbstatus_inq.html %}
+{% include_relative samples/perl/substatus_inq.html %}

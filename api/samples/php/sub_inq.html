@@ -1,6 +1,6 @@
 <div class="highlight"><pre><span class="cp">&lt;?php</span>
 <span class="cm">/*</span>
-<span class="cm"> * This sample will show all topics from a queuemanager.</span>
+<span class="cm"> * This sample will show all subscriptions from a queuemanager.</span>
 <span class="cm"> * MQWeb runs on localhost and is listening on port 8081. </span>
 <span class="cm"> */</span>
 <span class="k">if</span> <span class="p">(</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$argv</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="p">)</span> <span class="p">{</span>
@@ -10,7 +10,7 @@
 
 <span class="nv">$qmgr</span> <span class="o">=</span> <span class="nv">$argv</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
 
-<span class="nv">$url</span> <span class="o">=</span> <span class="s1">&#39;http://localhost:8081/api/topic/inquire/&#39;</span> <span class="o">.</span> <span class="nv">$qmgr</span> <span class="o">.</span> <span class="s1">&#39;/*&#39;</span><span class="p">;</span>
+<span class="nv">$url</span> <span class="o">=</span> <span class="s1">&#39;http://localhost:8081/api/sub/inquire/&#39;</span> <span class="o">.</span> <span class="nv">$qmgr</span> <span class="o">.</span> <span class="s1">&#39;/*&#39;</span><span class="p">;</span>
 
 <span class="nv">$curl</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
 <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$url</span><span class="p">);</span>
@@ -18,7 +18,7 @@
 
 <span class="k">if</span> <span class="p">(</span> <span class="p">(</span><span class="nv">$response</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curl</span><span class="p">))</span> <span class="o">===</span> <span class="k">false</span> <span class="p">)</span> <span class="p">{</span>
   <span class="nv">$err</span> <span class="o">=</span> <span class="nb">curl_error</span><span class="p">(</span><span class="nv">$curl</span><span class="p">);</span>
-  <span class="k">echo</span> <span class="s1">&#39;An HTTP error occurred while getting topic information from &#39;</span>
+  <span class="k">echo</span> <span class="s1">&#39;An HTTP error occurred while getting subscription information from &#39;</span>
     <span class="p">,</span> <span class="nv">$qmgr</span>
     <span class="p">,</span> <span class="s1">&#39;: &#39;</span>
     <span class="p">,</span> <span class="nv">$err</span>
@@ -26,11 +26,10 @@
 <span class="p">}</span>
 <span class="k">else</span> <span class="p">{</span>
   <span class="nv">$json</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="p">);</span>
-  
   <span class="c1">// When there is an error object returned, something went wrong with</span>
   <span class="c1">// the WebSphere MQ command.</span>
   <span class="k">if</span> <span class="p">(</span> <span class="nb">isset</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">error</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
-    <span class="k">echo</span> <span class="s1">&#39;An MQ error occurred while inquiring topics from &#39;</span>
+    <span class="k">echo</span> <span class="s1">&#39;An MQ error occurred while inquiring subscriptions from &#39;</span>
       <span class="p">,</span> <span class="nv">$qmgr</span>
       <span class="p">,</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
     <span class="k">echo</span> <span class="s1">&#39;Reason Code: &#39;</span>
@@ -40,17 +39,17 @@
       <span class="p">,</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
   <span class="p">}</span>
   <span class="k">else</span> <span class="p">{</span>
-    <span class="k">echo</span> <span class="s1">&#39;Topics on &#39;</span><span class="p">,</span> <span class="nv">$qmgr</span><span class="p">,</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
-    <span class="k">echo</span> <span class="s1">&#39;----------&#39;</span><span class="p">,</span> <span class="nb">str_repeat</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="nb">strlen</span><span class="p">(</span><span class="nv">$qmgr</span><span class="p">)),</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
-    <span class="k">if</span> <span class="p">(</span> <span class="nb">isset</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">topics</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">topics</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
-      <span class="k">foreach</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">topics</span> <span class="k">as</span> <span class="nv">$topic</span><span class="p">)</span>
+    <span class="k">echo</span> <span class="s1">&#39;Subscriptions on &#39;</span><span class="p">,</span> <span class="nv">$qmgr</span><span class="p">,</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+    <span class="k">echo</span> <span class="s1">&#39;-----------------&#39;</span><span class="p">,</span> <span class="nb">str_repeat</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="nb">strlen</span><span class="p">(</span><span class="nv">$qmgr</span><span class="p">)),</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="nb">isset</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">subs</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">subs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="k">foreach</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">subs</span> <span class="k">as</span> <span class="nv">$sub</span><span class="p">)</span>
       <span class="p">{</span>
-        <span class="k">echo</span> <span class="nv">$topic</span><span class="o">-&gt;</span><span class="na">TopicName</span><span class="o">-&gt;</span><span class="na">value</span><span class="p">,</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+        <span class="k">echo</span> <span class="nv">$sub</span><span class="o">-&gt;</span><span class="na">SubName</span><span class="o">-&gt;</span><span class="na">value</span><span class="p">,</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
       <span class="p">}</span>
     <span class="p">}</span>
     <span class="k">else</span>
     <span class="p">{</span>
-      <span class="k">echo</span> <span class="s1">&#39;No topics found&#39;</span><span class="p">,</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+      <span class="k">echo</span> <span class="s1">&#39;No subscriptions found&#39;</span><span class="p">,</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
     <span class="p">}</span>
   <span class="p">}</span>
 <span class="p">}</span>
