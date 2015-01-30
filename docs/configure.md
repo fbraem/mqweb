@@ -164,3 +164,19 @@ all IP addresses starting with 10.192.
     mq.web.deny.ip1=10\.192*
 
 The value of the property must be a valid regular expression.
+
+Web Pages
+---------
+When the templates and static files, used to create the internal
+web pages, are not located in the same folder as the mqweb application, you need
+to configure these paths:
+
++ mq.web.templates
+
+  This is the folder where the templates are placed.
+
++ mq.web.static
+
+  This is the folder where the static files (images, html, ...) are placed.
+
+This configuration is not required when the internal web pages are not used.
