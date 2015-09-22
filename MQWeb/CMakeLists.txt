@@ -14,9 +14,10 @@ link_directories(${CMAKE_BINARY_DIR})
 add_executable(mqweb ${SOURCES})
 
 if (CMAKE_BUILD_TYPE STREQUAL debug)
-  target_link_libraries(mqweb debug mqd rt dl pthread ${POCO_Net_LIBRARY_DEBUG} ${POCO_Util_LIBRARY_DEBUG} ${POCO_JSON_LIBRARY_DEBUG}  ${POCO_XML_LIBRARY_DEBUG} ${POCO_DataSQLite_LIBRARY_DEBUG} ${POCO_Data_LIBRARY_DEBUG} ${POCO_Foundation_LIBRARY_DEBUG})
+  set(MQLIB "mqd")
 else()
-  target_link_libraries(mqweb optimized mq rt dl pthread ${POCO_Net_LIBRARY_RELEASE} ${POCO_Util_LIBRARY_RELEASE} ${POCO_JSON_LIBRARY_RELEASE} ${POCO_XML_LIBRARY_RELEASE} ${POCO_DataSQLite_LIBRARY_RELEASE} ${POCO_Data_LIBRARY_RELEASE} ${POCO_Foundation_LIBRARY_RELEASE})
+  set(MQLIB "mq")
 endif()
 
+target_link_libraries(mqweb ${MQLIB} rt dl ${POCO_Net_LIBRARY} ${POCO_Util_LIBRARY} ${POCO_JSON_LIBRARY} ${POCO_XML_LIBRARY} ${POCO_DataSQLite_LIBRARY} ${POCO_Data_LIBRARY} ${POCO_Foundation_LIBRARY})
 set_target_properties(mqweb PROPERTIES DEBUG_POSTFIX "d")

@@ -8,60 +8,59 @@ else()
   set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin/release)
 endif()
 
-set(POCO_INCLUDE_DIRS)
 foreach(pocolib Foundation Util XML Net JSON Data DataSQLite)
-  message(STATUS "POCO ${pocolib} - RELEASE")
-  set(POCO_LIB_RELEASE POCO_${pocolib}_LIBRARY_RELEASE)
-  find_library(${POCO_LIB_RELEASE} NAMES Poco${pocolib}
-    PATHS ${POCO_PREFIX}/static/lib/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}
-          /usr/lib
-          /usr/local/lib
-          /usr/lib64
-          /usr/local/lib64
-  )
-  if (${POCO_LIB_RELEASE})
-    message(STATUS "POCO ${pocolib} found: ${${POCO_LIB_RELEASE}}")
+
+  if (CMAKE_BUILD_TYPE STREQUAL debug)
+    set(pocolibname ${pocolib}d)
   else()
-    message(FATAL_ERROR "No POCO ${pocolib} library found!")
+    set(pocolibname ${pocolib})
   endif()
   
-  message(STATUS "POCO ${pocolib}d - DEBUG")
-  set(POCO_LIB_DEBUG POCO_${pocolib}_LIBRARY_DEBUG)
-  find_library(${POCO_LIB_DEBUG} NAMES Poco${pocolib}d
-    PATHS ${POCO_PREFIX}/static/lib/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}
-          /usr/lib
-          /usr/local/lib
-          /usr/lib64
-          /usr/local/lib64
-  )
-  if (${POCO_LIB_DEBUG})
-    message(STATUS "POCO ${pocolib}d found: ${${POCO_LIB_DEBUG}}")
+  message(STATUS "Searching POCO library ${pocolib}")
+  set(POCO_LIB POCO_${pocolib}_LIBRARY)
+  
+  if ( POCO_PREFIX )
+		if ( POCO_NO_INSTALL )
+      set(POCO_LIB_SEARCH_PATH "${POCO_PREFIX}/lib/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}")
+    else()
+      set(POCO_LIB_SEARCH_PATH "${POCO_PREFIX}/lib")
+    endif()
+    find_library(${POCO_LIB} NAMES Poco${pocolibname}
+      PATHS ${POCO_LIB_SEARCH_PATH} NO_DEFAULT_PATH
+    )
+  endif()
+  find_library(${POCO_LIB} NAMES Poco${pocolibname})
+
+  if (${POCO_LIB})
+    message(STATUS "POCO ${pocolib} found: ${${POCO_LIB}}")
   else()
-    message(STATUS "No POCO ${pocolib}d DEBUG library found! Debug build will be skipped")
+    message(FATAL_ERROR "No POCO ${pocolibname} library found!")
   endif()
   
-  message(STATUS "Searching ${pocolib}.h")
   if (pocolib STREQUAL "Foundation")
-    find_path(POCO_${pocolib}_INCLUDE NAMES Poco/${pocolib}.h
-      PATHS ${POCO_PREFIX}/${pocolib}/include
-      /usr/include
-      /usr/local/include
-    )
+    set(POCO_INC_H Poco/${pocolib}.h)
   elseif(pocolib STREQUAL "DataSQLite")
-    find_path(POCO_${pocolib}_INCLUDE NAMES Poco/Data/SQLite/SQLite.h
-      PATHS ${POCO_PREFIX}/Data/SQLite/include
-      /usr/include/Poco
-      /usr/local/include/Poco
-    )
+    set(POCO_INC_H Poco/Data/SQLite/SQLite.h)
   else()
-    find_path(POCO_${pocolib}_INCLUDE NAMES Poco/${pocolib}/${pocolib}.h
-      PATHS ${POCO_PREFIX}/${pocolib}/include
-      /usr/include/Poco
-      /usr/local/include/Poco
+    set(POCO_INC_H Poco/${pocolib}/${pocolib}.h)
+  endif()
+  message(STATUS "Searching ${POCO_INC_H}")
+
+  set(POCO_INCLUDE_DIR POCO_${pocolib}_INCLUDE)
+  if ( POCO_PREFIX )
+    if ( POCO_NO_INSTALL )
+      set(POCO_INC_SEARCH_PATH "${POCO_PREFIX}/../${pocolib}/include" "${POCO_PREFIX}/${pocolib}/include")
+    else()
+      set(POCO_INC_SEARCH_PATH "${POCO_PREFIX}/include")
+    endif()
+    message(STATUS "Search in ${POCO_INC_SEARCH_PATH}")
+    find_path(${POCO_INCLUDE_DIR} NAMES ${POCO_INC_H}
+      PATHS ${POCO_INC_SEARCH_PATH} NO_DEFAULT_PATH
     )
   endif()
-  set(POCO_INCLUDE_DIR POCO_${pocolib}_INCLUDE)
-  if (POCO_INCLUDE_DIR)
+  find_path(${POCO_INCLUDE_DIR} NAMES ${POCO_INC_H})
+
+  if (${POCO_INCLUDE_DIR})
     message(STATUS "POCO ${pocolib} include directory: ${${POCO_INCLUDE_DIR}}")
   else()
     message(FATAL_ERROR "No POCO ${pocolib} include directory found")
@@ -70,6 +69,8 @@ endforeach()
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+
+#set(CMAKE_BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
 
 add_subdirectory(MQ)
 add_subdirectory(MQWeb)
