@@ -7,6 +7,7 @@
   - Add resume cluster qmgr
   - First steps in adding websocket for browsing messages
   - Add inquire channel initiator (chinit)
+  - Start support for CMake
   
 0.0.11
   - Add inquire connection (conn)
