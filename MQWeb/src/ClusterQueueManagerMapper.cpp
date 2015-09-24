@@ -85,4 +85,57 @@ Poco::JSON::Array::Ptr ClusterQueueManagerMapper::inquire()
 	return json;
 }
 
+Poco::JSON::Object::Ptr ClusterQueueManagerMapper::suspend()
+{
+	createCommand(MQCMD_SUSPEND_Q_MGR_CLUSTER);
+
+	// Required parameters
+	addParameter<std::string>(MQCA_CLUSTER_NAME, "ClusterName");
+	addParameter<std::string>(MQCA_CLUSTER_NAMELIST, "ClusterNamelist");
+
+	// Optional parameters
+	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	addAttributeList(MQIACF_MODE, "Mode");
+
+	PCF::Vector commandResponse;
+	execute(commandResponse);
+
+	if ( commandResponse.size() > 0 )
+	{
+		PCF::Vector::iterator it = commandResponse.begin();
+		if ( (*it)->getReasonCode() != MQRC_NONE )
+		{
+			return createError(**it);
+		}
+	}
+
+	return new Poco::JSON::Object();
+}
+
+Poco::JSON::Object::Ptr ClusterQueueManagerMapper::resume()
+{
+	createCommand(MQCMD_RESUME_Q_MGR_CLUSTER);
+
+	// Required parameters
+	addParameter<std::string>(MQCA_CLUSTER_NAME, "ClusterName");
+	addParameter<std::string>(MQCA_CLUSTER_NAMELIST, "ClusterNamelist");
+
+	// Optional parameters
+	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+
+	PCF::Vector commandResponse;
+	execute(commandResponse);
+
+	if ( commandResponse.size() > 0 )
+	{
+		PCF::Vector::iterator it = commandResponse.begin();
+		if ( (*it)->getReasonCode() != MQRC_NONE )
+		{
+			return createError(**it);
+		}
+	}
+
+	return new Poco::JSON::Object();
+}
+
 }} //  Namespace MQ::Web

@@ -108,4 +108,75 @@ void ClusterQueueManagerController::inquire()
 }
 
 
+void ClusterQueueManagerController::suspend()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
+
+	if ( data().has("filter") && data().isObject("filter") )
+	{
+		pcfParameters = data().getObject("filter");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter is a clustername
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("ClusterName", parameters[1]);
+		}
+		else
+		{
+			if ( form().has("ClusterName") ) pcfParameters->set("ClusterName", form().get("ClusterName"));
+		}
+
+		if ( form().has("CommandScope") ) pcfParameters->set("CommandScope", form().get("CommandScope"));
+		if ( form().has("Mode") ) pcfParameters->set("Mode", form().get("Mode"));
+	}
+
+	ClusterQueueManagerMapper mapper(*commandServer(), pcfParameters);
+
+	Poco::JSON::Object::Ptr error = mapper.suspend();
+	if ( error->size() > 0 ) set("error", error);
+}
+
+
+void ClusterQueueManagerController::resume()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
+
+	if ( data().has("filter") && data().isObject("filter") )
+	{
+		pcfParameters = data().getObject("filter");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter is a clustername
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("ClusterName", parameters[1]);
+		}
+		else
+		{
+			if ( form().has("ClusterName") ) pcfParameters->set("ClusterName", form().get("ClusterName"));
+		}
+
+		if ( form().has("CommandScope") ) pcfParameters->set("CommandScope", form().get("CommandScope"));
+	}
+
+	ClusterQueueManagerMapper mapper(*commandServer(), pcfParameters);
+
+	Poco::JSON::Object::Ptr error = mapper.resume();
+	if ( error->size() > 0 ) set("error", error);
+}
+
+
 } } // Namespace MQ::Web

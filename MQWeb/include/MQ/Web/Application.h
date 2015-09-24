@@ -59,12 +59,16 @@ protected:
 	void displayHelp();
 		/// Display the help screen
 
+	void displayVersion();
+		/// Display the version
+
 	int main(const std::vector<std::string>& args);
 		/// The main program
 
 private:
 	bool _helpRequested;
 
+	bool _versionRequested;
 
 	Poco::JSON::TemplateCache _cache;
 		/// Only one TemplaceCache object is allowed. The best place to define it

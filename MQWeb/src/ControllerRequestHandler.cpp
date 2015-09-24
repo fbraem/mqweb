@@ -22,7 +22,9 @@
 #include "MQ/Web/WebController.h"
 #include "MQ/Web/AuthenticationInformationController.h"
 #include "MQ/Web/AuthorityRecordController.h"
+#include "MQ/Web/AuthorityServiceController.h"
 #include "MQ/Web/ChannelController.h"
+#include "MQ/Web/ChannelInitiatorController.h"
 #include "MQ/Web/ChannelStatusController.h"
 #include "MQ/Web/ClusterQueueManagerController.h"
 #include "MQ/Web/ConnectionController.h"
@@ -36,6 +38,10 @@
 #include "MQ/Web/QueueManagerStatusController.h"
 #include "MQ/Web/QueueStatusController.h"
 #include "MQ/Web/ServiceController.h"
+#include "MQ/Web/SubscriptionController.h"
+#include "MQ/Web/SubscriptionStatusController.h"
+#include "MQ/Web/TopicController.h"
+#include "MQ/Web/TopicStatusController.h"
 
 #include "Poco/URI.h"
 
@@ -126,6 +132,12 @@ void ControllerRequestHandler::registerControllers()
 	_controllerFactory.registerClass<QueueStatusController>("qstatus");
 	_controllerFactory.registerClass<AuthenticationInformationController>("authinfo");
 	_controllerFactory.registerClass<AuthorityRecordController>("authrec");
+	_controllerFactory.registerClass<SubscriptionController>("sub");
+	_controllerFactory.registerClass<SubscriptionStatusController>("sbstatus");
+	_controllerFactory.registerClass<TopicController>("topic");
+	_controllerFactory.registerClass<TopicStatusController>("tpstatus");
+	_controllerFactory.registerClass<AuthorityServiceController>("authservice");
+	_controllerFactory.registerClass<ChannelInitiatorController>("chinit");
 }
 
 

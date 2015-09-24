@@ -128,17 +128,17 @@ int MQCheckApplication::main(const std::vector<std::string>& args)
     qmgr->connect();
   }
 
-  MQ::CommandServer cmdServer(qmgr, "SYSTEM.DEFAULT.MODEL.QUEUE");
+  MQ::CommandServer* cmdServer = qmgr->createCommandServer("SYSTEM.DEFAULT.MODEL.QUEUE");
 
   std::string type = config().getString("mqcheck.options.type");
   std::transform(type.begin(), type.end(), type.begin(), ::toupper); 
   if ( type.compare("QUEUE") == 0 )
   {
-    checkQueues(qmgr, cmdServer);
+    checkQueues(qmgr, *cmdServer);
   }
   else if (type.compare("CHSTATUS") == 0 )
   {
-    checkChannelStatus(qmgr, cmdServer);
+    checkChannelStatus(qmgr, *cmdServer);
   }
 
   return Application::EXIT_OK;

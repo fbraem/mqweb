@@ -30,21 +30,19 @@ $req->header(
 $req->content($content);
 
 my $res = $ua->request($req);
-if ($res->is_success) {
-	my $mqweb = $json->decode($res->content());
-	if ( exists($mqweb->{error}) ) {
-		say 'An MQ error occurred while inquiring queuemanager.';
-		say	'Reason Code: ',
-			$mqweb->{error}->{reason}->{code},
-			' - ',
-			$mqweb->{error}->{reason}->{desc};
-	}
-	else {
-		say $mqweb->{qmgr}->{QMgrName}->{value},
-			' : ', 
-			$mqweb->{qmgr}->{QMgrDesc}->{value};
-	}
+die $res->status_line unless $res->is_success;
+
+my $mqweb = $json->decode($res->content());
+if ( exists($mqweb->{error}) ) {
+	say 'An MQ error occurred while inquiring queuemanager.';
+	say	'Reason Code: ',
+		$mqweb->{error}->{reason}->{code},
+		' - ',
+		$mqweb->{error}->{reason}->{desc};
 }
 else {
-	die $res->status_line;
+	say $mqweb->{qmgr}->{QMgrName}->{value},
+		' : ', 
+		$mqweb->{qmgr}->{QMgrDesc}->{value};
 }
+

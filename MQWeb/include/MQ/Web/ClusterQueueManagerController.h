@@ -60,6 +60,10 @@ public:
 		///   When an MQ error occurs there will be no clusqmgrs property.
 		///  error: An object describing the MQ error (only returned on error).
 
+	void suspend();
+
+	void resume();
+
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions.
 
@@ -72,6 +76,8 @@ inline const Controller::ActionMap& ClusterQueueManagerController::getActions() 
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
 			("inquire", static_cast<ActionFn>(&ClusterQueueManagerController::inquire))
+			("suspend", static_cast<ActionFn>(&ClusterQueueManagerController::suspend))
+			("resume", static_cast<ActionFn>(&ClusterQueueManagerController::resume))
 		;
 	return actions;
 }

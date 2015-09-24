@@ -119,6 +119,7 @@ private:
 	void inquireQmgrAttrs();
 
 	friend class Queue;
+	friend class MessageConsumer;
 };
 
 

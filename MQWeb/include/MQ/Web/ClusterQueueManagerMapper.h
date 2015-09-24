@@ -49,6 +49,12 @@ public:
 	Poco::JSON::Array::Ptr inquire();
 		/// Implements the inquire cluster qmgr command.
 
+	Poco::JSON::Object::Ptr suspend();
+		/// Implements the suspend cluster qmgr command.
+
+	Poco::JSON::Object::Ptr resume();
+		/// Implements the resume cluster qmgr command.
+
 private:
 
 	ClusterQueueManagerMapper(const ClusterQueueManagerMapper&);

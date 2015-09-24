@@ -61,10 +61,12 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
 
 	long wait = 600000;
 	PCF::Ptr msgResponse;
-	do
+
+	bool keepRunning = true;
+	while(keepRunning)
 	{
 		msgResponse = new PCF(_qmgr.zos());
-		msgResponse->setCorrelationId(*command->getMessageId());
+		msgResponse->correlationId()->set(command->messageId());
 		msgResponse->buffer().resize(REPLY_MESSAGE_LEN, false);
 
 		try
@@ -83,21 +85,34 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
 				
 				msgResponse->buffer().resize(msgResponse->dataLength(), false);
 				msgResponse->clear();
-				msgResponse->setCorrelationId(*command->getMessageId());
+				msgResponse->correlationId()->set(command->messageId());
 				_replyQ.get(*msgResponse.get(), MQGMO_CONVERT | MQGMO_NO_SYNCPOINT);
 			}
 			else
 			{
+				// on z/OS we can't rely on isLast, because a response
+				// can have multiple sets of responses which have a
+				// last flag in each set ...
+				if ( _qmgr.zos() && mqe.reason() == MQRC_NO_MSG_AVAILABLE )
+				{
+					keepRunning = false;
+					continue;
+				}
+
 				throw;
 			}
 		}
-		wait = 1000;
+		wait = 100;
 		msgResponse->buffer().resize(msgResponse->dataLength());
 		msgResponse->init();
 
 		response.push_back(msgResponse);
+
+		if ( ! _qmgr.zos() && msgResponse->isLast() )
+		{
+			keepRunning = false;
+		}
 	}
-	while(! msgResponse->isLast());
 }
 
 }

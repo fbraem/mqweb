@@ -13,26 +13,17 @@
 	<h2>Encoding:</h2>
 	<div class="detail">{{ message.Encoding }}</div>
 </div> <!-- details -->
-<div style="margin-top:10px;margin-bottom:10px">
-	<a ng-click="ascii = !ascii">
- 		<span ng-show="ascii">Hide ASCII</span><span ng-show="!ascii">Show ASCII</span>
-	</a>&nbsp;&nbsp;
-	<a ng-click="ebcdic = !ebcdic">
- 		<span ng-show="ebcdic">Hide EBCDIC</span><span ng-show="!ebcdic">Show EBCDIC</span>
-	</a>
-</div>
 <table id="messageDumpTable" style="font-size:0.8em;border-collapse:collapse;">
  <thead>
   <tr>
-   <th>Position</th><th>Hex</th><th ng-show="ascii">ASCII</th><th ng-show="ebcdic">EBCDIC</th>
+   <th>Position</th><th>Hex</th><th>ASCII</th>
   </tr>
  </thead>
  <tbody>
   <tr ng-repeat="dump in message.dump">
-	 <td style="padding-left:5px;padding-right:5px;border-left:1px dotted black;border-right:1px dotted black;"><code>{{ dump.position }}</code></td>
+   <td style="padding-left:5px;padding-right:5px;border-left:1px dotted black;border-right:1px dotted black;"><code>{{ dump.position }}</code></td>
    <td nowrap="nowrap" style="padding-left:5px;padding-right:5px;border-right:1px dotted black;"><code>{{ dump.hex }}</code></td>
-	 <td ng-show="ascii" style="padding-left:5px;padding-right:5px;border-right:1px dotted black;"><code>{{ dump.ascii }}</code></td>
- 	 <td ng-show="ebcdic" style="padding-left:5px;padding-right:5px;border-right:1px dotted black;"><code>{{ dump.ebcdic }}</code></td>
+   <td ng-show="ascii" style="padding-left:5px;padding-right:5px;border-right:1px dotted black;"><code>{{ dump.ascii }}</code></td>
  </tr>
 </tbody>
 </table>

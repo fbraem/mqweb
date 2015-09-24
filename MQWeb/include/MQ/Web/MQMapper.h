@@ -42,11 +42,18 @@ public:
 	virtual ~MQMapper();
 		/// Destructor
 
+	static Poco::JSON::Object::Ptr createError(const PCF& pcf);
+		/// Returns a JSON error object based on completion code
+		/// and reason code
+
 	//const Poco::SharedPtr<Dictionary> dictionary() const;
 		/// Returns the dictionary for the associated object type
 
 	static MQLONG getOperator(const std::string& op);
 		/// Returns the string equivalent for an operator
+
+	static std::string getCommandString(MQLONG command);
+		/// Translates a command code into a string
 
 	static std::string getReasonString(MQLONG reasonCode);
 		/// Translates a reason code into a string

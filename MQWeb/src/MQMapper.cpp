@@ -73,6 +73,12 @@ std::string MQMapper::getReasonString(MQLONG reasonCode)
 	return dict->getDisplayValue(MQIACF_REASON_CODE, reasonCode);
 }
 
+std::string MQMapper::getCommandString(MQLONG command)
+{
+	static Poco::SharedPtr<Dictionary> dict = _dictionaryCache.getDictionary("Event");
+	return dict->getDisplayValue(MQIACF_COMMAND, command);
+}
+
 MQLONG MQMapper::getOperator(const std::string& op)
 {
 	return _operators.getId(op);
@@ -154,8 +160,13 @@ void MQMapper::addAttributeList(MQLONG attrId, const std::string& attr)
 		if ( !attrs.isNull() && attrs->size() > 0 )
 		{
 			std::vector<MQLONG> numList;
+			
 			for(Poco::JSON::Array::ValueVec::const_iterator it = attrs->begin(); it != attrs->end(); ++it)
 			{
+				if ( Poco::icompare(it->toString(), "All") == 0 )
+				{
+					numList.push_back(MQIACF_ALL);
+				}
 				MQLONG id = _dictionary->getId(*it);
 				if ( id != -1 ) numList.push_back(id);
 			}
@@ -200,13 +211,32 @@ void MQMapper::execute(PCF::Vector& response)
 			  && (*it)->getReasonCode() > 3000 
 			  && (*it)->getReasonCode() < 4000 
 			  && (*it)->getReasonCode() != MQRCCF_NONE_FOUND
-			  && (*it)->getReasonCode() != MQRCCF_CHL_STATUS_NOT_FOUND )
+			  && (*it)->getReasonCode() != MQRCCF_CHL_STATUS_NOT_FOUND
+			  && (*it)->getReasonCode() != MQRCCF_TOPIC_STRING_NOT_FOUND )
 		{
-			static Poco::SharedPtr<Dictionary> dict = _dictionaryCache.getDictionary("Event");
-			std::string command = dict->getDisplayValue(MQIACF_COMMAND, (*it)->getCommand());
-			throw MQException("PCF", command, (*it)->getCompletionCode(), (*it)->getReasonCode());
+			throw MQException("PCF", getCommandString((*it)->getCommand()), (*it)->getCompletionCode(), (*it)->getReasonCode());
 		}
 	}
+}
+
+Poco::JSON::Object::Ptr MQMapper::createError(const PCF& pcf)
+{
+	Poco::JSON::Object::Ptr error = new Poco::JSON::Object();
+	error->set("object", "PCF");
+	error->set("fn", getCommandString(pcf.getCommand()));
+	switch(pcf.getCompletionCode())
+	{
+		case MQCC_OK: error->set("code", "OK"); break;
+		case MQCC_WARNING: error->set("code", "WARNING"); break;
+		case MQCC_FAILED: error->set("code", "ERROR"); break;
+	}
+
+	Poco::JSON::Object::Ptr reason = new Poco::JSON::Object();
+	error->set("reason", reason);
+	reason->set("code", pcf.getReasonCode());
+	reason->set("desc", MQMapper::getReasonString(pcf.getReasonCode()));
+
+	return error;
 }
 
 }} //  Namespace MQ::Web

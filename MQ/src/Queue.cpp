@@ -82,7 +82,7 @@ void Queue::put(Message& msg, MQLONG options)
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
 	try
 	{
-		mqSystem.functions().put(_qmgr.handle(), _handle, msg.md(), &pmo, size, size > 0 ? &msg.buffer()[0] : NULL);
+		mqSystem.functions().put(_qmgr.handle(), _handle, msg.md(), &pmo, size, size > 0 ? msg.buffer().data() : NULL);
 	}
 	catch(MQException& mqe)
 	{
@@ -96,12 +96,12 @@ void Queue::get(Message& msg, MQLONG options, long wait)
 {
 	MQGMO gmo = { MQGMO_DEFAULT };
 
-	if ( ! msg.isEmptyMessageId() )
+	if ( ! msg.messageId()->hasAllNullBytes() )
 	{
 		gmo.MatchOptions |= MQMO_MATCH_MSG_ID;
 	}
 
-	if ( ! msg.isEmptyCorrelationId() )
+	if ( ! msg.correlationId()->hasAllNullBytes() )
 	{
 		gmo.MatchOptions |= MQMO_MATCH_CORREL_ID;
 	}
@@ -122,7 +122,7 @@ void Queue::get(Message& msg, MQLONG options, long wait)
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
 	try
 	{
-		mqSystem.functions().get(_qmgr.handle(), _handle, msg.md(), &gmo, size, size > 0 ? &(msg.buffer()[0]) : NULL, &msg._dataLength);
+		mqSystem.functions().get(_qmgr.handle(), _handle, msg.md(), &gmo, size, size > 0 ? msg.buffer().data() : NULL, &msg._dataLength);
 	}
 	catch(MQException& mqe)
 	{

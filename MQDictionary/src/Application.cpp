@@ -420,7 +420,7 @@ Dictionary queueManagerStatusDictionary = Dictionary()
 	)
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary queueDictionary = Dictionary()
@@ -601,7 +601,7 @@ Dictionary queueDictionary = Dictionary()
 	(MQCA_XMIT_Q_NAME, "XmitQName")
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary queueStatusDictionary = Dictionary()
@@ -720,10 +720,10 @@ Dictionary queueStatusDictionary = Dictionary()
 		(MQUOWT_IMS, "IMS")
 		(MQUOWT_XA, "XA")
 	)
-	(MQCACF_USER_IDENTIFIER)
+	(MQCACF_USER_IDENTIFIER, "UserIdentifier")
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary channelDictionary = Dictionary()
@@ -863,6 +863,7 @@ Dictionary channelDictionary = Dictionary()
 	(MQIA_QSG_DISP)
 	(MQCACH_RCV_EXIT_NAME, "ReceiveExit")
 	(MQCACH_RCV_EXIT_USER_DATA, "ReceiveUserData")
+	(MQIACH_RESET_REQUESTED, "ResetSeq")
 	(MQCACH_SEC_EXIT_NAME, "SecurityExit")
 	(MQCACH_SEC_EXIT_USER_DATA, "SecurityUserData")
 	(MQCACH_SEND_EXIT_NAME, "SendExit")
@@ -899,7 +900,7 @@ Dictionary channelDictionary = Dictionary()
 	(MQCACH_XMIT_Q_NAME, "XmitQName")
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary channelStatusDictionary = Dictionary()
@@ -1076,7 +1077,7 @@ Dictionary channelStatusDictionary = Dictionary()
 	(MQIACH_XMITQ_TIME_INDICATOR, "XQTime")
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary clusterQueueManagerDictionary = Dictionary()
@@ -1085,6 +1086,9 @@ Dictionary clusterQueueManagerDictionary = Dictionary()
 	(MQIACH_BATCH_HB)
 	(MQIACH_BATCH_INTERVAL)
 	(MQIACH_BATCH_SIZE)
+#ifdef MQIACH_BATCH_DATA_LIMIT
+	(MQIACH_BATCH_DATA_LIMIT)
+#endif
 	(MQCACH_DESC)
 	(MQIA_MONITORING_CHANNEL)
 	(MQCACH_CHANNEL_NAME)
@@ -1188,7 +1192,7 @@ Dictionary clusterQueueManagerDictionary = Dictionary()
 	(MQCACH_USER_ID)
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary connectionDictionary = Dictionary()
@@ -1230,8 +1234,8 @@ Dictionary connectionDictionary = Dictionary()
 		(MQREADA_INHIBITED, "Inhibited")
 	)
 	(MQCACF_UOW_LOG_EXTENT_NAME, "StartUOWLogExtent")
-	(MQBACF_SUB_ID, "SubscriptionID")
-	(MQCACF_SUB_NAME, "SubscriptionName")
+	(MQBACF_SUB_ID, "SubID")
+	(MQCACF_SUB_NAME, "SubName")
 	(MQIACF_THREAD_ID)
 	(MQCA_TOPIC_STRING, "TopicString")
 	(MQCACF_TRANSACTION_ID)
@@ -1258,9 +1262,10 @@ Dictionary connectionDictionary = Dictionary()
 		(MQQSGD_GROUP, "Group")
 		(MQQSGD_Q_MGR, "Queuemanager")
 	)
+	(MQCACF_USER_IDENTIFIER)
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary listenerDictionary = Dictionary()
@@ -1287,7 +1292,7 @@ Dictionary listenerDictionary = Dictionary()
 	(MQIACH_XMIT_PROTOCOL_TYPE)
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary listenerStatusDictionary = Dictionary()
@@ -1313,12 +1318,14 @@ Dictionary listenerStatusDictionary = Dictionary()
 		(MQSVC_STATUS_STARTING, "Starting")
 		(MQSVC_STATUS_RUNNING, "Running")
 		(MQSVC_STATUS_STOPPING, "Stopping")
+		(MQSVC_STATUS_RETRYING, "Retrying")
+		(MQSVC_STATUS_STOPPED, "Stopped")
 	)
 	(MQCACH_TP_NAME)
 	(MQIACH_XMIT_PROTOCOL_TYPE)
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary topicDictionary = Dictionary()
@@ -1398,11 +1405,53 @@ Dictionary topicDictionary = Dictionary()
 	)
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
+;
+
+Dictionary topicStatusDictionary = Dictionary()
+	(MQCA_CLUSTER_NAME)
+	(MQIA_TOPIC_DEF_PERSISTENCE)
+	(MQIA_DEF_PUT_RESPONSE_TYPE)
+	(MQIA_DEF_PRIORITY)
+	(MQIA_DURABLE_SUB)
+	(MQIA_INHIBIT_PUB)
+	(MQIA_INHIBIT_SUB)
+	(MQCA_ADMIN_TOPIC_NAME, "AdminTopicNames")
+	(MQCA_MODEL_DURABLE_Q)
+	(MQCA_MODEL_NON_DURABLE_Q)
+	(MQIA_PM_DELIVERY)
+	(MQIA_NPM_DELIVERY)
+	(MQIACF_RETAINED_PUBLICATION, "RetainedPublication")
+	(MQIA_PUB_COUNT, "PublishCount")
+	(MQIA_SUB_COUNT, "SubscriptionCount")
+	(MQIA_SUB_SCOPE)
+	(MQIA_PUB_SCOPE)
+#ifdef MQIA_USE_DEAD_LETTER_Q
+	(MQIA_USE_DEAD_LETTER_Q)
+#endif	
+	(MQBACF_SUB_ID)
+	(MQCACF_SUB_USER_ID, "SubscriptionUserId")
+	(MQIACF_DURABLE_SUBSCRIPTION, "Durable", DisplayMapInitializer
+		(MQSUB_DURABLE_YES, "Yes")
+		(MQSUB_DURABLE_NO, "No")
+	)
+	(MQIACF_SUB_TYPE, "SubscriptionType", DisplayMapInitializer
+		(MQSUBTYPE_PROXY, "Proxy")
+		(MQSUBTYPE_ADMIN, "Admin")
+		(MQSUBTYPE_API, "API")
+	)
+	(MQCA_RESUME_DATE, "ResumeDate")
+	(MQCA_RESUME_TIME, "ResumeTime")
+	(MQCACF_LAST_MSG_DATE, "LastMessageDate")
+	(MQCACF_LAST_MSG_TIME, "LastMessageTime")
+	(MQCACF_LAST_PUB_DATE, "LastPublicationDate")
+	(MQCACF_LAST_PUB_TIME, "LastPublicationTime")
+	(MQIACF_PUBLISH_COUNT, "NumberOfPublishes")
+	(MQBACF_CONNECTION_ID)
 ;
 
 Dictionary eventDictionary = Dictionary()
-	(MQCA_ADMIN_TOPIC_NAME, "AdminTopicNames")
+	(MQCA_ADMIN_TOPIC_NAME)
 	(MQIA_APPL_TYPE)
 	(MQCACF_APPL_NAME, "ApplName")
 	(MQCA_AUTH_INFO_NAME, "AuthInfoName")
@@ -1740,7 +1789,7 @@ Dictionary eventDictionary = Dictionary()
 	(MQCACH_SSL_PEER_NAME, "SSLPeerName")
 	(MQIACH_SSL_RETURN_CODE, "SSLReturnCode")
 	(MQCA_STORAGE_CLASS)
-	(MQCACF_SUB_NAME, "SubName")
+	(MQCACF_SUB_NAME)
 	(MQIACF_SUB_OPTIONS, "SubOptions")
 	(MQIA_TIME_SINCE_RESET, "TimeSinceReset")
 	(MQCA_TOPIC_NAME, "TopicName")
@@ -1776,7 +1825,7 @@ Dictionary eventDictionary = Dictionary()
 		(MQRQ_CAF_NOT_INSTALLED, "CAF Not Installed")
 	)
 	(MQCACF_RESTART_LOG_EXTENT_NAME, "RestartRecoveryLogExtent")
-	(MQCACF_USER_IDENTIFIER, "UserIdentifier")
+	(MQCACF_USER_IDENTIFIER)
 	(MQCACH_XMIT_Q_NAME)
 ;
 
@@ -2594,7 +2643,7 @@ Dictionary processDictionary = Dictionary()
 	(MQCA_USER_DATA, "UserData")
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary serviceDictionary = Dictionary()
@@ -2619,7 +2668,7 @@ Dictionary serviceDictionary = Dictionary()
 	(MQCA_SERVICE_STOP_COMMAND, "StopCommand")
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary authenticationInformationDictionary = Dictionary()
@@ -2639,7 +2688,7 @@ Dictionary authenticationInformationDictionary = Dictionary()
 	(MQIA_QSG_DISP)
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 Dictionary authorityRecordDictionary = Dictionary()
@@ -2683,7 +2732,128 @@ Dictionary authorityRecordDictionary = Dictionary()
 	(MQCA_Q_MGR_NAME)
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
-	(MQCACF_RESPONSE_Q_MGR_NAME, "ResponseQMgrName")
+	(MQCACF_RESPONSE_Q_MGR_NAME)
+;
+
+Dictionary subDictionary = Dictionary()
+	(MQCA_ALTERATION_DATE)
+	(MQCA_ALTERATION_TIME)
+	(MQCA_CREATION_DATE)
+	(MQCA_CREATION_TIME)
+	(MQCACF_DESTINATION, "Destination")
+	(MQIACF_DESTINATION_CLASS, "DestinationClass", DisplayMapInitializer
+		(MQDC_MANAGED, "Managed")
+		(MQDC_PROVIDED, "Provided")
+	)
+	(MQBACF_DESTINATION_CORREL_ID, "DestinationCorrelId")
+	(MQCACF_DESTINATION_Q_MGR, "DestionationQueueManager")
+#ifdef MQIA_DISPLAY_TYPE
+	(MQIA_DISPLAY_TYPE, "DisplayType", DisplayMapInitializer
+		(MQDOPT_RESOLVED, "Resolved")
+		(MQDOPT_DEFINED, "Defined")
+	)
+#endif
+	(MQIACF_DURABLE_SUBSCRIPTION)
+	(MQIACF_EXPIRY, "Expiry")
+	(MQBACF_ACCOUNTING_TOKEN, "PublishedAccountingToken")
+	(MQCACF_APPL_IDENTITY_DATA, "PublishedApplicationIdentityData")
+	(MQIACF_PUB_PRIORITY, "PublishPriority")
+	(MQIACF_PUBSUB_PROPERTIES, "PublishSubscribeProperties", DisplayMapInitializer
+		(MQPSPROP_NONE, "None")
+		(MQPSPROP_MSGPROP, "MsgProp")
+		(MQPSPROP_COMPAT, "Compat")
+		(MQPSPROP_RFH2, "RFH2")
+	)
+	(MQIACF_REQUEST_ONLY, "Requestonly", DisplayMapInitializer
+		(MQRU_PUBLISH_ALL, "All")
+		(MQRU_PUBLISH_ON_REQUEST, "On Request")
+	)
+	(MQCACF_SUB_SELECTOR, "Selector")
+	(MQIACF_SELECTOR_TYPE, "SelectorType", DisplayMapInitializer
+		(MQSELTYPE_NONE, "None")
+		(MQSELTYPE_STANDARD, "Standard")
+		(MQSELTYPE_EXTENDED, "Extended")
+	)
+	(MQBACF_SUB_ID, "SubId")
+	(MQIACF_SUB_LEVEL, "SubLevel")
+	(MQCACF_SUB_NAME)
+	(MQIACF_SUBSCRIPTION_SCOPE, "SubscriptionScope", DisplayMapInitializer
+		(MQTSCOPE_ALL, "All")
+		(MQTSCOPE_QMGR, "QMgr")
+	)
+	(MQIACF_SUB_TYPE)
+	(MQCACF_SUB_USER_ID, "SubscriptionUser")
+	(MQCA_TOPIC_NAME)
+	(MQCA_TOPIC_STRING)
+	(MQCACF_SUB_USER_DATA, "UserData")
+	(MQIACF_VARIABLE_USER_ID, "VariableUser")
+	(MQIACF_WILDCARD_SCHEMA, "WildcardSchema", DisplayMapInitializer
+		(MQWS_CHAR, "Char")
+		(MQWS_TOPIC, "Topic")
+	)
+;
+
+Dictionary subStatusDictionary = Dictionary()
+	(MQBACF_CONNECTION_ID)
+	(MQIACF_DURABLE_SUBSCRIPTION)
+	(MQCACF_LAST_MSG_DATE)
+	(MQCACF_LAST_MSG_TIME)
+#ifdef MQIACF_MESSAGE_COUNT
+	(MQIACF_MESSAGE_COUNT, "MessageCount")
+#endif
+	(MQIACF_PUBLISH_COUNT, "NumberMsgs")
+	(MQCA_RESUME_DATE)
+	(MQCA_RESUME_TIME)
+	(MQBACF_SUB_ID)
+	(MQCACF_SUB_NAME)
+	(MQCACF_SUB_USER_ID)
+	(MQIACF_SUB_TYPE)
+	(MQCA_TOPIC_STRING)
+#ifdef MQIACF_MCAST_REL_INDICATOR
+	(MQIACF_MCAST_REL_INDICATOR, "MCastRelIndicator")
+#endif
+;
+
+Dictionary authorityServiceDictionary = Dictionary()
+	(MQIACF_INTERFACE_VERSION, "InterfaceVersion")
+	(MQCACF_SERVICE_COMPONENT, "ServiceComponent")
+	(MQIACF_USER_ID_SUPPORT, "UserIDSupport", DisplayMapInitializer
+		(MQUIDSUPP_YES, "Yes")
+		(MQUIDSUPP_NO, "No")
+	)
+;
+
+Dictionary channelInitiatorDictionary = Dictionary()
+	(MQIACH_ACTIVE_CHL, "ActiveChannels")
+	(MQIACH_ACTIVE_CHL_MAX, "ActiveChannelsMax")
+	(MQIACH_ACTIVE_CHL_PAUSED, "ActiveChannelsPaused")
+	(MQIACH_ACTIVE_CHL_RETRY, "ActiveChannelsRetrying")
+	(MQIACH_ACTIVE_CHL_STARTED, "ActiveChannelsStarted")
+	(MQIACH_ACTIVE_CHL_STOPPED, "ActiveChannelsStopped")
+	(MQIACH_ADAPS_MAX, "AdaptersMax")
+	(MQIACH_ADAPS_STARTED, "AdaptersStarted")
+	(MQIACF_CHINIT_STATUS)
+	(MQIACH_CURRENT_CHL, "CurrentChannels")
+	(MQIACH_CURRENT_CHL_LU62, "CurrentChannelsLU62")
+	(MQIACH_CURRENT_CHL_MAX, "CurrentChannelsMax")
+	(MQIACH_CURRENT_CHL_TCP, "CurrentChannelsLTCP")
+	(MQIACH_DISPS_MAX, "DispatchersMax")
+	(MQIACH_DISPS_STARTED, "DispatchersStarted")
+	(MQIACH_SSLTASKS_MAX, "SSLTasksMax")
+	(MQIACH_SSLTASKS_STARTED, "SSLTasksStarted")
+	(MQCACH_TCP_NAME, "TCPName")
+	(MQIACH_INBOUND_DISP, "InboundDisposition", DisplayMapInitializer
+		(MQINBD_GROUP, "Group")
+		(MQINBD_Q_MGR, "Qmgr")
+	)
+	(MQCACH_IP_ADDRESS)
+	(MQIACH_LISTENER_STATUS)
+	(MQCACH_LU_NAME, "LUName")
+	(MQIACH_PORT_NUMBER, "Port")
+	(MQIACH_XMIT_PROTOCOL_TYPE)
+	// Extended Response
+	(MQBACF_RESPONSE_ID)
+	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
 class MQDictionary : public Poco::Util::Application
@@ -2793,6 +2963,7 @@ int main(const std::vector<std::string>& args)
 	store(session, ++oid, "Listener", listenerDictionary);
 	store(session, ++oid, "ListenerStatus", listenerStatusDictionary);
 	store(session, ++oid, "Topic", topicDictionary);
+	store(session, ++oid, "TopicStatus", topicStatusDictionary);
 	store(session, ++oid, "Event", eventDictionary);
 	store(session, ++oid, "Reason", reasonDictionary);
 	store(session, ++oid, "Namelist", namelistDictionary);
@@ -2800,6 +2971,10 @@ int main(const std::vector<std::string>& args)
 	store(session, ++oid, "Service", serviceDictionary);
 	store(session, ++oid, "AuthenticationInformation", authenticationInformationDictionary);
 	store(session, ++oid, "AuthorityRecord", authorityRecordDictionary);
+	store(session, ++oid, "Sub", subDictionary);
+	store(session, ++oid, "SubStatus", subStatusDictionary);
+	store(session, ++oid, "AuthorityService", authorityServiceDictionary);
+	store(session, ++oid, "ChannelInitiator", channelInitiatorDictionary);
 	return Application::EXIT_OK;
 }
 
