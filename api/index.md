@@ -57,18 +57,50 @@ following properties:
 
 Properties of WebSphere MQ objects are always returned with the name as documented 
 in the WebSphere MQ information center. For example: The property of the current 
-queue depth of a queue will have the name `CurrentQDepth`.
+queue depth of a queue will have the name `CurrentQDepth`. Each property is an
+object with the following properties:
+
++ `id`
+
+  The id of the WebSphere MQ property. For example `CurrentQDepth` will have the
+  id `3`, which is the equivalent of the C constant `MQIA_CURRENT_Q_DEPTH`.
+
++ `value`
+
+  The value of the WebSphere MQ property.
+
++ `display`
+
+  When the value of the property is an MQ constant then this property will have
+  the string representation of the value. For example: When `QueueType` has the
+  value 1 (MQQT_LOCAL), then this property will have the value `Local`. 
+
+> A property with the name `id_nnnn` (where nnnn is the value of the C constant) 
+> means that the property is not defined in the SQLite database. Create an 
+> issue on [Github](https://github.com/fbraem/mqweb/issues) and this will be 
+> fixed as soon as possible.
+
+Controllers
+-----------
 
 |Controller|URI path|
 |----------|--------|
 |[AuthenticationInformationController](authinfo.html)|/api/authinfo|
 |[AuthorityRecordController](authrec.html)|/api/authrec|
+|[AuthorityServiceController](authservice.html)|/api/authservice|
 |[ChannelController](channel.html)|/api/channel|
+|[ChannelInitiatorController](chinit.html)|/api/chinit|
 |[ChannelStatusController](chstatus.html)|/api/chstatus|
+|[ClusterQueueManagerController](clusqmgr.html)|/api/clusqmgr|
+|[ConnectionController](conn.html)|/api/conn|
 |[QueueManagerController](qmgr.html)|/api/qmgr|
 |[QueueManagerStatusController](qmstatus.html)|/api/qmstatus|
 |[QueueController](queue.html)|/api/queue|
 |[ListenerController](listener.html)|/api/listener|
 |[ListenerStatusController](lsstatus.html)|/api/lsstatus|
 |[MessageController](message.html)|/api/message|
+|[TopicController](topic.html)|/api/topic|
+|[TopicStatusController](tpstatus.html)|/api/tpstatus|
+|[SubController](sub.html)|/api/sub|
+|[SubStatusController](sbstatus.html)|/api/sbstatus|
 

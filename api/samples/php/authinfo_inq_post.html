@@ -1,0 +1,56 @@
+<div class="highlight"><pre><span class="cp">&lt;?php</span> 
+
+<span class="c1">// This sample will show all SYSTEM authentication information objects.</span>
+
+<span class="k">if</span> <span class="p">(</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$argv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">{</span>
+  <span class="k">echo</span> <span class="s2">&quot;Please pass me the name of a queuemanager as argument&quot;</span><span class="p">,</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+  <span class="k">exit</span><span class="p">;</span> 
+<span class="p">}</span>
+
+<span class="nv">$json</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;AuthInfoName&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;SYSTEM*&#39;</span><span class="p">);</span>
+<span class="nv">$content</span> <span class="o">=</span> <span class="nx">json_encode</span><span class="p">(</span><span class="nv">$json</span><span class="p">);</span>
+  
+<span class="nv">$curl</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">(</span><span class="s1">&#39;http://localhost:8081/api/authinfo/inquire/&#39;</span> <span class="o">.</span> <span class="nv">$argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_CUSTOMREQUEST</span><span class="p">,</span> <span class="s2">&quot;POST&quot;</span><span class="p">);</span>
+<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_POSTFIELDS</span><span class="p">,</span> <span class="nv">$content</span><span class="p">);</span>
+<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_HTTPHEADER</span><span class="p">,</span> 
+  <span class="k">array</span><span class="p">(</span> 
+      <span class="s1">&#39;Content-Type: application/json&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;Content-Length: &#39;</span> <span class="o">.</span> <span class="nb">strlen</span><span class="p">(</span><span class="nv">$content</span><span class="p">)</span>
+  <span class="p">)</span>
+<span class="p">);</span>
+
+<span class="k">if</span> <span class="p">(</span> <span class="p">(</span><span class="nv">$response</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curl</span><span class="p">))</span> <span class="o">===</span> <span class="k">false</span> <span class="p">)</span> <span class="p">{</span>
+  <span class="nv">$err</span> <span class="o">=</span> <span class="nb">curl_error</span><span class="p">(</span><span class="nv">$curl</span><span class="p">);</span>
+  <span class="k">echo</span> <span class="s2">&quot;An HTTP error occurred while inquiring authentication information:&quot;</span>
+    <span class="p">,</span> <span class="nv">$err</span>
+    <span class="p">,</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">else</span> <span class="p">{</span>
+  <span class="nv">$json</span> <span class="o">=</span> <span class="nx">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span> <span class="nb">isset</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">error</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="s2">&quot;An MQ error occurred while inquiring authentication information objects.&quot;</span>
+      <span class="p">,</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+    <span class="k">echo</span> <span class="s2">&quot;Reason Code: &quot;</span>
+      <span class="p">,</span> <span class="nv">$json</span><span class="o">-&gt;</span><span class="na">error</span><span class="o">-&gt;</span><span class="na">reason</span><span class="o">-&gt;</span><span class="na">code</span>
+      <span class="p">,</span> <span class="s2">&quot; - &quot;</span>
+      <span class="p">,</span> <span class="nv">$json</span><span class="o">-&gt;</span><span class="na">error</span><span class="o">-&gt;</span><span class="na">reason</span><span class="o">-&gt;</span><span class="na">desc</span>
+      <span class="p">,</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">else</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="nb">isset</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">authinfos</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">authinfos</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="k">foreach</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="na">authinfos</span> <span class="k">as</span> <span class="nv">$authinfo</span><span class="p">)</span>
+      <span class="p">{</span>
+        <span class="k">echo</span> <span class="nv">$authinfo</span><span class="o">-&gt;</span><span class="na">AuthInfoName</span><span class="o">-&gt;</span><span class="na">value</span>
+          <span class="p">,</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+      <span class="k">echo</span> <span class="s2">&quot;No authentication information objects found&quot;</span>
+        <span class="p">,</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>

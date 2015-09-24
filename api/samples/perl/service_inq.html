@@ -1,9 +1,13 @@
 <div class="highlight"><pre><span class="c1">#!/usr/bin/perl</span>
 <span class="k">use</span> <span class="n">strict</span><span class="p">;</span>
 <span class="k">use</span> <span class="n">warnings</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">feature</span> <span class="sx">qw(say)</span><span class="p">;</span>
+
 <span class="k">use</span> <span class="n">JSON</span><span class="p">;</span>
 <span class="k">use</span> <span class="nn">LWP::</span><span class="n">UserAgent</span><span class="p">;</span>
 <span class="k">use</span> <span class="nn">HTTP::Request::</span><span class="n">Common</span><span class="p">;</span>
+
+<span class="c1"># This sample will show all services</span>
 
 <span class="k">my</span> <span class="nv">$qmgr</span> <span class="o">=</span> <span class="nb">shift</span><span class="p">;</span>
 <span class="nb">die</span><span class="p">(</span><span class="s">&quot;Please pass me the name of a queuemanager as argument&quot;</span><span class="p">)</span> <span class="k">unless</span> <span class="nb">defined</span><span class="p">(</span><span class="nv">$qmgr</span><span class="p">);</span>
@@ -12,9 +16,11 @@
 
 <span class="k">my</span> <span class="nv">%input</span> <span class="o">=</span> <span class="p">(</span> 
   <span class="s">&#39;ServiceName&#39;</span> <span class="o">=&gt;</span> <span class="s">&#39;*&#39;</span><span class="p">,</span>
-  <span class="s">&#39;ServiceAttrs&#39;</span> <span class="o">=&gt;</span> <span class="p">[</span> <span class="s">&#39;ServiceName&#39;</span> <span class="p">]</span>
+  <span class="s">&#39;ServiceAttrs&#39;</span> <span class="o">=&gt;</span> <span class="p">[</span> <span class="s">&#39;ServiceName&#39;</span> <span class="p">]</span> 
+    <span class="c1"># Not really needed, because ServiceName is always returned</span>
+    <span class="c1"># but it shows how to set the ServiceAttrs property</span>
 <span class="p">);</span>
-<span class="k">my</span> <span class="nv">$content</span> <span class="o">=</span> <span class="nv">$json</span><span class="o">-&gt;</span><span class="n">encode</span><span class="p">(</span><span class="o">\</span><span class="nv">%input</span><span class="p">);</span>    
+<span class="k">my</span> <span class="nv">$content</span> <span class="o">=</span> <span class="nv">$json</span><span class="o">-&gt;</span><span class="n">encode</span><span class="p">(</span><span class="o">\</span><span class="nv">%input</span><span class="p">);</span>
 
 <span class="k">my</span> <span class="nv">$ua</span> <span class="o">=</span> <span class="nn">LWP::</span><span class="n">UserAgent</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">;</span>
 <span class="k">my</span> <span class="nv">$req</span> <span class="o">=</span> <span class="n">POST</span> <span class="s">&#39;http://localhost:8081/api/service/inquire/&#39;</span> <span class="o">.</span> <span class="nv">$qmgr</span><span class="p">;</span>
@@ -25,6 +31,19 @@
 <span class="nv">$req</span><span class="o">-&gt;</span><span class="n">content</span><span class="p">(</span><span class="nv">$content</span><span class="p">);</span>
 
 <span class="k">my</span> <span class="nv">$res</span> <span class="o">=</span> <span class="nv">$ua</span><span class="o">-&gt;</span><span class="n">request</span><span class="p">(</span><span class="nv">$req</span><span class="p">);</span>
+<span class="nb">die</span> <span class="nv">$res</span><span class="o">-&gt;</span><span class="n">status_line</span> <span class="k">unless</span> <span class="nv">$res</span><span class="o">-&gt;</span><span class="n">is_success</span><span class="p">;</span>
 
-<span class="k">print</span> <span class="nv">$json</span><span class="o">-&gt;</span><span class="n">pretty</span><span class="o">-&gt;</span><span class="n">encode</span><span class="p">(</span><span class="nv">$json</span><span class="o">-&gt;</span><span class="n">decode</span><span class="p">(</span><span class="nv">$res</span><span class="o">-&gt;</span><span class="n">content</span><span class="p">()));</span>
+<span class="k">my</span> <span class="nv">$mqweb</span> <span class="o">=</span> <span class="nv">$json</span><span class="o">-&gt;</span><span class="n">decode</span><span class="p">(</span><span class="nv">$res</span><span class="o">-&gt;</span><span class="n">content</span><span class="p">());</span>
+<span class="k">if</span> <span class="p">(</span> <span class="nb">exists</span><span class="p">(</span><span class="nv">$mqweb</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">error</span><span class="p">})</span> <span class="p">)</span> <span class="p">{</span>
+  <span class="n">say</span> <span class="s">&#39;An MQ error occurred while inquiring services.&#39;</span><span class="p">;</span>
+  <span class="n">say</span> <span class="s">&#39;Reason Code: &#39;</span>
+    <span class="p">,</span> <span class="nv">$mqweb</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">error</span><span class="p">}</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">reason</span><span class="p">}</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">code</span><span class="p">}</span>
+    <span class="p">,</span> <span class="s">&#39; - &#39;</span>
+    <span class="p">,</span> <span class="nv">$mqweb</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">error</span><span class="p">}</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">reason</span><span class="p">}</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">desc</span><span class="p">};</span>
+<span class="p">}</span>
+<span class="k">else</span> <span class="p">{</span>
+  <span class="k">foreach</span> <span class="k">my</span> <span class="nv">$service</span><span class="p">(</span><span class="nv">@</span><span class="p">{</span><span class="nv">$mqweb</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">services</span><span class="p">}})</span> <span class="p">{</span>
+    <span class="n">say</span> <span class="nv">$service</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">ServiceName</span><span class="p">}</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">value</span><span class="p">};</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>

@@ -8,6 +8,10 @@ ClusterQueueManagerController
 
 The second part of the URI must be `clusqmgr` to call the ClusterQueueManagerController.
 
++ [inquire](#inquire) : Inquire cluster information
++ [suspend](#suspend) : Suspend queuemanager in cluster
++ [resume](#resume) : Resume queuemanager in cluster
+
 ##<a name="inquire"></a>inquire
 Get information from clusters. This action executes the 
 MQCMD_INQUIRE_CLUSTER_Q_MGR pcf command.
@@ -24,7 +28,7 @@ The name of the queuemanager. This parameter is required!
 
 ####<a name="inquireURLClusterName"></a>ClusterName
 The name of a cluster. Generic names are supported. When this parameter is used, 
-the query parameter for [Cluster](#inquireQueryClusterName) is ignored.
+the query parameter for [ClusterName](#inquireQueryClusterName) is ignored.
 
 ####<a name="inquireURLClusterQMgrName"></a>ClusterQMgrName
 The name of a queuemanager that is part of the cluster. Generic names are 
@@ -112,11 +116,108 @@ There are some differences between query parameters and a JSON object:
 + A filter is an object: *IntegerFilterCommand* can be used to filter on 
   parameters which has integer values, while *StringFilterCommand* can be used 
   to filter on parameters with string values. The filter object has these 
-  three properties: Parameter ([FilterParam](#inquireQueryFilterParam)), 
-  Operator ([FilterOp](#inquireQueryFilterOp)) and FilterValue 
-  ([FilterValue](#inquireQueryFilterValue)).
+  three properties: Parameter (see [FilterParam](#inquireQueryFilterParam)), 
+  Operator (see [FilterOp](#inquireQueryFilterOp)) and FilterValue 
+  (see [FilterValue](#inquireQueryFilterValue)).
 
 > An *IntegerFilterCommand* can't be used together with a *StringFilterCommand*
 
 {% include_relative samples/perl/clusqmgr_inq.html %}
+
+##<a name="suspend">suspend
+Suspend the queuemanager in a cluster. This action executes the 
+MQCMD_SUSPEND_Q_MGR_CLUSTER pcf command.
+
+The returned JSON object will have an `error` object when a WebSphere MQ
+error occurred.
+
+###<a name="suspendURL"></a>URL Parameters
+`/api/clusqmgr/suspend/<QueueManager>/<ClusterName>`
+
+####<a name="suspendURLQueueManager"></a>QueueManager
+The name of the queuemanager. This parameter is required!
+
+####<a name="suspendURLClusterName"></a>ClusterName
+The name of a cluster. When this parameter is used, 
+the query parameter for [ClusterName](#suspendQueryClusterName) is ignored.
+
+###<a name="suspendQuery"></a>Query Parameters
+
+####<a name="suspendQueryClusterName"></a>ClusterName
+The name of a cluster. This parameter is ignored, when 
+a [URL parameter](#suspendURLClusterName) is used.
+
+####<a name="suspendQueryClusterNamelist"></a>ClusterNamelist
+The name of a cluster namelist. This parameter can not be used together with
+[ClusterName](#suspendURLClusterName).
+
+####<a name="suspendQueryCommandScope"></a>CommandScope
+Specifies how the command is executed when the queue manager is a member of a 
+queue-sharing group. This parameter applies to z/OS only.
+
+####<a name="suspendQueryMode"></a>Mode
+The mode on how the local queue manager is suspended from the cluster. The 
+case-sensitive value can be `Quiesce` or `Force`.
+
+###<a name="suspendExample"></a>Example
+`/api/clusqmgr/suspend/PIGEON/BIRDS`  
+`/api/clusqmgr/suspend/PIGEON?ClusterName=BIRDS&Mode=Quiesce`
+
+{% include_relative samples/php/clusqmgr_suspend.html %}
+
+###<a name="suspendJSON"></a>JSON Object
+When using an application/json POST request you can post a JSON object with 
+names like the query parameters.
+
+> All URL parameters and query parameters are ignored except for the URL 
+> parameter for the name of the [queuemanager](#suspendURLQueueManager).
+
+{% highlight javascript %}
+    {
+      'ClusterName' : 'BIRDS',
+      'Mode' : 'Quiesce'
+    }
+{% endhighlight %}
+
+{% include_relative samples/perl/clusqmgr_suspend.html %}
+
+##<a name="resume">resume
+Resume the queuemanager in a cluster. This action executes the 
+MQCMD_RESUME_Q_MGR_CLUSTER pcf command.
+
+The returned JSON object will have an `error` object when a WebSphere MQ
+error occurred.
+
+####<a name="resumeQueryClusterName"></a>ClusterName
+The name of a cluster. This parameter is ignored, when 
+a [URL parameter](#resumeURLClusterName) is used.
+
+####<a name="resumeQueryClusterNamelist"></a>ClusterNamelist
+The name of a cluster namelist. This parameter can not be used together with
+[ClusterName](#resumeURLClusterName).
+
+####<a name="resumeQueryCommandScope"></a>CommandScope
+Specifies how the command is executed when the queue manager is a member of a 
+queue-sharing group. This parameter applies to z/OS only.
+
+###<a name="resumeExample"></a>Example
+`/api/clusqmgr/resume/PIGEON/BIRDS`  
+`/api/clusqmgr/resume/PIGEON?ClusterName=BIRDS`
+
+{% include_relative samples/perl/clusqmgr_resume.html %}
+
+###<a name="resumeJSON"></a>JSON Object
+When using an application/json POST request you can post a JSON object with 
+names like the query parameters.
+
+> All URL parameters and query parameters are ignored except for the URL 
+> parameter for the name of the [queuemanager](#resumeURLQueueManager).
+
+{% highlight javascript %}
+    {
+      'ClusterName' : 'BIRDS'
+    }
+{% endhighlight %}
+
+{% include_relative samples/perl/clusqmgr_resume.html %}
 
