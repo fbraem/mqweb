@@ -49,6 +49,12 @@ public:
 	Poco::JSON::Array::Ptr inquire();
 		/// Implements the inquire channel command.
 
+	Poco::JSON::Object::Ptr start();
+		/// Implements the sart channel command.
+
+	Poco::JSON::Object::Ptr stop();
+		/// Implements the stop channel command.
+
 private:
 
 	ChannelMapper(const ChannelMapper&);

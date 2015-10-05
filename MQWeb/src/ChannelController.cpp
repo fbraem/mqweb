@@ -123,5 +123,77 @@ void ChannelController::inquire()
 	set("channels", mapper.inquire());
 }
 
+void ChannelController::start()
+{
+	  Poco::JSON::Object::Ptr pcfParameters;
+ 
+	  if ( data().has("filter") && data().isObject("filter") )
+	  {
+			pcfParameters = data().getObject("filter");
+	  }
+	  else
+	  {
+			pcfParameters = new Poco::JSON::Object();
+			set("filter", pcfParameters);
+ 
+			std::vector<std::string> parameters = getParameters();
+			// First parameter is queuemanager
+			// Second parameter is a channelname
+			if ( parameters.size() > 1 )
+			{
+				  pcfParameters->set("ChannelName", parameters[1]);
+			}
+			else
+			{
+				  if ( form().has("ChannelName") ) pcfParameters->set("ChannelName", form().get("ChannelName"));
+			}
+ 
+			if ( form().has("CommandScope") ) pcfParameters->set("CommandScope", form().get("CommandScope"));
+			if ( form().has("ChannelDisposition") ) pcfParameters->set("ChannelDisposition", form().get("ChannelDisposition"));
+	  }
+ 
+	  ChannelMapper mapper(*commandServer(), pcfParameters);
+ 
+	  Poco::JSON::Object::Ptr error = mapper.start();
+	  if ( error->size() > 0 ) set("error", error);
+}
+ 
+void ChannelController::stop()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
+ 
+	if ( data().has("filter") && data().isObject("filter") )
+	{
+		pcfParameters = data().getObject("filter");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		set("filter", pcfParameters);
+ 
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter is a channelname
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("ChannelName", parameters[1]);
+		}
+		else
+		{
+			if ( form().has("ChannelName") ) pcfParameters->set("ChannelName", form().get("ChannelName"));
+		}
+ 
+		if ( form().has("ChannelDisposition") ) pcfParameters->set("ChannelDisposition", form().get("ChannelDisposition"));
+		if ( form().has("ChannelStatus") ) pcfParameters->set("ChannelStatus", form().get("ChannelStatus"));
+		if ( form().has("ConnectionName") ) pcfParameters->set("ConnectionName", form().get("ConnectionName"));
+		if ( form().has("Mode") ) pcfParameters->set("Mode", form().get("Mode"));
+		if ( form().has("QMgrName") ) pcfParameters->set("QMgrName", form().get("QMgrName"));
+	  }
+ 
+	  ChannelMapper mapper(*commandServer(), pcfParameters);
+ 
+	  Poco::JSON::Object::Ptr error = mapper.stop();
+	  if ( error->size() > 0 ) set("error", error);
+}
 
 } } // Namespace MQ::Web
