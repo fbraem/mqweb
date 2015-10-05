@@ -20,7 +20,7 @@ foreach(pocolib Foundation Util XML Net JSON Data DataSQLite)
   set(POCO_LIB POCO_${pocolib}_LIBRARY)
   
   if ( POCO_PREFIX )
-		if ( POCO_NO_INSTALL )
+    if ( POCO_NO_INSTALL )
       set(POCO_LIB_SEARCH_PATH "${POCO_PREFIX}/lib/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}")
     else()
       set(POCO_LIB_SEARCH_PATH "${POCO_PREFIX}/lib")
