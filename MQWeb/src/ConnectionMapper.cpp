@@ -72,7 +72,8 @@ Poco::JSON::Array::Ptr ConnectionMapper::inquire()
 	}
 	else
 	{
-		Buffer::Ptr id = new Buffer(); // Empty buffer
+		Buffer::Ptr id = new Buffer(MQ_CONNECTION_ID_LENGTH); // Empty buffer
+		memset(id->data(), 0, MQ_CONNECTION_ID_LENGTH);
 		pcf()->addParameter(MQBACF_GENERIC_CONNECTION_ID, id);
 	}
 
