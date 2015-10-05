@@ -74,3 +74,5 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 add_subdirectory(MQ)
 add_subdirectory(MQWeb)
+add_subdirectory(MQCheck)
+add_subdirectory(MQDictionary)
