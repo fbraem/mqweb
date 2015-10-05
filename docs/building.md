@@ -26,16 +26,12 @@ POCO for other projects, you can opt for shared libraries. I've choosen static
 ones, which makes it easier to install MQWeb: there's only one executable you
 need to care about.
 
-Premake
--------
+Premake / CMake
+---------------
 
-MQWeb uses [premake](http://industriousone.com/premake) as build tool. Premake
-can generate Visual Studio solutions, make files, 
-[Codelite](http://codelite.org/) workspaces and more.
-
-[Download](http://industriousone.com/premake/download) premake. Binaries simply 
-need to be unpacked and placed somewhere on the system search path or any other 
-convenient location.
+MQWeb can be build using [premake](http://premake.github.io/) version 4.4
+or [CMake](https://cmake.org) as build tool. Premake or CMake can generate
+Visual Studio solutions, make files, [Codelite](http://codelite.org/) workspaces and more.
 
 WebSphere MQ
 ------------
@@ -88,8 +84,11 @@ Download a MQWeb source archive from the
 [releases](https://github.com/fbraem/mqweb/releases) or just download an archive
 from the [source tree](https://github.com/fbraem/mqweb). Note that the 
 [master](https://github.com/fbraem/mqweb/tree/master) always points to the 
-latest release, while the source tree with the latest branch points to code
-that is work in progress and it is possible that it doesn't work.
+latest release.
+
+Premake or CMake can be used to generate makefiles, project files, ...
+
+####Premake
 
 Extract the archive and make the root folder of the archive the current
 folder. Open *poco.lua* and *mq.lua* and see if you need to make any changes. 
@@ -116,6 +115,31 @@ When you use [Codelite](http://codelite.org/), you'll find the workspaces in
 
 The result of your build will be placed in *bin/Debug* or *bin/Release*.
 
+####CMake
+
+Create a build folder and make it the current directory. When running CMake the
+following properties can be used:
+
++ CMAKE_BUILD_TYPE
+
+  debug or release
+
++ POCO_NO_INSTALL
+
+  set to Y when POCO isn't installed. By default the build process assumes that
+  POCO is installed.
+  
++ POCO_PREFIX
+
+  When POCO isn't installed then use this property to set the location of POCO.
+
+Some examples:
+
+````
+cmake -DCMAKE_BUILD_TYPE=debug ..
+cmake -DCMAKE_BUILD_TYPE=debug -DPOCO_NO_INSTALL=Y -DPOCO_PREFIX=/development/poco-1.6.1-all/shared ..
+````
+
 <a name="windows"> </a>
 
 Windows
@@ -141,6 +165,8 @@ from the [source tree](https://github.com/fbraem/mqweb). Note that the
 latest release, while the source tree with the latest branch points to code
 that is work in progress and it is possible that it doesn't work.
 
+####Premake
+
 Extract the archive and make the root folder of the archive the current
 folder. Open *poco.lua* and *mq.lua* and see if you need to make any changes. 
 Now run premake:
@@ -148,3 +174,7 @@ Now run premake:
     premake4 vs2008
 
 Now you have a Visual Studio solution file in the build folder.
+
+####CMake
+
+Building MQWeb on Windows with CMake is not yet supported.
