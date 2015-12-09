@@ -44,4 +44,6 @@ There are some differences between query parameters and a JSON object:
 
 This sample is a Perl script that inquires the channel initiator:
 
-{% include_relative samples/perl/chinit_inq.html %}
+{% capture sample %}{% include_relative samples/perl/chinit_inq.md %}{% endcapture %}
+{{ sample | markdownify }}
+

@@ -64,7 +64,8 @@ possible. The value must be a (case-sensitive) valid attribute name.
 `/api/lsstatus/inquire/PIGEON`  
 `/api/lsstatus/inquire/PIGEON?ListenerName=MQWEB*`
 
-{% include_relative samples/php/lsstatus_inq.html %}
+{% capture sample %}{% include_relative samples/php/lsstatus_inq.md %}{% endcapture %}
+{{ sample | markdownify }}
 
 ###<a name="inquireJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with 
@@ -99,5 +100,7 @@ There are some differences between query parameters and a JSON object:
 
 This is a Perl example that inquires all statuses.
 
-{% include_relative samples/perl/lsstatus_inq.html %}
+{% capture sample %}{% include_relative samples/perl/lsstatus_inq.md %}{% endcapture %}
+{{ sample | markdownify }}
+
 

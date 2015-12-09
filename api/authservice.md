@@ -39,7 +39,8 @@ Name of authorization service.
 ###<a name="inquiryExample"></a>Example
 `/api/authservice/inquire/PIGEON`  
 
-{% include_relative samples/php/authservice_inq.html %}
+{% capture sample %}{% include_relative samples/php/authservice_inq.md %}{% endcapture %}
+{{ sample | markdownify }}
 
 ###<a name="inquireJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with 
@@ -55,5 +56,7 @@ There are some differences between query parameters and a JSON object:
   attributenames as element.
 + Synonyms can't be used, you need to use the name of the attribute
   as described in the query parameters.
-  
-{% include_relative samples/perl/authservice_inq.html %}
+
+{% capture sample %}{% include_relative samples/perl/authservice_inq.md %}{% endcapture %}
+{{ sample | markdownify }}
+

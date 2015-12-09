@@ -91,7 +91,8 @@ Disposition of the object within the group. Possible values are `Live`, `Copy`,
 `/api/channel/inquire/PIGEON/CL.*`  
 `/api/channel/inquire/PIGEON?ChannelName=CL.*`
 
-{% include_relative samples/php/channel_inq.html %}
+{% capture sample %}{% include_relative samples/php/channel_inq.md %}{% endcapture %}
+{{ sample | markdownify }}
 
 ###<a name="inquireJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with 
@@ -131,5 +132,6 @@ There are some differences between query parameters and a JSON object:
 This sample is a Perl script that inquires all channels starting with `SYSTEM`
 and only returns the channelname and connectionname (if available):
 
-{% include_relative samples/perl/channel_inq.html %}
+{% capture sample %}{% include_relative samples/perl/channel_inq.md %}{% endcapture %}
+{{ sample | markdownify }}
 

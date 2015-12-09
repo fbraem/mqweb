@@ -37,7 +37,8 @@ possible. The value must be a (case-sensitive) valid attribute name.
 ###Example
 `/api/qmstatus/inquire/PIGEON`
 
-{% include_relative samples/php/qmstatus_inq.html %}
+{% capture sample %}{% include_relative samples/php/qmstatus_inq.md %}{% endcapture %}
+{{ sample | markdownify }}
 
 ###<a name="inquireJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with 
@@ -67,5 +68,6 @@ There are some differences between query parameters and a JSON object:
 This is a Perl example that inquires a queuemanager to get the start date and
 time of the queuemanager.
 
-{% include_relative samples/perl/qmstatus_inq.html %}
+{% capture sample %}{% include_relative samples/perl/qmstatus_inq.md %}{% endcapture %}
+{{ sample | markdownify }}
 

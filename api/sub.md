@@ -89,7 +89,8 @@ Only return the subscriptions of the given type. Possible values are `Admin`,
 
 This sample is a PHP script that inquires all subscriptions from a queuemanager:
 
-{% include_relative samples/php/sub_inq.html %}
+{% capture sample %}{% include_relative samples/php/sub_inq.md %}{% endcapture %}
+{{ sample | markdownify }}
 
 ###<a name="inquireJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with 
@@ -122,5 +123,7 @@ There are some differences between query parameters and a JSON object:
 
 This sample is a Perl script that inquires all subscriptions:
 
-{% include_relative samples/perl/sub_inq.html %}
+{% capture sample %}{% include_relative samples/perl/sub_inq.md %}{% endcapture %}
+{{ sample | markdownify }}
+
 

@@ -88,7 +88,8 @@ Disposition of the object within the group. Possible values are `Live`, `Copy`,
 `/api/clusqmgr/inquire/PIGEON/BIRDS/BLACKBIRD`  
 `/api/clusqmgr/inquire/PIGEON?ClusterName=BIRDS`
 
-{% include_relative samples/php/clusqmgr_inq.html %}
+{% capture sample %}{% include_relative samples/php/clusqmgr_inq.md %}{% endcapture %}
+{{ sample | markdownify }}
 
 ###<a name="inquireJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with 
@@ -122,7 +123,8 @@ There are some differences between query parameters and a JSON object:
 
 > An *IntegerFilterCommand* can't be used together with a *StringFilterCommand*
 
-{% include_relative samples/perl/clusqmgr_inq.html %}
+{% capture sample %}{% include_relative samples/perl/clusqmgr_inq.md %}{% endcapture %}
+{{ sample | markdownify }}
 
 ##<a name="suspend">suspend
 Suspend the queuemanager in a cluster. This action executes the 
@@ -163,7 +165,8 @@ case-sensitive value can be `Quiesce` or `Force`.
 `/api/clusqmgr/suspend/PIGEON/BIRDS`  
 `/api/clusqmgr/suspend/PIGEON?ClusterName=BIRDS&Mode=Quiesce`
 
-{% include_relative samples/php/clusqmgr_suspend.html %}
+{% capture sample %}{% include_relative samples/php/clusqmgr_suspend.md %}{% endcapture %}
+{{ sample | markdownify }}
 
 ###<a name="suspendJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with 
@@ -179,7 +182,8 @@ names like the query parameters.
     }
 {% endhighlight %}
 
-{% include_relative samples/perl/clusqmgr_suspend.html %}
+{% capture sample %}{% include_relative samples/perl/clusqmgr_suspend.md %}{% endcapture %}
+{{ sample | markdownify }}
 
 ##<a name="resume">resume
 Resume the queuemanager in a cluster. This action executes the 
@@ -204,7 +208,8 @@ queue-sharing group. This parameter applies to z/OS only.
 `/api/clusqmgr/resume/PIGEON/BIRDS`  
 `/api/clusqmgr/resume/PIGEON?ClusterName=BIRDS`
 
-{% include_relative samples/perl/clusqmgr_resume.html %}
+{% capture sample %}{% include_relative samples/perl/clusqmgr_resume.md %}{% endcapture %}
+{{ sample | markdownify }}
 
 ###<a name="resumeJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with 
@@ -218,6 +223,4 @@ names like the query parameters.
       'ClusterName' : 'BIRDS'
     }
 {% endhighlight %}
-
-{% include_relative samples/perl/clusqmgr_resume.html %}
 

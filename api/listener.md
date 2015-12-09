@@ -74,7 +74,8 @@ The default is `All`. The value is case-sensitive.
 This sample is a PHP script that inquires all SYSTEM listeners with 
 transporttype TCP from queuemanager PIGEON:
 
-{% include_relative samples/php/listener_inq.html %}
+{% capture sample %}{% include_relative samples/php/listener_inq.md %}{% endcapture %}
+{{ sample | markdownify }}
 
 ###<a name="inquireJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with 
@@ -110,5 +111,6 @@ There are some differences between query parameters and a JSON object:
 This is a Perl example that inquires all listeners and returns the listenername
 and transportype attributes.
 
-{% include_relative samples/perl/listener_inq.html %}
+{% capture sample %}{% include_relative samples/perl/listener_inq.md %}{% endcapture %}
+{{ sample | markdownify }}
 
