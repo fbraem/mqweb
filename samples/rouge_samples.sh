@@ -15,7 +15,17 @@ do
   do 
     p=`basename $f | cut -f1 -d.`
     echo "processing $f"
-    pygmentize -O tabsize=2 -o $1/api/samples/$language/$p.html $f
+    mkdir -p $1/_includes/samples/$language
+    cp $f $1/_includes/samples/$language/$p.md
+    ed -s $1/_includes/samples/$language/$p.md <<EOF
+0a
+{% highlight $language %}
+.
+\$a
+{% endhighlight %}
+.
+w
+EOF
   done
 done
 
