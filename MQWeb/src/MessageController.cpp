@@ -383,13 +383,8 @@ void MessageController::dump()
 	int row = 0;
 	for(int i = 0; i < message.buffer().size(); ++i)
 	{
-		char ascii = (char) message.buffer().chr(i);
-		if ( message.getCodedCharSetId() == 500 ) //EBCDIC
-		{
-			ascii = EBCDIC_translate_ASCII[ascii];
-		}
-
-		oss << (isprint((unsigned char) ascii) ? ascii : '.');
+		unsigned char code = message.buffer().chr(i);
+		oss << (char) (message.getCodedCharSetId() == 500 ? EBCDIC_translate_ASCII[code] : code);
 		if ( (i + 1) % 16 == 0 )
 		{
 			jsonMessageDump = jsonDump->getObject(row++);

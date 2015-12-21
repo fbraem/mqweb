@@ -59,6 +59,10 @@ public:
 		///   When an MQ error occurs there will be no channels property.
 		///  error: An object describing the MQ error (only returned on error).
 
+	void start();
+
+	void stop();
+
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions.
 
@@ -71,6 +75,8 @@ inline const Controller::ActionMap& ChannelController::getActions() const
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
 			("inquire", static_cast<ActionFn>(&ChannelController::inquire))
+			("stop", static_cast<ActionFn>(&ChannelController::stop))
+			("start", static_cast<ActionFn>(&ChannelController::start))
 		;
 	return actions;
 }

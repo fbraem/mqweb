@@ -96,4 +96,59 @@ Poco::JSON::Array::Ptr ChannelMapper::inquire()
 	return json;
 }
 
+Poco::JSON::Object::Ptr ChannelMapper::start()
+{
+	createCommand(MQCMD_START_CHANNEL);
+ 
+	// Required Parameters
+	addParameter<std::string>(MQCACH_CHANNEL_NAME, "ChannelName");
+ 
+	// Optional Parameters
+	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	addParameterNumFromString(MQIACH_CHANNEL_DISP, "ChannelDisposition");
+ 
+	PCF::Vector commandResponse;
+	execute(commandResponse);
+ 
+	if ( commandResponse.size() > 0 )
+	{
+		PCF::Vector::iterator it = commandResponse.begin();
+		if ( (*it)->getReasonCode() != MQRC_NONE )
+		{
+			return createError(**it);
+		}
+	}
+ 
+	return new Poco::JSON::Object();
+}
+ 
+Poco::JSON::Object::Ptr ChannelMapper::stop()
+{
+	createCommand(MQCMD_STOP_CHANNEL);
+ 
+	// Required Parameters
+	addParameter<std::string>(MQCACH_CHANNEL_NAME, "ChannelName");
+ 
+	// Optional Parameters
+	addParameterNumFromString(MQIACH_CHANNEL_DISP, "ChannelDisposition");
+	addParameterNumFromString(MQIACH_CHANNEL_STATUS, "ChannelStatus");
+	addParameter<std::string>(MQCACH_CONNECTION_NAME, "ConnectionName");
+	addParameterNumFromString(MQIACF_MODE, "Mode");
+	addParameter<std::string>(MQCA_Q_MGR_NAME, "QMgrName");
+ 
+	PCF::Vector commandResponse;
+	execute(commandResponse);
+ 
+	if ( commandResponse.size() > 0 )
+	{
+		PCF::Vector::iterator it = commandResponse.begin();
+		if ( (*it)->getReasonCode() != MQRC_NONE )
+		{
+			return createError(**it);
+		}
+	}
+ 
+	return new Poco::JSON::Object();
+}
+
 }} //  Namespace MQ::Web
