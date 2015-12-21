@@ -1,3 +1,6 @@
+0.1.0
+  - Web app has its own repository now: mqwebapp
+
 0.0.13
   - Upgrade documents to use latest Jekyll release
   - Use unsigned char for ebcdic code. Fix #13
@@ -15,7 +18,7 @@
   - First steps in adding websocket for browsing messages
   - Add inquire channel initiator (chinit)
   - Start support for CMake
-  
+
 0.0.11
   - Add inquire connection (conn)
   - Add inquire namelist (nl)
