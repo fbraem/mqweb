@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 #include "MQ/Web/ControllerRequestHandler.h"
-#include "MQ/Web/WebController.h"
+#include "MQ/Web/AppRequestHandler.h"
 #include "MQ/Web/AuthenticationInformationController.h"
 #include "MQ/Web/AuthorityRecordController.h"
 #include "MQ/Web/AuthorityServiceController.h"
@@ -31,6 +31,7 @@
 #include "MQ/Web/ListenerController.h"
 #include "MQ/Web/ListenerStatusController.h"
 #include "MQ/Web/MessageController.h"
+#include "MQ/Web/MQWebController.h"
 #include "MQ/Web/NamelistController.h"
 #include "MQ/Web/ProcessController.h"
 #include "MQ/Web/QueueController.h"
@@ -61,29 +62,19 @@ void ControllerRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& reque
 	std::vector<std::string> paths;
 	uri.getPathSegments(paths);
 
-	std::string controllerType;
-	std::string controllerName;
-	if ( paths.size() == 0 ) // Use the default controller type
-	{
-		controllerType = "web";
-	}
-	else
-	{
-		controllerType = paths.front();
-		paths.erase(paths.begin());
+	if ( paths.size() == 0 ) {
+		response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "Invalid path specified in URL. Did you specified api?");
+		response.send();
+		return;
 	}
 
+	std::string controllerType = paths.front();
+	paths.erase(paths.begin());
+
+	std::string controllerName;
+
 	Poco::SharedPtr<Controller> controller;
-	if ( controllerType.compare("web") == 0 )
-	{
-		controller = new WebController();
-		if ( paths.size() == 0 )
-		{
-			paths.push_back("qmgr"); // Default qmgr
-		}
-		controller->handle(paths, request, response);
-	}
-	else if ( controllerType.compare("api") == 0 )
+	if ( controllerType.compare("api") == 0 )
 	{
 		if ( paths.size() == 0 )
 		{
@@ -108,7 +99,7 @@ void ControllerRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& reque
 	}
 	else
 	{
-		response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "Only web or api are allowed as controller type");
+		response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "Only api is allowed as controller type");
 		response.send();
 	}
 }
@@ -138,6 +129,7 @@ void ControllerRequestHandler::registerControllers()
 	_controllerFactory.registerClass<TopicStatusController>("tpstatus");
 	_controllerFactory.registerClass<AuthorityServiceController>("authservice");
 	_controllerFactory.registerClass<ChannelInitiatorController>("chinit");
+	_controllerFactory.registerClass<MQWebController>("mqweb");
 }
 
 

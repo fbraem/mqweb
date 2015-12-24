@@ -19,8 +19,8 @@
  * permissions and limitations under the Licence.
  */
 
-#ifndef _MQWeb_StaticRequestHandler_H
-#define _MQWeb_StaticRequestHandler_H
+#ifndef _MQWeb_AppRequestHandler_H
+#define _MQWeb_AppRequestHandler_H
 
 #include "Poco/Net/HTTPRequestHandler.h"
 
@@ -29,12 +29,11 @@ namespace MQ
 namespace Web
 {
 
-class StaticRequestHandler: public Poco::Net::HTTPRequestHandler
-	/// An HTTPRequestHandler which returns static content like images, html, css, ...
-	/// All static content is resolved against the mq.web.static property.
+class AppRequestHandler: public Poco::Net::HTTPRequestHandler
+	/// An HTTPRequestHandler which handles requests for the MQWeb App
 {
 public:
-	StaticRequestHandler();
+	AppRequestHandler();
 		/// Constructor
 
 	void handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
@@ -43,4 +42,4 @@ public:
 
 } } // Namespace MQ::Web
 
-#endif //  _MQWeb_StaticRequestHandler_H
+#endif //  _MQWeb_AppRequestHandler_H

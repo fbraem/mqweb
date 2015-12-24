@@ -168,55 +168,28 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 
 	_cache.setLogger(logger);
 
-	if ( config().has("mq.web.templates") )
+	// Check the web app path configuration (mq.web.app)
+	if ( config().has("mq.web.app") )
 	{
-		Poco::Path templatePath;
-		std::string templatesValue;
+		Poco::Path appPath;
+		std::string appValue;
 		try
 		{
-			templatesValue = config().getString("mq.web.templates");
-			templatesValue = config().expand(templatesValue);
-			templatePath.assign(templatesValue);
-			templatePath.makeDirectory();
+			appValue = config().getString("mq.web.app");
+			appValue = config().expand(appValue);
+			appPath.assign(appValue);
+			appPath.makeDirectory();
 		}
 		catch(Poco::PathSyntaxException&)
 		{
-			poco_fatal_f1(logger, "Invalid path specified for mq.web.templates: %s", templatesValue);
+			poco_fatal_f1(logger, "Invalid path specified for mq.web.app: %s", appValue);
 			return Application::EXIT_CONFIG;
 		}
 
-		Poco::File file(templatePath);
+		Poco::File file = Poco::File(appPath);
 		if ( !file.exists() )
 		{
-			poco_fatal_f1(logger, "Template path %s doesn't exist! Check the configuration file.", templatePath.toString());
-			return Application::EXIT_CONFIG;
-		}
-
-		_cache.addPath(templatePath);
-	}
-
-	// Check the static path configuration (mq.web.static)
-	if ( config().has("mq.web.static") )
-	{
-		Poco::Path staticPath;
-		std::string staticValue;
-		try
-		{
-			staticValue = config().getString("mq.web.static");
-			staticValue = config().expand(staticValue);
-			staticPath.assign(staticValue);
-			staticPath.makeDirectory();
-		}
-		catch(Poco::PathSyntaxException&)
-		{
-			poco_fatal_f1(logger, "Invalid path specified for mq.web.static: %s", staticValue);
-			return Application::EXIT_CONFIG;
-		}
-
-		Poco::File file = Poco::File(staticPath);
-		if ( !file.exists() )
-		{
-			poco_fatal_f1(logger, "Path for static files %s doesn't exist! Check the configuration file.", staticPath.toString());
+			poco_fatal_f1(logger, "Path for static files %s doesn't exist! Check the configuration file.", appPath.toString());
 			return Application::EXIT_CONFIG;
 		}
 	}

@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-#include "MQ/Web/StaticRequestHandler.h"
+#include "MQ/Web/AppRequestHandler.h"
 
 #include "Poco/Net/HTTPRequestHandlerFactory.h"
 #include "Poco/Net/HTTPServerRequest.h"
@@ -38,11 +38,11 @@ namespace MQ
 namespace Web
 {
 
-StaticRequestHandler::StaticRequestHandler()
+AppRequestHandler::AppRequestHandler()
 {
 }
 
-void StaticRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
+void AppRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
 {
 	// Check for the favicon.ico request, we don't have one for now,
 	// so set status code to HTTP_NOT_FOUND
@@ -58,10 +58,11 @@ void StaticRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, 
 	Poco::URI uri(request.getURI());
 
 	Poco::Util::Application& app = Poco::Util::Application::instance();
-	std::string staticPathname = app.config().getString("mq.web.static", "");
+	std::string staticPathname = app.config().getString("mq.web.app", "");
 	if ( staticPathname.empty() )
 	{
-		staticPathname = app.config().getString("application.dir");
+		response.setStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
+		response.send();
 	}
 
 	if ( ! staticPathname.empty() )

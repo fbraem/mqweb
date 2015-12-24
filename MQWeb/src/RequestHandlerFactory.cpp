@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 #include "MQ/Web/RequestHandlerFactory.h"
-#include "MQ/Web/StaticRequestHandler.h"
+#include "MQ/Web/AppRequestHandler.h"
 #include "MQ/Web/DenyRequestHandler.h"
 #include "MQ/Web/WebSocketRequestHandler.h"
 #include "MQ/Web/ControllerRequestHandler.h"
@@ -41,7 +41,7 @@ RequestHandlerFactory::RequestHandlerFactory() : Poco::Net::HTTPRequestHandlerFa
 
 Poco::Net::HTTPRequestHandler* RequestHandlerFactory::createRequestHandler(const Poco::Net::HTTPServerRequest& request)
 {
-	static std::string staticURI = "/static";
+	static std::string appURI = "/web";
 	std::string uri = request.getURI();
 
 	Poco::Logger& logger = Poco::Logger::get("mq.web.access");
@@ -58,10 +58,10 @@ Poco::Net::HTTPRequestHandler* RequestHandlerFactory::createRequestHandler(const
 		return new WebSocketRequestHandler();
 	}
 
-	if ( ! uri.compare(0, staticURI.size(), staticURI) 
+	if ( ! uri.compare(0, appURI.size(), appURI)
 		|| ! uri.compare("/favicon.ico") )
 	{
-		return new StaticRequestHandler();
+		return new AppRequestHandler();
 	}
 
 	return new ControllerRequestHandler();

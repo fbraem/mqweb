@@ -19,66 +19,47 @@
  * permissions and limitations under the Licence.
  */
 
-#ifndef _MQWeb_WebController_h
-#define _MQWeb_WebController_h
+#ifndef _MQWeb_MQWebController_h
+#define _MQWeb_MQWebController_h
 
-#include "MQ/Web/MQController.h"
+#include "MQ/Web/Controller.h"
 #include "MQ/Web/MapInitializer.h"
 
 namespace MQ {
 namespace Web {
 
-class WebController : public MQController
-	/// Controller that shows the details of a queue
+class MQWebController : public Controller
+	/// Controller that shows the details of MQWeb
 {
 public:
-	WebController();
+	MQWebController();
 		/// Constructor
 
-	virtual ~WebController();
+	virtual ~MQWebController();
 		/// Destructor
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions
 
-	bool isJSON() const;
+	void inquire();
 
-	void qmgr();
-
-	void queue();
-
-	void channel();
-
-	void chstatus();
-
-	void listener();
-
-	void lstatus();
-
-	void message();
+	void list();
 
 private:
 };
 
 
-inline const Controller::ActionMap& WebController::getActions() const
+inline const Controller::ActionMap& MQWebController::getActions() const
 {
-	static Controller::ActionMap actions 
+	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
-			("qmgr", static_cast<ActionFn>(&WebController::qmgr))
-			("queue", static_cast<ActionFn>(&WebController::queue))
-			("channel", static_cast<ActionFn>(&WebController::channel))
-			("listener", static_cast<ActionFn>(&WebController::listener))
-			("message", static_cast<ActionFn>(&WebController::message))
+			("inquire", static_cast<ActionFn>(&MQWebController::inquire))
+			("list", static_cast<ActionFn>(&MQWebController::list))
 		;
 	return actions;
 }
 
-inline bool WebController::isJSON() const
-{
-	return false;
-}
 
 } } // Namespace MQ::Web
 
-#endif // _MQWeb_WebController_h
+#endif // _MQWeb_MQWebController_h
