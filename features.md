@@ -20,6 +20,10 @@ This controller can be reached by using `web` as first part of the URL:
 The built-in HTML pages use [AngularJS](http://angularjs.org) to call the API's
 of MQWeb and to transform the JSON objects into HTML.
 
+> **Note:** this will change for version 0.1.0 and above. The built-in HTML pages
+> are removed from the MQWeb repository and the web application will be rewritten
+> in the [MQWeb App](https://github.com/fbraem/mqwebapp) repository.
+
 API
 ---
 
