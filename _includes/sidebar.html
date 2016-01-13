@@ -1,12 +1,13 @@
 <div class="sidebar">
  <h3>Latest News</h3>
-  {% for post in site.posts %}
+  {% for post in site.posts limit:5 %}
    <div style="margin-bottom:10px">
      <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a><br />
      <em>{{ post.date | date: "%-d %B %Y" }}</em>
    </div>
   {% endfor %} 
- <hr />
+  <a href="{{ site.baseurl }}/news.html">More news &raquo;</a>
+ <hr style="margin-top:10px" />
  <div style="text-align:center;margin-top:30px;">
   <a href="http://www.pocoproject.org">
    <img src="{{ site.baseurl }}/img/poco.gif" />
@@ -22,3 +23,4 @@
   </form>
  </div>
 </div>
+
