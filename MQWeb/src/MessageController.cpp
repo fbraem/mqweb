@@ -32,6 +32,7 @@
 #include "MQ/Message.h"
 #include "MQ/QueueManager.h"
 #include "MQ/Queue.h"
+#include "MQ/Topic.h"
 #include "MQ/Buffer.h"
 
 static unsigned char EBCDIC_translate_ASCII[256] =
@@ -51,7 +52,7 @@ static unsigned char EBCDIC_translate_ASCII[256] =
 	0x7B, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x2E, 0x2E, 0x2E, 0x2E, 0x2E, 0x2E,
 	0x7D, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x2E, 0x2E, 0x2E, 0x2E, 0x2E, 0x2E,
 	0x5C, 0x2E, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x2E, 0x2E, 0x2E, 0x2E, 0x2E, 0x2E,
-	0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x2E, 0x2E, 0x2E, 0x2E, 0x2E, 0x2E 
+	0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x2E, 0x2E, 0x2E, 0x2E, 0x2E, 0x2E
 };
 
 #define DEFAULT_EVENT_MESSAGE_SIZE 512
@@ -367,14 +368,14 @@ void MessageController::dump()
 		{
 			jsonMessageDump->set("hex", hexPart);
 			hexPart.clear();
-			
+
 			jsonMessageDump = new Poco::JSON::Object();
 			std::ostringstream outputPos;
 			outputPos << std::uppercase << std::right << std::setw(8) << std::setfill('0') << std::setbase(16) << (i / 2);
 			jsonMessageDump->set("position", outputPos.str());
 			jsonDump->add(jsonMessageDump);
 		}
-		
+
 		hexPart += fullHex[i];
 	}
 	jsonMessageDump->set("hex", hexPart);
@@ -600,6 +601,28 @@ void MessageController::mapMessageToJSON(const Message& message, Poco::JSON::Obj
 	obj.set("MsgFlags", message.getMsgFlags());
 	obj.set("OriginalLength", message.getOriginalLength());
 	obj.set("Length", message.dataLength());
+}
+
+
+void MessageController::publish()
+{
+	std::vector<std::string> parameters = getParameters();
+
+	if ( parameters.size() < 2 )
+	{
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+		return;
+	}
+
+	std::string topicName = parameters[1];
+	Topic topic(*qmgr().get(), topicName);
+	topic.open(MQOO_OUTPUT | MQOO_FAIL_IF_QUIESCING | MQBND_BIND_ON_OPEN);
+
+	std::string topicString;
+	if ( parameters.size() > 2 )
+	{
+		topicString = parameters[2];
+	}
 }
 
 } } // Namespace MQ::Web
