@@ -46,13 +46,13 @@ public:
 		/// Constructor. Note: Message doesn't own the buffer. In this case
 		/// the Buffer class only acts as a wrapper around the externally
 		/// supplied memory.
-	
+
 	Buffer& buffer();
 		/// Returns the buffer used for storing the content of the message.
 
 	const Buffer& buffer() const;
 		/// Returns a const reference to the content of the message.
-	
+
 	void clear();
 		/// Clears the content and the fields of the message.
 
@@ -63,8 +63,8 @@ public:
 
 	Buffer::Ptr accountingToken() const;
 		/// Returns the account token as a Buffer. This is the
-		/// const version. The buffer is a copy, which means 
-		/// you can resize and change it, but the orginal account 
+		/// const version. The buffer is a copy, which means
+		/// you can resize and change it, but the orginal account
 		/// token will not be changed.
 
 	std::string getApplIdentityData() const;
@@ -89,8 +89,8 @@ public:
 
 	Buffer::Ptr correlationId() const;
 		/// Returns the correlation id as a Buffer. This is the
-		/// const version. The buffer is a copy, which means 
-		/// you can resize and change it, but the orginal correlation 
+		/// const version. The buffer is a copy, which means
+		/// you can resize and change it, but the orginal correlation
 		/// id will not be changed.
 
 	MQLONG getCodedCharSetId() const;
@@ -104,7 +104,7 @@ public:
 
 	MQLONG getEncoding() const;
 		/// Gets the encoding
-	
+
 	void setEncoding(MQLONG encoding);
 		/// Sets the encoding
 
@@ -133,8 +133,8 @@ public:
 
 	Buffer::Ptr groupId() const;
 		/// Returns the group id as a Buffer. This is the
-		/// const version. The buffer is a copy, which means 
-		/// you can resize and change it, but the orginal group 
+		/// const version. The buffer is a copy, which means
+		/// you can resize and change it, but the orginal group
 		/// id will not be changed.
 
 	MQLONG getMsgFlags() const;
@@ -150,8 +150,8 @@ public:
 
 	Buffer::Ptr messageId() const;
 		/// Returns the message id as a Buffer. This is the
-		/// const version. The buffer is a copy, which means 
-		/// you can resize and change it, but the orginal message 
+		/// const version. The buffer is a copy, which means
+		/// you can resize and change it, but the orginal message
 		/// id will not be changed.
 
 	MQLONG getMsgSeqNumber() const;
@@ -246,6 +246,8 @@ private:
 	friend class Queue;
 
 	friend class MessageConsumer;
+
+	friend class Topic;
 };
 
 

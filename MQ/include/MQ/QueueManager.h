@@ -74,7 +74,7 @@ public:
 		/// Returns true when the queuemanager is connected.
 
 	CommandServer* createCommandServer(const std::string& replyQ);
-		/// Create a command server. Once created, you can use commandServer to 
+		/// Create a command server. Once created, you can use commandServer to
 		/// get the associated command server. Can throw an MQException. The
 		/// QueueManager instance is responsible for the CommandServer object
 		/// and will destroy it when the queuemanager is disconnected.
@@ -120,6 +120,7 @@ private:
 
 	friend class Queue;
 	friend class MessageConsumer;
+	friend class Topic;
 };
 
 
