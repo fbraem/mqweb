@@ -41,14 +41,14 @@ void ChannelController::inquire()
 {
 	Poco::JSON::Object::Ptr pcfParameters;
 
-	if ( data().has("filter") && data().isObject("filter") )
+	if ( data().has("input") && data().isObject("input") )
 	{
-		pcfParameters = data().getObject("filter");
+		pcfParameters = data().getObject("input");
 	}
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("filter", pcfParameters);
+		set("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -127,14 +127,14 @@ void ChannelController::start()
 {
 	  Poco::JSON::Object::Ptr pcfParameters;
  
-	  if ( data().has("filter") && data().isObject("filter") )
+	  if ( data().has("input") && data().isObject("input") )
 	  {
-			pcfParameters = data().getObject("filter");
+			pcfParameters = data().getObject("input");
 	  }
 	  else
 	  {
 			pcfParameters = new Poco::JSON::Object();
-			set("filter", pcfParameters);
+			set("input", pcfParameters);
  
 			std::vector<std::string> parameters = getParameters();
 			// First parameter is queuemanager
@@ -162,14 +162,14 @@ void ChannelController::stop()
 {
 	Poco::JSON::Object::Ptr pcfParameters;
  
-	if ( data().has("filter") && data().isObject("filter") )
+	if ( data().has("input") && data().isObject("input") )
 	{
-		pcfParameters = data().getObject("filter");
+		pcfParameters = data().getObject("input");
 	}
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("filter", pcfParameters);
+		set("input", pcfParameters);
  
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager

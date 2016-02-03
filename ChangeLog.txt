@@ -1,5 +1,6 @@
 0.1.0
   - Web app has its own repository now: mqwebapp
+  - 'filter' renamed to 'input' in mqweb JSON answer
 
 0.0.13
   - Upgrade documents to use latest Jekyll release

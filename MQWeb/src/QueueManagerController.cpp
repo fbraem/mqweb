@@ -41,14 +41,14 @@ void QueueManagerController::inquire()
 {
 	Poco::JSON::Object::Ptr pcfParameters;
 
-	if ( data().has("filter") && data().isObject("filter") )
+	if ( data().has("input") && data().isObject("input") )
 	{
-		pcfParameters = data().getObject("filter");
+		pcfParameters = data().getObject("input");
 	}
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("filter", pcfParameters);
+		set("input", pcfParameters);
 
 		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
 		formElementToJSONArray("QMgrAttrs", attrs);

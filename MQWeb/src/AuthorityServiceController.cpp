@@ -41,9 +41,9 @@ void AuthorityServiceController::inquire()
 {
 	Poco::JSON::Object::Ptr pcfParameters;
 
-	if ( data().has("filter") && data().isObject("filter") )
+	if ( data().has("input") && data().isObject("input") )
 	{
-		pcfParameters = data().getObject("filter");
+		pcfParameters = data().getObject("input");
 		// There is a bug in MQCMD_INQUIRE_AUTH_SERVICE, AuthServiceAttrs is required!
 		if ( !pcfParameters->has("AuthServiceAttrs") )
 		{
@@ -55,7 +55,7 @@ void AuthorityServiceController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("filter", pcfParameters);
+		set("input", pcfParameters);
 
 		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
 		formElementToJSONArray("AuthServiceAttrs", attrs);

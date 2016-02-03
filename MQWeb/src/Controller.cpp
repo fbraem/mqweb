@@ -89,7 +89,7 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 			Poco::Dynamic::Var json = parser.parse(request.stream());
 			if ( ! json.isEmpty() && json.type() == typeid(Poco::JSON::Object::Ptr) )
 			{
-				_data->set("filter", json.extract<Poco::JSON::Object::Ptr>());
+				_data->set("input", json.extract<Poco::JSON::Object::Ptr>());
 			}
 		}
 		catch(Poco::JSON::JSONException& jsone)
@@ -148,7 +148,7 @@ void Controller::render()
 	if ( _view.isNull() ) return; // No view set, don't do anything
 
 	_view->initializeResponse(*_response);
-	
+
 	std::stringstream ss;
 	bool rendered = _view->render(_data, ss);
 	if ( rendered )
@@ -164,7 +164,7 @@ void Controller::render()
 
 void Controller::formElementToJSONArray(const std::string& name, Poco::JSON::Array::Ptr arr)
 {
-	for(Poco::Net::NameValueCollection::ConstIterator it = form().find(name); 
+	for(Poco::Net::NameValueCollection::ConstIterator it = form().find(name);
 		it != form().end() && Poco::icompare(it->first, name) == 0;
 		++it)
 	{
