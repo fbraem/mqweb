@@ -9,7 +9,7 @@ AuthenticationInformationController
 The second part of the URI must be `authinfo` to call the AuthenticationInformationController.
 This controller can be used to get attributes of authentication information objects.
 
-##<a name="inquire"></a>inquire
+## <a name="inquire"></a>inquire
 Get information about one or more authentication information objects. 
 This action executes the MQCMD_INQUIRE_AUTH_INFO pcf command.
 
