@@ -124,9 +124,9 @@ following properties can be used:
 
   debug or release
 
-+ POCO_NO_INSTALL
++ POCO_INSTALLED
 
-  set to Y when POCO isn't installed. By default the build process assumes that
+  set to N when POCO isn't installed. By default the build process assumes that
   POCO is installed.
   
 + POCO_PREFIX
@@ -136,8 +136,8 @@ following properties can be used:
 Some examples:
 
 ````
-cmake -DCMAKE_BUILD_TYPE=debug ..
-cmake -DCMAKE_BUILD_TYPE=debug -DPOCO_NO_INSTALL=Y -DPOCO_PREFIX=/development/poco-1.6.1-all/shared ..
+cmake -DCMAKE_BUILD_TYPE=debug ..  
+cmake -DCMAKE_BUILD_TYPE=debug -DPOCO_INSTALLED=N -DPOCO_PREFIX=/development/poco-1.6.1-all/shared ..
 ````
 
 <a name="windows"> </a>
