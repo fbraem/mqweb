@@ -29,6 +29,7 @@
 #include "Poco/String.h"
 #include "Poco/SharedPtr.h"
 #include "Poco/Buffer.h"
+#include "Poco/DateTimeFormatter.h"
 
 #include "MQ/Buffer.h"
 
@@ -200,7 +201,10 @@ public:
 		/// Sets the type of application that put the message
 
 	Poco::DateTime getPutDate() const;
-		/// Returns the put datetime
+		/// Returns the put datetime (incl. time)
+
+	void setPutDate(const Poco::DateTime& putDate, int tz = Poco::DateTimeFormatter::UTC);
+		/// Sets the put datetime (incl. time)
 
 	std::string getReplyToQMgr() const;
 		/// Returns the name of the reply queue manager
@@ -228,6 +232,9 @@ public:
 
 	std::string getUser() const;
 		/// Returns the name of the user
+
+	void setUser(const std::string& user);
+		/// Sets the name of the user
 
 private:
 
@@ -571,6 +578,10 @@ inline std::string Message::getUser() const
 	return Poco::trimRight(std::string(_md.UserIdentifier, MQ_USER_ID_LENGTH));
 }
 
+inline void Message::setUser(const std::string& user)
+{
+	strncpy(_md.UserIdentifier, user.c_str(), MQ_USER_ID_LENGTH);
+}
 
 } // namespace MQ
 
