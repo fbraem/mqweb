@@ -25,6 +25,7 @@
 #include "Poco/HexBinaryDecoder.h"
 #include "Poco/DateTime.h"
 #include "Poco/DateTimeParser.h"
+#include "Poco/NumberFormatter.h"
 
 #include "MQ/Message.h"
 
@@ -52,11 +53,25 @@ Poco::DateTime Message::getPutDate() const
 
 	std::string dateValue(_md.PutDate, MQ_PUT_DATE_LENGTH);
 	std::string timeValue(_md.PutTime, MQ_PUT_TIME_LENGTH);
+	timeValue += "0"; // Put time is hundredths of seconds
 	dateValue += timeValue;
 
 	int timeZone;
-	Poco::DateTimeParser::parse("%Y%n%e%H%M%S", dateValue, dateTime, timeZone);
+	Poco::DateTimeParser::parse("%Y%n%e%H%M%S%i", dateValue, dateTime, timeZone);
 	return dateTime;
+}
+
+void Message::setPutDate(const Poco::DateTime &putDate, int tz)
+{
+	std::string date = Poco::DateTimeFormatter::format(putDate, "%Y%m%d", tz);
+	strncpy(_md.PutDate, date.c_str(), MQ_PUT_DATE_LENGTH);
+
+	int ms = putDate.microsecond();
+	ms /= 10; // Put time is hundredths of seconds
+
+	std::string time = Poco::DateTimeFormatter::format(putDate, "%H%M%S", tz);
+	time += Poco::NumberFormatter::format0(ms, 2);
+	strncpy(_md.PutTime, time.c_str(), MQ_PUT_TIME_LENGTH);
 }
 
 }
