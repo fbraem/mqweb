@@ -27,12 +27,12 @@ of MQWeb and to transform the JSON objects into HTML.
 API
 ---
 
-The web [API]({{ site.baseurl }}/api/index.html) of MQWeb sends a PCF command 
-to WebSphere MQ and returns the answer as JSON objects. The 
-[API]({{ site.baseurl }}/api/index.html) can be reached by using `api` as first 
+The web [API]({{ site.baseurl }}/api/index.html) of MQWeb sends a PCF command
+to WebSphere MQ and returns the answer as JSON objects. The
+[API]({{ site.baseurl }}/api/index.html) can be reached by using `api` as first
 part of the URL:
 
-	http://<mqwebhost:port>/api/queue/inquire/PIGEON
+    http://<mqwebhost:port>/api/queue/inquire/PIGEON
 
 The API's can be called from any language that supports HTTP clients:
 
@@ -56,4 +56,3 @@ or in Python
 {% endhighlight %}
 
 Look at [API overview](/api/index.html) to see which api's are available.
-
