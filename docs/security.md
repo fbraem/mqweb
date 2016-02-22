@@ -6,24 +6,24 @@ security: true
 
 Security
 ========
-You can start MQWeb with user mqm but it is recommended to run your applications 
-with a dedicated user. This page shows what permissions are needed to run the 
-MQWeb daemon with a dedicated user. Ofcourse it depends on how you want to use 
+You can start MQWeb with user mqm but it is recommended to run your applications
+with a dedicated user. This page shows what permissions are needed to run the
+MQWeb daemon with a dedicated user. Ofcourse it depends on how you want to use
 MQWeb.
 
-In the examples below we assume that the user has the name mqweb and is part of 
+In the examples below we assume that the user has the name mqweb and is part of
 the mqweb group.
 
 Websphere MQ Client Security
 ----------------------------
-When MQWeb connects in client mode, you have to secure the client channel. Set 
+When MQWeb connects in client mode, you have to secure the client channel. Set
 the MCAUSER to NOACCESS.
 
     DEFINE CHANNEL(CL.MQWEB) +
     CHLTYPE(SVRCONN) +
     MCAUSER(NOACCESS)
 
-By setting MCAUSER to NOACCESS, nobody can abuse channel CL.MQWEB. 
+By setting MCAUSER to NOACCESS, nobody can abuse channel CL.MQWEB.
 Now you have to add a channel authentication record:
 
     SET CHLAUTH(CL.MQWEB) TYPE(USERMAP) +
@@ -41,8 +41,8 @@ ID on CL.MQWEB then set MCAUSER to mqweb and allow the connection".
 Queuemanager Security
 ---------------------
 The user needs permissions to connect to the queuemanager. MQWeb also
-needs authorisation to inquire some information from the queuemanager. 
-When MQWeb is used to display attributes of the queuemanager you also need 
+needs authorisation to inquire some information from the queuemanager.
+When MQWeb is used to display attributes of the queuemanager you also need
 to add the DISPLAY authorisation. Use the following SET AUTHREC statement:
 
 
@@ -58,8 +58,8 @@ to add the DISPLAY authorisation. Use the following SET AUTHREC statement:
 Command Server Queues Security
 ------------------------------
 MQWeb puts PCF messages on the command queue. The name of the command queue
-is inquired from the queuemanager. By default the name is 
-SYSTEM.ADMIN.COMMAND.QUEUE. 
+is inquired from the queuemanager. By default the name is
+SYSTEM.ADMIN.COMMAND.QUEUE.
 
     SET AUTHREC PROFILE(SYSTEM.ADMIN.COMMAND.QUEUE) +
     GROUP('mqweb') +
@@ -70,10 +70,10 @@ Reply Queue
 -----------
 The command server will put the reply of the PCF message on a queue.
 Which queue must be used can be configured using the *mq.web.reply* property
-in the mqweb properties file. When no name is configured, MQWeb will use the 
+in the mqweb properties file. When no name is configured, MQWeb will use the
 SYSTEM.DEFAULT.MODEL.QUEUE to create a temporary queue.
 
-###Temporary Queues
+### Temporary Queues
 When temporary queues are used for returning the reply messages, apply the
 following SET AUTHREC statement to the model queue:
 
@@ -85,7 +85,7 @@ following SET AUTHREC statement to the model queue:
 > There is no need to set authentication records for temporary queues. WebSphere
 > MQ will grant access to this queue automatically.
 
-###Configured queue
+### Configured queue
 When a reply queue is configured in the mqweb properties file, the MQWeb user needs
 permissions to use this queue. This sample uses *MQWEB.REPLY.Q01*:
 
@@ -107,7 +107,7 @@ BROWSE authority is also required when MQWeb is used to browse queues.
     AUTHADD(DSP)
 
 
-The following statement shows how to allow the event action on 
+The following statement shows how to allow the event action on
 SYSTEM.ADMIN.QMGR.EVENT . It adds BROWSE and INQ authorisations. INQ
 is needed because the event action inquires the current depth of the queue.
 
@@ -126,7 +126,7 @@ following permissions are necessary:
     OBJTYPE(CHANNEL) +
     AUTHADD(DSP)
 
-There is also a need for permissions on the cluster transmission 
+There is also a need for permissions on the cluster transmission
 queues, when the status of cluster sender channels is inquired.
 
     SET AUTHREC PROFILE(SYSTEM.CLUSTER.TRANSMIT.QUEUE) +

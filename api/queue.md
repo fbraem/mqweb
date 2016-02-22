@@ -8,38 +8,38 @@ QueueController
 
 The second part of the URI must be `queue` to call the QueueController.
 
-##<a name="inquire"></a>inquire
+## <a name="inquire"></a>inquire
 Get information about one or more queues. This action executes the MQCMD_INQUIRE_Q pcf command.
 
-The returned JSON object will have a `queues` array. When a WebSphere MQ error occurred 
+The returned JSON object will have a `queues` array. When a WebSphere MQ error occurred
 there will be no `queues` array, but instead an `error` object is returned.
 
-###<a name="inquireUrl"></a>URL Parameters
+### <a name="inquireUrl"></a>URL Parameters
 `/api/queue/inquire/<QueueManager>/<QName>`
 
-####<a name="inquireUrlQueueManager"></a>QueueManager
+#### <a name="inquireUrlQueueManager"></a>QueueManager
 The name of the queuemanager. This parameter is required.
 
-####<a name="inquireUrlQName"></a>QName
+#### <a name="inquireUrlQName"></a>QName
 The name of a queue. Generic queue names are supported.
 This parameter is optional.
 
-###<a name="inquireQuery"></a>Query Parameters
+### <a name="inquireQuery"></a>Query Parameters
 
-####<a name="inquireQueryCFStructure"></a>CFStructure
+#### <a name="inquireQueryCFStructure"></a>CFStructure
 Specifies the name of the storage class. This parameter is valid only on z/OS.
 
-####<a name="inquireQueryClusterInfo"></a>ClusterInfo
-When `true` cluster information about queues and other queues in the repository 
+#### <a name="inquireQueryClusterInfo"></a>ClusterInfo
+When `true` cluster information about queues and other queues in the repository
 that match the selection criteria is returned. By default this is `false`.
 
-####<a name="inquireQueryCommandScope"></a>CommandScope
-Specifies how the command is executed when the queue manager is a member of a 
+#### <a name="inquireQueryCommandScope"></a>CommandScope
+Specifies how the command is executed when the queue manager is a member of a
 queue-sharing group. This parameter applies to z/OS only.
 
-####<a name="inquireQueryCurrentQDepth"></a>CurrentQDepth
+#### <a name="inquireQueryCurrentQDepth"></a>CurrentQDepth
 Only return queues which have at least *CurrentQDepth* messages. This is
-actually a shortcut for a [Filter](#inquireQueryFilter) : 
+actually a shortcut for a [Filter](#inquireQueryFilter) :
 
     filter=I&filter_param=CurrentQDepth&filter_op=NLT&filter_value=<value>
 
@@ -48,46 +48,46 @@ be passed as *QueueDepth*.
 
 > Be aware that only one integer/string filter can be used for each call.
 
-####<a name="inquireQueryExcludeSystem"></a>ExcludeSystem
+#### <a name="inquireQueryExcludeSystem"></a>ExcludeSystem
 When value is `true`, all queues starting with SYSTEM. will be discarded.
 This parameter is optional. By default the value is set to `false`.
 
-####<a name="inquireQueryExcludeTemp"></a>ExcludeTemp
+#### <a name="inquireQueryExcludeTemp"></a>ExcludeTemp
 When value is `true`, all temporary queues will be discarded.
 This parameter is optional. By default the value is set to `false`.
 
-> When the [QAttrs](#inquireQueryQAttrs) parameter is used, the DefinitionType 
+> When the [QAttrs](#inquireQueryQAttrs) parameter is used, the DefinitionType
 > attribute must be selected to make this work.
 
-####<a name="inquireQueryFilter"></a>Filter
+#### <a name="inquireQueryFilter"></a>Filter
 Speficies which filter to use: `I` means Integerfilter, `S` means Stringfilter.
 *FilterParam* and *FilterValue* are required to create the filter. When a filter can't be build
 because of too little information, it will be silently discarded.
 
-####<a name="inquireQueryFilterOp"></a>FilterOp
+#### <a name="inquireQueryFilterOp"></a>FilterOp
 {% capture filterop %}{% include filterop.md %}{% endcapture %}
 {{ filterop | markdownify }}
 
-####<a name="inquireQueryFilterParam"></a>FilterParam
+#### <a name="inquireQueryFilterParam"></a>FilterParam
 The name of the parameter to filter on. The names are based on the names used in the WebSphere MQ information center.
 
-####<a name="inquireQueryFilterValue"></a>FilterValue
+#### <a name="inquireQueryFilterValue"></a>FilterValue
 The value to use for filtering. When a string is passed for an Integerfilter, a WebSphere MQ constant is assumed.
 
-####<a name="inquireQueryPageSetID"></a>PageSetID
-This parameter specifies that eligible queues are limited to those having the 
+#### <a name="inquireQueryPageSetID"></a>PageSetID
+This parameter specifies that eligible queues are limited to those having the
 specified *PageSetID* value. This parameter applies to z/OS only.
 
-####<a name="inquireQueryQAttrs"></a>QAttrs
+#### <a name="inquireQueryQAttrs"></a>QAttrs
 With the QAttrs parameter you can specify which attributes must be
 returned from the PCF command. Multiple occurences of this parameter
 are possible. The value must be a valid attribute name.
 
 > Attrs is a synonym for QAttrs
 
-####<a name="inquireQueryQName"></a>QName
-Only return queues with a name that matches *QName*. By 
-default * is used which matches all queues. *Name* is a synonym for this 
+#### <a name="inquireQueryQName"></a>QName
+Only return queues with a name that matches *QName*. By
+default * is used which matches all queues. *Name* is a synonym for this
 parameter.
 
 This parameter is ignored when there is a URI parameter for a queuename.
@@ -95,11 +95,11 @@ This parameter is ignored when there is a URI parameter for a queuename.
 >For compatibility reasons with older versions this parameter can also
 >be passed as *QueueName*.
 
-####<a name="inquireQueryQSGDisposition"></a>QSGDisposition
-Disposition of the object within the group. Possible values are `Live`, `Copy`, 
+#### <a name="inquireQueryQSGDisposition"></a>QSGDisposition
+Disposition of the object within the group. Possible values are `Live`, `Copy`,
 `Group`, `QMgr`, `Private` or `All`. This parameter applies to z/OS only.
 
-####<a name="inquireQueryQType"></a>QType
+#### <a name="inquireQueryQType"></a>QType
 Only return the queues of the given type. Possible values are `Local`,
 `Remote`, `Model`, `Alias`, `Cluster` or `All`. Default is `All`. The
 value is case-sensitive.
@@ -107,7 +107,7 @@ value is case-sensitive.
 For compatibility reasons with older versions this parameter can also
 be passed as *QueueType*.
 
-####<a name="inquireQueryUsage"></a>Usage
+#### <a name="inquireQueryUsage"></a>Usage
 Only return queues with the given usage type. Use `normal` or `xmitq`. When
 this parameter is not set, all queues will be returned. The value is not
 case-sensitive.
@@ -122,7 +122,7 @@ case-sensitive.
 For compatibility reasons with older versions this parameter can also
 be passed as *QueueUsage*.
 
-###<a name="inquireExample"></a>Example
+### <a name="inquireExample"></a>Example
 
 `/api/queue/inquire/PIGEON/MQWEB.TEST.Q1`  
 `/api/queue/inquire/PIGEON/*`  
@@ -135,7 +135,7 @@ queuemanager:
 {% capture sample %}{% include_relative samples/php/queue_inq.md %}{% endcapture %}
 {{ sample | markdownify }}
 
-###<a name="inquireJSON"></a>JSON Object
+### <a name="inquireJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object with names like the
 query parameters.
 
@@ -166,12 +166,12 @@ There are some differences between query parameters and a JSON object:
 + *CurrentQDepth* can't be used. You need to use an *IntegerFilterCommand* to do the same.
 + A filter is an object: *IntegerFilterCommand* can be used to filter on parameters which has
   integer values, while *StringFilterCommand* can be used to filter on parameters with string values.
-  The filter object has these three properties: Parameter (see [FilterParam](#inquireQueryFilterParam)), 
+  The filter object has these three properties: Parameter (see [FilterParam](#inquireQueryFilterParam)),
   Operator (see [FilterOp](#inquireQueryFilterOp)) and FilterValue (see [FilterValue](#inquireQueryFilterValue)).
 
 > An *IntegerFilterCommand* can't be used together with a *StringFilterCommand*
 
-This sample is a Perl script that inquires all SYSTEM queues and shows the 
+This sample is a Perl script that inquires all SYSTEM queues and shows the
 current depth of these queues:
 
 {% capture sample %}{% include_relative samples/perl/queue_inq.md %}{% endcapture %}
