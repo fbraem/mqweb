@@ -57,6 +57,10 @@ public:
 		/// Publish a message to a topic
 		///   /message/publish/<qmgrName>/<topicName>/<topicString>
 
+	void put();
+		/// Put a message on a queue
+		///   /message/publish/<qmgrName>/<queueName>
+
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available action
 
@@ -66,13 +70,16 @@ private:
 	static void mapMessageToJSON(const Message& message, Poco::JSON::Object& obj);
 
 
-	static DisplayMap _reportCodes;
+	static void mapJSONToMessage(const Poco::JSON::Object& obj, Message& message);
 
 
-	static DisplayMap _messageTypeCodes;
+	static Dictionary _reportCodes;
 
 
-	static DisplayMap _feedbackCodes;
+	static Dictionary _messageTypeCodes;
+
+
+	static Dictionary _feedbackCodes;
 };
 
 inline const Controller::ActionMap& MessageController::getActions() const
@@ -82,6 +89,8 @@ inline const Controller::ActionMap& MessageController::getActions() const
 			("browse", static_cast<ActionFn>(&MessageController::browse))
 			("dump", static_cast<ActionFn>(&MessageController::dump))
 			("event", static_cast<ActionFn>(&MessageController::event))
+			("publish", static_cast<ActionFn>(&MessageController::publish))
+			("put", static_cast<ActionFn>(&MessageController::put))
 		;
 	return actions;
 }
