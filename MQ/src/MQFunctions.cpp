@@ -40,7 +40,14 @@ MQFunctions::MQFunctions() :
 	_putFn(NULL),
 	_getFn(NULL),
 	_discFn(NULL),
-	_inqFn(NULL)
+	_inqFn(NULL),
+	_cbFn(NULL),
+	_ctlFn(NULL),
+	_crtMhFn(NULL),
+	_dltMhFn(NULL),
+	_setMpFn(NULL),
+	_dltMpFn(NULL),
+	_inqMpFn(NULL)
 {
 }
 
@@ -300,9 +307,9 @@ void MQFunctions::inq(MQHCONN conn, MQHOBJ obj, const std::vector<int>& intSelec
 	}
 	std::vector<MQCHAR> charAttrs(charAttrLength);
 
-	inq(conn, obj, selectors.size(), selectors.size() == 0 ? NULL : &selectors[0],
-	    intAttrs.size(), intAttrs.size() == 0 ? NULL : &intAttrs[0],
-	    charAttrs.size(), charAttrs.size() == 0 ? NULL : &charAttrs[0]);
+	inq(conn, obj, (MQLONG) selectors.size(), selectors.size() == 0 ? NULL : &selectors[0],
+		(MQLONG) intAttrs.size(), intAttrs.size() == 0 ? NULL : &intAttrs[0],
+		(MQLONG) charAttrs.size(), charAttrs.size() == 0 ? NULL : &charAttrs[0]);
 
 	for(int i = 0; i < intAttrs.size(); i++)
 	{
@@ -359,6 +366,112 @@ void MQFunctions::ctl(MQHCONN conn, MQLONG operation, MQCTLO* options)
 		throw MQException("", "MQCTL", cc, rc);
 	}
 }
+
+void MQFunctions::crtmh(MQHCONN conn, MQCMHO* options, MQHMSG* hmsg, MQLONG* cc, MQLONG* rc)
+{
+	poco_assert_dbg(_crtMhFn != NULL);
+
+	_crtMhFn(conn, options, hmsg, cc, rc);
+
+	trace("", "MQCRTMH", cc, rc);
+}
+
+void MQFunctions::crtmh(MQHCONN conn, MQCMHO* options, MQHMSG* hmsg)
+{
+	MQLONG cc = MQCC_OK;
+	MQLONG rc = MQRC_NONE;
+
+	crtmh(conn, options, hmsg, &cc, &rc);
+	if ( cc != MQCC_OK )
+	{
+		throw MQException("", "MQCRTMH", cc, rc);
+	}
+}
+
+void MQFunctions::dltmh(MQHCONN conn, MQHMSG* hmsg, MQDMHO* options, MQLONG* cc, MQLONG* rc)
+{
+	poco_assert_dbg(_dltMhFn != NULL);
+
+	_dltMhFn(conn, hmsg, options, cc, rc);
+
+	trace("", "MQDLTMH", cc, rc);
+}
+
+void MQFunctions::dltmh(MQHCONN conn, MQHMSG* hmsg, MQDMHO* options)
+{
+	MQLONG cc = MQCC_OK;
+	MQLONG rc = MQRC_NONE;
+
+	dltmh(conn, hmsg, options, &cc, &rc);
+	if ( cc != MQCC_OK )
+	{
+		throw MQException("", "MQDLTMH", cc, rc);
+	}
+}
+
+void MQFunctions::setmp(MQHCONN conn, MQHMSG hmsg, MQSMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG type, MQLONG valueLength, MQBYTE* value, MQLONG* cc, MQLONG* rc)
+{
+	poco_assert_dbg(_setMpFn != NULL);
+
+	_setMpFn(conn, hmsg, options, name, propDesc, type, valueLength, value, cc, rc);
+
+	trace("", "MQSETMP", cc, rc);
+}
+
+void MQFunctions::setmp(MQHCONN conn, MQHMSG hmsg, MQSMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG type, MQLONG valueLength, MQBYTE* value)
+{
+	MQLONG cc = MQCC_OK;
+	MQLONG rc = MQRC_NONE;
+
+	setmp(conn, hmsg, options, name, propDesc, type, valueLength, value, &cc, &rc);
+	if ( cc != MQCC_OK )
+	{
+		throw MQException("", "MQSETMP", cc, rc);
+	}
+}
+
+void MQFunctions::dltmp(MQHCONN conn, MQHMSG hmsg, MQDMPO* options, MQCHARV* name, MQLONG* cc, MQLONG* rc)
+{
+	poco_assert_dbg(_dltMpFn != NULL);
+
+	_dltMpFn(conn, hmsg, options, name, cc, rc);
+
+	trace("", "MQDLTMP", cc, rc);
+}
+
+void MQFunctions::dltmp(MQHCONN conn, MQHMSG hmsg, MQDMPO* options, MQCHARV* name)
+{
+	MQLONG cc = MQCC_OK;
+	MQLONG rc = MQRC_NONE;
+
+	dltmp(conn, hmsg, options, name, &cc, &rc);
+	if ( cc != MQCC_OK )
+	{
+		throw MQException("", "MQDLTMP", cc, rc);
+	}
+}
+
+void MQFunctions::inqmp(MQHCONN conn, MQHMSG hmsg, MQIMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG type, MQLONG valueLength, MQBYTE* value, MQLONG* dataLength, MQLONG* cc, MQLONG* rc)
+{
+	poco_assert_dbg(_inqMpFn != NULL);
+
+	_inqMpFn(conn, hmsg, options, name, propDesc, type, valueLength, value, dataLength, cc, rc);
+
+	trace("", "MQINQMP", cc, rc);
+}
+
+void MQFunctions::inqmp(MQHCONN conn, MQHMSG hmsg, MQIMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG type, MQLONG valueLength, MQBYTE* value, MQLONG* dataLength)
+{
+	MQLONG cc = MQCC_OK;
+	MQLONG rc = MQRC_NONE;
+
+	inqmp(conn, hmsg, options, name, propDesc, type, valueLength, value, dataLength, &cc, &rc);
+	if ( cc != MQCC_OK )
+	{
+		throw MQException("", "MQINQMP", cc, rc);
+	}
+}
+
 
 void MQFunctions::trace(const std::string& subject, const std::string& function, MQLONG* cc, MQLONG* rc)
 {
