@@ -209,13 +209,6 @@ public:
 	void setPutApplType(MQLONG appType);
 		/// Sets the type of application that put the message
 
-<<<<<<< 28f5df5970adff580c82e7545f0c8574e5f3555a
-	Poco::DateTime getPutDate() const;
-		/// Returns the put datetime (incl. time)
-
-	void setPutDate(const Poco::DateTime& putDate, int tz = Poco::DateTimeFormatter::UTC);
-		/// Sets the put datetime (incl. time)
-=======
 	std::string getPutDate() const;
 		/// Returns the put date
 
@@ -234,7 +227,6 @@ public:
 
 	void setPutTime(const std::string& date);
 	/// Sets the put time. Time format must be HHMMSSTH.
->>>>>>> ef071155913e07c0dba2cbe2493e151d42bfc7db
 
 	std::string getReplyToQMgr() const;
 		/// Returns the name of the reply queue manager
