@@ -47,20 +47,39 @@ Message::Message(const MQBYTE* buffer, MQLONG size)
 {
 }
 
-Poco::DateTime Message::getPutDate() const
+void Message::setPutDatetime(const Poco::DateTime &putDate, int tz)
+{
+	setPutDate(Poco::DateTimeFormatter::format(putDate, "%Y%m%d", tz));
+
+	int ms = putDate.millisecond();
+	ms /= 10; // Put time is hundredths of seconds
+
+	std::string time = Poco::DateTimeFormatter::format(putDate, "%H%M%S", tz);
+	time += Poco::NumberFormatter::format0(ms, 2);
+	strncpy(_md.PutTime, time.c_str(), MQ_PUT_TIME_LENGTH);
+}
+
+Poco::DateTime Message::createDatetime(const std::string& date, const std::string& time)
 {
 	Poco::DateTime dateTime;
 
+<<<<<<< 28f5df5970adff580c82e7545f0c8574e5f3555a
 	std::string dateValue(_md.PutDate, MQ_PUT_DATE_LENGTH);
 	std::string timeValue(_md.PutTime, MQ_PUT_TIME_LENGTH);
 	timeValue += "0"; // Put time is hundredths of seconds
 	dateValue += timeValue;
+=======
+	std::string dateValue = date;
+	dateValue += time;
+	dateValue += "0"; // Put time is hundredths of seconds
+>>>>>>> ef071155913e07c0dba2cbe2493e151d42bfc7db
 
 	int timeZone;
 	Poco::DateTimeParser::parse("%Y%n%e%H%M%S%i", dateValue, dateTime, timeZone);
 	return dateTime;
 }
 
+<<<<<<< 28f5df5970adff580c82e7545f0c8574e5f3555a
 void Message::setPutDate(const Poco::DateTime &putDate, int tz)
 {
 	std::string date = Poco::DateTimeFormatter::format(putDate, "%Y%m%d", tz);
@@ -73,5 +92,7 @@ void Message::setPutDate(const Poco::DateTime &putDate, int tz)
 	time += Poco::NumberFormatter::format0(ms, 2);
 	strncpy(_md.PutTime, time.c_str(), MQ_PUT_TIME_LENGTH);
 }
+=======
+>>>>>>> ef071155913e07c0dba2cbe2493e151d42bfc7db
 
 }
