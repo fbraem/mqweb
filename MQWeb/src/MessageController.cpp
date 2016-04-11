@@ -237,7 +237,7 @@ void MessageController::browse()
 
 		try
 		{
-			q.get(msg, MQGMO_BROWSE_NEXT, 0);
+			q.get(msg, MQGMO_BROWSE_NEXT | MQGMO_PROPERTIES_FORCE_MQRFH2, 0);
 		}
 		catch(MQException mqe)
 		{
@@ -341,6 +341,36 @@ void MessageController::browse()
 				msg.buffer().resize(msg.dataLength());
 			}
 			jsonMessage->set("data", msg.buffer().toString());
+		}
+		else if ( msg.getFormat().compare(MQFMT_RF_HEADER_2) == 0 )
+		{
+			MQBYTE* begin =  (MQBYTE*) msg.buffer().data();
+			MQRFH2* rfh2 = (MQRFH2*) begin;
+			Poco::JSON::Object::Ptr jsonRfh2 = new Poco::JSON::Object();
+			jsonMessage->set("rfh2", jsonRfh2);
+			jsonRfh2->set("Encoding", rfh2->Encoding);
+
+			Poco::JSON::Array::Ptr jsonNameValues = new Poco::JSON::Array();
+			jsonRfh2->set("NameValues", jsonNameValues);
+
+			MQBYTE* data = begin + sizeof(MQRFH2);
+			MQBYTE* end = begin + rfh2->StrucLength;
+
+			while(data < end)
+			{
+				MQLONG len = *(MQLONG*) data;
+				data += sizeof(MQLONG);
+
+				if ( len < 0 || data + len > end )
+				{
+					//TODO: invalid RFH2 ...
+				}
+				std::string value((const char*) data, len);
+				if ( value[0] == '\0' ) value.resize(0);
+				Poco::trimRightInPlace(value);
+				jsonNameValues->add(value);
+				data += len;
+			}
 		}
 		jsonMessages->add(jsonMessage);
 	}
