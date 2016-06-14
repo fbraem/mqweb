@@ -71,8 +71,7 @@ std::string MQMapper::getReasonString(MQLONG reasonCode)
 	Poco::SharedPtr<Dictionary> dict = _dictionaryCache.getDictionary("Reason");
 	poco_assert_dbg(!dict.isNull());
 
-
-	return dict->getDisplayValue(MQIACF_REASON_CODE, reasonCode);
+	return dict->getTextForValue(MQIACF_REASON_CODE, reasonCode);
 }
 
 std::string MQMapper::getCommandString(MQLONG command)
@@ -80,15 +79,15 @@ std::string MQMapper::getCommandString(MQLONG command)
 	Poco::SharedPtr<Dictionary> dict = _dictionaryCache.getDictionary("Event");
 	poco_assert_dbg(!dict.isNull());
 
-	return dict->getDisplayValue(MQIACF_COMMAND, command);
+	return dict->getTextForValue(MQIACF_COMMAND, command);
 }
 
 MQLONG MQMapper::getOperator(const std::string& op)
 {
-	return _operators.getId(op);
+	return _operators.getIdForName(op);
 }
 
-const DisplayMap& MQMapper::getDisplayMap(const std::string& objectType, MQLONG id)
+const TextMap& MQMapper::getTextMap(const std::string& objectType, MQLONG id)
 {
 	Poco::SharedPtr<Dictionary> dict = _dictionaryCache.getDictionary(objectType);
 	poco_assert_dbg(!dict.isNull());
@@ -99,7 +98,7 @@ const DisplayMap& MQMapper::getDisplayMap(const std::string& objectType, MQLONG 
 		logger.error(Poco::Logger::format("$0 not found in dictionary database", objectType));
 	}
 
-	return dict->getDisplayMap(id);
+	return dict->getTextMap(id);
 }
 
 void MQMapper::addIntegerFilter()
@@ -111,7 +110,7 @@ void MQMapper::addIntegerFilter()
 		return;
 
 	std::string parameterName = integerFilter->optValue<std::string>("Parameter", "");
-	MQLONG parameter = _dictionary->getId(parameterName);
+	MQLONG parameter = _dictionary->getIdForName(parameterName);
 	if ( parameter == -1 )
 		return;
 
@@ -124,7 +123,7 @@ void MQMapper::addIntegerFilter()
 	if ( value.isString() )
 	{
 		// A String is passed ... try to find the MQ integer value
-		filterValue = _dictionary->getDisplayId(parameter, value);
+		filterValue = _dictionary->getIdForText(parameter, value);
 	}
 	else if ( value.isNumeric() )
 	{
@@ -142,7 +141,7 @@ void MQMapper::addStringFilter()
 		return;
 
 	std::string parameterName = stringFilter->optValue<std::string>("Parameter", "");
-	MQLONG parameter = _dictionary->getId(parameterName);
+	MQLONG parameter = _dictionary->getIdForName(parameterName);
 	if ( parameter == -1 )
 		return;
 
@@ -171,7 +170,7 @@ void MQMapper::addAttributeList(MQLONG attrId, const std::string& attr)
 				{
 					numList.push_back(MQIACF_ALL);
 				}
-				MQLONG id = _dictionary->getId(*it);
+				MQLONG id = _dictionary->getIdForName(*it);
 				if ( id != -1 ) numList.push_back(id);
 			}
 			if ( numList.size() > 0 ) _pcf->addParameterList(attrId, numList);
@@ -189,7 +188,7 @@ void MQMapper::addParameterNumFromString(MQLONG parameter, const std::string& na
 		try
 		{
 			std::string stringValue = value.convert<std::string>();
-			MQLONG numValue = _dictionary->getDisplayId(parameter, stringValue);
+			MQLONG numValue = _dictionary->getIdForText(parameter, stringValue);
 			poco_assert_dbg(numValue != -1);
 			if ( numValue != - 1 )
 			{

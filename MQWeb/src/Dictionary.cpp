@@ -42,36 +42,36 @@ Dictionary& Dictionary::operator()(MQLONG id, const std::string& name)
 }
 
 
-Dictionary& Dictionary::operator()(MQLONG id, const std::string& name, const DisplayMap& displayMap)
+Dictionary& Dictionary::operator()(MQLONG id, const std::string& name, const TextMap& textMap)
 {
 	_idMap.insert(std::make_pair<MQLONG, std::string>(id, name));
 	_nameMap.insert(std::make_pair<std::string, MQLONG>(name, id));
 
-	_displayMaps.insert(std::make_pair<MQLONG, DisplayMap>(id, displayMap));
+	_textMaps.insert(std::make_pair<MQLONG, TextMap>(id, textMap));
 
 	return *this;
 }
 
-std::string Dictionary::getDisplayValue(MQLONG id, MQLONG displayId) const
+std::string Dictionary::getTextForValue(MQLONG id, MQLONG value) const
 {
-	std::map<MQLONG, DisplayMap>::const_iterator it = _displayMaps.find(id);
-	if ( it == _displayMaps.end() )
+	std::map<MQLONG, TextMap>::const_iterator it = _textMaps.find(id);
+	if ( it == _textMaps.end() )
 		return "";
 
-	DisplayMap::const_iterator it2 = it->second.find(displayId);
+	TextMap::const_iterator it2 = it->second.find(value);
 	if ( it2 == it->second.end() )
 		return "";
 
 	return it2->second;
 }
 
-MQLONG Dictionary::getDisplayId(MQLONG id, const std::string& value) const
+MQLONG Dictionary::getIdForText(MQLONG id, const std::string& value) const
 {
-	std::map<MQLONG, DisplayMap>::const_iterator it = _displayMaps.find(id);
-	if ( it == _displayMaps.end() )
+	std::map<MQLONG, TextMap>::const_iterator it = _textMaps.find(id);
+	if ( it == _textMaps.end() )
 		return -1;
 
-	for(DisplayMap::const_iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
+	for(TextMap::const_iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
 	{
 		if ( it2->second.compare(value) == 0 )
 			return it2->first;
@@ -84,7 +84,7 @@ void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, bool a
 	std::vector<MQLONG> parameters = pcf.getParameters();
 	for(std::vector<MQLONG>::iterator it = parameters.begin(); it != parameters.end(); ++it)
 	{
-		std::string name = getName(*it);
+		std::string name = getNameForId(*it);
 		if ( name.empty() )
 		{
 			if ( alwaysCreate )
@@ -109,14 +109,14 @@ void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, bool a
 			MQLONG value = pcf.getParameterNum(*it);
 			field->set("value", value);
 
-			if ( hasDisplayMap(*it) )
+			if ( hasTextMap(*it) )
 			{
-				std::string displayValue = getDisplayValue(*it, value);
-				if ( displayValue.empty() )
+				std::string text = getTextForValue(*it, value);
+				if ( text.empty() )
 				{
-					displayValue = "Unknown value " + Poco::NumberFormatter::format(value) + " for " + Poco::NumberFormatter::format(*it);
+					text = "Unknown value " + Poco::NumberFormatter::format(value) + " for " + Poco::NumberFormatter::format(*it);
 				}
-				field->set("display", displayValue);
+				field->set("text", text);
 			}
 		}
 		else if ( pcf.isString(*it) )
@@ -129,19 +129,19 @@ void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, bool a
 			Poco::JSON::Array::Ptr jsonValues = new Poco::JSON::Array();
 			field->set("value", jsonValues);
 
-			if ( hasDisplayMap(*it) )
+			if ( hasTextMap(*it) )
 			{
 				for(std::vector<MQLONG>::iterator vit = values.begin(); vit != values.end(); ++vit)
 				{
 					Poco::JSON::Object::Ptr jsonValueObject = new Poco::JSON::Object();
 
-					std::string displayValue = getDisplayValue(*it, *vit);
-					if ( displayValue.empty() )
+					std::string text = getTextForValue(*it, *vit);
+					if ( text.empty() )
 					{
-						displayValue = "Unknown value " + Poco::NumberFormatter::format(*vit) + " for " + Poco::NumberFormatter::format(*it);
+						text = "Unknown value " + Poco::NumberFormatter::format(*vit) + " for " + Poco::NumberFormatter::format(*it);
 					}
 					jsonValueObject->set("value", *vit);
-					jsonValueObject->set("display", displayValue);
+					jsonValueObject->set("text", text);
 					jsonValues->add(jsonValueObject);
 				}
 			}

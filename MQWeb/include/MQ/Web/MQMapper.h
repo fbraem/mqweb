@@ -58,8 +58,8 @@ public:
 	static std::string getReasonString(MQLONG reasonCode);
 		/// Translates a reason code into a string
 
-	static const DisplayMap& getDisplayMap(const std::string& objectType, MQLONG id);
-		/// Returns the DisplayMap for the given Websphere MQ id
+	static const TextMap& getTextMap(const std::string& objectType, MQLONG id);
+		/// Returns the TextMap for the given Websphere MQ id
 
 	static const Poco::SharedPtr<Dictionary> dictionary(const std::string& objectType);
 		/// Returns the dictionary for the given object type

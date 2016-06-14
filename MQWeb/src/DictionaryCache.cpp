@@ -93,7 +93,7 @@ Poco::SharedPtr<Dictionary> DictionaryCache::load(const std::string& name)
 	}
 
 	int prevAttributeId = -1;
-	DisplayMap displayMap;
+	TextMap displayMap;
 
 	std::string attributeName;
 
