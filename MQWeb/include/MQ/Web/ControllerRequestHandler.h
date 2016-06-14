@@ -48,4 +48,4 @@ private:
 
 } } // Namespace MQ::Web
 
-#endif // _MQWeb_RequestHandler_INCLUDED
+#endif // _MQWeb_ControllerRequestHandler_INCLUDED
