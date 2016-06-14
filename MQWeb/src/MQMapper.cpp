@@ -68,14 +68,18 @@ MQMapper::~MQMapper()
 
 std::string MQMapper::getReasonString(MQLONG reasonCode)
 {
-	static Poco::SharedPtr<Dictionary> dict = _dictionaryCache.getDictionary("Reason");
+	Poco::SharedPtr<Dictionary> dict = _dictionaryCache.getDictionary("Reason");
+	poco_assert_dbg(!dict.isNull());
+
 
 	return dict->getDisplayValue(MQIACF_REASON_CODE, reasonCode);
 }
 
 std::string MQMapper::getCommandString(MQLONG command)
 {
-	static Poco::SharedPtr<Dictionary> dict = _dictionaryCache.getDictionary("Event");
+	Poco::SharedPtr<Dictionary> dict = _dictionaryCache.getDictionary("Event");
+	poco_assert_dbg(!dict.isNull());
+
 	return dict->getDisplayValue(MQIACF_COMMAND, command);
 }
 
