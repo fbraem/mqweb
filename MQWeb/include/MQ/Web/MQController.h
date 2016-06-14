@@ -64,8 +64,8 @@ public:
 		/// Creates an IntegerFilterCommand or StringFilterCommand
 		/// when a filter is passed.
 
-	Poco::JSON::Object& mqwebData();
-		/// Returns the JSON object for storing MQWeb data.
+	Poco::JSON::Object& meta();
+		/// Returns the JSON object for storing meta data (see JSON-API).
 		/// This object can be used to store common data like queuemanager name,
 		/// queue, elapsed time, ...
 
@@ -84,7 +84,7 @@ private:
 	CommandServer* _commandServer;
 
 
-	Poco::JSON::Object::Ptr _mqwebData;
+	Poco::JSON::Object::Ptr _meta;
 
 
 	Poco::Stopwatch _stopwatch;
@@ -102,11 +102,11 @@ inline CommandServer* MQController::commandServer()
 	return _commandServer;
 }
 
-inline Poco::JSON::Object& MQController::mqwebData()
+inline Poco::JSON::Object& MQController::meta()
 {
-	poco_assert_dbg(_mqwebData);
+	poco_assert_dbg(_meta);
 
-	return *_mqwebData;
+	return *_meta;
 }
 
 }} // Namespace MQ::Web

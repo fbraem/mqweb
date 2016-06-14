@@ -34,9 +34,9 @@ namespace MQ {
 namespace Web {
 
 
-MQController::MQController() : Controller(), _mqwebData(new Poco::JSON::Object()), _commandServer(NULL)
+MQController::MQController() : Controller(), _meta(new Poco::JSON::Object()), _commandServer(NULL)
 {
-	set("mqweb", _mqwebData);
+	set("meta", _meta);
 }
 
 
@@ -50,13 +50,13 @@ void MQController::beforeAction()
 	_stopwatch.start();
 
 	Poco::JSON::Object::Ptr date = new Poco::JSON::Object();
-	_mqwebData->set("date", date);
+	_meta->set("date", date);
 	date->set("start", Poco::DateTimeFormatter::format(Poco::Timestamp(), Poco::DateTimeFormat::HTTP_FORMAT));
 
 	MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQSubsystem>();
 	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
 
-	_mqwebData->set("client", mqSystem.client());
+	_meta->set("client", mqSystem.client());
 
 	std::string qmgrName;
 	if ( config.hasProperty("mq.web.qmgr") )
@@ -94,9 +94,9 @@ void MQController::beforeAction()
 	}
 	_qmgrPoolGuard = new QueueManagerPoolGuard(qmgrPool, qmgr);
 
-	_mqwebData->set("qmgr", qmgr->name());
-	_mqwebData->set("zos", qmgr->zos());
-	_mqwebData->set("qmgrId", qmgr->id());
+	_meta->set("qmgr", qmgr->name());
+	_meta->set("zos", qmgr->zos());
+	_meta->set("qmgrId", qmgr->id());
 
 	_commandServer = qmgr->commandServer();
 	if ( _commandServer == NULL )
@@ -117,8 +117,8 @@ void MQController::beforeAction()
 
 	if ( _commandServer != NULL )
 	{
-		_mqwebData->set("replyq", _commandServer->replyQName());
-		_mqwebData->set("cmdq", _commandServer->commandQName());
+		_meta->set("replyq", _commandServer->replyQName());
+		_meta->set("cmdq", _commandServer->commandQName());
 	}
 }
 
@@ -155,14 +155,14 @@ void MQController::handleException(const MQException& mqe)
 
 void MQController::afterAction()
 {
-	Poco::JSON::Object::Ptr date = _mqwebData->getObject("date");
+	Poco::JSON::Object::Ptr date = _meta->getObject("date");
 	if ( ! date.isNull() )
 	{
 		date->set("end", Poco::DateTimeFormatter::format(Poco::Timestamp(), Poco::DateTimeFormat::HTTP_FORMAT));
 	}
 	
 	_stopwatch.stop();
-	_mqwebData->set("elapsed", (double) _stopwatch.elapsed() / 1000000 );
+	_meta->set("elapsed", (double) _stopwatch.elapsed() / 1000000 );
 
 	Controller::afterAction();
 }

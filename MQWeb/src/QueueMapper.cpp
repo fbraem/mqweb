@@ -136,7 +136,11 @@ Poco::JSON::Array::Ptr QueueMapper::inquire()
 			continue;
 		}
 
-		json->add(createJSON(**it));
+		Poco::JSON::Object::Ptr data = new Poco::JSON::Object();
+		json->add(data);
+		data->set("type", "queue");
+		data->set("id", (*it)->getParameterString(MQCA_Q_NAME));
+		data->set("attributes", createJSON(**it));
 	}
 
 	return json;

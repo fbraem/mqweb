@@ -19,7 +19,6 @@
  * permissions and limitations under the Licence.
  */
 #include "MQ/Web/ControllerRequestHandler.h"
-#include "MQ/Web/AppRequestHandler.h"
 #include "MQ/Web/AuthenticationInformationController.h"
 #include "MQ/Web/AuthorityRecordController.h"
 #include "MQ/Web/AuthorityServiceController.h"

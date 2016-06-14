@@ -21,6 +21,8 @@
 #include "MQ/Web/QueueManagerController.h"
 #include "MQ/Web/QueueManagerMapper.h"
 
+#include "Poco/StringTokenizer.h"
+
 namespace MQ
 {
 namespace Web
@@ -43,27 +45,49 @@ void QueueManagerController::inquire()
 
 	if ( data().has("input") && data().isObject("input") )
 	{
+		// Posted JSON
 		pcfParameters = data().getObject("input");
 	}
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		meta().set("input", pcfParameters);
+		if ( isJSONAPI() )
+		{
+			if ( form().has("fields") )
+			{
+				std::string fields = form().get("fields");
+				Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
 
-		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
-		formElementToJSONArray("QMgrAttrs", attrs);
-		if ( attrs->size() == 0 ) // Nothing found for QMgrAttrs, try Attrs
-		{
-			formElementToJSONArray("Attrs", attrs);
-		}
-		if ( attrs->size() > 0 )
-		{
-			pcfParameters->set("QMgrAttrs", attrs);
-		}
+				Poco::StringTokenizer tokenizer(fields, ",", Poco::StringTokenizer::TOK_IGNORE_EMPTY);
+				for(Poco::StringTokenizer::Iterator it = tokenizer.begin(); it != tokenizer.end(); ++it)
+				{
+					attrs->add(*it);
+				}
 
-		if ( form().has("CommandScope") )
+				if ( attrs->size() > 0 )
+				{
+					pcfParameters->set("QMgrAttrs", attrs);
+				}
+			}
+		}
+		else
 		{
-			pcfParameters->set("CommandScope", form().get("CommandScope"));
+			Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+			formElementToJSONArray("QMgrAttrs", attrs);
+			if ( attrs->size() == 0 ) // Nothing found for QMgrAttrs, try Attrs
+			{
+				formElementToJSONArray("Attrs", attrs);
+			}
+			if ( attrs->size() > 0 )
+			{
+				pcfParameters->set("QMgrAttrs", attrs);
+			}
+
+			if ( form().has("CommandScope") )
+			{
+				pcfParameters->set("CommandScope", form().get("CommandScope"));
+			}
 		}
 	}
 
@@ -71,7 +95,8 @@ void QueueManagerController::inquire()
 	Poco::JSON::Array::Ptr json = mapper.inquire();
 	if ( json->size() > 0 )
 	{
-		set("qmgr", json->get(0));
+		Poco::JSON::Object::Ptr data = new Poco::JSON::Object();
+		set("data", json->get(0));
 	}
 }
 

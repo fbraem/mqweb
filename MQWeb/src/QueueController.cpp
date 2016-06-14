@@ -48,7 +48,7 @@ void QueueController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		meta().set("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -180,7 +180,7 @@ void QueueController::inquire()
 	}
 
 	QueueMapper mapper(*commandServer(), pcfParameters);
-	set("queues", mapper.inquire());
+	set("data", mapper.inquire());
 }
 
 

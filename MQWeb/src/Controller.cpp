@@ -37,7 +37,7 @@ namespace Web
 {
 
 
-Controller::Controller() : _data(new Poco::JSON::Object())
+Controller::Controller() : _data(new Poco::JSON::Object()), _request(NULL), _response(NULL)
 {
 }
 
@@ -58,7 +58,14 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 	_request = &request;
 	_response = &response;
 
-	if ( _parameters.size() > 0 )
+	if ( isJSONAPI() ) 
+	{
+		if ( isGet() )
+		{
+			_action = "inquire";
+		}
+	}
+	else if ( _parameters.size() > 0 )
 	{
 		_action = _parameters.front();
 		_parameters.erase(_parameters.begin());

@@ -20,6 +20,12 @@
  */
 #include "Poco/JSON/Object.h"
 #include "Poco/Util/Application.h"
+#include "Poco/Process.h"
+#include "Poco/Pipe.h"
+#include "Poco/PipeStream.h"
+#include "Poco/LineEndingConverter.h"
+#include "Poco/RegularExpression.h"
+#include "Poco/Logger.h"
 
 #include "MQ/Web/MQWebController.h"
 #include "MQ/Web/Version.h"
@@ -81,8 +87,39 @@ void MQWebController::list()
 			queuemanagers->add(*it);
 		}
 	}
-	else
+	else // Binding mode, try dspmq to get the list of installed queuemanagers
 	{
+		Poco::RegularExpression re("QMNAME\\((.*)\\)\\s*STATUS\\((.*)\\)");
+
+		Poco::Process::Args args;
+		args.push_back("-n");
+		args.push_back("-s");
+		Poco::Pipe outPipe;
+
+		try
+		{
+			Poco::ProcessHandle ph = Poco::Process::launch("C:/Program Files (x86)/IBM/WebSphere MQ Runtime V750/bin/dspmq", args, 0, &outPipe, 0);
+
+			Poco::PipeInputStream istr(outPipe);
+
+			std::string line;
+			int lc = 0;
+			while(std::getline(istr, line))
+			{
+				Poco::RegularExpression::MatchVec match;
+				if ( re.match(line, 0, match) == 3 )
+				{
+					queuemanagers->add(line.substr(match[1].offset, match[1].length));
+				}
+			}
+			int rc = ph.wait();
+			//assert (rc == 1);
+		}
+		catch(Poco::SystemException& e)
+		{
+			Poco::Logger& logger = Poco::Logger::get("mq.web");
+			poco_error(logger, e.displayText());
+		}
 	}
 }
 

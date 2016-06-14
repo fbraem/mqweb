@@ -65,7 +65,7 @@ namespace Web {
 #define RCSTR(x) (x, #x)
 
 Dictionary MessageController::_reportCodes = Dictionary()
-	(0, "Report", DisplayMapInitializer
+	(0, "Report", TextMapInitializer
 		RCSTR(MQRO_EXCEPTION                 )
 		RCSTR(MQRO_EXCEPTION_WITH_DATA       )
 		RCSTR(MQRO_EXCEPTION_WITH_FULL_DATA  )
@@ -93,7 +93,7 @@ Dictionary MessageController::_reportCodes = Dictionary()
 ;
 
 Dictionary MessageController::_messageTypeCodes = Dictionary()
-	(0, "MsgType", DisplayMapInitializer
+	(0, "MsgType", TextMapInitializer
 		RCSTR(MQMT_REQUEST)
 		RCSTR(MQMT_REPLY)
 		RCSTR(MQMT_DATAGRAM)
@@ -104,7 +104,7 @@ Dictionary MessageController::_messageTypeCodes = Dictionary()
 ;
 
 Dictionary MessageController::_feedbackCodes = Dictionary()
-	(0, "Feedback", DisplayMapInitializer
+	(0, "Feedback", TextMapInitializer
 		RCSTR(MQFB_NONE                   )
 		RCSTR(MQFB_QUIT                   )
 		RCSTR(MQFB_EXPIRATION             )
@@ -194,7 +194,7 @@ void MessageController::browse()
 	}
 
 	std::string queueName = parameters[1];
-	mqwebData().set("queue", queueName);
+	meta().set("queue", queueName);
 
 	int limit = -1;
 	int maxMessageSize = 1024;
@@ -204,7 +204,7 @@ void MessageController::browse()
 	{
 		limit = 1;
 		messageId = parameters[2];
-		mqwebData().set("messageId", messageId);
+		meta().set("messageId", messageId);
 	}
 	else
 	{
@@ -239,7 +239,7 @@ void MessageController::browse()
 		{
 			q.get(msg, MQGMO_BROWSE_NEXT | MQGMO_PROPERTIES_FORCE_MQRFH2, 0);
 		}
-		catch(MQException mqe)
+		catch(MQException& mqe)
 		{
 			if ( mqe.reason() == MQRC_NO_MSG_AVAILABLE )
 			{
@@ -253,9 +253,55 @@ void MessageController::browse()
 					// real length
 					msg.buffer().resize(msg.dataLength(), false);
 					msg.clear();
-					q.get(msg, MQGMO_BROWSE_NEXT);
+					try
+					{
+						q.get(msg, MQGMO_BROWSE_NEXT | MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
+					}
+					catch(MQException& mqe2)
+					{
+						if ( mqe2.reason() != MQRC_TRUNCATED_MSG_ACCEPTED )
+						{
+							throw;
+						}
+					}
 				}
-				else 
+				else if ( msg.getFormat().compare(MQFMT_XMIT_Q_HEADER) == 0 )
+				{
+					// ignore size limit for xmitq messages and retry to get it with at least the
+					// length of the xmitq header
+					msg.buffer().resize(sizeof(MQXQH), false);
+					msg.clear();
+					try
+					{
+						q.get(msg, MQGMO_BROWSE_NEXT | MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
+					}
+					catch(MQException& mqe2)
+					{
+						if ( mqe2.reason() != MQRC_TRUNCATED_MSG_ACCEPTED )
+						{
+							throw;
+						}
+					}
+				}
+				else if ( msg.getFormat().compare(MQFMT_DEAD_LETTER_HEADER) == 0 )
+				{
+					// ignore size limit for dlh messages and retry to get it with at least the
+					// length of the dlh header
+					msg.buffer().resize(sizeof(MQDLH), false);
+					msg.clear();
+					try
+					{
+						q.get(msg, MQGMO_BROWSE_NEXT | MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
+					}
+					catch(MQException& mqe2)
+					{
+						if ( mqe2.reason() != MQRC_TRUNCATED_MSG_ACCEPTED )
+						{
+							throw;
+						}
+					}
+				}
+				else
 				{
 					continue; // TODO: or throw ???;
 				}
@@ -278,14 +324,20 @@ void MessageController::browse()
 				Poco::JSON::Object::Ptr jsonDLH = new Poco::JSON::Object();
 				jsonMessage->set("dlh", jsonDLH);
 				jsonDLH->set("Version", dlh->Version);
-				jsonDLH->set("Reason", dlh->Reason);
+
+				Poco::JSON::Object::Ptr jsonReason = new Poco::JSON::Object();
+				jsonDLH->set("Reason", jsonReason);
+				jsonReason->set("code", dlh->Reason);
+				std::string reasonCodeStr = MQMapper::getReasonString(dlh->Reason);
+				jsonReason->set("desc", reasonCodeStr);
+
 				jsonDLH->set("DestQName", Poco::trimRight(std::string(dlh->DestQName, MQ_Q_NAME_LENGTH)));
 				jsonDLH->set("DestQMgrName", Poco::trimRight(std::string(dlh->DestQMgrName, MQ_Q_MGR_NAME_LENGTH)));
 				jsonDLH->set("Encoding", dlh->Encoding);
 				jsonDLH->set("CodedCharSetId", dlh->CodedCharSetId);
 				jsonDLH->set("Format", Poco::trimRight(std::string(dlh->Format, MQ_FORMAT_LENGTH)));
-				const DisplayMap& applTypes = MQMapper::getDisplayMap("QueueStatus", MQIA_APPL_TYPE);
-				DisplayMap::const_iterator it = applTypes.find(dlh->PutApplType);
+				const TextMap& applTypes = MQMapper::getTextMap("QueueStatus", MQIA_APPL_TYPE);
+				TextMap::const_iterator it = applTypes.find(dlh->PutApplType);
 				jsonDLH->set("PutApplType", it == applTypes.end() ? "" : it->second);
 				jsonDLH->set("PutApplName", Poco::trimRight(std::string(dlh->PutApplName, MQ_PUT_APPL_NAME_LENGTH)));
 
@@ -305,7 +357,7 @@ void MessageController::browse()
 			Poco::JSON::Object::Ptr jsonEvent = new Poco::JSON::Object();
 			jsonMessage->set("event", jsonEvent);
 			Poco::JSON::Object::Ptr jsonReason = new Poco::JSON::Object();
-			jsonEvent->set("reason", jsonReason);
+			jsonEvent->set("Reason", jsonReason);
 			jsonReason->set("code", pcfEvent.getReasonCode());
 			std::string reasonCodeStr = MQMapper::getReasonString(pcfEvent.getReasonCode());
 			jsonReason->set("desc", reasonCodeStr);
@@ -390,10 +442,10 @@ void MessageController::dump()
 	}
 
 	std::string queueName = parameters[1];
-	mqwebData().set("queue", queueName);
+	meta().set("queue", queueName);
 
 	std::string messageId = parameters[2];
-	mqwebData().set("messageId", messageId);
+	meta().set("messageId", messageId);
 
 	Message message;
 
@@ -553,7 +605,7 @@ void MessageController::event()
 	{
 		limit = 1;
 		messageId = parameters[2];
-		mqwebData().set("messageId", messageId);
+		meta().set("messageId", messageId);
 	}
 	else
 	{
@@ -662,10 +714,10 @@ void MessageController::event()
 
 void MessageController::mapMessageToJSON(const Message& message, Poco::JSON::Object& obj)
 {
-	std::string report = _reportCodes.getDisplayValue(0, message.getReport());
+	std::string report = _reportCodes.getTextForValue(0, message.getReport());
 	obj.set("Report", report);
 
-	std::string msgType = _messageTypeCodes.getDisplayValue(0, message.getMsgType());
+	std::string msgType = _messageTypeCodes.getTextForValue(0, message.getMsgType());
 	if ( msgType.empty() )
 	{
 		obj.set("MsgType", message.getMsgType());
@@ -676,7 +728,7 @@ void MessageController::mapMessageToJSON(const Message& message, Poco::JSON::Obj
 	}
 
 	obj.set("Expiry", message.getExpiry());
-	obj.set("Feedback", _feedbackCodes.getDisplayValue(0, message.getFeedback()));
+	obj.set("Feedback", _feedbackCodes.getTextForValue(0, message.getFeedback()));
 	obj.set("Encoding", message.getEncoding());
 	obj.set("CodedCharSetId", message.getCodedCharSetId());
 	obj.set("Format", Poco::trimRight(message.getFormat()));
@@ -691,8 +743,8 @@ void MessageController::mapMessageToJSON(const Message& message, Poco::JSON::Obj
 	obj.set("AccountingToken", message.accountingToken()->toHex());
 	obj.set("ApplIdentityData", message.getApplIdentityData());
 
-	const DisplayMap& applTypes = MQMapper::getDisplayMap("QueueStatus", MQIA_APPL_TYPE);
-	DisplayMap::const_iterator it = applTypes.find(message.getPutApplType());
+	const TextMap& applTypes = MQMapper::getTextMap("QueueStatus", MQIA_APPL_TYPE);
+	TextMap::const_iterator it = applTypes.find(message.getPutApplType());
 	obj.set("PutApplType", it == applTypes.end() ? "" : it->second);
 
 	obj.set("PutApplName", message.getPutApplName());
@@ -718,7 +770,7 @@ void MessageController::mapJSONToMessage(const Poco::JSON::Object& obj, Message&
 
 	if ( obj.has("Report") )
 	{
-		MQLONG reportCode = _reportCodes.getDisplayId(0, obj.optValue<std::string>("Report", ""));
+		MQLONG reportCode = _reportCodes.getIdForText(0, obj.optValue<std::string>("Report", ""));
 		if ( reportCode != -1 )
 		{
 			message.setReport(reportCode);
@@ -729,7 +781,7 @@ void MessageController::mapJSONToMessage(const Poco::JSON::Object& obj, Message&
 
 	if ( obj.has("Feedback") )
 	{
-		MQLONG feedbackCode = _feedbackCodes.getDisplayId(0, obj.optValue<std::string>("Feedback", ""));
+		MQLONG feedbackCode = _feedbackCodes.getIdForText(0, obj.optValue<std::string>("Feedback", ""));
 		if ( feedbackCode != -1 )
 		{
 			message.setFeedback(feedbackCode);
@@ -768,7 +820,7 @@ void MessageController::mapJSONToMessage(const Poco::JSON::Object& obj, Message&
 	if ( obj.has("PutApplType") )
 	{
 		Poco::SharedPtr<Dictionary> dictionary = MQMapper::dictionary("QueueStatus");
-		MQLONG id = dictionary->getDisplayId(MQIA_APPL_TYPE, obj.optValue<std::string>("PutApplType", ""));
+		MQLONG id = dictionary->getIdForText(MQIA_APPL_TYPE, obj.optValue<std::string>("PutApplType", ""));
 		if ( id == -1 ) // User defined?
 		{
 			message.setPutApplType(obj.optValue<MQLONG>("PutApplType", MQAT_DEFAULT));
@@ -805,7 +857,7 @@ void MessageController::mapJSONToMessage(const Poco::JSON::Object& obj, Message&
 	if ( obj.has("MsgSeqNumber") ) message.setMsgSeqNumber(obj.optValue<MQLONG>("MsgSeqNumber", 0));
 	if ( obj.has("MsgType") )
 	{
-		MQLONG msgTypeCode = _messageTypeCodes.getDisplayId(0, obj.optValue<std::string>("MsgType", ""));
+		MQLONG msgTypeCode = _messageTypeCodes.getIdForText(0, obj.optValue<std::string>("MsgType", ""));
 		if ( msgTypeCode != -1 )
 		{
 			message.setMsgType(msgTypeCode);
