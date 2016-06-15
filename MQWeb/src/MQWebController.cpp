@@ -102,7 +102,7 @@ void MQWebController::list()
 			std::string mqBinPathname = app.config().getString("mq.bin", "");
 			std::string command = mqBinPathname + "/dspmq";
 
-			Poco::ProcessHandle ph = Poco::Process::launch(command, args, mqBinPathname, 0, &outPipe, 0);
+			Poco::ProcessHandle ph = Poco::Process::launch(command, args, 0, &outPipe, 0);
 
 			Poco::PipeInputStream istr(outPipe);
 
