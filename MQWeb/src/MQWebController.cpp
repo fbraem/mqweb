@@ -98,7 +98,11 @@ void MQWebController::list()
 
 		try
 		{
-			Poco::ProcessHandle ph = Poco::Process::launch("C:/Program Files (x86)/IBM/WebSphere MQ Runtime V750/bin/dspmq", args, 0, &outPipe, 0);
+			Poco::Util::Application& app = Poco::Util::Application::instance();
+			std::string mqBinPathname = app.config().getString("mq.bin", "");
+			std::string command = mqBinPathname + "/dspmq";
+
+			Poco::ProcessHandle ph = Poco::Process::launch(command, args, mqBinPathname, 0, &outPipe, 0);
 
 			Poco::PipeInputStream istr(outPipe);
 
