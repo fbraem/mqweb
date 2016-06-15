@@ -76,7 +76,7 @@ Poco::SharedPtr<Dictionary> DictionaryCache::load(const std::string& name)
 		int objectId = 0;
 		session << "SELECT id FROM objects WHERE name == :n", into(objectId), useRef(name), now;
 
-		session << "SELECT a.id, a.name, d.value, d.display FROM object_attributes oa INNER JOIN attributes a ON oa.attribute_id = a.id LEFT JOIN displays d ON oa.attribute_id = d.attribute_id WHERE oa.object_id = ?", use(objectId), into(attributes), now;
+		session << "SELECT a.id, a.name, d.value, d.text FROM object_attributes oa INNER JOIN attributes a ON oa.attribute_id = a.id LEFT JOIN texts d ON oa.attribute_id = d.attribute_id WHERE oa.object_id = ?", use(objectId), into(attributes), now;
 	}
 	catch(Poco::Data::DataException& de)
 	{
@@ -93,7 +93,7 @@ Poco::SharedPtr<Dictionary> DictionaryCache::load(const std::string& name)
 	}
 
 	int prevAttributeId = -1;
-	TextMap displayMap;
+	TextMap textMap;
 
 	std::string attributeName;
 
@@ -101,10 +101,10 @@ Poco::SharedPtr<Dictionary> DictionaryCache::load(const std::string& name)
 	{
 		if ( prevAttributeId != it->get<0>() )
 		{
-			if ( displayMap.size() > 0 )
+			if ( textMap.size() > 0 )
 			{
-				dictionary->set(prevAttributeId, attributeName, displayMap);
-				displayMap.clear();
+				dictionary->set(prevAttributeId, attributeName, textMap);
+				textMap.clear();
 			}
 			prevAttributeId = it->get<0>();
 		}
@@ -115,15 +115,15 @@ Poco::SharedPtr<Dictionary> DictionaryCache::load(const std::string& name)
 			continue;
 		}
 
-		displayMap.insert(std::make_pair(it->get<2>(), it->get<3>()));
+		textMap.insert(std::make_pair(it->get<2>(), it->get<3>()));
 		attributeName = it->get<1>();
 	}
 
 	// Do the last one ...
-	if ( displayMap.size() > 0 )
+	if ( textMap.size() > 0 )
 	{
-		dictionary->set(prevAttributeId, attributeName, displayMap);
-		displayMap.clear();
+		dictionary->set(prevAttributeId, attributeName, textMap);
+		textMap.clear();
 	}
 
 	return dictionary;
