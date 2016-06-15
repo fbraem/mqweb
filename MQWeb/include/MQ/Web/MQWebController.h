@@ -42,8 +42,12 @@ public:
 		/// Returns all available actions
 
 	void inquire();
+		/// Returns MQWeb information like: version, client/binding mode, ...
 
 	void list();
+		/// Returns a list of available queuemanagers. In client mode, all queuemanagers
+		/// that are configured are returned, in binding mode MQWeb will try to 
+		/// execute the mq utility dspmq.
 
 private:
 };
