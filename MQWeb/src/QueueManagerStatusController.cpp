@@ -70,12 +70,7 @@ void QueueManagerStatusController::inquire()
 	}
 
 	QueueManagerStatusMapper mapper(*commandServer(), pcfParameters);
-	Poco::JSON::Array::Ptr json = mapper.inquire();
-
-	if ( json->size() > 0 )
-	{
-		set("status", json->get(0));
-	}
+	set("data", mapper.inquire());
 }
 
 

@@ -104,7 +104,7 @@ void ClusterQueueManagerController::inquire()
 	}
 
 	ClusterQueueManagerMapper mapper(*commandServer(), pcfParameters);
-	set("clusqmgrs", mapper.inquire());
+	set("data", mapper.inquire());
 }
 
 

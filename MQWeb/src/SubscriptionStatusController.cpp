@@ -108,7 +108,7 @@ void SubscriptionStatusController::inquire()
 	}
 
 	SubscriptionStatusMapper mapper(*commandServer(), pcfParameters);
-	set("statuses", mapper.inquire());
+	set("data", mapper.inquire());
 }
 
 

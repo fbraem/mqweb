@@ -89,7 +89,7 @@ void ConnectionController::inquire()
 	}
 
 	ConnectionMapper mapper(*commandServer(), pcfParameters);
-	set("connections", mapper.inquire());
+	set("data", mapper.inquire());
 }
 
 

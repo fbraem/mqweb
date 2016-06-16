@@ -58,7 +58,7 @@ void ChannelInitiatorController::inquire()
 	}
 
 	ChannelInitiatorMapper mapper(*commandServer(), pcfParameters);
-	set("response", mapper.inquire());
+	set("data", mapper.inquire());
 }
 
 

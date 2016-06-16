@@ -115,7 +115,7 @@ void TopicController::inquire()
 	}
 
 	TopicMapper mapper(*commandServer(), pcfParameters);
-	set("topics", mapper.inquire());
+	set("data", mapper.inquire());
 }
 
 

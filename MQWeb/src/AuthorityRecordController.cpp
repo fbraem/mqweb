@@ -105,7 +105,7 @@ void AuthorityRecordController::inquire()
 	}
 
 	AuthorityRecordMapper mapper(*commandServer(), pcfParameters);
-	set("authrecs", mapper.inquire());
+	set("data", mapper.inquire());
 }
 
 

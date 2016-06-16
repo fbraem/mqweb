@@ -77,7 +77,23 @@ class MQWebTest(unittest.TestCase):
 			conn = httplib.HTTPConnection(self.mqWebHost, self.mqWebPort)
 			conn.request('GET', url);
 			res = conn.getresponse()
-			data = json.loads(res.read())
+			result = json.loads(res.read())
+			
+			self.assertFalse('meta' not in result, 'No meta data returned')
+	
+			if 'error' in result:
+				self.assertFalse(True, 'Received a WebSphere MQ error:' + 
+					str(result['error']['reason']['code']))
+	
+			self.assertFalse('data' not in result, 
+				'No information returned')
+			self.assertFalse(len(result['data']) == 0, 
+				'Empty JSON array returned. ' +
+				'Does MQWeb have permission to view this information?')
+	
+			self.assertTrue(self.checkIds(result['data'][0]), 
+				'There are unmapped Websphere MQ attributes')
+			
 		except httplib.HTTPException as e:
 			print 'Exception Caught: ' + e.errno + e.strerror
 			self.assertFalse(True, "Can't connect to MQWeb: " + 
@@ -85,7 +101,7 @@ class MQWebTest(unittest.TestCase):
 				self.mqWebPort + 
 				' (qmgr: ' + self.qmgr + ')')
 
-		return data
+		return result
 
 	'''
 	HTTP POST implemenation
@@ -96,11 +112,23 @@ class MQWebTest(unittest.TestCase):
 			conn = httplib.HTTPConnection(self.mqWebHost, self.mqWebPort)
 			conn.request('POST', url, json.dumps(filter), self.headers)
 			res = conn.getresponse()
-			data = json.loads(res.read())
+			result = json.loads(res.read())
+			
+			self.assertFalse('meta' not in result, 'No meta data returned')
+	
+			if 'error' in result:
+				self.assertFalse(True, 'Received a WebSphere MQ error:' 
+					+ str(result['error']['reason']['code']))
+	        
+			self.assertFalse('data' not in result, 'No information returned')
+			self.assertFalse(len(result['data']) == 0, 
+				'Empty JSON array returned. ' +
+				'Does MQWeb have permission to view this information?')
+			
 		except httplib.HTTPException as e:
 			print 'Exception Caught: ' + e.errno + e.strerror
 			self.assertFalse(True, "Can't connect to MQWeb: " + 
 				self.mqWebHost + ":" + 
 				self.mqWebPort + ' (qmgr: ' + self.qmgr + ')')
 
-		return data
+		return result

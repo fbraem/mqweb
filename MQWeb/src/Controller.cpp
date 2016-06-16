@@ -57,14 +57,7 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 	_request = &request;
 	_response = &response;
 
-	if ( isJSONAPI() ) 
-	{
-		if ( isGet() )
-		{
-			_action = "inquire";
-		}
-	}
-	else if ( _parameters.size() > 0 )
+	if ( _parameters.size() > 0 )
 	{
 		_action = _parameters.front();
 		_parameters.erase(_parameters.begin());

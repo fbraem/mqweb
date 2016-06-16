@@ -94,7 +94,7 @@ void ServiceController::inquire()
 	}
 
 	ServiceMapper mapper(*commandServer(), pcfParameters);
-	set("services", mapper.inquire());
+	set("data", mapper.inquire());
 }
 
 

@@ -106,7 +106,7 @@ void ChannelStatusController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 	ChannelStatusMapper mapper(*commandServer(), pcfParameters);
-	set("statuses", mapper.inquire());
+	set("data", mapper.inquire());
 }
 
 

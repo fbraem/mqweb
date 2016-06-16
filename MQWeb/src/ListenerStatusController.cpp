@@ -93,7 +93,7 @@ void ListenerStatusController::inquire()
 	handleFilterForm(pcfParameters);
 
 	ListenerStatusMapper mapper(*commandServer(), pcfParameters);
-	set("statuses", mapper.inquire());
+	set("data", mapper.inquire());
 }
 
 

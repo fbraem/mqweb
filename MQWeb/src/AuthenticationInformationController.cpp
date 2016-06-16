@@ -108,7 +108,7 @@ void AuthenticationInformationController::inquire()
 	}
 
 	AuthenticationInformationMapper mapper(*commandServer(), pcfParameters);
-	set("authinfos", mapper.inquire());
+	set("data", mapper.inquire());
 }
 
 

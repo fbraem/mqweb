@@ -112,7 +112,7 @@ void NamelistController::inquire()
 	pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
 
 	NamelistMapper mapper(*commandServer(), pcfParameters);
-	set("namelists", mapper.inquire());
+	set("data", mapper.inquire());
 }
 
 

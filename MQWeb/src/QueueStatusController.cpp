@@ -113,7 +113,7 @@ void QueueStatusController::inquire()
 	}
 
 	QueueStatusMapper mapper(*commandServer(), pcfParameters);
-	set("statuses", mapper.inquire());
+	set("data", mapper.inquire());
 }
 
 

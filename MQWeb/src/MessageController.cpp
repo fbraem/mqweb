@@ -426,7 +426,7 @@ void MessageController::browse()
 		jsonMessages->add(jsonMessage);
 	}
 
-	set("messages", jsonMessages);
+	set("data", jsonMessages);
 }
 
 
@@ -560,7 +560,7 @@ void MessageController::dump()
 	}
 	mapMessageToJSON(message, *jsonMessage);
 
-	set("message", jsonMessage);
+	set("data", jsonMessage);
 }
 
 

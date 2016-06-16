@@ -52,52 +52,26 @@ void QueueManagerController::inquire()
 	{
 		pcfParameters = new Poco::JSON::Object();
 		meta().set("input", pcfParameters);
-		if ( isJSONAPI() )
+
+		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
+		formElementToJSONArray("QMgrAttrs", attrs);
+		if ( attrs->size() == 0 ) // Nothing found for QMgrAttrs, try Attrs
 		{
-			if ( form().has("fields") )
-			{
-				std::string fields = form().get("fields");
-				Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
-
-				Poco::StringTokenizer tokenizer(fields, ",", Poco::StringTokenizer::TOK_IGNORE_EMPTY);
-				for(Poco::StringTokenizer::Iterator it = tokenizer.begin(); it != tokenizer.end(); ++it)
-				{
-					attrs->add(*it);
-				}
-
-				if ( attrs->size() > 0 )
-				{
-					pcfParameters->set("QMgrAttrs", attrs);
-				}
-			}
+			formElementToJSONArray("Attrs", attrs);
 		}
-		else
+		if ( attrs->size() > 0 )
 		{
-			Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
-			formElementToJSONArray("QMgrAttrs", attrs);
-			if ( attrs->size() == 0 ) // Nothing found for QMgrAttrs, try Attrs
-			{
-				formElementToJSONArray("Attrs", attrs);
-			}
-			if ( attrs->size() > 0 )
-			{
-				pcfParameters->set("QMgrAttrs", attrs);
-			}
+			pcfParameters->set("QMgrAttrs", attrs);
+		}
 
-			if ( form().has("CommandScope") )
-			{
-				pcfParameters->set("CommandScope", form().get("CommandScope"));
-			}
+		if ( form().has("CommandScope") )
+		{
+			pcfParameters->set("CommandScope", form().get("CommandScope"));
 		}
 	}
 
 	QueueManagerMapper mapper(*commandServer(), pcfParameters);
-	Poco::JSON::Array::Ptr json = mapper.inquire();
-	if ( json->size() > 0 )
-	{
-		Poco::JSON::Object::Ptr data = new Poco::JSON::Object();
-		set("data", json->get(0));
-	}
+	set("data", mapper.inquire());
 }
 
 

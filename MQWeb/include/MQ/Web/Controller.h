@@ -92,9 +92,6 @@ public:
 	bool isPost() const;
 		/// Returns true when the HTTP method POST is used.
 
-	bool isJSONAPI() const;
-		/// Returns true when the HTTP request accepts JSONAPI
-
 	void set(const std::string& name, const Poco::Dynamic::Var& var);
 		/// Sets a variable in data for use in a view
 
@@ -197,11 +194,6 @@ inline bool Controller::isGet() const
 inline bool Controller::isJSON() const
 {
 	return true;
-}
-
-inline bool Controller::isJSONAPI() const
-{
-	return _request->get("Accept", "").compare("application/vnd.api+json") == 0;
 }
 
 inline bool Controller::isPost() const

@@ -102,7 +102,7 @@ void ListenerController::inquire()
 	}
 
 	ListenerMapper mapper(*commandServer(), pcfParameters);
-	set("listeners", mapper.inquire());
+	set("data", mapper.inquire());
 }
 
 

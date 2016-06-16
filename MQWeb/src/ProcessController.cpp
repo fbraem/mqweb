@@ -104,7 +104,7 @@ void ProcessController::inquire()
 	}
 
 	ProcessMapper mapper(*commandServer(), pcfParameters);
-	set("processes", mapper.inquire());
+	set("data", mapper.inquire());
 }
 
 
