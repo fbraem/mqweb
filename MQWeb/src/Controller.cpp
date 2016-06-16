@@ -21,7 +21,6 @@
 #include <sstream>
 
 #include "MQ/Web/Controller.h"
-#include "MQ/Web/JSONPView.h"
 #include "MQ/MQSubsystem.h"
 
 #include "Poco/Util/Application.h"
@@ -78,7 +77,7 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 
 	for(std::vector<std::string>::iterator it = _parameters.begin(); it != _parameters.end(); ++it)
 	{
-		int pos = it->find_first_of(':');
+		size_t pos = it->find_first_of(':');
 		if ( pos != std::string::npos )
 		{
 			std::string name = it->substr(0, pos);
@@ -143,30 +142,30 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 }
 
 
-void Controller::setJSONView()
-{
-	if ( _form.has("callback") ) setView(new JSONPView(_form.get("callback")));
-	else if ( _form.has("jsonp") ) setView(new JSONPView(_form.get("jsonp")));
-	else setView(new JSONView());
-}
-
 void Controller::render()
 {
-	if ( _view.isNull() ) return; // No view set, don't do anything
-
-	_view->initializeResponse(*_response);
+	response().setChunkedTransferEncoding(true);
+	response().setContentType("application/json");
+	response().set("Cache-Controle", "no-cache,no-store,must-revalidate"); // HTTP 1.1
+	response().set("Pragma", "no-cache"); // HTTP 1.0
+	response().set("Expires", "0"); // Proxies
 
 	std::stringstream ss;
-	bool rendered = _view->render(_data, ss);
-	if ( rendered )
+
+	if ( _form.has("callback") )
 	{
-		Poco::StreamCopier::copyStream(ss, _response->send());
+		ss << _form.get("callback") << '(';
 	}
-	else
+	
+	data().stringify(ss);
+	ss.flush();
+
+	if ( _form.has("callback") )
 	{
-		//TODO: redirect to an error page?
-		setResponseStatus(Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR);
+		ss << ');';
 	}
+
+	Poco::StreamCopier::copyStream(ss, _response->send());
 }
 
 void Controller::formElementToJSONArray(const std::string& name, Poco::JSON::Array::Ptr arr)

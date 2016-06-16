@@ -28,7 +28,6 @@
 
 #include "MQ/Web/MessageController.h"
 #include "MQ/Web/MQMapper.h"
-#include "MQ/Web/JSONView.h"
 #include "MQ/MQException.h"
 #include "MQ/Message.h"
 #include "MQ/QueueManager.h"

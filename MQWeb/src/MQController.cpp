@@ -27,8 +27,6 @@
 
 #include "MQ/Web/MQController.h"
 #include "MQ/Web/MQMapper.h"
-#include "MQ/Web/TemplateView.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ {
 namespace Web {
@@ -154,15 +152,6 @@ void MQController::handleException(const MQException& mqe)
 
 	error->set("code", Poco::NumberFormatter::format(mqe.reason()));
 	error->set("title", reasonStr);
-
-	if ( isJSON() )
-	{
-		setJSONView();
-	}
-	else
-	{
-		setView(new TemplateView("error.tpl"));
-	}
 }
 
 

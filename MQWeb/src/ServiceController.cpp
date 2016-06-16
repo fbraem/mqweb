@@ -20,7 +20,6 @@
  */
 #include "MQ/Web/ServiceController.h"
 #include "MQ/Web/ServiceMapper.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ
 {

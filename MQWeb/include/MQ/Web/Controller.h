@@ -33,7 +33,6 @@
 
 #include "MQ/QueueManager.h"
 #include "MQ/CommandServer.h"
-#include "MQ/Web/View.h"
 
 namespace MQ {
 namespace Web {
@@ -105,9 +104,6 @@ public:
 	Poco::Net::HTTPServerResponse& response();
 		/// Returns the HTTP response
 
-	void setJSONView();
-		/// Checks for JSONP or JSON request and creates the corresponding view class
-
 	void setResponseStatus(Poco::Net::HTTPServerResponse::HTTPStatus status);
 		/// Sets the HTTP response status. This will send the response to the client.
 
@@ -116,9 +112,6 @@ public:
 
 	void render();
 		/// Renders the view
-
-	void setView(Poco::SharedPtr<View> v);
-		/// Set the view
 
 protected:
 
@@ -153,18 +146,12 @@ private:
 	std::map<std::string, std::string> _namedParameters;
 
 
-	Poco::SharedPtr<View> _view;
-
-
 	friend class ControllerRequestHandler;
 };
 
 
 inline void Controller::afterAction()
 {
-	// When no view is set yet, we assume JSON
-	if ( _view.isNull() ) setJSONView();
-
 	render();
 }
 
@@ -256,12 +243,6 @@ inline Poco::Net::HTTPServerResponse& Controller::response()
 	poco_assert_dbg(_response);
 
 	return *_response;
-}
-
-
-inline void Controller::setView(Poco::SharedPtr<View> v)
-{
-	_view = v;
 }
 
 }} // Namespace MQ::Web
