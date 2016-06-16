@@ -125,22 +125,35 @@ void MQController::beforeAction()
 
 void MQController::handleException(const MQException& mqe)
 {
-	Poco::JSON::Object::Ptr error = new Poco::JSON::Object();
+	Poco::JSON::Array::Ptr errors = new Poco::JSON::Array();
+	set("errors", errors);
 
-	set("error", error);
-	error->set("object", mqe.object());
-	error->set("fn", mqe.function());
+	Poco::JSON::Object::Ptr error = new Poco::JSON::Object();
+	errors->add(error);
+
+	Poco::JSON::Object::Ptr meta = new Poco::JSON::Object();
+	error->set("meta", meta);
+	meta->set("object", mqe.object());
+	meta->set("fn", mqe.function());
+	
+	Poco::JSON::Object::Ptr completion = new Poco::JSON::Object();
+	meta->set("completion", completion);
+	completion->set("code", mqe.code());
 	switch(mqe.code())
 	{
-		case MQCC_OK: error->set("code", "OK"); break;
-		case MQCC_WARNING: error->set("code", "WARNING"); break;
-		case MQCC_FAILED: error->set("code", "ERROR"); break;
+		case MQCC_OK: completion->set("desc", "OK"); break;
+		case MQCC_WARNING: completion->set("desc", "WARNING"); break;
+		case MQCC_FAILED: completion->set("desc", "ERROR"); break;
 	}
 
+	std::string reasonStr = MQMapper::getReasonString(mqe.reason());
 	Poco::JSON::Object::Ptr reason = new Poco::JSON::Object();
-	error->set("reason", reason);
+	meta->set("reason", reason);
 	reason->set("code", mqe.reason());
-	reason->set("desc", MQMapper::getReasonString(mqe.reason()));
+	reason->set("desc", reasonStr);
+
+	error->set("code", Poco::NumberFormatter::format(mqe.reason()));
+	error->set("title", reasonStr);
 
 	if ( isJSON() )
 	{
