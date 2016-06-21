@@ -50,9 +50,6 @@ public:
 		///
 		/// Currently the message size is restricted to 16K.
 
-	void event();
-		/// Shows an event message
-
 	void publish();
 		/// Publish a message to a topic
 		///   /message/publish/<qmgrName>/<topicName>/<topicString>
@@ -88,7 +85,6 @@ inline const Controller::ActionMap& MessageController::getActions() const
 		= MapInitializer<std::string, Controller::ActionFn>
 			("browse", static_cast<ActionFn>(&MessageController::browse))
 			("dump", static_cast<ActionFn>(&MessageController::dump))
-			("event", static_cast<ActionFn>(&MessageController::event))
 			("publish", static_cast<ActionFn>(&MessageController::publish))
 			("put", static_cast<ActionFn>(&MessageController::put))
 		;
