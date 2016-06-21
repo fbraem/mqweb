@@ -39,11 +39,11 @@ query parameter but is now case sensitive!
 The answer of an api request is always a JSON object. This JSON object can contain the
 following properties:
 
-+ `mqweb`
++ `meta`
 
   Contains general information about the api call.
 
-+ `filter`
++ `input`
 
   Contains the data which is used as input for the PCF command. This can be 
   useful to debug a GET/POST request.
@@ -52,10 +52,13 @@ following properties:
 
   Only returned when a WebSphere MQ error occurred.
 
-+ An array or object depending on the WebSphere MQ object type (only returned when 
-  no error occurred).
++ `data`
 
-Properties of WebSphere MQ objects are always returned with the name as documented 
+  An array with objects containing the requested attributes for the WebSphere 
+  MQ object type (only returned when no error occurred). This is always an 
+  array, even when the PCF command responds with only one message.
+
+Attributes of WebSphere MQ objects are always returned with the name as documented 
 in the WebSphere MQ information center. For example: The property of the current 
 queue depth of a queue will have the name `CurrentQDepth`. Each property is an
 object with the following properties:
@@ -69,7 +72,7 @@ object with the following properties:
 
   The value of the WebSphere MQ property.
 
-+ `display`
++ `text`
 
   When the value of the property is an MQ constant then this property will have
   the string representation of the value. For example: When `QueueType` has the

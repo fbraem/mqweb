@@ -6,20 +6,14 @@ doc_architecture: true
 Architecture
 ============
 
-This sequence diagram shows how a built-in HTML page is build.
-
-<img src="{{ site.baseurl }}/img/mqwebsequence.png" style="text-align:center" alt="MQWeb Sequence Diagram" />
-
 MQWeb uses the HTTPServer class from [POCO](http://www.pocoproject.org).
-This class uses request handlers to handle incoming requests. MQWeb has three
+This class uses request handlers to handle incoming requests. MQWeb has four
 handlers.
 
-## StaticRequestHandler
+## AppRequestHandler
 
-This request handler is called when the URI starts with `static` and is only
-used when the built-in HTML pages are used. This handler is responsible for
-returning style sheets, images, scripts, ... In other words: it returns static
-content.
+This request handler is called when a web application is used. The URI starts 
+with `web` and returns the content based on the `mq.web.app` property.
 
 ## DenyRequestHandler
 
@@ -29,11 +23,11 @@ be blocked. It will always return 403 Forbidden.
 ## ControllerRequestHandler
 
 This handler is responsible for creating the controller that handles a request
-for a WebSphere MQ object. There are two types of controllers:
+for a WebSphere MQ object. The [api controllers](/api/index.html) are 
+responsible of sending PCF commands to WebSphere MQ and to return the answer in 
+JSON format. An api controller is called when the URI begins with `api`.
 
-+ The [web controller](docs/web.html) is responsible of returning a built-in
-HTML page for a WebSphere MQ object. The web controller will be called when the
-first part of the URI is `web`.
-+ The [api controllers](/api/index.html) are responsible of sending PCF commands
-to WebSphere MQ and to return the answer in JSON format. An api controller is
-called when the URI begins with `api`.
+## WebSockeRequestHandler
+
+This handler uses a Websocket to forward messages from a queue to the client. 
+**This is currently experimental code**!

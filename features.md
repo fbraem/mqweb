@@ -9,21 +9,6 @@ Features
 
 MQWeb can be used in two ways:
 
-Built-in HTML
--------------
-
-MQWeb has its own HTML pages which can be viewed by surfing to the web controller.
-This controller can be reached by using `web` as first part of the URL:
-
-    http://<mqwebhost:port>/web/qmgr/PIGEON
-
-The built-in HTML pages use [AngularJS](http://angularjs.org) to call the API's
-of MQWeb and to transform the JSON objects into HTML.
-
-> **Note:** this will change for version 0.1.0 and above. The built-in HTML pages
-> are removed from the MQWeb repository and the web application will be rewritten
-> in the [MQWeb App](https://github.com/fbraem/mqwebapp) repository.
-
 API
 ---
 
@@ -56,3 +41,19 @@ or in Python
 {% endhighlight %}
 
 Look at [API overview](/api/index.html) to see which api's are available.
+
+MQWeb App
+---------
+
+MQWeb App is a sample web application which has its own 
+[Github repository](https://github.com/fbraem/mqwebapp). This web application 
+can be reached by prefixing the requested HTML page with
+
+    http://<mqwebhost:port>/web
+
+Make sure that the `mq.web.app` property is set to the document root.
+
+MQWeb API's can be integrated in your website using any server side language
+that supports HTTP requests, but with the MQWeb app, you can use any client side
+solution like [AngularJS](https://angularjs.org/), 
+[vue.js](http://www.vuejs.org), ...

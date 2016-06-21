@@ -30,7 +30,15 @@ If you placed the database in the application folder, you can use this to
 configure it:
 
     mq.web.db=${application.dir}/mqweb.db
-    
+
+MQWeb App
+---------
+When you use a client solution
+ like [MQWeb app](https://github.com/fbraem/mqwebapp) then you need to set 
+ `mq.web.app` property to the document root of the web application:
+
+    mq.web.app=${application.dir}/mqwebapp
+
 Connection Mode
 ---------------
 By default mqweb connects in bindings mode. This can be changed by setting the 
@@ -96,7 +104,7 @@ MQWeb creates a connection pool for each queuemanager.
 
 When a queuemanager is requested from the pool:
 
-If a queuemanager is available from the pool, an queuemanager from the pool is 
+If a queuemanager is available from the pool, the queuemanager is 
 removed from the pool and returned. Otherwise, if the peak capacity of the pool 
 has not yet been reached, a new queuemanager is created, connected and returned.
 If the peak capacity has already been reached, no queuemanager is returned
@@ -164,19 +172,3 @@ all IP addresses starting with 10.192.
     mq.web.deny.ip1=10\.192*
 
 The value of the property must be a valid regular expression.
-
-Web Pages
----------
-When the templates and static files, used to create the internal
-web pages, are not located in the same folder as the mqweb application, you need
-to configure these paths:
-
-+ mq.web.templates
-
-  This is the folder where the templates are placed.
-
-+ mq.web.static
-
-  This is the folder where the static files (images, html, ...) are placed.
-
-This configuration is not required when the internal web pages are not used.
