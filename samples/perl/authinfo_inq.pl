@@ -40,7 +40,7 @@ if ( exists($mqweb->{error}) ) {
 		, $mqweb->{error}->{reason}->{desc};
 }
 else {
-	foreach my $authinfo(@{$mqweb->{authinfos}}) {
+	foreach my $authinfo(@{$mqweb->{data}}) {
 		say $authinfo->{AuthInfoName}->{value};
 	}
 }

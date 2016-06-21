@@ -40,7 +40,7 @@ if ( exists($mqweb->{error}) ) {
 		, $mqweb->{error}->{reason}->{desc};
 }
 else {
-	foreach my $topic(@{$mqweb->{topics}}) {
+	foreach my $topic(@{$mqweb->{data}}) {
 		say $topic->{TopicName}->{value};
 	}
 }

@@ -38,7 +38,7 @@ if ( exists($mqweb->{error}) ) {
 		, $mqweb->{error}->{reason}->{desc};
 }
 else {
-	foreach my $response(@{$mqweb->{response}}) {
+	foreach my $response(@{$mqweb->{data}}) {
 		if ( exists($response->{TransportType})
 			   && $response->{TransportType}->{display} eq 'TCP' ) {
 			my $ip = '';

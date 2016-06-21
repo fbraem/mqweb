@@ -45,7 +45,7 @@ if ( exists($mqweb->{error}) ) {
 		, $mqweb->{error}->{reason}->{desc};
 }
 else {
-	foreach my $connection(@{$mqweb->{connections}}) {
+	foreach my $connection(@{$mqweb->{data}}) {
 		say $connection->{ApplTag}->{value}
 			, ' = '
 			, $connection->{ApplType}->{display} 

@@ -40,7 +40,7 @@ if ( exists($mqweb->{error}) ) {
 		, $mqweb->{error}->{reason}->{desc};
 }
 else {
-	foreach my $namelist(@{$mqweb->{namelists}}) {
+	foreach my $namelist(@{$mqweb->{data}}) {
 		say $namelist->{NamelistName}->{value};
 		my @names = @{$namelist->{Names}->{value}};
 		foreach my $name(@names) {

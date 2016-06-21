@@ -37,8 +37,7 @@ if ( exists($mqweb->{error}) ) {
 		$mqweb->{error}->{reason}->{desc};
 }
 else {
-	say $mqweb->{status}->{QMgrName}->{value},
+	say $mqweb->{data}->[0]->{QMgrName}->{value},
 		' : ', 
-		$mqweb->{status}->{QMgrStatus}->{display};
+		$mqweb->{data}->[0]->{QMgrStatus}->{text};
 }
-
