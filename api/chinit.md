@@ -12,8 +12,8 @@ The second part of the URI must be `chinit` to call the
 ## <a name="inquire"></a>inquire
 Get info about the channel initiator. This api executes the MQCMD_INQUIRE_CHANNEL_INIT
 pcf command.
-
-The returned JSON object will have a `response` array.
+On success, the returned JSON object will have a `data` array, on failure an
+ `error` object.
 
 ### <a name="inquireUrl"></a>URL Parameters
 `/api/chinit/inquire/<QueueManager>`

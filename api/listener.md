@@ -11,10 +11,8 @@ The second part of the URI must be `listener` to call the ListenerController.
 ## <a name="inquire"></a>inquire
 Get information about one ore more listeners. This actions executes the
 PCF commando MQCMD_INQUIRE_LISTENER.
-
-The returned JSON object will have a `listeners` property which contains all
-matching listeners. When a WebSphere MQ error occurred there will be no
-`listeners` array, but instead an `error` object is returned.
+On success, the returned JSON object will have a `data` array, on failure an
+ `error` object.
 
 ### <a name="inquireURL"></a>URL Parameters
 `/api/listener/inquire/<QueueManager>/<ListenerName>`

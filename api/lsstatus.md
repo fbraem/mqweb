@@ -11,10 +11,8 @@ ListenerStatusController.
 
 ## <a name="inquire"></a>inquire
 Get status information about one ore more listeners. This actions executes the
-PCF commando MQCMD_INQUIRE_LISTENER_STATUS.The returned JSON object will have a
-`mqweb` object and a `statuses` array with all returned statuses as object.
-When a WebSphere MQ error occurred, there will be no `statuses` array.
-Instead an `error` object is returned.
+PCF commando MQCMD_INQUIRE_LISTENER_STATUS. On success, the returned JSON 
+object will have a `data` array, on failure an `error` object.
 
 ### <a name="inquireURL"></a>URL Parameters
 `/api/lsstatus/inquire/<QueueManager>/<ListenerName>`

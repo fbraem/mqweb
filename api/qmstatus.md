@@ -11,9 +11,9 @@ QueueManagerStatusController.
 
 ## <a name="inquire"></a>inquire
 Returns all status information attributes of the queuemanager with the given
-name. The data will be returned in the `status` property of the JSON object.
-When a WebSphere MQ error occurred an `error` property is set and the `status`
-property is not set.
+name. This action executes the MQCMD_INQUIRE_Q_MGR_STATUS pcf command. On 
+success, the returned JSON object will have a `data` array, on failure an
+`error` object.
 
 > HTTP_NOT_IMPLEMENTED will be returned when this command is send to a
 > queuemanager on a z/OS system. MQCMD_INQUIRE_Q_MGR_STATUS is not available for

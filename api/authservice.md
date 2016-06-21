@@ -13,10 +13,8 @@ about the level of function supported by installed authority managers.
 ## <a name="inquire"></a>inquire
 Get information about the level of function supported by installed authority
 managers. This action executes the MQCMD_INQUIRE_AUTH_SERVICE pcf command.
-
-The returned JSON object will have a `authservices` array. When a WebSphere MQ
-error occurred there will be no `authservices` array, but instead an `error`
-object is returned.
+On success, the returned JSON object will have a `data` array, on failure an
+ `error` object.
 
 ### <a name="inquireUrl"></a>URL Parameters
 `/api/authservice/inquire/<QueueManager>`

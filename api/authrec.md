@@ -12,11 +12,9 @@ This controller can be used to get attributes of authority records.
 > AuthorityRecordController is not available for z/OS.
 
 ## <a name="inquire"></a>inquire
-Get information about one or more authority records.
-This action executes the MQCMD_INQUIRE_AUTH_RECS pcf command.
-
-The returned JSON object will have a `authrecs` array. When a WebSphere MQ error occurred
-there will be no `authrecs` array, but instead an `error` object is returned.
+Get information about one or more authority records. This action executes 
+the MQCMD_INQUIRE_AUTH_RECS pcf command. On success, the returned JSON object 
+will have a `data` array, on failure an `error` object.
 
 ### <a name="inquireUrl"></a>URL Parameters
 `/api/authrec/inquire/<QueueManager>/<ProfileName>`

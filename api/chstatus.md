@@ -12,9 +12,8 @@ This controller can be used to get status information from channels.
 ## <a name="inquire"></a>inquire
 Returns all status attributes of channels which matches the given name.
 This action executes the MQCMD_INQUIRE_CHANNEL_STATUS pcf command.
-The data will be returned in a JSON array as the `statuses` property of the JSON
-object. When a WebSphere MQ error occurred an `error` property is set and the
-`statuses` property is not set.
+On success, the returned JSON object will have a `data` array, on failure an
+ `error` object.
 
 ### <a name="inquireURL"></a>URL Parameters
 `/api/chstatus/inquire/<QueueManager>/<ChannelName>`

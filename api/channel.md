@@ -12,10 +12,8 @@ This controller can be used to get information from a channel.
 ## <a name="inquire"></a>inquire
 Get information about one or more queues. This action executes the
 MQCMD_INQUIRE_CHANNEL pcf command.
-
-The returned JSON object will have a `channels` array. When a WebSphere MQ
-error occurred there will be no `channels` array, but instead an `error`
-object is returned.
+On success, the returned JSON object will have a `data` array, on failure an
+ `error` object.
 
 ### <a name="inquireURL"></a>URL Parameters
 `/api/channel/inquire/<QueueManager>/<ChannelName>/<ChannelType>`

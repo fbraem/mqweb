@@ -10,11 +10,8 @@ The second part of the URI must be `sbstatus` to call the SubStatusController.
 
 ## <a name="inquire"></a>inquire
 Get status information about one or more subscriptions. This action executes the
-MQCMD_INQUIRE_SUB_STATUS pcf command.
-
-The returned JSON object will have a `statuses` array. When a WebSphere MQ error
-occurred there will be no `statuses` array, but instead an `error` object is
-returned.
+MQCMD_INQUIRE_SUB_STATUS pcf command.  On success, the returned JSON 
+object will have a `data` array, on failure an `error` object.
 
 ### <a name="inquireUrl"></a>URL Parameters
 `/api/sbstatus/inquire/<QueueManager>/<SubName>`

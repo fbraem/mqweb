@@ -10,11 +10,8 @@ The second part of the URI must be `sub` to call the SubController.
 
 ## <a name="inquire"></a>inquire
 Get information about one or more subscriptions. This action executes the
-MQCMD_INQUIRE_SUB pcf command.
-
-The returned JSON object will have a `subs` array. When a WebSphere MQ error
-occurred there will be no `subs` array, but instead an `error` object is
-returned.
+MQCMD_INQUIRE_SUB pcf command. On success, the returned JSON 
+object will have a `data` array, on failure an `error` object.
 
 ### <a name="inquireUrl"></a>URL Parameters
 `/api/sub/inquire/<QueueManager>/<SubName>`

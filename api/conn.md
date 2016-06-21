@@ -11,10 +11,8 @@ The second part of the URI must be `conn` to call the ConnectionController.
 ## <a name="inquire"></a>inquire
 Get information from clusters. This action executes the
 MQCMD_INQUIRE_CONNECTION pcf command.
-
-The returned JSON object will have a `connections` array. When a WebSphere MQ
-error occurred, there will be no `connections` array, but instead an `error`
-object is returned.
+On success, the returned JSON object will have a `data` array, on failure an
+ `error` object.
 
 ### <a name="inquireURL"></a>URL Parameters
 `/api/conn/inquire/<QueueManager>/<ConnectionId>`

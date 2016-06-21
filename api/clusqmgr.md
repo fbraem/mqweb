@@ -15,10 +15,8 @@ The second part of the URI must be `clusqmgr` to call the ClusterQueueManagerCon
 ## <a name="inquire"></a>inquire
 Get information from clusters. This action executes the
 MQCMD_INQUIRE_CLUSTER_Q_MGR pcf command.
-
-The returned JSON object will have a `clusqmgrs` array. When a WebSphere MQ
-error occurred, there will be no `clusqmgrs` array, but instead an `error`
-object is returned.
+On success, the returned JSON object will have a `data` array, on failure an
+ `error` object.
 
 ### <a name="inquireURL"></a>URL Parameters
 `/api/clusqmgr/inquire/<QueueManager>/<ClusterName>/<ClusterQMgrName>`

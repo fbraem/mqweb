@@ -9,9 +9,9 @@ QueueManagerController
 The second part of the URI must be `qmgr` to call the QueueManagerController.
 
 ## <a name="inquire"></a>inquire
-Returns all attributes of the queuemanager with the given name. The data will
-be returned in the `qmgr` property of the JSON object. When a WebSphere MQ
-error occurred an `error` property is set and the `qmgr` property is not set.
+Returns all attributes of the queuemanager with the given name. This actions
+ executes the PCF commando MQCMD_INQUIRE_Q_MGR. On success, the returned JSON 
+object will have a `data` array, on failure an `error` object.
 
 ### <a name="inquireURL"></a>URL Parameters
 `/api/qmgr/inquire/<QueueManager>`

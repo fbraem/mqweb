@@ -10,11 +10,8 @@ The second part of the URI must be `topic` to call the TopicController.
 
 ## <a name="inquire"></a>inquire
 Get information about one or more topics. This action executes the
-MQCMD_INQUIRE_TOPIC pcf command.
-
-The returned JSON object will have a `topics` array. When a WebSphere MQ error
-occurred there will be no `topics` array, but instead an `error` object is
-returned.
+MQCMD_INQUIRE_TOPIC pcf command. On success, the returned JSON 
+object will have a `data` array, on failure an `error` object.
 
 ### <a name="inquireUrl"></a>URL Parameters
 `/api/topic/inquire/<QueueManager>/<TopicName>`
