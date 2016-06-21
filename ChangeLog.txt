@@ -1,8 +1,10 @@
 0.1.0
   - Web app has its own repository now: mqwebapp
   - 'filter' renamed to 'input' in mqweb JSON answer
+  - 'mqweb' property in JSON answer renamed to 'meta'
+  - On success the information is always stored in a 'data' array.
   - Browse DLQ messages
-  - Integrate event messages in browse action
+  - Integrate event messages in browse action. Message event action removed.
 
 0.0.13
   - Upgrade documents to use latest Jekyll release
