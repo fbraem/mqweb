@@ -18,7 +18,7 @@ if response.code == "200"
 	if json["error"]
 		puts "An MQException occurred: RC= #{json["error"]["reason"]["code"]} - #{json["error"]["reason"]["desc"]}"
 	else
-		json["queues"].each do |queue|
+		json["data"].each do |queue|
 			puts queue["QName"]["value"]
 		end
 	end
