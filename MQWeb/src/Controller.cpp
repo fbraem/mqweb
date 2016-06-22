@@ -155,7 +155,7 @@ void Controller::render()
 
 	if ( _form.has("callback") )
 	{
-		ss << ');';
+		ss << ");";
 	}
 
 	Poco::StreamCopier::copyStream(ss, _response->send());
