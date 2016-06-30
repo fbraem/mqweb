@@ -20,8 +20,8 @@
 			echo "Reason Code: {$json->error->reason->code} - {$json->error->reason->desc}\n";
 		}
 		else {
-			if ( isset($json->connections) && count($json->connections) > 0 ) {
-				foreach($json->connections as $connection)
+			if ( isset($json->data) && count($json->data) > 0 ) {
+				foreach($json->data as $connection)
 				{
 					echo $connection->ApplTag->value;
 					echo ' (';

@@ -87,7 +87,7 @@ void TopicStatusController::inquire()
 	}
 
 	TopicStatusMapper mapper(*commandServer(), pcfParameters);
-	set("statuses", mapper.inquire());
+	set("data", mapper.inquire());
 }
 
 

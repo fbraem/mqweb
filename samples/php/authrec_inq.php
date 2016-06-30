@@ -20,8 +20,8 @@
 			echo "Reason Code: {$json->error->reason->code} - {$json->error->reason->desc}\n";
 		}
 		else {
-			if ( isset($json->authrecs) && count($json->authrecs) > 0 ) {
-				foreach($json->authrecs as $authrec)
+			if ( isset($json->data) && count($json->data) > 0 ) {
+				foreach($json->data as $authrec)
 				{
 					echo $authrec->ProfileName->value;
 					echo '(';

@@ -110,7 +110,7 @@ void SubscriptionController::inquire()
 	}
 
 	SubscriptionMapper mapper(*commandServer(), pcfParameters);
-	set("subs", mapper.inquire());
+	set("data", mapper.inquire());
 }
 
 

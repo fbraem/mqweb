@@ -20,8 +20,8 @@
 			echo "Reason Code: {$json->error->reason->code} - {$json->error->reason->desc}\n";
 		}
 		else {
-			if ( isset($json->services) && count($json->services) > 0 ) {
-				foreach($json->services as $service)
+			if ( isset($json->data) && count($json->data) > 0 ) {
+				foreach($json->data as $service)
 				{
 					echo $service->ServiceName->value;
 					echo "\n";
