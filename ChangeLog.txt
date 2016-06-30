@@ -5,6 +5,7 @@
   - On success the information is always stored in a 'data' array.
   - Browse DLQ messages
   - Integrate event messages in browse action. Message event action removed.
+  - Dictionary tables changed: 'display' renamed into 'text'
 
 0.0.13
   - Upgrade documents to use latest Jekyll release
