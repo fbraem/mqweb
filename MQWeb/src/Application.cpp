@@ -54,7 +54,14 @@ void MQWebApplication::initialize(Application& self)
 {
 	try
 	{
-		loadConfiguration(); // load default configuration files, if present
+		if (config().has("mq.web.cfg"))
+		{
+				loadConfiguration(config().getString("mq.web.cfg"));
+		}
+		else
+		{
+				loadConfiguration(); // load default configuration files, if present
+		}
 	}
 	catch(Poco::FileException& fe)
 	{
@@ -99,6 +106,13 @@ void MQWebApplication::defineOptions(Poco::Util::OptionSet& options)
 		.repeatable(false)
 		.binding("mq.web.qmgr")
 		.argument("<name>"));
+
+	options.addOption(
+	Option("config", "c", "Configuration file to load")
+		.required(false)
+		.repeatable(false)
+		.binding("mq.web.cfg")
+		.argument("<propertyfile>"));
 
 	options.addOption(
 	Option("port", "p", "Port for HTTP listener")
