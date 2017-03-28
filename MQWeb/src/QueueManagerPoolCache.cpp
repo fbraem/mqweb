@@ -23,6 +23,7 @@
 #include "MQ/MQSubsystem.h"
 
 #include "MQ/Web/QueueManagerPoolCache.h"
+#include "MQ/Web/QueueManagerDefaultConfig.h"
 
 namespace MQ {
 namespace Web {
@@ -73,53 +74,12 @@ QueueManagerPool::Ptr QueueManagerPoolCache::createPool(const std::string& qmgrN
 	MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQSubsystem>();
 	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
 
-	std::string qmgrConfig = "mq.web.qmgr." + qmgrName;
-
 	Poco::SharedPtr<QueueManagerFactory> factory;
 
 	if ( mqSystem.client() )
 	{
-		Poco::DynamicStruct connectionInformation;
-
-		// In client mode we check for a configuration
-		// When this is not available, we hope that a channel tab file
-		// is configured.
-		std::string qmgrConfigConnection = qmgrConfig + ".connection";
-		if ( config.has(qmgrConfigConnection) )
-		{
-			std::string connection;
-			std::string channel;
-			connectionInformation.insert("connection", config.getString(qmgrConfigConnection));
-			std::string qmgrConfigChannel = qmgrConfig + ".channel";
-			if ( config.has(qmgrConfigChannel) )
-			{
-				connectionInformation.insert("channel", config.getString(qmgrConfigChannel));
-			}
-			else
-			{
-				connectionInformation.insert("channel", config.getString("mq.web.defaultChannel", "SYSTEM.DEF.SVRCONN"));
-			}
-
-			if ( config.has("mq.web.ssl.keyrepos") )
-			{
-				Poco::DynamicStruct ssl;
-				connectionInformation.insert("ssl", ssl);
-
-				Poco::Util::AbstractConfiguration::Keys keys;
-				Poco::AutoPtr<Poco::Util::AbstractConfiguration> sslConfig = config.createView("mq.web.ssl");
-				sslConfig->keys(keys);
-				for(Poco::Util::AbstractConfiguration::Keys::iterator it = keys.begin(); it != keys.end(); ++it)
-				{
-					ssl.insert(*it, config.getString(*it));
-				}
-			}
-
-			factory = new QueueManagerFactory(qmgrName, connectionInformation);
-		}
-		else
-		{
-			factory = new QueueManagerFactory(qmgrName);
-		}
+		QueueManagerDefaultConfig qmgrConfig(qmgrName, config);
+		factory = new QueueManagerFactory(qmgrName, qmgrConfig.read());
 	}
 	else
 	{
@@ -130,6 +90,7 @@ QueueManagerPool::Ptr QueueManagerPoolCache::createPool(const std::string& qmgrN
 	std::size_t peakCapacity;
 	int idle;
 
+	std::string qmgrConfig = "mq.web.qmgr." + qmgrName;
 	std::string qmgrPoolCapacity = qmgrConfig + ".pool.capacity";
 	if ( !config.has(qmgrPoolCapacity) )
 	{
