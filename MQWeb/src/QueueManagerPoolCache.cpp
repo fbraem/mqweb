@@ -19,11 +19,14 @@
  * permissions and limitations under the Licence.
  */
 #include "Poco/Util/Application.h"
+#include "Poco/Data/SessionFactory.h"
+#include "Poco/Data/SQLite/Connector.h"
 
 #include "MQ/MQSubsystem.h"
 
 #include "MQ/Web/QueueManagerPoolCache.h"
 #include "MQ/Web/QueueManagerDefaultConfig.h"
+#include "MQ/Web/QueueManagerDatabaseConfig.h"
 
 namespace MQ {
 namespace Web {
@@ -78,8 +81,20 @@ QueueManagerPool::Ptr QueueManagerPoolCache::createPool(const std::string& qmgrN
 
 	if ( mqSystem.client() )
 	{
-		QueueManagerDefaultConfig qmgrConfig(qmgrName, config);
-		factory = new QueueManagerFactory(qmgrName, qmgrConfig.read());
+		Poco::SharedPtr<QueueManagerConfig> qmgrConfig;
+		if ( config.has("mq.web.config.connection") )
+		{
+			// Queuemanagers connection information is stored in a database
+			std::string dbConnector = config.getString("mq.web.config.connector", Poco::Data::SQLite::Connector::KEY);
+			std::string dbConnection = config.getString("mq.web.config.connection");
+			qmgrConfig = new QueueManagerDatabaseConfig(qmgrName, dbConnector, dbConnection);
+		}
+		else
+		{
+			qmgrConfig = new QueueManagerDefaultConfig(qmgrName, config);
+		}
+
+		factory = new QueueManagerFactory(qmgrName, qmgrConfig->read());
 	}
 	else
 	{

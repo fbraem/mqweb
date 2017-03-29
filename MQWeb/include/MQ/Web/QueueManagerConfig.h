@@ -21,6 +21,8 @@
 #ifndef _MQ_QueueManagerConfig_h
 #define _MQ_QueueManagerConfig_h
 
+#include <vector>
+
 #include "Poco/Dynamic/Struct.h"
 
 namespace MQ {
@@ -39,6 +41,9 @@ public:
 
 	std::string qmgrName() const;
 		/// Returns the queuemanager name
+
+	virtual void list(std::vector<std::string>& arr) const = 0;
+		/// Returns all configured queuemanagers
 
 	virtual Poco::DynamicStruct read() = 0;
 		/// Read the configuration

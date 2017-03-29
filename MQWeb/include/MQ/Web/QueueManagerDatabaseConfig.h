@@ -18,37 +18,38 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-#ifndef _MQ_QueueManagerDefaultConfig_h
-#define _MQ_QueueManagerDefaultConfig_h
+#ifndef _MQ_QueueManagerDatabaseConfig_h
+#define _MQ_QueueManagerDatabaseConfig_h
 
 #include "MQ/Web/QueueManagerConfig.h"
 
-#include "Poco/Util/AbstractConfiguration.h"
+#include "Poco/Data/Session.h"
 
 namespace MQ {
 namespace Web {
 
-class QueueManagerDefaultConfig : public QueueManagerConfig
-	/// Default class for queuemanager configuration. The default configuration
+class QueueManagerDatabaseConfig : public QueueManagerConfig
+	/// Class that retrieves queuemanager configuration from a database.
 {
 public:
 
-	QueueManagerDefaultConfig(const std::string& qmgrName, Poco::Util::AbstractConfiguration& config);
+	QueueManagerDatabaseConfig(const std::string& qmgrName, const std::string& connector, const std::string& connectionString);
 		/// Constructor.
 
-	virtual ~QueueManagerDefaultConfig();
+	virtual ~QueueManagerDatabaseConfig();
 		/// Destructor.
 
 	void list(std::vector<std::string>& arr) const;
-		/// Returns all configured queuemanagers.
+		/// Returns all configured queuemanagers
 
 	Poco::DynamicStruct read();
 		/// Read the configuration
 
 private:
-	Poco::Util::AbstractConfiguration& _config;
+
+	mutable Poco::SharedPtr<Poco::Data::Session> _session;
 };
 
 }} // Namespace MQ::Web
 
-#endif // _MQ_QueueManagerDefaultConfig_h
+#endif // _MQ_QueueManagerDatabaseConfig_h

@@ -33,6 +33,17 @@ QueueManagerDefaultConfig::~QueueManagerDefaultConfig()
 {
 }
 
+void QueueManagerDefaultConfig::list(std::vector<std::string>& arr) const
+{
+	Poco::Util::AbstractConfiguration::Keys qmgrs;
+	_config.keys("mq.web.qmgr", qmgrs);
+
+	for(Poco::Util::AbstractConfiguration::Keys::iterator it = qmgrs.begin(); it != qmgrs.end(); ++it)
+	{
+		arr.push_back(*it);
+	}
+}
+
 Poco::DynamicStruct QueueManagerDefaultConfig::read()
 {
 	std::string qmgrConfig = "mq.web.qmgr." + qmgrName();

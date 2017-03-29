@@ -27,9 +27,13 @@
 #include "Poco/RegularExpression.h"
 #include "Poco/Logger.h"
 
+#include "Poco/Data/SQLite/Connector.h"
+
 #include "MQ/Web/MQWebController.h"
 #include "MQ/Web/Version.h"
 #include "MQ/MQSubsystem.h"
+#include "MQ/Web/QueueManagerDefaultConfig.h"
+#include "MQ/Web/QueueManagerDatabaseConfig.h"
 
 namespace MQ
 {
@@ -79,10 +83,20 @@ void MQWebController::list()
 	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
 	if ( mqSystem.client() )
 	{
-		Poco::Util::AbstractConfiguration::Keys qmgrs;
-		config.keys("mq.web.qmgr", qmgrs);
-
-		for(Poco::Util::AbstractConfiguration::Keys::iterator it = qmgrs.begin(); it != qmgrs.end(); ++it)
+		std::vector<std::string> configuredQueuemanagers;
+		Poco::SharedPtr<QueueManagerConfig> qmgrConfig;
+		if ( config.has("mq.web.config.connection") )
+		{
+			std::string dbConnector = config.getString("mq.web.config.connector", Poco::Data::SQLite::Connector::KEY);
+			std::string dbConnection = config.getString("mq.web.config.connection");
+			qmgrConfig = new QueueManagerDatabaseConfig("", dbConnector, dbConnection);
+		}
+		else
+		{
+			qmgrConfig = new QueueManagerDefaultConfig("", config);
+		}
+		qmgrConfig->list(configuredQueuemanagers);
+		for(std::vector<std::string>::iterator it = configuredQueuemanagers.begin(); it != configuredQueuemanagers.end(); ++it)
 		{
 			queuemanagers->add(*it);
 		}
@@ -128,4 +142,3 @@ void MQWebController::list()
 }
 
 }} // Namespace MQ::Web
-
