@@ -80,7 +80,7 @@ void MQController::beforeAction()
 	Poco::SharedPtr<QueueManagerPool> qmgrPool = QueueManagerPoolCache::instance()->getQueueManagerPool(qmgrName);
 	if ( qmgrPool.isNull() )
 	{
-		setResponseStatus(Poco::Net::HTTPServerResponse::HTTP_INTERNAL_SERVER_ERROR, "Out of memory: can't create a pool for queuemanager.");
+		setResponseStatus(Poco::Net::HTTPServerResponse::HTTP_INTERNAL_SERVER_ERROR, "Can't create a pool for queuemanager. Check your configuration or memory limitations.");
 		return;
 	}
 
