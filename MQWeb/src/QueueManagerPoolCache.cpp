@@ -21,6 +21,7 @@
 #include "Poco/Util/Application.h"
 #include "Poco/Data/SessionFactory.h"
 #include "Poco/Data/SQLite/Connector.h"
+#include "Poco/Logger.h"
 
 #include "MQ/MQSubsystem.h"
 
@@ -87,49 +88,81 @@ QueueManagerPool::Ptr QueueManagerPoolCache::createPool(const std::string& qmgrN
 			// Queuemanagers connection information is stored in a database
 			std::string dbConnector = config.getString("mq.web.config.connector", Poco::Data::SQLite::Connector::KEY);
 			std::string dbConnection = config.getString("mq.web.config.connection");
-			qmgrConfig = new QueueManagerDatabaseConfig(qmgrName, dbConnector, dbConnection);
+
+			Poco::Logger& logger = Poco::Logger::get("mq.web");
+			poco_information_f3(logger, "Using connector %s with connection %s to get information for queuemanager %s", dbConnector, dbConnection, qmgrName);
+
+			try 
+			{
+				qmgrConfig = new QueueManagerDatabaseConfig(qmgrName, dbConnector, dbConnection);
+			}
+			catch(Poco::Exception& e)
+			{
+				logger.log(e);
+			}
 		}
 		else
 		{
 			qmgrConfig = new QueueManagerDefaultConfig(qmgrName, config);
 		}
 
-		factory = new QueueManagerFactory(qmgrName, qmgrConfig->read());
+		if (qmgrConfig.isNull())
+		{
+			// Problems with the database configuration? An empty pool will be returned.
+			return pool;
+		}
+
+		Poco::Logger& logger = Poco::Logger::get("mq.web");
+
+		try
+		{
+			Poco::DynamicStruct connectionInformation = qmgrConfig->read();
+			poco_information_f1(logger, "Connection information: %s", connectionInformation.toString());
+			factory = new QueueManagerFactory(qmgrName, connectionInformation);
+		}
+		catch(Poco::Exception& e)
+		{
+			logger.log(e);
+		}
 	}
 	else
 	{
 		factory = new QueueManagerFactory(qmgrName);
 	}
 
-	std::size_t capacity;
-	std::size_t peakCapacity;
-	int idle;
-
-	std::string qmgrConfig = "mq.web.qmgr." + qmgrName;
-	std::string qmgrPoolCapacity = qmgrConfig + ".pool.capacity";
-	if ( !config.has(qmgrPoolCapacity) )
+	if (!factory.isNull()) 
 	{
-		qmgrPoolCapacity = "mq.web.pool.capacity";
+		std::size_t capacity;
+		std::size_t peakCapacity;
+		int idle;
+
+		std::string qmgrConfig = "mq.web.qmgr." + qmgrName;
+		std::string qmgrPoolCapacity = qmgrConfig + ".pool.capacity";
+		if ( !config.has(qmgrPoolCapacity) )
+		{
+			qmgrPoolCapacity = "mq.web.pool.capacity";
+		}
+		capacity = config.getInt(qmgrPoolCapacity, 10);
+
+		std::string qmgrPoolPeakCapacity = qmgrConfig + ".pool.peakcapacity";
+		if ( !config.has(qmgrPoolPeakCapacity) )
+		{
+			qmgrPoolPeakCapacity = "mq.web.pool.peakcapacity";
+		}
+		peakCapacity = config.getInt(qmgrPoolPeakCapacity, 20);
+
+		std::string qmgrPoolIdle = qmgrConfig + ".pool.idle";
+		if ( !config.has(qmgrPoolIdle) )
+		{
+			qmgrPoolIdle = "mq.web.pool.idle";
+		}
+		idle = config.getInt(qmgrPoolIdle, 60);
+
+		pool = new QueueManagerPool(factory, capacity, peakCapacity, idle);
+
+		_cache.add(qmgrName, pool);
 	}
-	capacity = config.getInt(qmgrPoolCapacity, 10);
 
-	std::string qmgrPoolPeakCapacity = qmgrConfig + ".pool.peakcapacity";
-	if ( !config.has(qmgrPoolPeakCapacity) )
-	{
-		qmgrPoolPeakCapacity = "mq.web.pool.peakcapacity";
-	}
-	peakCapacity = config.getInt(qmgrPoolPeakCapacity, 20);
-
-	std::string qmgrPoolIdle = qmgrConfig + ".pool.idle";
-	if ( !config.has(qmgrPoolIdle) )
-	{
-		qmgrPoolIdle = "mq.web.pool.idle";
-	}
-	idle = config.getInt(qmgrPoolIdle, 60);
-
-	pool = new QueueManagerPool(factory, capacity, peakCapacity, idle);
-
-	_cache.add(qmgrName, pool);
 	return pool;
 }
 

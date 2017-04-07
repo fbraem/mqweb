@@ -40,17 +40,10 @@ void QueueManagerDatabaseConfig::list(std::vector<std::string>& arr) const
 	typedef Poco::Tuple<std::string> Attribute;
 	std::vector<Attribute> attributes;
 
-	try
+	*_session << "SELECT name FROM queuemanagers", into(attributes), now;
+	for(std::vector<Attribute>::iterator it = attributes.begin(); it != attributes.end(); ++it)
 	{
-		*_session << "SELECT name FROM queuemanagers", into(attributes), now;
-		for(std::vector<Attribute>::iterator it = attributes.begin(); it != attributes.end(); ++it)
-		{
-			arr.push_back(it->get<0>());
-		}
-	}
-	catch(Poco::Data::DataException& de)
-	{
-		//TODO: logging? or rethrow?
+		arr.push_back(it->get<0>());
 	}
 }
 
@@ -63,17 +56,10 @@ Poco::DynamicStruct QueueManagerDatabaseConfig::read()
 	std::string server;
 	int port = 0;
 
-	try
-	{
-		*_session << "SELECT channel, server, port FROM queuemanagers WHERE name = :n", into(channel), into(server), into(port), useRef(name), now;
+	*_session << "SELECT channel, server, port FROM queuemanagers WHERE name = :n", into(channel), into(server), into(port), useRef(name), now;
 
-		connectionInformation.insert("channel", channel);
-		connectionInformation.insert("connection", Poco::format("%s(%d)", server, port));
-	}
-	catch(Poco::Data::DataException& de)
-	{
-		//TODO: log or throw it?;
-	}
+	connectionInformation.insert("channel", channel);
+	connectionInformation.insert("connection", Poco::format("%s(%d)", server, port));
 
 	return connectionInformation;
 }
