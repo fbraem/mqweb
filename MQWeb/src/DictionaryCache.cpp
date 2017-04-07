@@ -33,12 +33,12 @@ namespace Web {
 
 using namespace Poco::Data::Keywords;
 
-DictionaryCache::DictionaryCache() 
+DictionaryCache::DictionaryCache()
 {
 }
 
 
-DictionaryCache::~DictionaryCache() 
+DictionaryCache::~DictionaryCache()
 {
 }
 
@@ -68,19 +68,20 @@ Poco::SharedPtr<Dictionary> DictionaryCache::load(const std::string& name)
 
 	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
 	std::string databaseName = config.getString("mq.web.db", "mqweb.db");
+	Poco::Logger& logger = Poco::Logger::get("mq.web");
+	poco_trace_f2(logger, "Trying to open SQLite database %s to load dictionary %s", databaseName, name);
 
 	try
 	{
 		Poco::Data::Session session(Poco::Data::SQLite::Connector::KEY, databaseName);
 
 		int objectId = 0;
-		session << "SELECT id FROM objects WHERE name == :n", into(objectId), useRef(name), now;
+		session << "SELECT id FROM objects WHERE name = :n", into(objectId), useRef(name), now;
 
 		session << "SELECT a.id, a.name, d.value, d.text FROM object_attributes oa INNER JOIN attributes a ON oa.attribute_id = a.id LEFT JOIN texts d ON oa.attribute_id = d.attribute_id WHERE oa.object_id = ?", use(objectId), into(attributes), now;
 	}
 	catch(Poco::Data::DataException& de)
 	{
-		Poco::Logger& logger = Poco::Logger::get("mq.web");
 		logger.log(de);
 		return dictionary;
 	}
