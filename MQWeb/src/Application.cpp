@@ -30,6 +30,8 @@
 #include "Poco/Net/HTTPServerResponse.h"
 #include "Poco/Net/HTTPServerParams.h"
 
+#include "Poco/Data/SQLite/Connector.h"
+
 #include "Poco/Logger.h"
 #include "Poco/File.h"
 
@@ -68,6 +70,8 @@ void MQWebApplication::initialize(Application& self)
 		std::cout << "Caught a file exception when loading configuration file: " << fe.message() << std::endl;
 	}
 
+	Poco::Data::SQLite::Connector::registerConnector();
+
 	try
 	{
 		ServerApplication::initialize(self);
@@ -82,6 +86,8 @@ void MQWebApplication::initialize(Application& self)
 void MQWebApplication::uninitialize()
 {
 	Poco::Logger::get("mq.web").information("MQWeb process stopped!");
+
+	Poco::Data::SQLite::Connector::unregisterConnector();
 
 	ServerApplication::uninitialize();
 }
