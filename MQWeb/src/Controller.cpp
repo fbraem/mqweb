@@ -114,24 +114,24 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 
 	beforeAction();
 
-	if ( response.getStatus() != Poco::Net::HTTPResponse::HTTP_OK
-		|| _data->has("error") )
+	// It's possible that already an error occurred in beforeAction.
+	// So check for it and don't do anything when there was already a problem.
+	if ( response.getStatus() == Poco::Net::HTTPResponse::HTTP_OK 
+		&& !_data->has("error") )
 	{
-		//TODO: return error template file or json error
+		const ActionMap& actions = getActions();
+		ActionMap::const_iterator it = actions.find(_action);
+		if ( it == actions.end() )
+		{
+			setResponseStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND, "Invalid action '" + _action + "' specified.");
+			return;
+		}
+
+		ActionFn action = it->second;
+		(this->*action)();
+	
+		afterAction();
 	}
-
-	const ActionMap& actions = getActions();
-	ActionMap::const_iterator it = actions.find(_action);
-	if ( it == actions.end() )
-	{
-		setResponseStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND, "Invalid action '" + _action + "' specified.");
-		return;
-	}
-
-	ActionFn action = it->second;
-	(this->*action)();
-
-	afterAction();
 }
 
 
