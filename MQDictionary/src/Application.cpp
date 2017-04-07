@@ -2862,10 +2862,12 @@ public:
 
 MQDictionary()
 {
+	Poco::Data::SQLite::Connector::registerConnector();
 }
 
 ~MQDictionary()
 {
+	Poco::Data::SQLite::Connector::unregisterConnector();
 }
 
 void store(Poco::Data::Session& session, int oid, const std::string& name, const Dictionary& dict)
