@@ -57,6 +57,7 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
 	response.clear();
 
 	command->setReplyToQueue(_replyQ.name());
+	command->setExpiry(1200000);
 	_commandQ.put(*command, MQPMO_NO_SYNCPOINT);
 
 	long wait = 600000;
