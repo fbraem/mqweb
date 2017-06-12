@@ -258,6 +258,8 @@ public:
 	void setUser(const std::string& user);
 		/// Sets the name of the user
 
+	typedef Poco::SharedPtr<Message> Ptr;
+
 private:
 
 	Buffer _buffer;

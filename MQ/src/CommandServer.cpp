@@ -56,19 +56,18 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
 {
 	response.clear();
 
-	command->setReplyToQueue(_replyQ.name());
-	command->setExpiry(1200000);
-	_commandQ.put(*command, MQPMO_NO_SYNCPOINT);
+	command->message()->setReplyToQueue(_replyQ.name());
+	command->message()->setExpiry(1200000);
+	_commandQ.put(*command->message(), MQPMO_NO_SYNCPOINT);
 
 	long wait = 600000;
-	PCF::Ptr msgResponse;
+	Message::Ptr msgResponse;
 
 	bool keepRunning = true;
 	while(keepRunning)
 	{
-		msgResponse = new PCF(_qmgr.zos());
-		msgResponse->correlationId()->set(command->messageId());
-		msgResponse->buffer().resize(REPLY_MESSAGE_LEN, false);
+		msgResponse = new Message(REPLY_MESSAGE_LEN);
+		msgResponse->correlationId()->set(command->message()->messageId());
 
 		try
 		{
@@ -86,7 +85,7 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
 				
 				msgResponse->buffer().resize(msgResponse->dataLength(), false);
 				msgResponse->clear();
-				msgResponse->correlationId()->set(command->messageId());
+				msgResponse->correlationId()->set(command->message()->messageId());
 				_replyQ.get(*msgResponse.get(), MQGMO_CONVERT | MQGMO_NO_SYNCPOINT);
 			}
 			else
@@ -104,12 +103,12 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
 			}
 		}
 		wait = 100;
+
 		msgResponse->buffer().resize(msgResponse->dataLength());
-		msgResponse->init();
+		PCF::Ptr pcf = new PCF(msgResponse, _qmgr.zos());
+		response.push_back(pcf);
 
-		response.push_back(msgResponse);
-
-		if ( ! _qmgr.zos() && msgResponse->isLast() )
+		if ( ! _qmgr.zos() && pcf->isLast() )
 		{
 			keepRunning = false;
 		}

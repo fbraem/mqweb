@@ -29,6 +29,7 @@
 #include "MQ/Web/MessageController.h"
 #include "MQ/Web/MQMapper.h"
 #include "MQ/MQException.h"
+#include "MQ/PCF.h"
 #include "MQ/Message.h"
 #include "MQ/QueueManager.h"
 #include "MQ/Queue.h"
@@ -228,15 +229,15 @@ void MessageController::browse()
 	int count = 0;
 	while(limit == -1 || count < limit)
 	{
-		Message msg(maxMessageSize);
+		Message::Ptr msg = new Message(maxMessageSize);
 		if ( ! messageId.empty() )
 		{
-			msg.messageId()->fromHex(messageId);
+			msg->messageId()->fromHex(messageId);
 		}
 
 		try
 		{
-			q.get(msg, MQGMO_BROWSE_NEXT | MQGMO_PROPERTIES_FORCE_MQRFH2, 0);
+			q.get(*msg, MQGMO_BROWSE_NEXT | MQGMO_PROPERTIES_FORCE_MQRFH2, 0);
 		}
 		catch(MQException& mqe)
 		{
@@ -247,14 +248,14 @@ void MessageController::browse()
 			}
 			else if ( mqe.reason() == MQRC_TRUNCATED_MSG_FAILED )
 			{
-				if ( msg.getFormat().compare(MQFMT_EVENT ) == 0 ) {
+				if ( msg->getFormat().compare(MQFMT_EVENT ) == 0 ) {
 					// ignore size limit for event messages and retry to get it with the
 					// real length
-					msg.buffer().resize(msg.dataLength(), false);
-					msg.clear();
+					msg->buffer().resize(msg->dataLength(), false);
+					msg->clear();
 					try
 					{
-						q.get(msg, MQGMO_BROWSE_NEXT | MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
+						q.get(*msg, MQGMO_BROWSE_NEXT | MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
 					}
 					catch(MQException& mqe2)
 					{
@@ -264,15 +265,15 @@ void MessageController::browse()
 						}
 					}
 				}
-				else if ( msg.getFormat().compare(MQFMT_XMIT_Q_HEADER) == 0 )
+				else if ( msg->getFormat().compare(MQFMT_XMIT_Q_HEADER) == 0 )
 				{
 					// ignore size limit for xmitq messages and retry to get it with at least the
 					// length of the xmitq header
-					msg.buffer().resize(sizeof(MQXQH), false);
-					msg.clear();
+					msg->buffer().resize(sizeof(MQXQH), false);
+					msg->clear();
 					try
 					{
-						q.get(msg, MQGMO_BROWSE_NEXT | MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
+						q.get(*msg, MQGMO_BROWSE_NEXT | MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
 					}
 					catch(MQException& mqe2)
 					{
@@ -282,15 +283,15 @@ void MessageController::browse()
 						}
 					}
 				}
-				else if ( msg.getFormat().compare(MQFMT_DEAD_LETTER_HEADER) == 0 )
+				else if ( msg->getFormat().compare(MQFMT_DEAD_LETTER_HEADER) == 0 )
 				{
 					// ignore size limit for dlh messages and retry to get it with at least the
 					// length of the dlh header
-					msg.buffer().resize(sizeof(MQDLH), false);
-					msg.clear();
+					msg->buffer().resize(sizeof(MQDLH), false);
+					msg->clear();
 					try
 					{
-						q.get(msg, MQGMO_BROWSE_NEXT | MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
+						q.get(*msg, MQGMO_BROWSE_NEXT | MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
 					}
 					catch(MQException& mqe2)
 					{
@@ -313,13 +314,13 @@ void MessageController::browse()
 
 		count++;
 		Poco::JSON::Object::Ptr jsonMessage = new Poco::JSON::Object();
-		mapMessageToJSON(msg, *jsonMessage);
+		mapMessageToJSON(*msg, *jsonMessage);
 
-		if ( msg.getFormat().compare(MQFMT_DEAD_LETTER_HEADER) == 0 )
+		if ( msg->getFormat().compare(MQFMT_DEAD_LETTER_HEADER) == 0 )
 		{
-			if ( msg.buffer().size() >= sizeof(MQDLH) )
+			if ( msg->buffer().size() >= sizeof(MQDLH) )
 			{
-				MQDLH* dlh = (MQDLH*) msg.buffer().data();
+				MQDLH* dlh = (MQDLH*) msg->buffer().data();
 				Poco::JSON::Object::Ptr jsonDLH = new Poco::JSON::Object();
 				jsonMessage->set("dlh", jsonDLH);
 				jsonDLH->set("Version", dlh->Version);
@@ -347,11 +348,9 @@ void MessageController::browse()
 				jsonDLH->set("PutTime", putTime);
 			}
 		}
-		else if ( msg.getFormat().compare(MQFMT_EVENT) == 0 )
+		else if ( msg->getFormat().compare(MQFMT_EVENT) == 0 )
 		{
-			PCF pcfEvent;
-			pcfEvent.buffer().set(msg.buffer());
-			pcfEvent.init();
+			PCF pcfEvent(msg);
 
 			Poco::JSON::Object::Ptr jsonEvent = new Poco::JSON::Object();
 			jsonMessage->set("event", jsonEvent);
@@ -385,17 +384,17 @@ void MessageController::browse()
 			poco_assert_dbg(! dictionary.isNull());
 			dictionary->mapToJSON(pcfEvent, jsonEvent, false);
 		}
-		else if ( msg.getFormat().compare(MQFMT_STRING) == 0 )
+		else if ( msg->getFormat().compare(MQFMT_STRING) == 0 )
 		{
-			if ( msg.dataLength() < msg.buffer().size() )
+			if ( msg->dataLength() < msg->buffer().size() )
 			{
-				msg.buffer().resize(msg.dataLength());
+				msg->buffer().resize(msg->dataLength());
 			}
-			jsonMessage->set("data", msg.buffer().toString());
+			jsonMessage->set("data", msg->buffer().toString());
 		}
-		else if ( msg.getFormat().compare(MQFMT_RF_HEADER_2) == 0 )
+		else if ( msg->getFormat().compare(MQFMT_RF_HEADER_2) == 0 )
 		{
-			MQBYTE* begin =  (MQBYTE*) msg.buffer().data();
+			MQBYTE* begin =  (MQBYTE*) msg->buffer().data();
 			MQRFH2* rfh2 = (MQRFH2*) begin;
 			Poco::JSON::Object::Ptr jsonRfh2 = new Poco::JSON::Object();
 			jsonMessage->set("rfh2", jsonRfh2);
