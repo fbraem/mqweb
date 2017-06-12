@@ -77,12 +77,12 @@ void Queue::put(Message& msg, MQLONG options)
 	MQPMO pmo = { MQPMO_DEFAULT };
 	pmo.Options = options;
 
-	int size = msg.buffer().size();
+	size_t size = msg.buffer().size();
 
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
 	try
 	{
-		mqSystem.functions().put(_qmgr.handle(), _handle, msg.md(), &pmo, size, size > 0 ? msg.buffer().data() : NULL);
+		mqSystem.functions().put(_qmgr.handle(), _handle, msg.md(), &pmo, (MQLONG) size, size > 0 ? msg.buffer().data() : NULL);
 	}
 	catch(MQException& mqe)
 	{
@@ -118,11 +118,11 @@ void Queue::get(Message& msg, MQLONG options, long wait)
 	}
 	gmo.Options |= options;
 
-	int size = msg.buffer().size();
+	size_t size = msg.buffer().size();
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
 	try
 	{
-		mqSystem.functions().get(_qmgr.handle(), _handle, msg.md(), &gmo, size, size > 0 ? msg.buffer().data() : NULL, &msg._dataLength);
+		mqSystem.functions().get(_qmgr.handle(), _handle, msg.md(), &gmo, (MQLONG) size, size > 0 ? msg.buffer().data() : NULL, &msg._dataLength);
 	}
 	catch(MQException& mqe)
 	{
