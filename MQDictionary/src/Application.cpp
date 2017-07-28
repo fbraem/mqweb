@@ -45,6 +45,13 @@ Dictionary queueManagerDictionary = Dictionary()
 	)
 	(MQCA_ALTERATION_DATE, "AlterationDate")
 	(MQCA_ALTERATION_TIME, "AlterationTime")
+#ifdef MQIA_AMQP_CAPABILITY
+	(MQIA_AMQP_CAPABILITY, "AMQPCapability", TextMapInitializer
+		(1, "Yes")
+		(0, "No")
+	)
+#endif
+
 	(MQIA_AUTHORITY_EVENT, "AuthorityEvent", TextMapInitializer
 		(MQEVR_DISABLED, "Disabled")
 		(MQEVR_ENABLED, "Enabled")
@@ -53,6 +60,9 @@ Dictionary queueManagerDictionary = Dictionary()
 		(MQEVR_DISABLED, "Disabled")
 		(MQEVR_ENABLED, "Enabled")
 	)
+#ifdef MQCA_CERT_LABEL
+	(MQCA_CERT_LABEL, "CertificcateLabel")
+#endif
 #ifdef MQIA_CERT_VAL_POLICY
 	(MQIA_CERT_VAL_POLICY, "CertificateValPolicy", TextMapInitializer
 		(MQ_CERT_VAL_POLICY_ANY, "Policy Any")
@@ -157,6 +167,15 @@ Dictionary queueManagerDictionary = Dictionary()
 		(MQCMDL_LEVEL_700, "Level 700")
 		(MQCMDL_LEVEL_701, "Level 701")
 		(MQCMDL_LEVEL_710, "Level 710")
+#ifdef MQCMDL_LEVEL_750
+		(MQCMDL_LEVEL_750, "Level 750")
+#endif
+#ifdef MQCMDL_LEVEL_800
+		(MQCMDL_LEVEL_800, "Level 800")
+#endif
+#ifdef MQCMDL_LEVEL_802
+		(MQCMDL_LEVEL_802, "Level 802")
+#endif
 	)
 	(MQIA_CMD_SERVER_CONTROL, "CommandServerControl", TextMapInitializer
 		(MQSVC_CONTROL_MANUAL, "Manual")
@@ -166,6 +185,9 @@ Dictionary queueManagerDictionary = Dictionary()
 		(MQEVR_DISABLED, "Disabled")
 		(MQEVR_ENABLED, "Enabled")
 	)
+#ifdef MQCA_CONN_AUTH
+	(MQCA_CONN_AUTH, "ConnAuth")
+#endif
 	(MQCA_CREATION_DATE, "CreationDate")
 	(MQCA_CREATION_TIME, "CreationTime")
 	(MQCA_CUSTOM, "Custom")
@@ -207,6 +229,22 @@ Dictionary queueManagerDictionary = Dictionary()
 		(MQEVR_DISABLED, "Disabled")
 		(MQEVR_ENABLED, "Enabled")
 	)
+#ifdef MQIA_MEDIA_IMAGE_INTERVAL
+	(MQIA_MEDIA_IMAGE_INTERVAL, "ImageInterval")
+	(MQIA_MEDIA_IMAGE_LOG_LENGTH, "ImageLogLength")
+	(MQIA_MEDIA_IMAGE_RECOVER_OBJ, "ImageRecoverObject", TextMapInitializer
+		(MQIMGRCOV_NO, "No")
+		(MQIMGRCOV_YES, "Yes")
+	)
+	(MQIA_MEDIA_IMAGE_RECOVER_Q, "ImageRecoverQueue", TextMapInitializer
+		(MQIMGRCOV_NO, "No")
+		(MQIMGRCOV_YES, "Yes")
+	)
+	(MQIA_MEDIA_IMAGE_SCHEDULING, "ImageSchedule", TextMapInitializer
+		(MQMEDIMGSCHED_AUTO, "Auto")
+		(MQMEDIMGSCHED_MANUAL, "Manual")
+	)
+#endif
 	(MQIA_INTRA_GROUP_QUEUING, "IntraGroupQueueing", TextMapInitializer
 		(MQIGQ_DISABLED, "Disabled")
 		(MQIGQ_ENABLED, "Enabled")
@@ -253,6 +291,9 @@ Dictionary queueManagerDictionary = Dictionary()
 	)
 	(MQIA_PLATFORM, "Platform", TextMapInitializer
 		(MQPL_UNIX, "UNIX")
+#ifdef MQPL_APPLIANCE
+		(MQPL_APPLIANCE, "IBM MQ Appliance")
+#endif
 		(MQPL_NSK, "Compaq NonStop Kernel")
 		(MQPL_OS400, "i5/OS")
 		(MQPL_VMS, "HP OpenVMS")
@@ -330,6 +371,12 @@ Dictionary queueManagerDictionary = Dictionary()
 		(MQSCYC_UPPER, "Upper")
 		(MQSCYC_MIXED, "Mixed")
 	)
+#ifdef MQIA_REVERSE_DNS_LOOKUP
+	(MQIA_REVERSE_DNS_LOOKUP, "RevDns", TextMapInitializer
+		(MQRDNS_DISABLED, "Disabled")
+		(MQRDNS_ENABLED, "Enabled")
+	)
+#endif
 	(MQIA_SHARED_Q_Q_MGR_NAME, "SharedQQmgrName", TextMapInitializer
 		(MQSQQM_USE, "Use")
 		(MQSQQM_IGNORE, "Ignore")
@@ -1428,7 +1475,7 @@ Dictionary topicStatusDictionary = Dictionary()
 	(MQIA_PUB_SCOPE)
 #ifdef MQIA_USE_DEAD_LETTER_Q
 	(MQIA_USE_DEAD_LETTER_Q)
-#endif	
+#endif
 	(MQBACF_SUB_ID)
 	(MQCACF_SUB_USER_ID, "SubscriptionUserId")
 	(MQIACF_DURABLE_SUBSCRIPTION, "Durable", TextMapInitializer
@@ -2889,7 +2936,7 @@ void store(Poco::Data::Session& session, int oid, const std::string& name, const
 	for(; it != dict.end(); ++it)
 	{
 		objectAttributes.push_back(ObjectAttribute(oid, it->first));
-		
+
 		if ( it->second.empty() ) continue;
 		// Empty attributes are ignored, we assume they are already defined ...
 
@@ -2928,7 +2975,7 @@ void store(Poco::Data::Session& session, int oid, const std::string& name, const
 	{
 		std::cout << "No attributes attached to the objecttype " << name << ". Please check !!!" << std::endl;
 	}
-	
+
 	std::cout << "Insert Attributes" << std::endl;
 	if ( attributes.size() > 0 )
 	{
