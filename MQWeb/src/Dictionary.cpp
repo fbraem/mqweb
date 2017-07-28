@@ -35,8 +35,8 @@ Dictionary::~Dictionary()
 
 Dictionary& Dictionary::operator()(MQLONG id, const std::string& name)
 {
-	_idMap.insert(std::make_pair<MQLONG, std::string>(id, name));
-	_nameMap.insert(std::make_pair<std::string, MQLONG>(name, id));
+	_idMap.insert(std::make_pair(id, name));
+	_nameMap.insert(std::make_pair(name, id));
 
 	return *this;
 }
@@ -44,10 +44,10 @@ Dictionary& Dictionary::operator()(MQLONG id, const std::string& name)
 
 Dictionary& Dictionary::operator()(MQLONG id, const std::string& name, const TextMap& textMap)
 {
-	_idMap.insert(std::make_pair<MQLONG, std::string>(id, name));
-	_nameMap.insert(std::make_pair<std::string, MQLONG>(name, id));
+	_idMap.insert(std::make_pair(id, name));
+	_nameMap.insert(std::make_pair(name, id));
 
-	_textMaps.insert(std::make_pair<MQLONG, TextMap>(id, textMap));
+	_textMaps.insert(std::make_pair(id, textMap));
 
 	return *this;
 }
