@@ -116,7 +116,7 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 
 	// It's possible that already an error occurred in beforeAction.
 	// So check for it and don't do anything when there was already a problem.
-	if ( response.getStatus() == Poco::Net::HTTPResponse::HTTP_OK 
+	if ( response.getStatus() == Poco::Net::HTTPResponse::HTTP_OK
 		&& !_data->has("error") )
 	{
 		const ActionMap& actions = getActions();
@@ -129,7 +129,7 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 
 		ActionFn action = it->second;
 		(this->*action)();
-	
+
 		afterAction();
 	}
 }
@@ -143,13 +143,20 @@ void Controller::render()
 	response().set("Pragma", "no-cache"); // HTTP 1.0
 	response().set("Expires", "0"); // Proxies
 
+	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
+	std::string origin = config.getString("mq.web.app.cors-origin", "");
+	if ( !origin.empty() )
+	{
+		response().set("Access-Control-Allow-Origin", origin);
+	}
+
 	std::stringstream ss;
 
 	if ( _form.has("callback") )
 	{
 		ss << _form.get("callback") << '(';
 	}
-	
+
 	data().stringify(ss);
 	ss.flush();
 
