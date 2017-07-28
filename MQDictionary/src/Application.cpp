@@ -61,7 +61,7 @@ Dictionary queueManagerDictionary = Dictionary()
 		(MQEVR_ENABLED, "Enabled")
 	)
 #ifdef MQCA_CERT_LABEL
-	(MQCA_CERT_LABEL, "CertificcateLabel")
+	(MQCA_CERT_LABEL, "Certificatelabel")
 #endif
 #ifdef MQIA_CERT_VAL_POLICY
 	(MQIA_CERT_VAL_POLICY, "CertificateValPolicy", TextMapInitializer
@@ -431,6 +431,12 @@ Dictionary queueManagerDictionary = Dictionary()
 ;
 
 Dictionary queueManagerStatusDictionary = Dictionary()
+#ifdef MQCACF_ARCHIVE_LOG_EXTENT_NAME
+	(MQCACF_ARCHIVE_LOG_EXTENT_NAME, "ArchiveLog")
+#endif
+#ifdef MQIACF_ARCHIVE_LOG_SIZE
+	(MQIACF_ARCHIVE_LOG_SIZE, "ArchiveLogSize")
+#endif
 	(MQIACF_CHINIT_STATUS, "ChannelInitiatorStatus", TextMapInitializer
 		(MQSVC_STATUS_STOPPED, "Stopped")
 		(MQSVC_STATUS_STARTING, "Starting")
@@ -450,8 +456,24 @@ Dictionary queueManagerStatusDictionary = Dictionary()
 	(MQCA_INSTALLATION_DESC, "InstallationDesc")
 	(MQCA_INSTALLATION_NAME, "InstallationName")
 	(MQCA_INSTALLATION_PATH, "InstallationPath")
+#ifdef MQIACF_LDAP_CONNECTION_STATUS
+	(MQIACF_LDAP_CONNECTION_STATUS, "LDAPConnectionStatus", TextMapInitializer
+		(MQLDAPC_CONNECTED, "Connected")
+		(MQLDAPC_ERROR, "Error")
+		(MQLDAPC_INACTIVE, "Inactive")
+	)
+#endif
+#ifdef MQIACF_LOG_IN_USE
+	(MQIACF_LOG_IN_USE, "LogInUse")
+#endif
 	(MQCACF_LOG_PATH, "LogPath")
+#ifdef MQIACF_LOG_UTILIZATION
+	(MQIACF_LOG_UTILIZATION, "LogUtilization")
+#endif
 	(MQCACF_MEDIA_LOG_EXTENT_NAME, "MediaRecoveryLog")
+#ifdef MQIACF_MEDIA_LOG_SIZE
+	(MQIACF_MEDIA_LOG_SIZE, "MediaRecoveryLogSize")
+#endif
 	(MQCA_Q_MGR_NAME)
 	(MQIACF_Q_MGR_STATUS, "QMgrStatus", TextMapInitializer
 		(MQQMSTA_STARTING, "Starting")
@@ -459,6 +481,12 @@ Dictionary queueManagerStatusDictionary = Dictionary()
 		(MQQMSTA_QUIESCING, "Quiescing")
 	)
 	(MQCACF_RESTART_LOG_EXTENT_NAME, "RestartRecoveryLog")
+#ifdef MQIACF_RESTART_LOG_SIZE
+	(MQIACF_RESTART_LOG_SIZE, "RestartRecoveryLogSize")
+#endif
+#ifdef MQIACF_REUSABLE_LOG_SIZE
+	(MQIACF_REUSABLE_LOG_SIZE, "ReuasableLogSize")
+#endif
 	(MQCACF_Q_MGR_START_DATE, "StartDate")
 	(MQCACF_Q_MGR_START_TIME, "StartTime")
 	(MQIACF_PERMIT_STANDBY, "PermitStandby", TextMapInitializer
@@ -538,6 +566,13 @@ Dictionary queueDictionary = Dictionary()
 		(MQQA_BACKOUT_HARDENED, "Hardened")
 		(MQQA_BACKOUT_NOT_HARDENED, "Not Hardened")
 	)
+#ifdef MQIA_MEDIA_IMAGE_RECOVER_Q
+	(MQIA_MEDIA_IMAGE_RECOVER_Q, "ImageRecoverQueue", TextMapInitializer
+		(MQIMGRCOV_YES, "Yes")
+		(MQIMGRCOV_NO, "No")
+		(MQIMGRCOV_AS_Q_MGR, "Qmgr")
+	)
+#endif
 	(MQIA_INDEX_TYPE, "IndexType", TextMapInitializer
 		(MQIT_NONE, "None")
 		(MQIT_MSG_ID, "Message ID")
@@ -705,6 +740,12 @@ Dictionary queueStatusDictionary = Dictionary()
 		(MQAT_RRS_BATCH, "RRS-coordinated Batch Application")
 		(MQAT_SIB, "SIB")
 		(MQAT_SYSTEM_EXTENSION, "System Extension")
+#ifdef MQAT_MCAST_PUBLISH
+		(MQAT_MCAST_PUBLISH, "MCastPublish")
+#endif
+#ifdef MQAT_AMQP
+		(MQAT_AMQP, "AMQP")
+#endif
 	)
 	(MQCACF_ASID, "ASId")
 	(MQIACF_ASYNC_STATE, "AsynchronousState", TextMapInitializer
@@ -782,6 +823,9 @@ Dictionary channelDictionary = Dictionary()
 	(MQIACH_BATCH_DATA_LIMIT, "BatchDataLimit")
 #endif
 	(MQIACH_BATCH_SIZE, "BatchSize")
+#ifdef MQCA_CERT_LABEL
+	(MQCA_CERT_LABEL, "Certificatelabel")
+#endif
 	(MQCACH_DESC, "ChannelDesc")
 	(MQIA_MONITORING_CHANNEL)
 	(MQCACH_CHANNEL_NAME)
@@ -1825,6 +1869,15 @@ Dictionary eventDictionary = Dictionary()
 		(MQOT_CLNTCONN_CHANNEL, "Client-connection Channel")
 		(MQOT_SHORT_CHANNEL, "Short Channel")
 		(MQOT_PROT_POLICY, "Protection Policy")
+#ifdef MQOT_TT_CHANNEL
+		(MQOT_TT_CHANNEL, "TT Channel")
+#endif
+#ifdef MQOT_AMPQ_CHANNEL
+		(MQOT_AMPQ_CHANNEL, "AMQP Channel")
+#endif
+#ifdef MQOT_AUTH_REC
+		(MQOT_AUTH_REC, "Auth Rec")
+#endif
 	)
 	(MQIACF_OPEN_OPTIONS)
 	(MQCA_PROCESS_NAME, "ProcessName")
