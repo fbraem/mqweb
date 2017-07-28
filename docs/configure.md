@@ -11,9 +11,9 @@ file must be located in the same directory as the executable or a parent
 directory of it, and must have the same base name as the executable, with one
 of the following extensions: *.properties*, *.ini* or *.xml*. The *.properties*
 file, if it exists, is loaded first, followed by the *.ini* file and the *.xml*
-file. If the MQWeb is built in debug mode (the \_DEBUG preprocessor macro is
+file. When MQWeb is built in debug mode (the \_DEBUG preprocessor macro is
 defined) and the base name of the appication executable ends with a 'd', a
-config file without the 'd' ending its base name is also found. For example:
+config file without the 'd' ending as its base name is also found. For example:
 "MQWebd.exe", built in debug mode, then MQWeb will automatically find a
 configuration file named *MQWeb.properties* if it exists and if
 *MQWebd.properties* cannot be found.
@@ -34,10 +34,20 @@ configure it:
 MQWeb App
 ---------
 When you use a client solution
- like [MQWeb app](https://github.com/fbraem/mqwebapp) then you need to set
+ like [MQWeb app](https://github.com/fbraem/mqwebapp) and you want MQWeb to
+ serve the static content then you need to set
  `mq.web.app` property to the document root of the web application:
 
     mq.web.app=${application.dir}/mqwebapp
+
+When you use a client solution that is located on another server, you need to
+set `mq.web.app.cors-origin` to avoid the error
+*"No 'Access-Control-Allow-Origin' header is present on the requested resource”*.
+If for example node.js listens to port 8080, then you need to set this as
+follows:
+
+    mq.web.app.cors-origin=http://<your_host>:8080
+
 
 Connection Mode
 ---------------
@@ -193,3 +203,12 @@ all IP addresses starting with 10.192.
     mq.web.deny.ip1=10\.192*
 
 The value of the property must be a valid regular expression.
+
+MQ Binary path
+--------------
+
+When the MQWeb controller is used to get a list of available queuemanagers and
+MQWeb is connecting in binding mode, MQWeb needs to know where it can find
+the `dspmq` command. This is done with the `mq.bin` property:
+
+    mq.bin=/opt/mqm/bin
