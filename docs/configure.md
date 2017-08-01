@@ -31,24 +31,6 @@ configure it:
 
     mq.web.db=${application.dir}/mqweb.db
 
-MQWeb App
----------
-When you use a client solution
- like [MQWeb app](https://github.com/fbraem/mqwebapp) and you want MQWeb to
- serve the static content then you need to set
- `mq.web.app` property to the document root of the web application:
-
-    mq.web.app=${application.dir}/mqwebapp
-
-When you use a client solution that is located on another server, you need to
-set `mq.web.app.cors-origin` to avoid the error
-*"No 'Access-Control-Allow-Origin' header is present on the requested resource”*.
-If for example node.js listens to port 8080, then you need to set this as
-follows:
-
-    mq.web.app.cors-origin=http://<your_host>:8080
-
-
 Connection Mode
 ---------------
 By default mqweb connects in bindings mode. This can be changed by setting the
@@ -203,6 +185,23 @@ all IP addresses starting with 10.192.
     mq.web.deny.ip1=10\.192*
 
 The value of the property must be a valid regular expression.
+
+MQWeb App or other web clients
+------------------------------
+When you use a client solution,
+ like [MQWeb app](https://github.com/fbraem/mqwebapp), and you want MQWeb to
+ serve the static content then you need to set
+ `mq.web.app` property to the document root of the web application:
+
+    mq.web.app=${application.dir}/mqwebapp
+
+When a client solution is used that is located on another server, you need to
+set `mq.web.app.cors-origin` to avoid the error
+*"No 'Access-Control-Allow-Origin' header is present on the requested resource”*.
+If, for example, node.js is used and is listening to port 8080, then you need to
+set this as follows:
+
+    mq.web.app.cors-origin=http://<your_host>:8080
 
 MQ Binary path
 --------------
