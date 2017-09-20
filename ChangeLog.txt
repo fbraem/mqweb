@@ -6,6 +6,12 @@
   - Browse DLQ messages
   - Integrate event messages in browse action. Message event action removed.
   - Dictionary tables changed: 'display' renamed into 'text'
+  - Changed license from EUPL to MIT
+  - Add new MQ 9.0.0 attributes
+  - Add expiry to PCF messages to avoid orphaned messages when the Command
+    server answers too late
+  - Queuemanager configuration can be stored in SQLite
+  - Add mq.web.app.cors-origin property
 
 0.0.13
   - Upgrade documents to use latest Jekyll release
