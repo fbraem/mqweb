@@ -1,24 +1,23 @@
 /*
- * Copyright 2010 MQWeb - Franky Braem
- *
- * Licensed under the EUPL, Version 1.1 or – as soon they
- * will be approved by the European Commission - subsequent
- * versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the
- * Licence.
- * You may obtain a copy of the Licence at:
- *
- * http://joinup.ec.europa.eu/software/page/eupl
- *
- * Unless required by applicable law or agreed to in
- * writing, software distributed under the Licence is
- * distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied.
- * See the Licence for the specific language governing
- * permissions and limitations under the Licence.
- */
-
+* Copyright 2017 - KBC Group NV - Franky Braem - The MIT license
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+*  copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #ifndef _MQWeb_MQController_h
 #define _MQWeb_MQController_h
 
@@ -64,8 +63,8 @@ public:
 		/// Creates an IntegerFilterCommand or StringFilterCommand
 		/// when a filter is passed.
 
-	Poco::JSON::Object& mqwebData();
-		/// Returns the JSON object for storing MQWeb data.
+	Poco::JSON::Object& meta();
+		/// Returns the JSON object for storing meta data (see JSON-API).
 		/// This object can be used to store common data like queuemanager name,
 		/// queue, elapsed time, ...
 
@@ -84,7 +83,7 @@ private:
 	CommandServer* _commandServer;
 
 
-	Poco::JSON::Object::Ptr _mqwebData;
+	Poco::JSON::Object::Ptr _meta;
 
 
 	Poco::Stopwatch _stopwatch;
@@ -102,11 +101,11 @@ inline CommandServer* MQController::commandServer()
 	return _commandServer;
 }
 
-inline Poco::JSON::Object& MQController::mqwebData()
+inline Poco::JSON::Object& MQController::meta()
 {
-	poco_assert_dbg(_mqwebData);
+	poco_assert_dbg(_meta);
 
-	return *_mqwebData;
+	return *_meta;
 }
 
 }} // Namespace MQ::Web

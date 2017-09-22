@@ -46,7 +46,7 @@ if ( exists($mqweb->{error}) ) {
 		, $mqweb->{error}->{reason}->{desc};
 }
 else {
-	foreach my $listener(@{$mqweb->{listeners}}) {
+	foreach my $listener(@{$mqweb->{data}}) {
 		say $listener->{ListenerName}->{value}
 			, ' - '
 			, $listener->{TransportType}->{display};

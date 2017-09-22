@@ -1,27 +1,26 @@
 /*
- * Copyright 2010 MQWeb - Franky Braem
- *
- * Licensed under the EUPL, Version 1.1 or – as soon they
- * will be approved by the European Commission - subsequent
- * versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the
- * Licence.
- * You may obtain a copy of the Licence at:
- *
- * http://joinup.ec.europa.eu/software/page/eupl
- *
- * Unless required by applicable law or agreed to in
- * writing, software distributed under the Licence is
- * distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied.
- * See the Licence for the specific language governing
- * permissions and limitations under the Licence.
- */
+* Copyright 2017 - KBC Group NV - Franky Braem - The MIT license
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+*  copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #include <sstream>
 
 #include "MQ/Web/Controller.h"
-#include "MQ/Web/JSONPView.h"
 #include "MQ/MQSubsystem.h"
 
 #include "Poco/Util/Application.h"
@@ -37,7 +36,7 @@ namespace Web
 {
 
 
-Controller::Controller() : _data(new Poco::JSON::Object())
+Controller::Controller() : _data(new Poco::JSON::Object()), _request(NULL), _response(NULL)
 {
 }
 
@@ -71,7 +70,7 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 
 	for(std::vector<std::string>::iterator it = _parameters.begin(); it != _parameters.end(); ++it)
 	{
-		int pos = it->find_first_of(':');
+		size_t pos = it->find_first_of(':');
 		if ( pos != std::string::npos )
 		{
 			std::string name = it->substr(0, pos);
@@ -89,7 +88,7 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 			Poco::Dynamic::Var json = parser.parse(request.stream());
 			if ( ! json.isEmpty() && json.type() == typeid(Poco::JSON::Object::Ptr) )
 			{
-				_data->set("filter", json.extract<Poco::JSON::Object::Ptr>());
+				_data->set("input", json.extract<Poco::JSON::Object::Ptr>());
 			}
 		}
 		catch(Poco::JSON::JSONException& jsone)
@@ -115,56 +114,63 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 
 	beforeAction();
 
-	if ( response.getStatus() != Poco::Net::HTTPResponse::HTTP_OK
-		|| _data->has("error") )
+	// It's possible that already an error occurred in beforeAction.
+	// So check for it and don't do anything when there was already a problem.
+	if ( response.getStatus() == Poco::Net::HTTPResponse::HTTP_OK
+		&& !_data->has("error") )
 	{
-		//TODO: return error template file or json error
+		const ActionMap& actions = getActions();
+		ActionMap::const_iterator it = actions.find(_action);
+		if ( it == actions.end() )
+		{
+			setResponseStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND, "Invalid action '" + _action + "' specified.");
+			return;
+		}
+
+		ActionFn action = it->second;
+		(this->*action)();
+
+		afterAction();
 	}
-
-	const ActionMap& actions = getActions();
-	ActionMap::const_iterator it = actions.find(_action);
-	if ( it == actions.end() )
-	{
-		setResponseStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND, "Invalid action '" + _action + "' specified.");
-		return;
-	}
-
-	ActionFn action = it->second;
-	(this->*action)();
-
-	afterAction();
 }
 
-
-void Controller::setJSONView()
-{
-	if ( _form.has("callback") ) setView(new JSONPView(_form.get("callback")));
-	else if ( _form.has("jsonp") ) setView(new JSONPView(_form.get("jsonp")));
-	else setView(new JSONView());
-}
 
 void Controller::render()
 {
-	if ( _view.isNull() ) return; // No view set, don't do anything
+	response().setChunkedTransferEncoding(true);
+	response().setContentType("application/json");
+	response().set("Cache-Controle", "no-cache,no-store,must-revalidate"); // HTTP 1.1
+	response().set("Pragma", "no-cache"); // HTTP 1.0
+	response().set("Expires", "0"); // Proxies
 
-	_view->initializeResponse(*_response);
-	
+	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
+	std::string origin = config.getString("mq.web.app.cors-origin", "");
+	if ( !origin.empty() )
+	{
+		response().set("Access-Control-Allow-Origin", origin);
+	}
+
 	std::stringstream ss;
-	bool rendered = _view->render(_data, ss);
-	if ( rendered )
+
+	if ( _form.has("callback") )
 	{
-		Poco::StreamCopier::copyStream(ss, _response->send());
+		ss << _form.get("callback") << '(';
 	}
-	else
+
+	data().stringify(ss);
+	ss.flush();
+
+	if ( _form.has("callback") )
 	{
-		//TODO: redirect to an error page?
-		setResponseStatus(Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR);
+		ss << ");";
 	}
+
+	Poco::StreamCopier::copyStream(ss, _response->send());
 }
 
 void Controller::formElementToJSONArray(const std::string& name, Poco::JSON::Array::Ptr arr)
 {
-	for(Poco::Net::NameValueCollection::ConstIterator it = form().find(name); 
+	for(Poco::Net::NameValueCollection::ConstIterator it = form().find(name);
 		it != form().end() && Poco::icompare(it->first, name) == 0;
 		++it)
 	{

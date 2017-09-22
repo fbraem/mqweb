@@ -25,9 +25,9 @@ var req = http.request(options, function(res) {
 			console.log("An MQException occurred: RC= " + json.error.reason.code + " - " + json.error.reason.desc);
 		}
 		else {
-			if ( json.queues ) {
-				for(q in json.queues) {
-					console.log(json.queues[q].QName.value);
+			if ( json.data ) {
+				for(q in json.data) {
+					console.log(json.data[q].QName.value);
 				}
 			}
 		}

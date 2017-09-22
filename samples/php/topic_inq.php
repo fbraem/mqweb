@@ -42,8 +42,8 @@ else {
 	else {
 		echo 'Topics on ', $qmgr, PHP_EOL;
 		echo '----------', str_repeat('-', strlen($qmgr)), PHP_EOL;
-		if ( isset($json->topics) && count($json->topics) > 0 ) {
-			foreach($json->topics as $topic)
+		if ( isset($json->data) && count($json->data) > 0 ) {
+			foreach($json->data as $topic)
 			{
 				echo $topic->TopicName->value, PHP_EOL;
 			}

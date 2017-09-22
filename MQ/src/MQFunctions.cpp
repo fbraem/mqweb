@@ -1,23 +1,23 @@
 /*
- * Copyright 2010 MQWeb - Franky Braem
- *
- * Licensed under the EUPL, Version 1.1 or - as soon they
- * will be approved by the European Commission - subsequent
- * versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the
- * Licence.
- * You may obtain a copy of the Licence at:
- *
- * http://joinup.ec.europa.eu/software/page/eupl
- *
- * Unless required by applicable law or agreed to in
- * writing, software distributed under the Licence is
- * distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied.
- * See the Licence for the specific language governing
- * permissions and limitations under the Licence.
- */
+* Copyright 2017 - KBC Group NV - Franky Braem - The MIT license
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+*  copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #include "MQ/MQFunctions.h"
 #include "MQ/MQException.h"
 
@@ -40,7 +40,14 @@ MQFunctions::MQFunctions() :
 	_putFn(NULL),
 	_getFn(NULL),
 	_discFn(NULL),
-	_inqFn(NULL)
+	_inqFn(NULL),
+	_cbFn(NULL),
+	_ctlFn(NULL),
+	_crtMhFn(NULL),
+	_dltMhFn(NULL),
+	_setMpFn(NULL),
+	_dltMpFn(NULL),
+	_inqMpFn(NULL)
 {
 }
 
@@ -300,9 +307,9 @@ void MQFunctions::inq(MQHCONN conn, MQHOBJ obj, const std::vector<int>& intSelec
 	}
 	std::vector<MQCHAR> charAttrs(charAttrLength);
 
-	inq(conn, obj, selectors.size(), selectors.size() == 0 ? NULL : &selectors[0],
-	    intAttrs.size(), intAttrs.size() == 0 ? NULL : &intAttrs[0],
-	    charAttrs.size(), charAttrs.size() == 0 ? NULL : &charAttrs[0]);
+	inq(conn, obj, (MQLONG) selectors.size(), selectors.size() == 0 ? NULL : &selectors[0],
+		(MQLONG) intAttrs.size(), intAttrs.size() == 0 ? NULL : &intAttrs[0],
+		(MQLONG) charAttrs.size(), charAttrs.size() == 0 ? NULL : &charAttrs[0]);
 
 	for(int i = 0; i < intAttrs.size(); i++)
 	{
@@ -359,6 +366,112 @@ void MQFunctions::ctl(MQHCONN conn, MQLONG operation, MQCTLO* options)
 		throw MQException("", "MQCTL", cc, rc);
 	}
 }
+
+void MQFunctions::crtmh(MQHCONN conn, MQCMHO* options, MQHMSG* hmsg, MQLONG* cc, MQLONG* rc)
+{
+	poco_assert_dbg(_crtMhFn != NULL);
+
+	_crtMhFn(conn, options, hmsg, cc, rc);
+
+	trace("", "MQCRTMH", cc, rc);
+}
+
+void MQFunctions::crtmh(MQHCONN conn, MQCMHO* options, MQHMSG* hmsg)
+{
+	MQLONG cc = MQCC_OK;
+	MQLONG rc = MQRC_NONE;
+
+	crtmh(conn, options, hmsg, &cc, &rc);
+	if ( cc != MQCC_OK )
+	{
+		throw MQException("", "MQCRTMH", cc, rc);
+	}
+}
+
+void MQFunctions::dltmh(MQHCONN conn, MQHMSG* hmsg, MQDMHO* options, MQLONG* cc, MQLONG* rc)
+{
+	poco_assert_dbg(_dltMhFn != NULL);
+
+	_dltMhFn(conn, hmsg, options, cc, rc);
+
+	trace("", "MQDLTMH", cc, rc);
+}
+
+void MQFunctions::dltmh(MQHCONN conn, MQHMSG* hmsg, MQDMHO* options)
+{
+	MQLONG cc = MQCC_OK;
+	MQLONG rc = MQRC_NONE;
+
+	dltmh(conn, hmsg, options, &cc, &rc);
+	if ( cc != MQCC_OK )
+	{
+		throw MQException("", "MQDLTMH", cc, rc);
+	}
+}
+
+void MQFunctions::setmp(MQHCONN conn, MQHMSG hmsg, MQSMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG type, MQLONG valueLength, MQBYTE* value, MQLONG* cc, MQLONG* rc)
+{
+	poco_assert_dbg(_setMpFn != NULL);
+
+	_setMpFn(conn, hmsg, options, name, propDesc, type, valueLength, value, cc, rc);
+
+	trace("", "MQSETMP", cc, rc);
+}
+
+void MQFunctions::setmp(MQHCONN conn, MQHMSG hmsg, MQSMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG type, MQLONG valueLength, MQBYTE* value)
+{
+	MQLONG cc = MQCC_OK;
+	MQLONG rc = MQRC_NONE;
+
+	setmp(conn, hmsg, options, name, propDesc, type, valueLength, value, &cc, &rc);
+	if ( cc != MQCC_OK )
+	{
+		throw MQException("", "MQSETMP", cc, rc);
+	}
+}
+
+void MQFunctions::dltmp(MQHCONN conn, MQHMSG hmsg, MQDMPO* options, MQCHARV* name, MQLONG* cc, MQLONG* rc)
+{
+	poco_assert_dbg(_dltMpFn != NULL);
+
+	_dltMpFn(conn, hmsg, options, name, cc, rc);
+
+	trace("", "MQDLTMP", cc, rc);
+}
+
+void MQFunctions::dltmp(MQHCONN conn, MQHMSG hmsg, MQDMPO* options, MQCHARV* name)
+{
+	MQLONG cc = MQCC_OK;
+	MQLONG rc = MQRC_NONE;
+
+	dltmp(conn, hmsg, options, name, &cc, &rc);
+	if ( cc != MQCC_OK )
+	{
+		throw MQException("", "MQDLTMP", cc, rc);
+	}
+}
+
+void MQFunctions::inqmp(MQHCONN conn, MQHMSG hmsg, MQIMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG type, MQLONG valueLength, MQBYTE* value, MQLONG* dataLength, MQLONG* cc, MQLONG* rc)
+{
+	poco_assert_dbg(_inqMpFn != NULL);
+
+	_inqMpFn(conn, hmsg, options, name, propDesc, type, valueLength, value, dataLength, cc, rc);
+
+	trace("", "MQINQMP", cc, rc);
+}
+
+void MQFunctions::inqmp(MQHCONN conn, MQHMSG hmsg, MQIMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG type, MQLONG valueLength, MQBYTE* value, MQLONG* dataLength)
+{
+	MQLONG cc = MQCC_OK;
+	MQLONG rc = MQRC_NONE;
+
+	inqmp(conn, hmsg, options, name, propDesc, type, valueLength, value, dataLength, &cc, &rc);
+	if ( cc != MQCC_OK )
+	{
+		throw MQException("", "MQINQMP", cc, rc);
+	}
+}
+
 
 void MQFunctions::trace(const std::string& subject, const std::string& function, MQLONG* cc, MQLONG* rc)
 {

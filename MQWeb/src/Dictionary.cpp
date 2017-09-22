@@ -1,23 +1,23 @@
 /*
- * Copyright 2010 MQWeb - Franky Braem
- *
- * Licensed under the EUPL, Version 1.1 or - as soon they
- * will be approved by the European Commission - subsequent
- * versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the
- * Licence.
- * You may obtain a copy of the Licence at:
- *
- * http://joinup.ec.europa.eu/software/page/eupl
- *
- * Unless required by applicable law or agreed to in
- * writing, software distributed under the Licence is
- * distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied.
- * See the Licence for the specific language governing
- * permissions and limitations under the Licence.
- */
+* Copyright 2017 - KBC Group NV - Franky Braem - The MIT license
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+*  copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #include "MQ/Web/Dictionary.h"
 
 namespace MQ {
@@ -35,43 +35,43 @@ Dictionary::~Dictionary()
 
 Dictionary& Dictionary::operator()(MQLONG id, const std::string& name)
 {
-	_idMap.insert(std::make_pair<MQLONG, std::string>(id, name));
-	_nameMap.insert(std::make_pair<std::string, MQLONG>(name, id));
+	_idMap.insert(std::make_pair(id, name));
+	_nameMap.insert(std::make_pair(name, id));
 
 	return *this;
 }
 
 
-Dictionary& Dictionary::operator()(MQLONG id, const std::string& name, const DisplayMap& displayMap)
+Dictionary& Dictionary::operator()(MQLONG id, const std::string& name, const TextMap& textMap)
 {
-	_idMap.insert(std::make_pair<MQLONG, std::string>(id, name));
-	_nameMap.insert(std::make_pair<std::string, MQLONG>(name, id));
+	_idMap.insert(std::make_pair(id, name));
+	_nameMap.insert(std::make_pair(name, id));
 
-	_displayMaps.insert(std::make_pair<MQLONG, DisplayMap>(id, displayMap));
+	_textMaps.insert(std::make_pair(id, textMap));
 
 	return *this;
 }
 
-std::string Dictionary::getDisplayValue(MQLONG id, MQLONG displayId) const
+std::string Dictionary::getTextForValue(MQLONG id, MQLONG value) const
 {
-	std::map<MQLONG, DisplayMap>::const_iterator it = _displayMaps.find(id);
-	if ( it == _displayMaps.end() )
+	std::map<MQLONG, TextMap>::const_iterator it = _textMaps.find(id);
+	if ( it == _textMaps.end() )
 		return "";
 
-	DisplayMap::const_iterator it2 = it->second.find(displayId);
+	TextMap::const_iterator it2 = it->second.find(value);
 	if ( it2 == it->second.end() )
 		return "";
 
 	return it2->second;
 }
 
-MQLONG Dictionary::getDisplayId(MQLONG id, const std::string& value) const
+MQLONG Dictionary::getIdForText(MQLONG id, const std::string& value) const
 {
-	std::map<MQLONG, DisplayMap>::const_iterator it = _displayMaps.find(id);
-	if ( it == _displayMaps.end() )
+	std::map<MQLONG, TextMap>::const_iterator it = _textMaps.find(id);
+	if ( it == _textMaps.end() )
 		return -1;
 
-	for(DisplayMap::const_iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
+	for(TextMap::const_iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
 	{
 		if ( it2->second.compare(value) == 0 )
 			return it2->first;
@@ -84,7 +84,7 @@ void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, bool a
 	std::vector<MQLONG> parameters = pcf.getParameters();
 	for(std::vector<MQLONG>::iterator it = parameters.begin(); it != parameters.end(); ++it)
 	{
-		std::string name = getName(*it);
+		std::string name = getNameForId(*it);
 		if ( name.empty() )
 		{
 			if ( alwaysCreate )
@@ -109,14 +109,14 @@ void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, bool a
 			MQLONG value = pcf.getParameterNum(*it);
 			field->set("value", value);
 
-			if ( hasDisplayMap(*it) )
+			if ( hasTextMap(*it) )
 			{
-				std::string displayValue = getDisplayValue(*it, value);
-				if ( displayValue.empty() )
+				std::string text = getTextForValue(*it, value);
+				if ( text.empty() )
 				{
-					displayValue = "Unknown value " + Poco::NumberFormatter::format(value) + " for " + Poco::NumberFormatter::format(*it);
+					text = "Unknown value " + Poco::NumberFormatter::format(value) + " for " + Poco::NumberFormatter::format(*it);
 				}
-				field->set("display", displayValue);
+				field->set("text", text);
 			}
 		}
 		else if ( pcf.isString(*it) )
@@ -129,19 +129,19 @@ void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, bool a
 			Poco::JSON::Array::Ptr jsonValues = new Poco::JSON::Array();
 			field->set("value", jsonValues);
 
-			if ( hasDisplayMap(*it) )
+			if ( hasTextMap(*it) )
 			{
 				for(std::vector<MQLONG>::iterator vit = values.begin(); vit != values.end(); ++vit)
 				{
 					Poco::JSON::Object::Ptr jsonValueObject = new Poco::JSON::Object();
 
-					std::string displayValue = getDisplayValue(*it, *vit);
-					if ( displayValue.empty() )
+					std::string text = getTextForValue(*it, *vit);
+					if ( text.empty() )
 					{
-						displayValue = "Unknown value " + Poco::NumberFormatter::format(*vit) + " for " + Poco::NumberFormatter::format(*it);
+						text = "Unknown value " + Poco::NumberFormatter::format(*vit) + " for " + Poco::NumberFormatter::format(*it);
 					}
 					jsonValueObject->set("value", *vit);
-					jsonValueObject->set("display", displayValue);
+					jsonValueObject->set("text", text);
 					jsonValues->add(jsonValueObject);
 				}
 			}

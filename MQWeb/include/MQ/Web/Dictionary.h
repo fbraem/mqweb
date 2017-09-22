@@ -1,3 +1,23 @@
+/*
+* Copyright 2017 - KBC Group NV - Franky Braem - The MIT license
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+*  copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #ifndef _MQWeb_Dictionary
 #define _MQWeb_Dictionary
 
@@ -14,8 +34,8 @@
 namespace MQ {
 namespace Web {
 
-typedef std::map<MQLONG, std::string> DisplayMap;
-typedef MapInitializer<MQLONG, std::string> DisplayMapInitializer;
+typedef std::map<MQLONG, std::string> TextMap;
+typedef MapInitializer<MQLONG, std::string> TextMapInitializer;
 
 class Dictionary
 	/// Class for holding all names, ids and values for Websphere MQ fields.
@@ -36,29 +56,29 @@ public:
 	Dictionary& operator()(MQLONG id, const std::string& name = "");
 		/// Adds the name for the given id.
 
-	Dictionary& operator()(MQLONG id, const std::string& name, const DisplayMap& displayMap);
+	Dictionary& operator()(MQLONG id, const std::string& name, const TextMap& textMap);
 		/// Adds the name and value for the given id.
 
-	const DisplayMap& getDisplayMap(MQLONG id) const;
+	const TextMap& getTextMap(MQLONG id) const;
 		/// Returns all values for the given id.
 
-	std::string getDisplayValue(MQLONG id, MQLONG value) const;
+	std::string getTextForValue(MQLONG id, MQLONG value) const;
 		/// Returns the display string for the given value of the given id.
 		/// For example: in MQMapper getDisplayValue(MQIA_PLATFORM, MQPL_UNIX) will return "UNIX".
 
-	MQLONG getDisplayId(MQLONG id, const std::string& value) const;
+	MQLONG getIdForText(MQLONG id, const std::string& value) const;
 		/// Returns the id for the given value and id.
 		/// For example: in MQMapper getDisplayId(MQIA_PLATFORM, "UNIX") will return MQPL_UNIX.
 
-	MQLONG getId(const std::string& name) const;
+	MQLONG getIdForName(const std::string& name) const;
 		/// Returns the id for the given name.
 		/// For example: in MQMapper getId("Platform") will return MQIA_PLATFORM.
 
-	std::string getName(MQLONG id) const;
+	std::string getNameForId(MQLONG id) const;
 		/// Returns the name for the given id
 		/// For example: in MQMapper getName(MQIA_PLATFORM) will return "Platform".
 
-	bool hasDisplayMap(MQLONG id) const;
+	bool hasTextMap(MQLONG id) const;
 		/// Returns true when the id has a corresponding map with display values.
 
 	void mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, bool alwaysCreate = true) const;
@@ -72,7 +92,7 @@ public:
 	void set(MQLONG id, const std::string& name);
 
 
-	void set(MQLONG id, const std::string& name, const DisplayMap& displayMap);
+	void set(MQLONG id, const std::string& name, const TextMap& textMap);
 
 private:
 
@@ -80,11 +100,11 @@ private:
 
 	std::map<std::string, MQLONG> _nameMap;
 
-	std::map<MQLONG, DisplayMap> _displayMaps;
+	std::map<MQLONG, TextMap> _textMaps;
 };
 
 
-inline std::string Dictionary::getName(MQLONG id) const
+inline std::string Dictionary::getNameForId(MQLONG id) const
 {
 	std::string name;
 
@@ -96,7 +116,7 @@ inline std::string Dictionary::getName(MQLONG id) const
 }
 
 
-inline MQLONG Dictionary::getId(const std::string& name) const
+inline MQLONG Dictionary::getIdForName(const std::string& name) const
 {
 	MQLONG id = -1;
 
@@ -108,20 +128,20 @@ inline MQLONG Dictionary::getId(const std::string& name) const
 }
 
 
-inline const DisplayMap& Dictionary::getDisplayMap(MQLONG id) const
+inline const TextMap& Dictionary::getTextMap(MQLONG id) const
 {
-	static DisplayMap emptyMap;
+	static TextMap emptyMap;
 
-	std::map<MQLONG, DisplayMap>::const_iterator it = _displayMaps.find(id);
-	if ( it == _displayMaps.end() )
+	std::map<MQLONG, TextMap>::const_iterator it = _textMaps.find(id);
+	if ( it == _textMaps.end() )
 		return emptyMap;
 
 	return it->second;
 }
 
-inline bool Dictionary::hasDisplayMap(MQLONG id) const
+inline bool Dictionary::hasTextMap(MQLONG id) const
 {
-	return _displayMaps.find(id) != _displayMaps.end();
+	return _textMaps.find(id) != _textMaps.end();
 }
 
 inline std::map<MQLONG, std::string>::const_iterator Dictionary::begin() const
@@ -140,10 +160,10 @@ inline void Dictionary::set(MQLONG id, const std::string& name)
 	_nameMap[name] = id;
 }
 
-inline void Dictionary::set(MQLONG id, const std::string& name, const DisplayMap& displayMap)
+inline void Dictionary::set(MQLONG id, const std::string& name, const TextMap& textMap)
 {
 	set(id, name);
-	_displayMaps[id] = displayMap;
+	_textMaps[id] = textMap;
 }
 
 }} // Namespace MQWeb

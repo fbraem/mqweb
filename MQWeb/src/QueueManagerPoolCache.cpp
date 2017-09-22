@@ -1,28 +1,33 @@
 /*
- * Copyright 2010 MQWeb - Franky Braem
- *
- * Licensed under the EUPL, Version 1.1 or  as soon they
- * will be approved by the European Commission - subsequent
- * versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the
- * Licence.
- * You may obtain a copy of the Licence at:
- *
- * http://joinup.ec.europa.eu/software/page/eupl
- *
- * Unless required by applicable law or agreed to in
- * writing, software distributed under the Licence is
- * distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied.
- * See the Licence for the specific language governing
- * permissions and limitations under the Licence.
- */
+* Copyright 2017 - KBC Group NV - Franky Braem - The MIT license
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+*  copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #include "Poco/Util/Application.h"
+#include "Poco/Data/SessionFactory.h"
+#include "Poco/Data/SQLite/Connector.h"
+#include "Poco/Logger.h"
 
 #include "MQ/MQSubsystem.h"
 
 #include "MQ/Web/QueueManagerPoolCache.h"
+#include "MQ/Web/QueueManagerDefaultConfig.h"
+#include "MQ/Web/QueueManagerDatabaseConfig.h"
 
 namespace MQ {
 namespace Web {
@@ -73,52 +78,51 @@ QueueManagerPool::Ptr QueueManagerPoolCache::createPool(const std::string& qmgrN
 	MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQSubsystem>();
 	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
 
-	std::string qmgrConfig = "mq.web.qmgr." + qmgrName;
-
 	Poco::SharedPtr<QueueManagerFactory> factory;
 
 	if ( mqSystem.client() )
 	{
-		Poco::DynamicStruct connectionInformation;
-
-		// In client mode we check for a configuration
-		// When this is not available, we hope that a channel tab file
-		// is configured.
-		std::string qmgrConfigConnection = qmgrConfig + ".connection";
-		if ( config.has(qmgrConfigConnection) )
+		Poco::SharedPtr<QueueManagerConfig> qmgrConfig;
+		if ( config.has("mq.web.config.connection") )
 		{
-			std::string connection;
-			std::string channel;
-			connectionInformation.insert("connection", config.getString(qmgrConfigConnection));
-			std::string qmgrConfigChannel = qmgrConfig + ".channel";
-			if ( config.has(qmgrConfigChannel) )
-			{
-				connectionInformation.insert("channel", config.getString(qmgrConfigChannel));
-			}
-			else
-			{
-				connectionInformation.insert("channel", config.getString("mq.web.defaultChannel", "SYSTEM.DEF.SVRCONN"));
-			}
+			// Queuemanagers connection information is stored in a database
+			std::string dbConnector = config.getString("mq.web.config.connector", Poco::Data::SQLite::Connector::KEY);
+			std::string dbConnection = config.getString("mq.web.config.connection");
 
-			if ( config.has("mq.web.ssl.keyrepos") )
+			Poco::Logger& logger = Poco::Logger::get("mq.web");
+			poco_information_f3(logger, "Using connector %s with connection %s to get information for queuemanager %s", dbConnector, dbConnection, qmgrName);
+
+			try
 			{
-				Poco::DynamicStruct ssl;
-				connectionInformation.insert("ssl", ssl);
-
-				Poco::Util::AbstractConfiguration::Keys keys;
-				Poco::AutoPtr<Poco::Util::AbstractConfiguration> sslConfig = config.createView("mq.web.ssl");
-				sslConfig->keys(keys);
-				for(Poco::Util::AbstractConfiguration::Keys::iterator it = keys.begin(); it != keys.end(); ++it)
-				{
-					ssl.insert(*it, config.getString(*it));
-				}
+				qmgrConfig = new QueueManagerDatabaseConfig(qmgrName, dbConnector, dbConnection);
 			}
-
-			factory = new QueueManagerFactory(qmgrName, connectionInformation);
+			catch(Poco::Exception& e)
+			{
+				logger.log(e);
+			}
 		}
 		else
 		{
-			factory = new QueueManagerFactory(qmgrName);
+			qmgrConfig = new QueueManagerDefaultConfig(qmgrName, config);
+		}
+
+		if (qmgrConfig.isNull())
+		{
+			// Problems with the database configuration? An empty pool will be returned.
+			return pool;
+		}
+
+		Poco::Logger& logger = Poco::Logger::get("mq.web");
+
+		try
+		{
+			Poco::DynamicStruct connectionInformation = qmgrConfig->read();
+			poco_information_f1(logger, "Connection information: %s", connectionInformation.toString());
+			factory = new QueueManagerFactory(qmgrName, connectionInformation);
+		}
+		catch(Poco::Exception& e)
+		{
+			logger.log(e);
 		}
 	}
 	else
@@ -126,34 +130,39 @@ QueueManagerPool::Ptr QueueManagerPoolCache::createPool(const std::string& qmgrN
 		factory = new QueueManagerFactory(qmgrName);
 	}
 
-	std::size_t capacity;
-	std::size_t peakCapacity;
-	int idle;
-
-	std::string qmgrPoolCapacity = qmgrConfig + ".pool.capacity";
-	if ( !config.has(qmgrPoolCapacity) )
+	if (!factory.isNull())
 	{
-		qmgrPoolCapacity = "mq.web.pool.capacity";
+		std::size_t capacity;
+		std::size_t peakCapacity;
+		int idle;
+
+		std::string qmgrConfig = "mq.web.qmgr." + qmgrName;
+		std::string qmgrPoolCapacity = qmgrConfig + ".pool.capacity";
+		if ( !config.has(qmgrPoolCapacity) )
+		{
+			qmgrPoolCapacity = "mq.web.pool.capacity";
+		}
+		capacity = config.getInt(qmgrPoolCapacity, 10);
+
+		std::string qmgrPoolPeakCapacity = qmgrConfig + ".pool.peakcapacity";
+		if ( !config.has(qmgrPoolPeakCapacity) )
+		{
+			qmgrPoolPeakCapacity = "mq.web.pool.peakcapacity";
+		}
+		peakCapacity = config.getInt(qmgrPoolPeakCapacity, 20);
+
+		std::string qmgrPoolIdle = qmgrConfig + ".pool.idle";
+		if ( !config.has(qmgrPoolIdle) )
+		{
+			qmgrPoolIdle = "mq.web.pool.idle";
+		}
+		idle = config.getInt(qmgrPoolIdle, 60);
+
+		pool = new QueueManagerPool(factory, capacity, peakCapacity, idle);
+
+		_cache.add(qmgrName, pool);
 	}
-	capacity = config.getInt(qmgrPoolCapacity, 10);
 
-	std::string qmgrPoolPeakCapacity = qmgrConfig + ".pool.peakcapacity";
-	if ( !config.has(qmgrPoolPeakCapacity) )
-	{
-		qmgrPoolPeakCapacity = "mq.web.pool.peakcapacity";
-	}
-	peakCapacity = config.getInt(qmgrPoolPeakCapacity, 20);
-
-	std::string qmgrPoolIdle = qmgrConfig + ".pool.idle";
-	if ( !config.has(qmgrPoolIdle) )
-	{
-		qmgrPoolIdle = "mq.web.pool.idle";
-	}
-	idle = config.getInt(qmgrPoolIdle, 60);
-
-	pool = new QueueManagerPool(factory, capacity, peakCapacity, idle);
-
-	_cache.add(qmgrName, pool);
 	return pool;
 }
 

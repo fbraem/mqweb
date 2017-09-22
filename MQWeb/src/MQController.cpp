@@ -1,23 +1,23 @@
 /*
- * Copyright 2010 MQWeb - Franky Braem
- *
- * Licensed under the EUPL, Version 1.1 or – as soon they
- * will be approved by the European Commission - subsequent
- * versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the
- * Licence.
- * You may obtain a copy of the Licence at:
- *
- * http://joinup.ec.europa.eu/software/page/eupl
- *
- * Unless required by applicable law or agreed to in
- * writing, software distributed under the Licence is
- * distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied.
- * See the Licence for the specific language governing
- * permissions and limitations under the Licence.
- */
+* Copyright 2017 - KBC Group NV - Franky Braem - The MIT license
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+*  copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #include "Poco/Util/Application.h"
 #include "Poco/Dynamic/Struct.h"
 #include "Poco/JSON/Object.h"
@@ -27,16 +27,14 @@
 
 #include "MQ/Web/MQController.h"
 #include "MQ/Web/MQMapper.h"
-#include "MQ/Web/TemplateView.h"
-#include "MQ/Web/JSONView.h"
 
 namespace MQ {
 namespace Web {
 
 
-MQController::MQController() : Controller(), _mqwebData(new Poco::JSON::Object()), _commandServer(NULL)
+MQController::MQController() : Controller(), _meta(new Poco::JSON::Object()), _commandServer(NULL)
 {
-	set("mqweb", _mqwebData);
+	set("meta", _meta);
 }
 
 
@@ -50,13 +48,13 @@ void MQController::beforeAction()
 	_stopwatch.start();
 
 	Poco::JSON::Object::Ptr date = new Poco::JSON::Object();
-	_mqwebData->set("date", date);
+	_meta->set("date", date);
 	date->set("start", Poco::DateTimeFormatter::format(Poco::Timestamp(), Poco::DateTimeFormat::HTTP_FORMAT));
 
 	MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQSubsystem>();
 	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
 
-	_mqwebData->set("client", mqSystem.client());
+	_meta->set("client", mqSystem.client());
 
 	std::string qmgrName;
 	if ( config.hasProperty("mq.web.qmgr") )
@@ -82,7 +80,7 @@ void MQController::beforeAction()
 	Poco::SharedPtr<QueueManagerPool> qmgrPool = QueueManagerPoolCache::instance()->getQueueManagerPool(qmgrName);
 	if ( qmgrPool.isNull() )
 	{
-		setResponseStatus(Poco::Net::HTTPServerResponse::HTTP_INTERNAL_SERVER_ERROR, "Out of memory: can't create a pool for queuemanager.");
+		setResponseStatus(Poco::Net::HTTPServerResponse::HTTP_INTERNAL_SERVER_ERROR, "Can't create a pool for queuemanager. Check your configuration or memory limitations.");
 		return;
 	}
 
@@ -94,9 +92,9 @@ void MQController::beforeAction()
 	}
 	_qmgrPoolGuard = new QueueManagerPoolGuard(qmgrPool, qmgr);
 
-	_mqwebData->set("qmgr", qmgr->name());
-	_mqwebData->set("zos", qmgr->zos());
-	_mqwebData->set("qmgrId", qmgr->id());
+	_meta->set("qmgr", qmgr->name());
+	_meta->set("zos", qmgr->zos());
+	_meta->set("qmgrId", qmgr->id());
 
 	_commandServer = qmgr->commandServer();
 	if ( _commandServer == NULL )
@@ -117,8 +115,8 @@ void MQController::beforeAction()
 
 	if ( _commandServer != NULL )
 	{
-		_mqwebData->set("replyq", _commandServer->replyQName());
-		_mqwebData->set("cmdq", _commandServer->commandQName());
+		_meta->set("replyq", _commandServer->replyQName());
+		_meta->set("cmdq", _commandServer->commandQName());
 	}
 }
 
@@ -141,28 +139,19 @@ void MQController::handleException(const MQException& mqe)
 	error->set("reason", reason);
 	reason->set("code", mqe.reason());
 	reason->set("desc", MQMapper::getReasonString(mqe.reason()));
-
-	if ( isJSON() )
-	{
-		setJSONView();
-	}
-	else
-	{
-		setView(new TemplateView("error.tpl"));
-	}
 }
 
 
 void MQController::afterAction()
 {
-	Poco::JSON::Object::Ptr date = _mqwebData->getObject("date");
+	Poco::JSON::Object::Ptr date = _meta->getObject("date");
 	if ( ! date.isNull() )
 	{
 		date->set("end", Poco::DateTimeFormatter::format(Poco::Timestamp(), Poco::DateTimeFormat::HTTP_FORMAT));
 	}
-	
+
 	_stopwatch.stop();
-	_mqwebData->set("elapsed", (double) _stopwatch.elapsed() / 1000000 );
+	_meta->set("elapsed", (double) _stopwatch.elapsed() / 1000000 );
 
 	Controller::afterAction();
 }

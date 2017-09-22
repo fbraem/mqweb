@@ -40,7 +40,7 @@ if ( exists($mqweb->{error}) ) {
 		, $mqweb->{error}->{reason}->{desc};
 }}
 else {
-	foreach my $status(@{$mqweb->{statuses}}) {
+	foreach my $status(@{$mqweb->{data}}) {
 		print $status->{ListenerName}->{value};
 		print ' : ', $status->{Status}->{display}; 
 		print "\n";

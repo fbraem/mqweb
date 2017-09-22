@@ -42,7 +42,7 @@ if ( exists($mqweb->{error}) ) {
 		, $mqweb->{error}->{reason}->{desc};
 }
 else {
-	foreach my $authservice(@{$mqweb->{authservices}}) {
+	foreach my $authservice(@{$mqweb->{data}}) {
 		foreach my $serviceComponent(@{$authservice->{ServiceComponent}->{value}}) {
 			say $serviceComponent;
 		}

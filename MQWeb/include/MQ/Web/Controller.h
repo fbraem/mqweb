@@ -1,24 +1,23 @@
 /*
- * Copyright 2010 MQWeb - Franky Braem
- *
- * Licensed under the EUPL, Version 1.1 or – as soon they
- * will be approved by the European Commission - subsequent
- * versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the
- * Licence.
- * You may obtain a copy of the Licence at:
- *
- * http://joinup.ec.europa.eu/software/page/eupl
- *
- * Unless required by applicable law or agreed to in
- * writing, software distributed under the Licence is
- * distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied.
- * See the Licence for the specific language governing
- * permissions and limitations under the Licence.
- */
-
+* Copyright 2017 - KBC Group NV - Franky Braem - The MIT license
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+*  copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #ifndef _MQWeb_Controller_h
 #define _MQWeb_Controller_h
 
@@ -33,7 +32,6 @@
 
 #include "MQ/QueueManager.h"
 #include "MQ/CommandServer.h"
-#include "MQ/Web/View.h"
 
 namespace MQ {
 namespace Web {
@@ -69,7 +67,7 @@ public:
 
 	virtual void afterAction();
 		/// Called after an action is executed. The default implementation renders
-		/// the associated view. When no view is set, a JSON view will be used 
+		/// the associated view. When no view is set, a JSON view will be used
 
 	void formElementToJSONArray(const std::string& name, Poco::JSON::Array::Ptr arr);
 		/// Stores each element with the given name in a JSON array
@@ -102,9 +100,6 @@ public:
 	Poco::Net::HTTPServerResponse& response();
 		/// Returns the HTTP response
 
-	void setJSONView();
-		/// Checks for JSONP or JSON request and creates the corresponding view class
-
 	void setResponseStatus(Poco::Net::HTTPServerResponse::HTTPStatus status);
 		/// Sets the HTTP response status. This will send the response to the client.
 
@@ -113,9 +108,6 @@ public:
 
 	void render();
 		/// Renders the view
-
-	void setView(Poco::SharedPtr<View> v);
-		/// Set the view
 
 protected:
 
@@ -150,18 +142,12 @@ private:
 	std::map<std::string, std::string> _namedParameters;
 
 
-	Poco::SharedPtr<View> _view;
-
-
 	friend class ControllerRequestHandler;
 };
 
 
 inline void Controller::afterAction()
 {
-	// When no view is set yet, we assume JSON
-	if ( _view.isNull() ) setJSONView();
-
 	render();
 }
 
@@ -248,12 +234,6 @@ inline Poco::Net::HTTPServerResponse& Controller::response()
 	poco_assert_dbg(_response);
 
 	return *_response;
-}
-
-
-inline void Controller::setView(Poco::SharedPtr<View> v)
-{
-	_view = v;
 }
 
 }} // Namespace MQ::Web

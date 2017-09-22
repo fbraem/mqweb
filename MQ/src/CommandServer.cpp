@@ -1,24 +1,23 @@
 /*
- * Copyright 2010 MQWeb - Franky Braem
- *
- * Licensed under the EUPL, Version 1.1 or – as soon they
- * will be approved by the European Commission - subsequent
- * versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the
- * Licence.
- * You may obtain a copy of the Licence at:
- *
- * http://joinup.ec.europa.eu/software/page/eupl
- *
- * Unless required by applicable law or agreed to in
- * writing, software distributed under the Licence is
- * distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied.
- * See the Licence for the specific language governing
- * permissions and limitations under the Licence.
- */
-
+* Copyright 2017 - KBC Group NV - Franky Braem - The MIT license
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+*  copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #include <iostream>
 
 #include "MQ/CommandServer.h"
@@ -36,7 +35,7 @@
 namespace MQ
 {
 
-CommandServer::CommandServer(QueueManager& qmgr, const std::string& modelQueue) 
+CommandServer::CommandServer(QueueManager& qmgr, const std::string& modelQueue)
 	: _qmgr(qmgr)
 	, _commandQ(qmgr, qmgr.commandQueue())
 	, _replyQ(qmgr, modelQueue)
@@ -56,18 +55,18 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
 {
 	response.clear();
 
-	command->setReplyToQueue(_replyQ.name());
-	_commandQ.put(*command, MQPMO_NO_SYNCPOINT);
+	command->message()->setReplyToQueue(_replyQ.name());
+	command->message()->setExpiry(1200000);
+	_commandQ.put(*command->message(), MQPMO_NO_SYNCPOINT);
 
 	long wait = 600000;
-	PCF::Ptr msgResponse;
+	Message::Ptr msgResponse;
 
 	bool keepRunning = true;
 	while(keepRunning)
 	{
-		msgResponse = new PCF(_qmgr.zos());
-		msgResponse->correlationId()->set(command->messageId());
-		msgResponse->buffer().resize(REPLY_MESSAGE_LEN, false);
+		msgResponse = new Message(REPLY_MESSAGE_LEN);
+		msgResponse->correlationId()->set(command->message()->messageId());
 
 		try
 		{
@@ -82,10 +81,10 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
 				{
 					poco_trace_f2(logger, "Truncated message received. Actual size is %ld (> %d).", msgResponse->dataLength(), REPLY_MESSAGE_LEN);
 				}
-				
+
 				msgResponse->buffer().resize(msgResponse->dataLength(), false);
 				msgResponse->clear();
-				msgResponse->correlationId()->set(command->messageId());
+				msgResponse->correlationId()->set(command->message()->messageId());
 				_replyQ.get(*msgResponse.get(), MQGMO_CONVERT | MQGMO_NO_SYNCPOINT);
 			}
 			else
@@ -103,12 +102,12 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
 			}
 		}
 		wait = 100;
+
 		msgResponse->buffer().resize(msgResponse->dataLength());
-		msgResponse->init();
+		PCF::Ptr pcf = new PCF(msgResponse, _qmgr.zos());
+		response.push_back(pcf);
 
-		response.push_back(msgResponse);
-
-		if ( ! _qmgr.zos() && msgResponse->isLast() )
+		if ( ! _qmgr.zos() && pcf->isLast() )
 		{
 			keepRunning = false;
 		}

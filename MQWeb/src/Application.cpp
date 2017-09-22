@@ -1,22 +1,22 @@
 /*
-* Copyright 2010 MQWeb - Franky Braem
+* Copyright 2017 - KBC Group NV - Franky Braem - The MIT license
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
 *
-* Licensed under the EUPL, Version 1.1 or – as soon they
-* will be approved by the European Commission - subsequent
-* versions of the EUPL (the "Licence");
-* You may not use this work except in compliance with the
-* Licence.
-* You may obtain a copy of the Licence at:
+* The above copyright notice and this permission notice shall be included in all
+*  copies or substantial portions of the Software.
 *
-* http://joinup.ec.europa.eu/software/page/eupl
-*
-* Unless required by applicable law or agreed to in
-* writing, software distributed under the Licence is
-* distributed on an "AS IS" basis,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-* express or implied.
-* See the Licence for the specific language governing
-* permissions and limitations under the Licence.
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
 */
 #include "MQ/MQSubsystem.h"
 #include "MQ/Web/Version.h"
@@ -29,6 +29,8 @@
 #include "Poco/Net/HTTPServerRequest.h"
 #include "Poco/Net/HTTPServerResponse.h"
 #include "Poco/Net/HTTPServerParams.h"
+
+#include "Poco/Data/SQLite/Connector.h"
 
 #include "Poco/Logger.h"
 #include "Poco/File.h"
@@ -54,12 +56,21 @@ void MQWebApplication::initialize(Application& self)
 {
 	try
 	{
-		loadConfiguration(); // load default configuration files, if present
+		if (config().has("mq.web.cfg"))
+		{
+				loadConfiguration(config().getString("mq.web.cfg"));
+		}
+		else
+		{
+				loadConfiguration(); // load default configuration files, if present
+		}
 	}
 	catch(Poco::FileException& fe)
 	{
 		std::cout << "Caught a file exception when loading configuration file: " << fe.message() << std::endl;
 	}
+
+	Poco::Data::SQLite::Connector::registerConnector();
 
 	try
 	{
@@ -75,6 +86,8 @@ void MQWebApplication::initialize(Application& self)
 void MQWebApplication::uninitialize()
 {
 	Poco::Logger::get("mq.web").information("MQWeb process stopped!");
+
+	Poco::Data::SQLite::Connector::unregisterConnector();
 
 	ServerApplication::uninitialize();
 }
@@ -99,6 +112,13 @@ void MQWebApplication::defineOptions(Poco::Util::OptionSet& options)
 		.repeatable(false)
 		.binding("mq.web.qmgr")
 		.argument("<name>"));
+
+	options.addOption(
+	Option("config", "c", "Configuration file to load")
+		.required(false)
+		.repeatable(false)
+		.binding("mq.web.cfg")
+		.argument("<propertyfile>"));
 
 	options.addOption(
 	Option("port", "p", "Port for HTTP listener")
@@ -168,55 +188,28 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 
 	_cache.setLogger(logger);
 
-	if ( config().has("mq.web.templates") )
+	// Check the web app path configuration (mq.web.app)
+	if ( config().has("mq.web.app") )
 	{
-		Poco::Path templatePath;
-		std::string templatesValue;
+		Poco::Path appPath;
+		std::string appValue;
 		try
 		{
-			templatesValue = config().getString("mq.web.templates");
-			templatesValue = config().expand(templatesValue);
-			templatePath.assign(templatesValue);
-			templatePath.makeDirectory();
+			appValue = config().getString("mq.web.app");
+			appValue = config().expand(appValue);
+			appPath.assign(appValue);
+			appPath.makeDirectory();
 		}
 		catch(Poco::PathSyntaxException&)
 		{
-			poco_fatal_f1(logger, "Invalid path specified for mq.web.templates: %s", templatesValue);
+			poco_fatal_f1(logger, "Invalid path specified for mq.web.app: %s", appValue);
 			return Application::EXIT_CONFIG;
 		}
 
-		Poco::File file(templatePath);
+		Poco::File file = Poco::File(appPath);
 		if ( !file.exists() )
 		{
-			poco_fatal_f1(logger, "Template path %s doesn't exist! Check the configuration file.", templatePath.toString());
-			return Application::EXIT_CONFIG;
-		}
-
-		_cache.addPath(templatePath);
-	}
-
-	// Check the static path configuration (mq.web.static)
-	if ( config().has("mq.web.static") )
-	{
-		Poco::Path staticPath;
-		std::string staticValue;
-		try
-		{
-			staticValue = config().getString("mq.web.static");
-			staticValue = config().expand(staticValue);
-			staticPath.assign(staticValue);
-			staticPath.makeDirectory();
-		}
-		catch(Poco::PathSyntaxException&)
-		{
-			poco_fatal_f1(logger, "Invalid path specified for mq.web.static: %s", staticValue);
-			return Application::EXIT_CONFIG;
-		}
-
-		Poco::File file = Poco::File(staticPath);
-		if ( !file.exists() )
-		{
-			poco_fatal_f1(logger, "Path for static files %s doesn't exist! Check the configuration file.", staticPath.toString());
+			poco_fatal_f1(logger, "Path for static files %s doesn't exist! Check the configuration file.", appPath.toString());
 			return Application::EXIT_CONFIG;
 		}
 	}

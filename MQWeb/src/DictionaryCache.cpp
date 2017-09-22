@@ -1,23 +1,23 @@
-﻿/*
- * Copyright 2010 MQWeb - Franky Braem
- *
- * Licensed under the EUPL, Version 1.1 or - as soon they
- * will be approved by the European Commission - subsequent
- * versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the
- * Licence.
- * You may obtain a copy of the Licence at:
- *
- * http://joinup.ec.europa.eu/software/page/eupl
- *
- * Unless required by applicable law or agreed to in
- * writing, software distributed under the Licence is
- * distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied.
- * See the Licence for the specific language governing
- * permissions and limitations under the Licence.
- */
+/*
+* Copyright 2017 - KBC Group NV - Franky Braem - The MIT license
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+*  copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #include "Poco/Logger.h"
 
 #include "Poco/Util/Application.h"
@@ -33,12 +33,12 @@ namespace Web {
 
 using namespace Poco::Data::Keywords;
 
-DictionaryCache::DictionaryCache() 
+DictionaryCache::DictionaryCache()
 {
 }
 
 
-DictionaryCache::~DictionaryCache() 
+DictionaryCache::~DictionaryCache()
 {
 }
 
@@ -68,19 +68,20 @@ Poco::SharedPtr<Dictionary> DictionaryCache::load(const std::string& name)
 
 	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
 	std::string databaseName = config.getString("mq.web.db", "mqweb.db");
+	Poco::Logger& logger = Poco::Logger::get("mq.web");
+	poco_trace_f2(logger, "Trying to open SQLite database %s to load dictionary %s", databaseName, name);
 
 	try
 	{
 		Poco::Data::Session session(Poco::Data::SQLite::Connector::KEY, databaseName);
 
 		int objectId = 0;
-		session << "SELECT id FROM objects WHERE name == :n", into(objectId), useRef(name), now;
+		session << "SELECT id FROM objects WHERE name = :n", into(objectId), useRef(name), now;
 
-		session << "SELECT a.id, a.name, d.value, d.display FROM object_attributes oa INNER JOIN attributes a ON oa.attribute_id = a.id LEFT JOIN displays d ON oa.attribute_id = d.attribute_id WHERE oa.object_id = ?", use(objectId), into(attributes), now;
+		session << "SELECT a.id, a.name, d.value, d.text FROM object_attributes oa INNER JOIN attributes a ON oa.attribute_id = a.id LEFT JOIN texts d ON oa.attribute_id = d.attribute_id WHERE oa.object_id = ?", use(objectId), into(attributes), now;
 	}
 	catch(Poco::Data::DataException& de)
 	{
-		Poco::Logger& logger = Poco::Logger::get("mq.web");
 		logger.log(de);
 		return dictionary;
 	}
@@ -93,7 +94,7 @@ Poco::SharedPtr<Dictionary> DictionaryCache::load(const std::string& name)
 	}
 
 	int prevAttributeId = -1;
-	DisplayMap displayMap;
+	TextMap textMap;
 
 	std::string attributeName;
 
@@ -101,10 +102,10 @@ Poco::SharedPtr<Dictionary> DictionaryCache::load(const std::string& name)
 	{
 		if ( prevAttributeId != it->get<0>() )
 		{
-			if ( displayMap.size() > 0 )
+			if ( textMap.size() > 0 )
 			{
-				dictionary->set(prevAttributeId, attributeName, displayMap);
-				displayMap.clear();
+				dictionary->set(prevAttributeId, attributeName, textMap);
+				textMap.clear();
 			}
 			prevAttributeId = it->get<0>();
 		}
@@ -115,15 +116,15 @@ Poco::SharedPtr<Dictionary> DictionaryCache::load(const std::string& name)
 			continue;
 		}
 
-		displayMap.insert(std::make_pair(it->get<2>(), it->get<3>()));
+		textMap.insert(std::make_pair(it->get<2>(), it->get<3>()));
 		attributeName = it->get<1>();
 	}
 
 	// Do the last one ...
-	if ( displayMap.size() > 0 )
+	if ( textMap.size() > 0 )
 	{
-		dictionary->set(prevAttributeId, attributeName, displayMap);
-		displayMap.clear();
+		dictionary->set(prevAttributeId, attributeName, textMap);
+		textMap.clear();
 	}
 
 	return dictionary;

@@ -1,24 +1,23 @@
 /*
- * Copyright 2010 MQWeb - Franky Braem
- *
- * Licensed under the EUPL, Version 1.1 or – as soon they
- * will be approved by the European Commission - subsequent
- * versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the
- * Licence.
- * You may obtain a copy of the Licence at:
- *
- * http://joinup.ec.europa.eu/software/page/eupl
- *
- * Unless required by applicable law or agreed to in
- * writing, software distributed under the Licence is
- * distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied.
- * See the Licence for the specific language governing
- * permissions and limitations under the Licence.
- */
-
+* Copyright 2017 - KBC Group NV - Franky Braem - The MIT license
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+*  copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #ifndef _MQ_PCF_h
 #define _MQ_PCF_h
 
@@ -29,21 +28,18 @@
 #include <vector>
 
 #include "Poco/DateTime.h"
-
 #include "MQ/Message.h"
 
 namespace MQ {
 
-class PCF : public Message
+class PCF
 	/// Represents a Programmable Command Format (PCF) message.
 {
 public:
+	PCF(Message::Ptr message, bool zos = false);
+		/// Creates a PCF from a message
 
-	explicit PCF(bool zos = false);
-		/// Creates an empty PCF message
-		/// Use this constructor to get a PCF message from a queue.
-
-	explicit PCF(int cmd, bool zos = false);
+	PCF(int cmd, bool zos = false);
 		/// Creates an empty PCF message for a command
 		/// Use this constructor to put a PFC on a queue.
 
@@ -64,7 +60,7 @@ public:
 
 	void addParameterList(MQLONG parameter, const std::vector<MQLONG>& values);
 		/// Add a numeric list parameter
-		
+
 	void addFilter(MQLONG parameter, MQLONG op, const std::string& value);
 		/// Add a filter with a string value.
 
@@ -140,10 +136,7 @@ public:
 	std::vector<MQLONG> getParameters() const;
 		/// Returns a vector with all parameter ids.
 
-	void init();
-		/// Initializes the internal PCF structures. Call this when you retrieved
-		/// a PFC message from a queue and before you start retrieving information
-		/// from it.
+	Message::Ptr message() const;
 
 	MQLONG optParameterNum(MQLONG parameter, MQLONG def = 0) const;
 		/// Returns the numeric value of a parameter.
@@ -159,9 +152,13 @@ public:
 
 	typedef std::vector<Ptr> Vector;
 
+	static Ptr create(Message::Ptr message, bool zos = false);
+
 private:
 
-	std::map<MQLONG, int> _pointers;
+	Message::Ptr _message;
+
+	std::map<MQLONG, size_t> _pointers;
 
 
 	bool _zos;
@@ -179,25 +176,25 @@ private:
 
 inline void PCF::addParameterList(MQLONG parameter, const std::vector<MQLONG>& values)
 {
-	addParameterList(parameter, (MQLONG*) &values[0], values.size());
+	addParameterList(parameter, (MQLONG*) &values[0], (unsigned int) values.size());
 }
 
-inline int PCF::getCommand() const 
+inline int PCF::getCommand() const
 {
-	MQCFH* header = (MQCFH*)(MQBYTE*) buffer().data();
-	return header->Command; 
+	MQCFH* header = (MQCFH*)(MQBYTE*) _message->buffer().data();
+	return header->Command;
 }
 
-inline int PCF::getCompletionCode() const 
-{ 
-	MQCFH* header = (MQCFH*)(MQBYTE*) buffer().data();
-	return header->CompCode; 
+inline int PCF::getCompletionCode() const
+{
+	MQCFH* header = (MQCFH*)(MQBYTE*) _message->buffer().data();
+	return header->CompCode;
 }
 
-inline int PCF::getReasonCode() const 
-{ 
-	MQCFH* header = (MQCFH*)(MQBYTE*) buffer().data();
-	return header->Reason; 
+inline int PCF::getReasonCode() const
+{
+	MQCFH* header = (MQCFH*)(MQBYTE*) _message->buffer().data();
+	return header->Reason;
 }
 
 inline bool PCF::isByteString(MQLONG parameter) const
@@ -207,8 +204,8 @@ inline bool PCF::isByteString(MQLONG parameter) const
 
 inline bool PCF::isExtendedResponse() const
 {
-	MQCFH* header = (MQCFH*)(MQBYTE*) buffer().data();
-	return header->Type == MQCFT_XR_SUMMARY; 
+	MQCFH* header = (MQCFH*)(MQBYTE*) _message->buffer().data();
+	return header->Type == MQCFT_XR_SUMMARY;
 }
 
 
@@ -219,7 +216,7 @@ inline bool PCF::hasParameter(MQLONG parameter) const
 
 inline bool PCF::isLast() const
 {
-	MQCFH* header = (MQCFH*)(MQBYTE*) buffer().data();
+	MQCFH* header = (MQCFH*)(MQBYTE*) _message->buffer().data();
 	return header->Control == MQCFC_LAST;
 }
 
@@ -246,13 +243,18 @@ inline bool PCF::isStringList(MQLONG parameter) const
 
 inline bool PCF::isType(MQLONG parameter, MQLONG type) const
 {
-	std::map<MQLONG, int>::const_iterator it = _pointers.find(parameter);
+	std::map<MQLONG, size_t>::const_iterator it = _pointers.find(parameter);
 	if ( it != _pointers.end() )
 	{
-		MQLONG *pcfType = (MQLONG*) buffer().data(it->second);
+		MQLONG *pcfType = (MQLONG*) _message->buffer().data(it->second);
 		return *pcfType == type;
 	}
 	return false;
+}
+
+inline Message::Ptr PCF::message() const
+{
+	return _message;
 }
 
 } // MQ namespace

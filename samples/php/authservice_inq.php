@@ -38,8 +38,8 @@ if ( ($response = curl_exec($curl)) === false )	{
 			, PHP_EOL;
 	}
 	else {
-		if ( isset($json->authservices) && count($json->authservices) > 0 ) {
-			foreach($json->authservices as $authservice)
+		if ( isset($json->data) && count($json->data) > 0 ) {
+			foreach($json->data as $authservice)
 			{
 				foreach($authservice->ServiceComponent->value as $serviceComponent) {
 					echo $serviceComponent, PHP_EOL;

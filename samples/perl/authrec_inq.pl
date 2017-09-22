@@ -44,7 +44,7 @@ if ( exists($mqweb->{error}) ) {
 		, $mqweb->{error}->{reason}->{desc};
 }
 else {
-	foreach my $authrec(@{$mqweb->{authrecs}}) {
+	foreach my $authrec(@{$mqweb->{data}}) {
 		my $output = $authrec->{ProfileName}->{value};
 		$output .= '(' . $authrec->{ObjectType}->{display} . ')';
 		$output .= ' - ' . $authrec->{EntityName}->{value};

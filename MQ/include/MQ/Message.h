@@ -1,24 +1,23 @@
 /*
- * Copyright 2010 MQWeb - Franky Braem
- *
- * Licensed under the EUPL, Version 1.1 or – as soon they
- * will be approved by the European Commission - subsequent
- * versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the
- * Licence.
- * You may obtain a copy of the Licence at:
- *
- * http://joinup.ec.europa.eu/software/page/eupl
- *
- * Unless required by applicable law or agreed to in
- * writing, software distributed under the Licence is
- * distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied.
- * See the Licence for the specific language governing
- * permissions and limitations under the Licence.
- */
-
+* Copyright 2017 - KBC Group NV - Franky Braem - The MIT license
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+*  copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #ifndef _MQ_Message_h
 #define _MQ_Message_h
 
@@ -29,6 +28,7 @@
 #include "Poco/String.h"
 #include "Poco/SharedPtr.h"
 #include "Poco/Buffer.h"
+#include "Poco/DateTimeFormatter.h"
 
 #include "MQ/Buffer.h"
 
@@ -46,13 +46,13 @@ public:
 		/// Constructor. Note: Message doesn't own the buffer. In this case
 		/// the Buffer class only acts as a wrapper around the externally
 		/// supplied memory.
-	
+
 	Buffer& buffer();
 		/// Returns the buffer used for storing the content of the message.
 
 	const Buffer& buffer() const;
 		/// Returns a const reference to the content of the message.
-	
+
 	void clear();
 		/// Clears the content and the fields of the message.
 
@@ -63,8 +63,8 @@ public:
 
 	Buffer::Ptr accountingToken() const;
 		/// Returns the account token as a Buffer. This is the
-		/// const version. The buffer is a copy, which means 
-		/// you can resize and change it, but the orginal account 
+		/// const version. The buffer is a copy, which means
+		/// you can resize and change it, but the orginal account
 		/// token will not be changed.
 
 	std::string getApplIdentityData() const;
@@ -79,8 +79,11 @@ public:
 	void setApplOriginData(const std::string& applOriginData);
 		/// Sets the application data relating to origin
 
-	MQLONG backoutCount() const;
-		// Returns the backout counter
+	MQLONG getBackoutCount() const;
+		/// Returns the backout counter
+
+	void setBackoutCount(MQLONG count);
+		/// Sets the backout counter
 
 	Buffer::Ptr correlationId();
 		/// Returns the correlation id as a Buffer. The buffer
@@ -89,8 +92,8 @@ public:
 
 	Buffer::Ptr correlationId() const;
 		/// Returns the correlation id as a Buffer. This is the
-		/// const version. The buffer is a copy, which means 
-		/// you can resize and change it, but the orginal correlation 
+		/// const version. The buffer is a copy, which means
+		/// you can resize and change it, but the orginal correlation
 		/// id will not be changed.
 
 	MQLONG getCodedCharSetId() const;
@@ -104,7 +107,7 @@ public:
 
 	MQLONG getEncoding() const;
 		/// Gets the encoding
-	
+
 	void setEncoding(MQLONG encoding);
 		/// Sets the encoding
 
@@ -133,8 +136,8 @@ public:
 
 	Buffer::Ptr groupId() const;
 		/// Returns the group id as a Buffer. This is the
-		/// const version. The buffer is a copy, which means 
-		/// you can resize and change it, but the orginal group 
+		/// const version. The buffer is a copy, which means
+		/// you can resize and change it, but the orginal group
 		/// id will not be changed.
 
 	MQLONG getMsgFlags() const;
@@ -150,8 +153,8 @@ public:
 
 	Buffer::Ptr messageId() const;
 		/// Returns the message id as a Buffer. This is the
-		/// const version. The buffer is a copy, which means 
-		/// you can resize and change it, but the orginal message 
+		/// const version. The buffer is a copy, which means
+		/// you can resize and change it, but the orginal message
 		/// id will not be changed.
 
 	MQLONG getMsgSeqNumber() const;
@@ -174,6 +177,12 @@ public:
 
 	MQLONG getOriginalLength() const;
 		/// Gets length of original message
+
+	void setOriginalLength(MQLONG length);
+		/// Sets length of original message
+
+	static Poco::DateTime createDatetime(const std::string& date, const std::string& time);
+		/// Creates a DateTime from a MQ date and MQ time
 
 	MQLONG getPersistence() const;
 		/// Returns the persistence flag
@@ -199,8 +208,24 @@ public:
 	void setPutApplType(MQLONG appType);
 		/// Sets the type of application that put the message
 
-	Poco::DateTime getPutDate() const;
-		/// Returns the put datetime
+	std::string getPutDate() const;
+		/// Returns the put date
+
+	Poco::DateTime getPutDatetime() const;
+	/// Returns the put datetime (incl. time)
+
+	void setPutDate(const std::string& date);
+		/// Sets the put date. Date format must be YYYYMMDD where month is 01 through 12
+		/// and day of month is 01 through 31.
+
+	void setPutDatetime(const Poco::DateTime& putDate, int tz = Poco::DateTimeFormatter::UTC);
+		/// Sets the put date and time
+
+	std::string getPutTime() const;
+		/// Returns the put time
+
+	void setPutTime(const std::string& date);
+	/// Sets the put time. Time format must be HHMMSSTH.
 
 	std::string getReplyToQMgr() const;
 		/// Returns the name of the reply queue manager
@@ -229,6 +254,11 @@ public:
 	std::string getUser() const;
 		/// Returns the name of the user
 
+	void setUser(const std::string& user);
+		/// Sets the name of the user
+
+	typedef Poco::SharedPtr<Message> Ptr;
+
 private:
 
 	Buffer _buffer;
@@ -246,6 +276,8 @@ private:
 	friend class Queue;
 
 	friend class MessageConsumer;
+
+	friend class Topic;
 };
 
 
@@ -285,11 +317,15 @@ inline void Message::setApplOriginData(const std::string& applOriginData)
 }
 
 
-inline MQLONG Message::backoutCount() const
+inline MQLONG Message::getBackoutCount() const
 {
 	return _md.BackoutCount;
 }
 
+inline void Message::setBackoutCount(MQLONG count)
+{
+	_md.BackoutCount = count;
+}
 
 inline Buffer& Message::buffer()
 {
@@ -394,6 +430,7 @@ inline MQMD* Message::md()
 
 inline Buffer::Ptr Message::groupId()
 {
+	_md.Version = MQMD_VERSION_2;
 	return new Buffer(_md.GroupId, MQ_GROUP_ID_LENGTH);
 }
 
@@ -412,6 +449,7 @@ inline MQLONG Message::getMsgFlags() const
 
 inline void Message::setMsgFlags(MQLONG flags)
 {
+	_md.Version = MQMD_VERSION_2;
 	_md.MsgFlags = flags;
 }
 
@@ -436,6 +474,7 @@ inline MQLONG Message::getMsgSeqNumber() const
 
 inline void Message::setMsgSeqNumber(MQLONG seqNumber)
 {
+	_md.Version = MQMD_VERSION_2;
 	_md.MsgSeqNumber = seqNumber;
 }
 
@@ -448,6 +487,7 @@ inline MQLONG Message::getOffset() const
 
 inline void Message::setOffset(MQLONG offset)
 {
+	_md.Version = MQMD_VERSION_2;
 	_md.Offset = offset;
 }
 
@@ -457,6 +497,11 @@ inline MQLONG Message::getOriginalLength() const
 	return _md.OriginalLength;
 }
 
+inline void Message::setOriginalLength(MQLONG length)
+{
+	_md.Version = MQMD_VERSION_2;
+	_md.OriginalLength = length;
+}
 
 inline MQLONG Message::getMsgType() const
 {
@@ -517,6 +562,30 @@ inline void Message::setPutApplType(MQLONG applType)
 	_md.PutApplType = applType;
 }
 
+inline Poco::DateTime Message::getPutDatetime() const
+{
+	return createDatetime(getPutDate(), getPutTime());
+}
+
+inline void Message::setPutDate(const std::string& date)
+{
+	strncpy(_md.PutDate, date.c_str(), MQ_PUT_DATE_LENGTH);
+}
+
+inline std::string Message::getPutDate() const
+{
+	return Poco::trimRight(std::string(_md.PutDate, MQ_PUT_DATE_LENGTH));
+}
+
+inline void Message::setPutTime(const std::string& time)
+{
+	strncpy(_md.PutTime, time.c_str(), MQ_PUT_TIME_LENGTH);
+}
+
+inline std::string Message::getPutTime() const
+{
+	return Poco::trimRight(std::string(_md.PutTime, MQ_PUT_TIME_LENGTH));
+}
 
 inline void Message::setReplyToQMgr(const std::string& qmgr)
 {
@@ -569,6 +638,10 @@ inline std::string Message::getUser() const
 	return Poco::trimRight(std::string(_md.UserIdentifier, MQ_USER_ID_LENGTH));
 }
 
+inline void Message::setUser(const std::string& user)
+{
+	strncpy(_md.UserIdentifier, user.c_str(), MQ_USER_ID_LENGTH);
+}
 
 } // namespace MQ
 

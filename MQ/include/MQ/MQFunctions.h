@@ -1,23 +1,23 @@
 /*
- * Copyright 2010 MQWeb - Franky Braem
- *
- * Licensed under the EUPL, Version 1.1 or - as soon they
- * will be approved by the European Commission - subsequent
- * versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the
- * Licence.
- * You may obtain a copy of the Licence at:
- *
- * http://joinup.ec.europa.eu/software/page/eupl
- *
- * Unless required by applicable law or agreed to in
- * writing, software distributed under the Licence is
- * distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied.
- * See the Licence for the specific language governing
- * permissions and limitations under the Licence.
- */
+* Copyright 2017 - KBC Group NV - Franky Braem - The MIT license
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+*  copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #include <cmqc.h>
 #include <cmqxc.h>
 
@@ -61,6 +61,21 @@ typedef void (*CbFn)(MQHCONN, MQLONG, MQCBD*, MQHOBJ, MQMD*, MQGMO*, MQLONG*, MQ
 
 
 typedef void (*CtlFn)(MQHCONN, MQLONG, MQCTLO*, MQLONG*, MQLONG*);
+
+
+typedef void (*CrtMhFn)(MQHCONN, MQCMHO*, MQHMSG*, MQLONG*, MQLONG*);
+
+
+typedef void (*DltMhFn)(MQHCONN, MQHMSG*, MQDMHO*, MQLONG*, MQLONG*);
+
+
+typedef void (*SetMpFn)(MQHCONN, MQHMSG, MQSMPO*, MQCHARV*, MQPD*, MQLONG, MQLONG, MQBYTE*, MQLONG*, MQLONG*);
+
+
+typedef void (*DltMpFn)(MQHCONN, MQHMSG, MQDMPO*, MQCHARV*, MQLONG*, MQLONG*);
+
+
+typedef void (*InqMpFn)(MQHCONN, MQHMSG, MQIMPO*, MQCHARV*, MQPD*, MQLONG, MQLONG, MQBYTE*, MQLONG*, MQLONG*, MQLONG*);
 
 class MQFunctions
 	/// Helper class for calling Websphere MQ functions dynamically. Depending on the loaded library
@@ -144,6 +159,25 @@ public:
 	void ctl(MQHCONN conn, MQLONG operation, MQCTLO* options);
 		/// Calls MQCTL. Can throw an MQException.
 
+	void crtmh(MQHCONN conn, MQCMHO* options, MQHMSG* hmsg, MQLONG* cc, MQLONG* rc);
+
+	void crtmh(MQHCONN conn, MQCMHO* options, MQHMSG* hmsg);
+
+	void dltmh(MQHCONN conn, MQHMSG* hmsg, MQDMHO* options, MQLONG* cc, MQLONG* rc);
+
+	void dltmh(MQHCONN conn, MQHMSG* hmsg, MQDMHO* options);
+
+	void setmp(MQHCONN conn, MQHMSG hmsg, MQSMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG type, MQLONG valueLength, MQBYTE* value, MQLONG* cc, MQLONG* rc);
+
+	void setmp(MQHCONN conn, MQHMSG hmsg, MQSMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG type, MQLONG valueLength, MQBYTE* value);
+
+	void dltmp(MQHCONN conn, MQHMSG hmsg, MQDMPO* options, MQCHARV* name, MQLONG* cc, MQLONG* rc);
+
+	void dltmp(MQHCONN conn, MQHMSG hmsg, MQDMPO* options, MQCHARV* name);
+
+	void inqmp(MQHCONN conn, MQHMSG, MQIMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG type, MQLONG valueLength, MQBYTE* value, MQLONG* dataLength, MQLONG* cc, MQLONG* rc);
+
+	void inqmp(MQHCONN conn, MQHMSG, MQIMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG type, MQLONG valueLength, MQBYTE* value, MQLONG* dataLength);
 private:
 	Poco::SharedLibrary _dll;
 
@@ -166,6 +200,16 @@ private:
 	CbFn _cbFn;
 
 	CtlFn _ctlFn;
+
+	CrtMhFn _crtMhFn;
+
+	DltMhFn _dltMhFn;
+
+	SetMpFn _setMpFn;
+
+	DltMpFn _dltMpFn;
+
+	InqMpFn _inqMpFn;
 
 	void trace(const std::string& subject, const std::string& function, MQLONG* cc, MQLONG* rc);
 };

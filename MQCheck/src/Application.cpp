@@ -1,23 +1,23 @@
 /*
- * Copyright 2010 MQCheck - Franky Braem
- *
- * Licensed under the EUPL, Version 1.1 or - as soon they
- * will be approved by the European Commission - subsequent
- * versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the
- * Licence.
- * You may obtain a copy of the Licence at:
- *
- * http://joinup.ec.europa.eu/software/page/eupl
- *
- * Unless required by applicable law or agreed to in
- * writing, software distributed under the Licence is
- * distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied.
- * See the Licence for the specific language governing
- * permissions and limitations under the Licence.
- */
+* Copyright 2017 - KBC Group NV - Franky Braem - The MIT license
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+*  copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #include <MQ/Check/Application.h>
 #include <MQ/MQFunctions.h>
 #include <MQ/MQSubsystem.h>
@@ -56,7 +56,7 @@ void MQCheckApplication::uninitialize()
 void MQCheckApplication::defineOptions(Poco::Util::OptionSet& options)
 {
   Application::defineOptions(options);
-  
+
   options.addOption(Option("help", "h", "display help information on command line arguments").required(false).repeatable(false));
   options.addOption(Option("channel", "c", "Server-connection channel").required(false)
                                                                        .repeatable(false)
@@ -131,7 +131,7 @@ int MQCheckApplication::main(const std::vector<std::string>& args)
   MQ::CommandServer* cmdServer = qmgr->createCommandServer("SYSTEM.DEFAULT.MODEL.QUEUE");
 
   std::string type = config().getString("mqcheck.options.type");
-  std::transform(type.begin(), type.end(), type.begin(), ::toupper); 
+  std::transform(type.begin(), type.end(), type.begin(), ::toupper);
   if ( type.compare("QUEUE") == 0 )
   {
     checkQueues(qmgr, *cmdServer);
@@ -147,10 +147,10 @@ int MQCheckApplication::main(const std::vector<std::string>& args)
 void MQCheckApplication::checkQueues(MQ::QueueManager::Ptr qmgr, MQ::CommandServer& cmdServer)
 {
   MQ::PCF::Ptr inquireQ = new MQ::PCF(MQCMD_INQUIRE_Q);
-  
+
   std::string queueName = config().getString("mqcheck.options.object", "*");
   inquireQ->addParameter(MQCA_Q_NAME, queueName);
-  
+
   std::string queueDepthOption = config().getString("mqcheck.options.qdepth", "");
   int queueDepth = -1;
   if ( ! queueDepthOption.empty() )
@@ -166,7 +166,7 @@ void MQCheckApplication::checkQueues(MQ::QueueManager::Ptr qmgr, MQ::CommandServ
   {
     inquireQ->addFilter(MQIA_CURRENT_Q_DEPTH, MQCFOP_NOT_LESS, queueDepth);
   }
-  
+
   std::vector<Poco::SharedPtr<MQ::PCF> > commandResponse;
   cmdServer.sendCommand(inquireQ, commandResponse);
 
@@ -193,7 +193,7 @@ void MQCheckApplication::checkQueues(MQ::QueueManager::Ptr qmgr, MQ::CommandServ
       std::cout << std::setw(MQ_Q_NAME_LENGTH + 1) << std::left << name;
       queueDepth = (*it)->getParameterNum(MQIA_CURRENT_Q_DEPTH);
       std::cout << " " << std::setw(6) << std::right;
-      if ( queueDepth == -1 ) 
+      if ( queueDepth == -1 )
       {
         std::cout << "-";
       }

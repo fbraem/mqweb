@@ -1,25 +1,24 @@
 /*
- * Copyright 2010 MQWeb - Franky Braem
- *
- * Licensed under the EUPL, Version 1.1 or - as soon they
- * will be approved by the European Commission - subsequent
- * versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the
- * Licence.
- * You may obtain a copy of the Licence at:
- *
- * http://joinup.ec.europa.eu/software/page/eupl
- *
- * Unless required by applicable law or agreed to in
- * writing, software distributed under the Licence is
- * distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied.
- * See the Licence for the specific language governing
- * permissions and limitations under the Licence.
- */
+* Copyright 2017 - KBC Group NV - Franky Braem - The MIT license
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+*  copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #include "MQ/Web/ControllerRequestHandler.h"
-#include "MQ/Web/WebController.h"
 #include "MQ/Web/AuthenticationInformationController.h"
 #include "MQ/Web/AuthorityRecordController.h"
 #include "MQ/Web/AuthorityServiceController.h"
@@ -31,6 +30,7 @@
 #include "MQ/Web/ListenerController.h"
 #include "MQ/Web/ListenerStatusController.h"
 #include "MQ/Web/MessageController.h"
+#include "MQ/Web/MQWebController.h"
 #include "MQ/Web/NamelistController.h"
 #include "MQ/Web/ProcessController.h"
 #include "MQ/Web/QueueController.h"
@@ -61,29 +61,19 @@ void ControllerRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& reque
 	std::vector<std::string> paths;
 	uri.getPathSegments(paths);
 
-	std::string controllerType;
-	std::string controllerName;
-	if ( paths.size() == 0 ) // Use the default controller type
-	{
-		controllerType = "web";
-	}
-	else
-	{
-		controllerType = paths.front();
-		paths.erase(paths.begin());
+	if ( paths.size() == 0 ) {
+		response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "Invalid path specified in URL. Did you specified api?");
+		response.send();
+		return;
 	}
 
+	std::string controllerType = paths.front();
+	paths.erase(paths.begin());
+
+	std::string controllerName;
+
 	Poco::SharedPtr<Controller> controller;
-	if ( controllerType.compare("web") == 0 )
-	{
-		controller = new WebController();
-		if ( paths.size() == 0 )
-		{
-			paths.push_back("qmgr"); // Default qmgr
-		}
-		controller->handle(paths, request, response);
-	}
-	else if ( controllerType.compare("api") == 0 )
+	if ( controllerType.compare("api") == 0 )
 	{
 		if ( paths.size() == 0 )
 		{
@@ -108,7 +98,7 @@ void ControllerRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& reque
 	}
 	else
 	{
-		response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "Only web or api are allowed as controller type");
+		response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "Only api is allowed as controller type");
 		response.send();
 	}
 }
@@ -138,6 +128,7 @@ void ControllerRequestHandler::registerControllers()
 	_controllerFactory.registerClass<TopicStatusController>("tpstatus");
 	_controllerFactory.registerClass<AuthorityServiceController>("authservice");
 	_controllerFactory.registerClass<ChannelInitiatorController>("chinit");
+	_controllerFactory.registerClass<MQWebController>("mqweb");
 }
 
 
