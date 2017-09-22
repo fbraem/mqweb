@@ -22,8 +22,8 @@
 			echo "Reason Code: {$json->error->reason->code} - {$json->error->reason->desc}\n";
 		}
 		else {
-			if ( isset($json->queues) && count($json->queues) > 0 ) {
-				foreach($json->queues as $queue)
+			if ( isset($json->data) && count($json->data) > 0 ) {
+				foreach($json->data as $queue)
 				{
 					echo $queue->QName->value;
 					if ( isset($queue->CurrentQDepth) ) {

@@ -28,12 +28,12 @@
 				. PHP_EOL;
 		}
 		else {
-			if ( isset($json->status) ) {
-				echo $json->status->QMgrName->value
+			if ( isset($json->data) && count($json->data) > 0 ) {
+				echo $json->data[0]->QMgrName->value
 					. ' started on '
-					. $json->status->StartDate->value
+					. $json->data[0]->StartDate->value
 					. ' '
-					. $json->status->StartTime->value
+					. $json->data[0]->StartTime->value
 					. PHP_EOL;
 			}
 			else {

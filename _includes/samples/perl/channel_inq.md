@@ -47,7 +47,7 @@ if ( exists($mqweb->{error}) ) {
 		, $mqweb->{error}->{reason}->{desc};
 }
 else {
-	foreach my $channel(@{$mqweb->{channels}}) {
+	foreach my $channel(@{$mqweb->{data}}) {
 		my $output = $channel->{ChannelName}->{value};
 		$output .= '(' . $channel->{ChannelType}->{display} . ')';
 		if ( exists($channel->{ConnectionName}) ) {

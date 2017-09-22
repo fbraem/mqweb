@@ -42,9 +42,9 @@ if ( exists($mqweb->{error}) ) {
 		$mqweb->{error}->{reason}->{desc};
 }
 else {
-	say $mqweb->{qmgr}->{QMgrName}->{value},
+	say $mqweb->{data}->[0]->{QMgrName}->{value},
 		' : ', 
-		$mqweb->{qmgr}->{QMgrDesc}->{value};
+		$mqweb->{data}->[0]->{QMgrDesc}->{value};
 }
 
 {% endhighlight %}

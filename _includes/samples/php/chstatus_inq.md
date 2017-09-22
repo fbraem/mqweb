@@ -21,8 +21,8 @@
 			echo "Reason Code: {$json->error->reason->code} - {$json->error->reason->desc}\n";
 		}
 		else {
-			if ( isset($json->statuses) && count($json->statuses) > 0 ) {
-				foreach($json->statuses as $status)
+			if ( isset($json->data) && count($json->data) > 0 ) {
+				foreach($json->data as $status)
 				{
 					echo $status->ChannelName->value;
 					echo " : ";

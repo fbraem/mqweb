@@ -42,7 +42,7 @@ if ( exists($mqweb->{error}) ) {
 }
 else {
 	my %clusters;
-	foreach my $clusqmgr(@{$mqweb->{clusqmgrs}}) {
+	foreach my $clusqmgr(@{$mqweb->{data}}) {
 		my $clusterName = $clusqmgr->{ClusterName}->{value};
 		push(@{$clusters{$clusterName}}, $clusqmgr->{QMgrName}->{value});
 	}

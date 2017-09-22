@@ -21,8 +21,8 @@
 			echo "Reason Code: {$json->error->reason->code} - {$json->error->reason->desc}\n";
 		}
 		else {
-			if ( isset($json->processes) && count($json->processes) > 0 ) {
-				foreach($json->processes as $process)
+			if ( isset($json->data) && count($json->data) > 0 ) {
+				foreach($json->data as $process)
 				{
 					echo $process->ProcessName->value;
 					echo "\n";

@@ -41,7 +41,7 @@ if ( exists($mqweb->{error}) ) {
 		, $mqweb->{error}->{reason}->{desc};
 }
 else {
-	foreach my $sub(@{$mqweb->{subs}}) {
+	foreach my $sub(@{$mqweb->{data}}) {
 		say $sub->{SubName}->{value};
 	}
 }

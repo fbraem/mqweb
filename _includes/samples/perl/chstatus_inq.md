@@ -46,7 +46,7 @@ if ( exists($mqweb->{error}) ) {
 		, $mqweb->{error}->{reason}->{desc};
 }
 else {
-	foreach my $status(@{$mqweb->{statuses}}) {
+	foreach my $status(@{$mqweb->{data}}) {
 		say $status->{ChannelName}->{value}
 			, ' : '
 			, $status->{ChannelStatus}->{display}

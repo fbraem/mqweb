@@ -42,7 +42,7 @@ if ( exists($mqweb->{error}) ) {
 		, $mqweb->{error}->{reason}->{desc};
 }
 else {
-	foreach my $process(@{$mqweb->{processes}}) {
+	foreach my $process(@{$mqweb->{data}}) {
 		say $process->{ProcessName}->{value};
 	}
 }

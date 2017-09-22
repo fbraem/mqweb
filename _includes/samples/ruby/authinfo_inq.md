@@ -19,7 +19,7 @@ if response.code == "200"
 	if json["error"]
 		puts "An MQException occurred: RC= #{json["error"]["reason"]["code"]} - #{json["error"]["reason"]["desc"]}"
 	else
-		json["authinfos"].each do |authinfo|
+		json["data"].each do |authinfo|
 			puts authinfo["AuthInfoName"]["value"]
 		end
 	end
