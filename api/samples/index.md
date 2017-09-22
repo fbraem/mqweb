@@ -158,7 +158,7 @@ on the server you can use [nodejs](http://nodejs.org/) to run your scripts.
 {% include accordion_sample.html language="python" id="clusqmgr_python_suspend" title="Suspend" sample="clusqmgr_suspend" %}
 
 ### Connection
-{% include accordion_sample.html language="python" id="connection_python_inq" title="Inquire" sample="connection_inq" %}
+{% include accordion_sample.html language="python" id="connection_python_inq" title="Inquire" sample="conn_inq" %}
 
 ### Event Messages
 {% include accordion_sample.html language="python" id="event_python_inq" title="Event" sample="event" %}
@@ -191,7 +191,7 @@ on the server you can use [nodejs](http://nodejs.org/) to run your scripts.
 {% include accordion_sample.html language="python" id="sub_python_inq" title="Inquire" sample="sub_inq" %}
 
 ### Subscription Statuses
-{% include accordion_sample.html language="python" id="sbstatus_python_inq" title="Inquire" sample="sbstatus_inq" %}
+{% include accordion_sample.html language="python" id="sbstatus_python_inq" title="Inquire" sample="substatus_inq" %}
 
 ### Topics
 {% include accordion_sample.html language="python" id="topic_python_inq" title="Inquire" sample="topic_inq" %}
