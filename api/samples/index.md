@@ -129,7 +129,74 @@ on the server you can use [nodejs](http://nodejs.org/) to run your scripts.
 {% include accordion_sample.html language="js" id="queue_js_1" title="Inquire" sample="queue_inq" %}
 
 ## <a name="Python"></a>Python
-TODO!
+
+### Authentication Information
+{% include accordion_sample.html language="python" id="authinfo_python_inq" title="Inquire" sample="authinfo_inq" %}
+
+### Authority Records
+{% include accordion_sample.html language="python" id="authrec_python_inq" title="Inquire" sample="authrec_inq" %}
+
+### Authority Service
+{% include accordion_sample.html language="python" id="authservice_python_inq" title="Inquire" sample="authservice_inq" %}
+
+### Channels
+{% include accordion_sample.html language="python" id="channel_python_inq" title="Inquire" sample="channel_inq" %}
+
+{% include accordion_sample.html language="python" id="channel_python_start" title="Start" sample="channel_start" %}
+
+{% include accordion_sample.html language="python" id="channel_python_stop" title="Stop" sample="channel_stop" %}
+
+### Channel Statuses
+{% include accordion_sample.html language="python" id="channelstatus_python_inq" title="Inquire" sample="chstatus_inq" %}
+
+### Cluster Queuemanager
+{% include accordion_sample.html language="python" id="clusqmgr_python_inq" title="Inquire" sample="clusqmgr_inq" %}
+
+{% include accordion_sample.html language="python" id="clusqmgr_python_resume" title="Resume" sample="clusqmgr_resume" %}
+
+{% include accordion_sample.html language="python" id="clusqmgr_python_suspend" title="Suspend" sample="clusqmgr_suspend" %}
+
+### Connection
+{% include accordion_sample.html language="python" id="connection_python_inq" title="Inquire" sample="connection_inq" %}
+
+### Event Messages
+{% include accordion_sample.html language="python" id="event_python_inq" title="Event" sample="event" %}
+
+### Listeners
+{% include accordion_sample.html language="python" id="listener_python_inq" title="Inquire" sample="listener_inq" %}
+
+### Listener Statuses
+{% include accordion_sample.html language="python" id="lsstatus_python_inq" title="Inquire" sample="lsstatus_inq" %}
+
+### Namelists
+{% include accordion_sample.html language="python" id="namelist_python_inq" title="Inquire" sample="namelist_inq" %}
+
+### Processes
+{% include accordion_sample.html language="python" id="processes_python_inq" title="Inquire" sample="process_inq" %}
+
+### Queuemanager
+{% include accordion_sample.html language="python" id="qmgr_python_inq" title="Inquire" sample="qmgr_inq" %}
+
+### Queuemanager Status
+{% include accordion_sample.html language="python" id="qmstatus_python_inq" title="Inquire" sample="qmstatus_inq" %}
+
+### Queue
+{% include accordion_sample.html language="python" id="queue_python_inq" title="Inquire" sample="queue_inq" %}
+
+### Services
+{% include accordion_sample.html language="python" id="service_python_inq" title="Inquire" sample="service_inq" %}
+
+### Subscriptions
+{% include accordion_sample.html language="python" id="sub_python_inq" title="Inquire" sample="sub_inq" %}
+
+### Subscription Statuses
+{% include accordion_sample.html language="python" id="sbstatus_python_inq" title="Inquire" sample="sbstatus_inq" %}
+
+### Topics
+{% include accordion_sample.html language="python" id="topic_python_inq" title="Inquire" sample="topic_inq" %}
+
+### Topic Statuses
+{% include accordion_sample.html language="python" id="tpstatus_python_inq" title="Inquire" sample="tpstatus_inq" %}
 
 ## <a name="Java"></a>Java
 TODO!
