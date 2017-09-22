@@ -45,15 +45,10 @@ Look at [API overview](/api/index.html) to see which api's are available.
 MQWeb App
 ---------
 
-MQWeb App is a sample web application which has its own 
-[Github repository](https://github.com/fbraem/mqwebapp). This web application 
-can be reached by prefixing the requested HTML page with
-
-    http://<mqwebhost:port>/web
-
-Make sure that the `mq.web.app` property is set to the document root.
+MQWeb App is a sample web application which has its own
+[Github repository](https://github.com/fbraem/mqwebapp).
 
 MQWeb API's can be integrated in your website using any server side language
 that supports HTTP requests, but with the MQWeb app, you can use any client side
-solution like [AngularJS](https://angularjs.org/), 
+solution like [AngularJS](https://angularjs.org/),
 [vue.js](http://www.vuejs.org), ...
