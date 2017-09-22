@@ -7,8 +7,6 @@ showSidebar: true
 Features
 ========
 
-MQWeb can be used in two ways:
-
 API
 ---
 
