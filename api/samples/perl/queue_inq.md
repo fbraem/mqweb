@@ -46,7 +46,7 @@ if ( exists($mqweb->{error}) ) {
 		, $mqweb->{error}->{reason}->{desc};
 }
 else {
-	foreach my $queue(@{$mqweb->{queues}}) {
+	foreach my $queue(@{$mqweb->{data}}) {
 		my $output = $queue->{QName}->{value};
 		$output .= ' : ' . $queue->{CurrentQDepth}->{value} 
 			if ( exists($queue->{CurrentQDepth}) );

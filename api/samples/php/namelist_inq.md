@@ -22,8 +22,8 @@
 			echo "Reason Code: {$json->error->reason->code} - {$json->error->reason->desc}\n";
 		}
 		else {
-			if ( isset($json->namelists) && count($json->namelists) > 0 ) {
-				foreach($json->namelists as $namelist)
+			if ( isset($json->data) && count($json->data) > 0 ) {
+				foreach($json->data as $namelist)
 				{
 					echo $namelist->NamelistName->value;
 					echo ': ';

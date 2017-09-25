@@ -42,8 +42,8 @@ else {
 	else {
 		echo 'Subscriptions on ', $qmgr, PHP_EOL;
 		echo '-----------------', str_repeat('-', strlen($qmgr)), PHP_EOL;
-		if ( isset($json->subs) && count($json->subs) > 0 ) {
-			foreach($json->subs as $sub)
+		if ( isset($json->data) && count($json->data) > 0 ) {
+			foreach($json->data as $sub)
 			{
 				echo $sub->SubName->value, PHP_EOL;
 			}

@@ -43,7 +43,7 @@ if ( exists($mqweb->{error}) ) {
 		, $mqweb->{error}->{reason}->{desc};
 }
 else {
-	foreach my $service(@{$mqweb->{services}}) {
+	foreach my $service(@{$mqweb->{data}}) {
 		say $service->{ServiceName}->{value};
 	}
 }

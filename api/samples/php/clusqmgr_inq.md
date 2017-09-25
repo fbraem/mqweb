@@ -22,8 +22,8 @@
 			echo "Reason Code: {$json->error->reason->code} - {$json->error->reason->desc}\n";
 		}
 		else {
-			if ( isset($json->clusqmgrs) && count($json->clusqmgrs) > 0 ) {
-				foreach($json->clusqmgrs as $clusqmgr)
+			if ( isset($json->data) && count($json->data) > 0 ) {
+				foreach($json->data as $clusqmgr)
 				{
 					echo $clusqmgr->ClusterName->value;
 					echo " : ";

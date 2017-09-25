@@ -28,10 +28,10 @@
 				. PHP_EOL;
 		}
 		else {
-			if ( isset($json->qmgr) ) {
-				echo $json->qmgr->QMgrName->value
+			if ( isset($json->data) && count($json->data) > 0 ) {
+				echo $json->data[0]->QMgrName->value
 					. ' : '
-					. $json->qmgr->QMgrDesc->value
+					. $json->data[0]->QMgrDesc->value
 					. PHP_EOL;
 			}
 			else {
