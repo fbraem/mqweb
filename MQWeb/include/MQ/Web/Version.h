@@ -23,9 +23,9 @@
 
 #define MQWEB_VERSION_MAJOR 0
 #define MQWEB_VERSION_MINOR 1
-#define MQWEB_RELEASE_NUMBER 0
+#define MQWEB_RELEASE_NUMBER 1
 
-#define MQWEB_VERSION "0.1.0"
-#define MQWEB_COMPLETE_VERSION "MQWeb v0.1.0"
+#define MQWEB_VERSION "0.1.1"
+#define MQWEB_COMPLETE_VERSION "MQWeb v0.1.1"
 
 #endif // _MQWeb_Version_H
