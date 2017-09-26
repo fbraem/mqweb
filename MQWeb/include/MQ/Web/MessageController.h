@@ -55,7 +55,7 @@ public:
 
 	void put();
 		/// Put a message on a queue
-		///   /message/publish/<qmgrName>/<queueName>
+		///   /message/put/<qmgrName>/<queueName>
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available action

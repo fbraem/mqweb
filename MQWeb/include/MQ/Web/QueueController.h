@@ -42,26 +42,6 @@ public:
 
 	void inquire();
 		/// Action inquire. Inquire queues and returns all data in JSON format.
-		/// URL's:
-		///  queue/inquire/<qmgrName>
-		///  queue/inquire/<qmgrName>/<queueName>
-		///  queue/inquire/<qmgrName>?queueName=MQWEB*&queueDepth=1
-		///
-		/// Query Parameters:
-		///  queueName: Name of the queue (* is default).
-		///  queueDepth: Only select queues which has at least queueDepth messages.
-		///  queueUsage: xmitq or normal (default is normal)
-		///  type: queue type. Possible values: All, Local, Alias, Cluster, Model or Remote (default is All)
-		///  excludeSystem: when 'true', queues starting with 'SYSTEM.' are excluded.
-		///  excludeTemp: when 'true', temporary queues are excluded.
-		///
-		/// Query parameters are ignored when a queueName is passed in the URI path.
-		///
-		/// The returned JSON object can contain following properties:
-		///  mqweb : An object with information about the MQWeb application and request.
-		///  queues : An array with all matching queues. This is always an array (even when a queuename is passed in the URI path).
-		///   When an MQ error occurs there will be no queues property.
-		///  error: An object describing the MQ error (only returned on error).
 
 private:
 };

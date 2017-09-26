@@ -39,24 +39,6 @@ public:
 
 	void inquire();
 		/// Action inquire. Inquire the channels and returns the details in JSON format.
-		/// URL:
-		///  channel/inquire/<qmgrName>
-		///  channel/inquire/<qmgrName>/<channelName>/<channelType>
-		///  channel/inquire/<qmgrName>?channelName=MQWEB*
-		///
-		/// Query Parameters:
-		///  channelName: Name of the channel (* is default).
-		///  channelType: Only return channels of the given type.
-		///   Possible values:
-		///  excludeSystem: When 'true', don't return system channels
-		///
-		/// Query parameters are ignored when a channelName is passed in the URI path.
-		///
-		/// The returned JSON object can contain following properties:
-		///  mqweb : An object with information about the MQWeb application and request.
-		///  queues : An array with all matching channels. This is always an array (even when a channelname is passed in the URI path).
-		///   When an MQ error occurs there will be no channels property.
-		///  error: An object describing the MQ error (only returned on error).
 
 	void start();
 

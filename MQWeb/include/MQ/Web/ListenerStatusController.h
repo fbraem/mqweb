@@ -41,23 +41,7 @@ public:
 		/// Returns all available actions
 
 	void inquire();
-		/// Action inquire. Inquire listeners and returns all data in JSON format.
-		/// URL's:
-		///  listener/inquire/<qmgrName>
-		///  listener/inquire/<qmgrName>/<listenerName>
-		///  listener/inquire/<qmgrName>?listenerName=MQWEB*
-		///
-		/// Query Parameters:
-		///  listenerName: Name of the queue (* is default).
-		///  type: listener type. Possible values: All, LU62, NETBIOS, SPX or TCP (default is All)
-		///
-		/// Query parameters are ignored when a listenerName is passed in the URI path.
-		///
-		/// The returned JSON object can contain following properties:
-		///  mqweb : An object with information about the MQWeb application and request.
-		///  listeners : An array with all matching listeners. This is always an array (even when a listenername is passed in the URI path).
-		///   When an MQ error occurs there will be no listeners property.
-		///  error: An object describing the MQ error (only returned on error).
+		/// Action inquire. Inquire listener statuses and returns all data in JSON format.
 
 private:
 };

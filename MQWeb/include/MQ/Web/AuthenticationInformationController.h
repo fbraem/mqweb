@@ -42,22 +42,6 @@ public:
 
 	void inquire();
 		/// Action inquire. Inquire authentication information objects and returns all data in JSON format.
-		/// URL's:
-		///  authinfo/inquire/<qmgrName>
-		///  authinfo/inquire/<qmgrName>/<authInfoName>
-		///  authinfo/inquire/<qmgrName>?authInfoName=MQWEB*
-		///
-		/// Query Parameters:
-		///  authInfoName: Name of the authentication information object (* is default).
-		///  excludeSystem: when 'true', queues starting with 'SYSTEM.' are excluded.
-		///
-		/// The authInfoName query parameter is ignored when a authInfoName is passed in the URI path.
-		///
-		/// The returned JSON object can contain following properties:
-		///  mqweb : An object with information about the MQWeb application and request.
-		///  authinfos : An array with all authentication information objects. This is always an array.
-		///  When an MQ error occurs there will be no authinfos property.
-		///  error: An object describing the MQ error (only returned on error).
 
 private:
 };

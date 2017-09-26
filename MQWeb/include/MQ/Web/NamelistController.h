@@ -39,22 +39,6 @@ public:
 
 	void inquire();
 		/// Action inquire. Inquire the namelists and returns the details in JSON format.
-		/// URL:
-		///  nl/inquire/<qmgrName>
-		///  nl/inquire/<qmgrName>/<namelistName>
-		///  nl/inquire/<qmgrName>?namelistName=MQWEB*
-		///
-		/// Query Parameters:
-		///  namelistName: Name of the namelist (* is default).
-		///  excludeSystem: When 'true', don't return system namelists
-		///
-		/// Query parameters are ignored when a namelistName is passed in the URI path.
-		///
-		/// The returned JSON object can contain following properties:
-		///  mqweb : An object with information about the MQWeb application and request.
-		///  namelists : An array with all matching namelists. This is always an array (even when a namelistname is passed in the URI path).
-		///   When an MQ error occurs there will be no namelists property.
-		///  error: An object describing the MQ error (only returned on error).
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions.

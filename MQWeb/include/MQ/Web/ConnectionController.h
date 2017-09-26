@@ -39,15 +39,6 @@ public:
 
 	void inquire();
 		/// Action inquire. Inquire the connections and returns the details in JSON format.
-		/// URL:
-		///  connection/inquire/<qmgrName>
-		///  connection/inquire/<qmgrName>/<connectionId>
-		///
-		/// The returned JSON object can contain following properties:
-		///  mqweb : An object with information about the MQWeb application and request.
-		///  connections : An array with all matching connections. This is always an array (even when a connectionId is passed in the URI path).
-		///   When an MQ error occurs there will be no queues property.
-		///  error: An object describing the MQ error (only returned on error).
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions.

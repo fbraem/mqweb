@@ -39,10 +39,6 @@ public:
 
 	void inquire();
 		/// Action inquire. Inquire the channelstatus and return the details in JSON format.
-		/// URL's:
-		///  /chstatus/inquire/<qmgrName>
-		///  /chstatus/inquire/<qmgrName>/<channelName>/<channelType>
-		///  /chstatus/inquire/<qmgrName>?channelName=MQWEB*
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all actions.

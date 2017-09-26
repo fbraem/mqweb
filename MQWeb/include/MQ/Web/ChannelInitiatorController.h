@@ -38,7 +38,7 @@ public:
 		/// Destructor
 
 	void inquire();
-		/// See: http://www.mqweb.org/api/topic.html#inquire
+		/// Action inquire. Inquire the channel initiator and returns the details in JSON format.
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions.
