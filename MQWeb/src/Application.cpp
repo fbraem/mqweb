@@ -186,8 +186,6 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 		return Application::EXIT_SOFTWARE;
 	}
 
-	_cache.setLogger(logger);
-
 	// Check the web app path configuration (mq.web.app)
 	if ( config().has("mq.web.app") )
 	{

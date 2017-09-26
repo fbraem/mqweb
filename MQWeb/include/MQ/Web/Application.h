@@ -26,8 +26,6 @@
 #include "Poco/Util/OptionSet.h"
 #include "Poco/Util/HelpFormatter.h"
 
-#include "Poco/JSON/TemplateCache.h"
-
 #include "MQ/Web/QueueManagerPoolCache.h"
 
 class MQWebApplication : public Poco::Util::ServerApplication
@@ -68,10 +66,6 @@ private:
 	bool _helpRequested;
 
 	bool _versionRequested;
-
-	Poco::JSON::TemplateCache _cache;
-		/// Only one TemplaceCache object is allowed. The best place to define it
-		/// is here.
 
 	MQ::Web::QueueManagerPoolCache _qmgrPoolCache;
 		/// Only one QueueManagerPoolCache object is allowed. The best place to
