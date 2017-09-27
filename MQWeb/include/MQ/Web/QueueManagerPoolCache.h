@@ -48,6 +48,8 @@ public:
 	QueueManagerPool::Ptr getQueueManagerPool(const std::string& qmgrName);
 		/// Get a QueueManagerPool from the cache
 
+	std::set<std::string> getAllPoolNames();
+
 	static QueueManagerPoolCache* instance();
 		/// Returns the only instance of this class
 
@@ -63,6 +65,11 @@ private:
 
 	static QueueManagerPoolCache* _instance;
 };
+
+inline std::set<std::string> QueueManagerPoolCache::getAllPoolNames()
+{
+	return _cache.getAllKeys();
+}
 
 inline QueueManagerPoolCache* QueueManagerPoolCache::instance()
 {

@@ -34,6 +34,7 @@
 #include "MQ/MQSubsystem.h"
 #include "MQ/Web/QueueManagerDefaultConfig.h"
 #include "MQ/Web/QueueManagerDatabaseConfig.h"
+#include "MQ/Web/QueueManagerPoolCache.h"
 
 namespace MQ
 {
@@ -72,6 +73,21 @@ void MQWebController::inquire()
 	MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQSubsystem>();
 	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
 	mqweb->set("client", mqSystem.client());
+
+	Poco::JSON::Array::Ptr connections = new Poco::JSON::Array();
+	mqweb->set("connections", connections);
+	std::set<std::string> pools = QueueManagerPoolCache::instance()->getAllPoolNames();
+	for(std::set<std::string>::const_iterator it = pools.begin(); it != pools.end(); ++it)
+	{
+		QueueManagerPool::Ptr pool = QueueManagerPoolCache::instance()->getQueueManagerPool(*it);
+		Poco::JSON::Object::Ptr jsonPool = new Poco::JSON::Object();
+		connections->add(jsonPool);
+		jsonPool->set("name", *it);
+		jsonPool->set("size", pool->size());
+		jsonPool->set("capacity", pool->capacity());
+		jsonPool->set("peakCapacity", pool->peakCapacity());
+		jsonPool->set("available", pool->available());
+	}
 }
 
 void MQWebController::list()
