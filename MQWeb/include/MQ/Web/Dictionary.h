@@ -83,6 +83,8 @@ public:
 
 	void mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, bool alwaysCreate = true) const;
 
+	void mapToPCF(Poco::JSON::Object::Ptr json, PCF &pcf) const;
+
 	std::map<MQLONG, std::string>::const_iterator begin() const;
 		/// Returns the begin iterator of the id map
 

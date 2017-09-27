@@ -19,6 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/QueueMapper.h"
+#include "MQ/MQException.h"
 
 namespace MQ {
 namespace Web {
@@ -41,7 +42,22 @@ void QueueMapper::change()
 
 void QueueMapper::create(bool replace)
 {
-	poco_assert_dbg(false); // Not yet implemented
+	createCommand(MQCMD_CREATE_Q);
+	fillPCF();
+
+	PCF::Vector commandResponse;
+	execute(commandResponse);
+
+	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
+	{
+		if ( (*it)->isExtendedResponse() ) // Skip extended response
+			continue;
+
+		if ( (*it)->getReasonCode() != MQRC_NONE ) 
+		{
+			throw MQException("PCF", "MQCMD_CREATE_Q", (*it)->getReasonCode(), (*it)->getReasonCode());
+		}
+	}
 }
 
 

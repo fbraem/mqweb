@@ -36,6 +36,24 @@ QueueController::~QueueController()
 {
 }
 
+void QueueController::create()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
+	if ( data().has("input") && data().isObject("input") )
+	{
+		pcfParameters = data().getObject("input");
+	} 
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		for(Poco::Net::NameValueCollection::ConstIterator it = form().begin(); it != form().end(); ++it)
+		{
+			pcfParameters->set(it->first, it->second);
+		}
+	}
+	QueueMapper mapper(*commandServer(), pcfParameters);
+	mapper.create();
+}
 
 void QueueController::inquire()
 {

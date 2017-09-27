@@ -40,6 +40,9 @@ public:
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions
 
+	void create();
+		/// Action create. Define queue.
+
 	void inquire();
 		/// Action inquire. Inquire queues and returns all data in JSON format.
 
@@ -51,6 +54,7 @@ inline const Controller::ActionMap& QueueController::getActions() const
 {
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
+			("create", static_cast<ActionFn>(&QueueController::create))
 			("inquire", static_cast<ActionFn>(&QueueController::inquire))
 		;
 	return actions;

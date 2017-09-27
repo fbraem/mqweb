@@ -35,20 +35,14 @@ Dictionary::~Dictionary()
 
 Dictionary& Dictionary::operator()(MQLONG id, const std::string& name)
 {
-	_idMap.insert(std::make_pair(id, name));
-	_nameMap.insert(std::make_pair(name, id));
-
+	set(id, name);
 	return *this;
 }
 
 
 Dictionary& Dictionary::operator()(MQLONG id, const std::string& name, const TextMap& textMap)
 {
-	_idMap.insert(std::make_pair(id, name));
-	_nameMap.insert(std::make_pair(name, id));
-
-	_textMaps.insert(std::make_pair(id, textMap));
-
+	set(id, name, textMap);
 	return *this;
 }
 
@@ -167,6 +161,35 @@ void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, bool a
 		else
 		{
 			poco_assert_dbg(false);
+		}
+	}
+}
+
+void Dictionary::mapToPCF(Poco::JSON::Object::Ptr json, MQ::PCF &pcf) const
+{
+	for(Poco::JSON::Object::ConstIterator it = json->begin(); it != json->end(); ++it)
+	{
+		MQLONG id = getIdForName(it->first);
+		if ( id == -1 ) continue; // Skip unknown attributes
+
+		if ( id > MQIA_FIRST && id < MQIA_LAST ) // Integer attributes
+		{
+			if ( hasTextMap(id) )
+			{
+				MQLONG value = getIdForText(id, it->second);
+				if ( value != -1 )
+				{
+					pcf.addParameter(id, value);
+				}
+			}
+		}
+		else if (id > MQCA_FIRST && id < MQCA_LAST ) // String attributes
+		{
+			pcf.addParameter(id, it->second.toString());
+		}
+		else if ( id > MQBACF_FIRST && id < MQBACF_LAST_USED ) // Byte attributes
+		{
+			//TODO: do we need this?
 		}
 	}
 }

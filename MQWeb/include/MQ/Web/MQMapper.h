@@ -70,6 +70,8 @@ protected:
 
 	Poco::JSON::Object::Ptr createJSON(const PCF& pcf);
 
+	void fillPCF();
+
 	void addAttributeList(MQLONG attrId, const std::string& attr);
 		/// Handles the attribute list
 
@@ -144,6 +146,11 @@ inline const Poco::SharedPtr<Dictionary> MQMapper::dictionary(const std::string&
 inline void MQMapper::createCommand(MQLONG command)
 {
 	_pcf = _commandServer.createCommand(command);
+}
+
+inline void MQMapper::fillPCF()
+{
+	_dictionary->mapToPCF(_input, *_pcf);
 }
 
 inline PCF::Ptr MQMapper::pcf()

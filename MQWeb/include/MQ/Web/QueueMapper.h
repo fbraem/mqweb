@@ -41,7 +41,7 @@ public:
 		/// Implements the change queue command. Not implemented yet.
 
 	void create(bool replace = false);
-		/// Implements the create queue command. Not implemented yet.
+		/// Implements the create queue command.
 
 	void copy(bool replace = false);
 		/// Implements the copy queue command. Not implemented yet.
