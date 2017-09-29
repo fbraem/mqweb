@@ -193,13 +193,14 @@ void PCFCommand::addParameterNumFromString(MQLONG parameter, const std::string& 
 	}
 }
 
-void PCFCommand::execute(PCF::Vector& response)
+void PCFCommand::execute()
 {
-	_commandServer.sendCommand(_pcf, response);
+	_response.clear();
+	_commandServer.sendCommand(_pcf, _response);
 
-	if ( response.size() > 0 )
+	if ( _response.size() > 0 )
 	{
-		PCF::Vector::const_iterator it = response.begin();
+		PCF::Vector::const_iterator it = _response.begin();
 		if (     (*it)->getCompletionCode() == MQCC_FAILED
 			  && (*it)->getReasonCode() > 3000
 			  && (*it)->getReasonCode() < 4000

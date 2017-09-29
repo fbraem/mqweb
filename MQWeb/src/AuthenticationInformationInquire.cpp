@@ -47,12 +47,11 @@ AuthenticationInformationInquire::~AuthenticationInformationInquire()
 
 Poco::JSON::Array::Ptr AuthenticationInformationInquire::execute()
 {
-	PCF::Vector response;
-	PCFCommand::execute(response);
+	PCFCommand::execute();
 
 	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 
-	for(PCF::Vector::iterator it = response.begin(); it != response.end(); it++)
+	for(PCF::Vector::const_iterator it = begin(); it != end(); it++)
 	{
 		if ( (*it)->isExtendedResponse() ) // Skip extended response
 			continue;

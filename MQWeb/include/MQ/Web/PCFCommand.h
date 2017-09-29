@@ -61,6 +61,15 @@ public:
 	static const Poco::SharedPtr<Dictionary> dictionary(const std::string& objectType);
 		/// Returns the dictionary for the given object type
 
+	void execute();
+		/// Sends the PCF command to the command server
+
+	PCF::Vector::const_iterator begin() const;
+
+	PCF::Vector::const_iterator end() const;
+
+	size_t responseSize() const;
+
 protected:
 
 	PCF::Ptr createCommand(MQLONG command);
@@ -83,9 +92,6 @@ protected:
 	void addStringFilter();
 		/// When StringFilterCommand is set, it will add an string filter to the PCF message
 
-	void execute(PCF::Vector& response);
-		/// Sends the PCF command to the command server
-
 	PCF::Ptr pcf();
 
 private:
@@ -95,6 +101,8 @@ private:
 	Poco::JSON::Object::Ptr _input;
 
 	PCF::Ptr _pcf;
+
+	PCF::Vector _response;
 
 	Poco::SharedPtr<Dictionary> _dictionary;
 
@@ -138,6 +146,21 @@ inline PCF::Ptr PCFCommand::createCommand(MQLONG command)
 inline void PCFCommand::fillPCF()
 {
 	_dictionary->mapToPCF(_input, *_pcf);
+}
+
+inline PCF::Vector::const_iterator PCFCommand::begin() const
+{
+	return _response.begin();
+}
+
+inline PCF::Vector::const_iterator PCFCommand::end() const
+{
+	return _response.end();
+}
+
+inline size_t PCFCommand::responseSize() const
+{
+	return _response.size();
 }
 
 inline PCF::Ptr PCFCommand::pcf()

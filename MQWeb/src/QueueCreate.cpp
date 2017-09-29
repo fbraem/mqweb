@@ -36,10 +36,9 @@ QueueCreate::~QueueCreate()
 
 Poco::JSON::Array::Ptr QueueCreate::execute()
 {
-	PCF::Vector commandResponse;
-	PCFCommand::execute(commandResponse);
+	PCFCommand::execute();
 
-	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
+	for(PCF::Vector::const_iterator it = begin(); it != end(); it++)
 	{
 		if ( (*it)->isExtendedResponse() ) // Skip extended response
 			continue;

@@ -58,11 +58,10 @@ SubscriptionStatusInquire::~SubscriptionStatusInquire()
 
 Poco::JSON::Array::Ptr SubscriptionStatusInquire::execute()
 {
-	PCF::Vector commandResponse;
-	PCFCommand::execute(commandResponse);
+	PCFCommand::execute();
 
 	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
-	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
+	for(PCF::Vector::const_iterator it = begin(); it != end(); it++)
 	{
 		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)
 			continue;

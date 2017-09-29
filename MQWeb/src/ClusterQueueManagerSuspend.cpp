@@ -45,12 +45,11 @@ ClusterQueueManagerSuspend::~ClusterQueueManagerSuspend()
 
 Poco::JSON::Array::Ptr ClusterQueueManagerSuspend::execute()
 {
-	PCF::Vector commandResponse;
-	PCFCommand::execute(commandResponse);
+	PCFCommand::execute();
 
-	if ( commandResponse.size() > 0 )
+	if ( responseSize() > 0 )
 	{
-		PCF::Vector::iterator it = commandResponse.begin();
+		PCF::Vector::const_iterator it = begin();
 		if ( (*it)->getReasonCode() != MQRC_NONE )
 		{
 			throw MQException("PCF", getCommandString((*it)->getCommand()), (*it)->getCompletionCode(), (*it)->getReasonCode());
