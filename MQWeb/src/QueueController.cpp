@@ -21,6 +21,7 @@
 #include "MQ/Web/QueueController.h"
 #include "MQ/Web/QueueInquire.h"
 #include "MQ/Web/QueueCreate.h"
+#include "MQ/Web/QueueRemove.h"
 
 namespace MQ
 {
@@ -43,7 +44,7 @@ void QueueController::create()
 	if ( data().has("input") && data().isObject("input") )
 	{
 		pcfParameters = data().getObject("input");
-	} 
+	}
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
@@ -54,6 +55,58 @@ void QueueController::create()
 	}
 	QueueCreate command(*commandServer(), pcfParameters);
 	command.execute();
+}
+
+void QueueController::remove()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
+
+	if ( data().has("input") && data().isObject("input") )
+	{
+		pcfParameters = data().getObject("input");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		meta().set("input", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a queuename. If this is passed, the
+		// query parameter QName or queueName is ignored.
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("QName", parameters[1]);
+		}
+		else
+		{
+			// Handle query parameters
+			std::string queueName;
+			if ( form().has("QName") )
+			{
+				queueName = form().get("QName");
+			}
+			pcfParameters->set("QName", queueName);
+		}
+
+		if ( form().has("CommandScope") )
+		{
+			pcfParameters->set("CommandScope", form().get("CommandScope"));
+		}
+
+		if ( form().has("QSGDisposition") )
+		{
+			pcfParameters->set("QSGDisposition", form().get("QSGDisposition"));
+		}
+
+		if ( form().has("QType") )
+		{
+			pcfParameters->set("QType", form().get("QType"));
+		}
+	}
+
+	QueueRemove command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 void QueueController::inquire()

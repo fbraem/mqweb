@@ -18,52 +18,46 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef _MQWeb_QueueController_h
-#define _MQWeb_QueueController_h
-
-#include "MQ/Web/MQController.h"
-#include "MQ/Web/MapInitializer.h"
+#include "MQ/Web/QueueRemove.h"
+#include "MQ/MQException.h"
 
 namespace MQ {
 namespace Web {
 
-class QueueController : public MQController
-	/// Controller that shows the details of a queue
+QueueRemove::QueueRemove(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
+: PCFCommand(commandServer, MQCMD_DELETE_Q, "Queue", input)
 {
-public:
-	QueueController();
-		/// Constructor
+	// Required Parameters
+	addParameter<std::string>(MQCA_Q_NAME, "QName");
 
-	virtual ~QueueController();
-		/// Destructor
-
-	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
-		/// Returns all available actions
-
-	void create();
-		/// Action create. Define queue.
-
-	void remove();
-
-	void inquire();
-		/// Action inquire. Inquire queues and returns all data in JSON format.
-
-private:
-};
-
-
-inline const Controller::ActionMap& QueueController::getActions() const
-{
-	static Controller::ActionMap actions
-		= MapInitializer<std::string, Controller::ActionFn>
-			("create", static_cast<ActionFn>(&QueueController::create))
-			("delete", static_cast<ActionFn>(&QueueController::remove))
-			("inquire", static_cast<ActionFn>(&QueueController::inquire))
-		;
-	return actions;
+	// Optional Parameters
+	addParameterNumFromString(MQIACF_REMOVE_AUTHREC, "Authrec");
+	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	addParameter<MQLONG>(MQIA_PAGESET_ID, "PageSetId");
+	addParameterNumFromString(MQIACF_PURGE, "Purge");
+	addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
+	addParameterNumFromString(MQIA_Q_TYPE, "QType");
 }
 
+QueueRemove::~QueueRemove()
+{
+}
 
-} } // Namespace MQ::Web
+Poco::JSON::Array::Ptr QueueRemove::execute()
+{
+	PCFCommand::execute();
 
-#endif // _MQWeb_QueueController_h
+	for(PCF::Vector::const_iterator it = begin(); it != end(); it++)
+	{
+		if ( (*it)->isExtendedResponse() ) // Skip extended response
+			continue;
+
+		if ( (*it)->getReasonCode() != MQRC_NONE )
+		{
+			throw MQException("PCF", getCommandString((*it)->getCommand()), (*it)->getCompletionCode(), (*it)->getReasonCode());
+		}
+	}
+	return new Poco::JSON::Array();
+}
+
+}} //  Namespace MQ::Web

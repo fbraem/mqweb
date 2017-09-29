@@ -18,52 +18,34 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef _MQWeb_QueueController_h
-#define _MQWeb_QueueController_h
+#ifndef _MQWeb_QueueRemove_H
+#define _MQWeb_QueueRemove_H
 
-#include "MQ/Web/MQController.h"
-#include "MQ/Web/MapInitializer.h"
+#include "MQ/Web/PCFCommand.h"
 
 namespace MQ {
 namespace Web {
 
-class QueueController : public MQController
-	/// Controller that shows the details of a queue
+class QueueRemove : public PCFCommand
+	/// Maps queue object to Websphere MQ
 {
 public:
-	QueueController();
+
+	QueueRemove(CommandServer& commandServer, Poco::JSON::Object::Ptr input);
 		/// Constructor
 
-	virtual ~QueueController();
+	virtual ~QueueRemove();
 		/// Destructor
 
-	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
-		/// Returns all available actions
-
-	void create();
-		/// Action create. Define queue.
-
-	void remove();
-
-	void inquire();
-		/// Action inquire. Inquire queues and returns all data in JSON format.
+	Poco::JSON::Array::Ptr execute();
+		/// Implements the inquire queue command.
 
 private:
+
+	QueueRemove(const QueueRemove&);
 };
 
 
-inline const Controller::ActionMap& QueueController::getActions() const
-{
-	static Controller::ActionMap actions
-		= MapInitializer<std::string, Controller::ActionFn>
-			("create", static_cast<ActionFn>(&QueueController::create))
-			("delete", static_cast<ActionFn>(&QueueController::remove))
-			("inquire", static_cast<ActionFn>(&QueueController::inquire))
-		;
-	return actions;
-}
+}} // Namespace MQ::Web
 
-
-} } // Namespace MQ::Web
-
-#endif // _MQWeb_QueueController_h
+#endif // _MQWeb_QueueRemove_H
