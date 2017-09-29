@@ -47,7 +47,7 @@ Poco::JSON::Array::Ptr ChannelStop::execute()
 {
 	PCFCommand::execute();
 
-	if ( responseSize() > 0 )
+	if ( hasResponse() )
 	{
 		PCF::Vector::const_iterator it = begin();
 		if ( (*it)->getReasonCode() != MQRC_NONE )

@@ -68,7 +68,7 @@ public:
 
 	PCF::Vector::const_iterator end() const;
 
-	size_t responseSize() const;
+	bool hasResponse() const;
 
 protected:
 
@@ -158,9 +158,9 @@ inline PCF::Vector::const_iterator PCFCommand::end() const
 	return _response.end();
 }
 
-inline size_t PCFCommand::responseSize() const
+inline bool PCFCommand::hasResponse() const
 {
-	return _response.size();
+	return _response.size() > 0;
 }
 
 inline PCF::Ptr PCFCommand::pcf()
