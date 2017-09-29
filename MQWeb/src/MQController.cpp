@@ -26,7 +26,7 @@
 #include "MQ/MQException.h"
 
 #include "MQ/Web/MQController.h"
-#include "MQ/Web/MQMapper.h"
+#include "MQ/Web/PCFCommand.h"
 
 namespace MQ {
 namespace Web {
@@ -138,7 +138,7 @@ void MQController::handleException(const MQException& mqe)
 	Poco::JSON::Object::Ptr reason = new Poco::JSON::Object();
 	error->set("reason", reason);
 	reason->set("code", mqe.reason());
-	reason->set("desc", MQMapper::getReasonString(mqe.reason()));
+	reason->set("desc", PCFCommand::getReasonString(mqe.reason()));
 }
 
 

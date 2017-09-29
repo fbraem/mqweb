@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/ServiceController.h"
-#include "MQ/Web/ServiceMapper.h"
+#include "MQ/Web/ServiceInquire.h"
 
 namespace MQ
 {
@@ -93,8 +93,8 @@ void ServiceController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 
-	ServiceMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	ServiceInquire command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 

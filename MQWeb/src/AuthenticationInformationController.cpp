@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/AuthenticationInformationController.h"
-#include "MQ/Web/AuthenticationInformationMapper.h"
+#include "MQ/Web/AuthenticationInformationInquire.h"
 
 namespace MQ
 {
@@ -107,8 +107,8 @@ void AuthenticationInformationController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 
-	AuthenticationInformationMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	AuthenticationInformationInquire command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 

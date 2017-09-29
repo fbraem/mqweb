@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/ChannelStatusController.h"
-#include "MQ/Web/ChannelStatusMapper.h"
+#include "MQ/Web/ChannelStatusInquire.h"
 
 namespace MQ
 {
@@ -105,8 +105,8 @@ void ChannelStatusController::inquire()
 
 		handleFilterForm(pcfParameters);
 	}
-	ChannelStatusMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	ChannelStatusInquire command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 

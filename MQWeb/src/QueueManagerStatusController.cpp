@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/QueueManagerStatusController.h"
-#include "MQ/Web/QueueManagerStatusMapper.h"
+#include "MQ/Web/QueueManagerStatusInquire.h"
 
 namespace MQ
 {
@@ -69,8 +69,8 @@ void QueueManagerStatusController::inquire()
 		}
 	}
 
-	QueueManagerStatusMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	QueueManagerStatusInquire command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 

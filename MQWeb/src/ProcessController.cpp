@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/ProcessController.h"
-#include "MQ/Web/ProcessMapper.h"
+#include "MQ/Web/ProcessInquire.h"
 
 namespace MQ
 {
@@ -103,8 +103,8 @@ void ProcessController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 
-	ProcessMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	ProcessInquire command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 

@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/ListenerStatusController.h"
-#include "MQ/Web/ListenerStatusMapper.h"
+#include "MQ/Web/ListenerStatusInquire.h"
 
 namespace MQ
 {
@@ -92,8 +92,8 @@ void ListenerStatusController::inquire()
 
 	handleFilterForm(pcfParameters);
 
-	ListenerStatusMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	ListenerStatusInquire command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 

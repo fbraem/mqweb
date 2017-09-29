@@ -19,7 +19,9 @@
 * SOFTWARE.
 */
 #include "MQ/Web/ChannelController.h"
-#include "MQ/Web/ChannelMapper.h"
+#include "MQ/Web/ChannelInquire.h"
+#include "MQ/Web/ChannelStart.h"
+#include "MQ/Web/ChannelStop.h"
 
 namespace MQ
 {
@@ -119,8 +121,8 @@ void ChannelController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 
-	ChannelMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	ChannelInquire command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 void ChannelController::start()
@@ -152,10 +154,8 @@ void ChannelController::start()
 			if ( form().has("ChannelDisposition") ) pcfParameters->set("ChannelDisposition", form().get("ChannelDisposition"));
 	}
 
-	ChannelMapper mapper(*commandServer(), pcfParameters);
-
-	Poco::JSON::Object::Ptr error = mapper.start();
-	if ( error->size() > 0 ) set("error", error);
+	ChannelStart command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 void ChannelController::stop()
@@ -190,10 +190,8 @@ void ChannelController::stop()
 		if ( form().has("QMgrName") ) pcfParameters->set("QMgrName", form().get("QMgrName"));
 	}
 
-	ChannelMapper mapper(*commandServer(), pcfParameters);
-
-	Poco::JSON::Object::Ptr error = mapper.stop();
-	if ( error->size() > 0 ) set("error", error);
+	ChannelStop command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 } } // Namespace MQ::Web

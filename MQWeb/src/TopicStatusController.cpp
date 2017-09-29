@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/TopicStatusController.h"
-#include "MQ/Web/TopicStatusMapper.h"
+#include "MQ/Web/TopicStatusInquire.h"
 
 namespace MQ
 {
@@ -88,8 +88,8 @@ void TopicStatusController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 
-	TopicStatusMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	TopicStatusInquire command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 

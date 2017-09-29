@@ -19,7 +19,8 @@
 * SOFTWARE.
 */
 #include "MQ/Web/QueueController.h"
-#include "MQ/Web/QueueMapper.h"
+#include "MQ/Web/QueueInquire.h"
+#include "MQ/Web/QueueCreate.h"
 
 namespace MQ
 {
@@ -51,8 +52,8 @@ void QueueController::create()
 			pcfParameters->set(it->first, it->second);
 		}
 	}
-	QueueMapper mapper(*commandServer(), pcfParameters);
-	mapper.create();
+	QueueCreate command(*commandServer(), pcfParameters);
+	command.execute();
 }
 
 void QueueController::inquire()
@@ -197,8 +198,8 @@ void QueueController::inquire()
 		}
 	}
 
-	QueueMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	QueueInquire command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 

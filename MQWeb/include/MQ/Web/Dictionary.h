@@ -41,7 +41,7 @@ class Dictionary
 	/// Class for holding all names, ids and values for Websphere MQ fields.
 	/// It can be used to get the field name for a given Websphere MQ field constant
 	/// or to get a String representation of a value of a field.
-	/// It's used by MQMapper to translate the values, ids, ...:
+	/// It's used by PCFCommand to translate the values, ids, ...:
 	/// getName(MQCA_ALTERATION_DATE) will return "AlterationDate",
 	/// while getId("AlterationDate") will return MQCA_ALTERATION_DATE.
 	/// getDisplayValue(MQIA_PLATFORM, MQPL_UNIX) will return "UNIX".
@@ -64,19 +64,19 @@ public:
 
 	std::string getTextForValue(MQLONG id, MQLONG value) const;
 		/// Returns the display string for the given value of the given id.
-		/// For example: in MQMapper getDisplayValue(MQIA_PLATFORM, MQPL_UNIX) will return "UNIX".
+		/// For example: in PCFCommand getDisplayValue(MQIA_PLATFORM, MQPL_UNIX) will return "UNIX".
 
 	MQLONG getIdForText(MQLONG id, const std::string& value) const;
 		/// Returns the id for the given value and id.
-		/// For example: in MQMapper getDisplayId(MQIA_PLATFORM, "UNIX") will return MQPL_UNIX.
+		/// For example: in PCFCommand getDisplayId(MQIA_PLATFORM, "UNIX") will return MQPL_UNIX.
 
 	MQLONG getIdForName(const std::string& name) const;
 		/// Returns the id for the given name.
-		/// For example: in MQMapper getId("Platform") will return MQIA_PLATFORM.
+		/// For example: in PCFCommand getId("Platform") will return MQIA_PLATFORM.
 
 	std::string getNameForId(MQLONG id) const;
 		/// Returns the name for the given id
-		/// For example: in MQMapper getName(MQIA_PLATFORM) will return "Platform".
+		/// For example: in PCFCommand getName(MQIA_PLATFORM) will return "Platform".
 
 	bool hasTextMap(MQLONG id) const;
 		/// Returns true when the id has a corresponding map with display values.

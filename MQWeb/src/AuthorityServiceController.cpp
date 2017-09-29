@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/AuthorityServiceController.h"
-#include "MQ/Web/AuthorityServiceMapper.h"
+#include "MQ/Web/AuthorityServiceInquire.h"
 
 namespace MQ
 {
@@ -77,8 +77,8 @@ void AuthorityServiceController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 
-	AuthorityServiceMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	AuthorityServiceInquire command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 

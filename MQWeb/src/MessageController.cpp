@@ -27,7 +27,7 @@
 #include "Poco/Timezone.h"
 
 #include "MQ/Web/MessageController.h"
-#include "MQ/Web/MQMapper.h"
+#include "MQ/Web/PCFCommand.h"
 #include "MQ/MQException.h"
 #include "MQ/PCF.h"
 #include "MQ/Message.h"
@@ -328,7 +328,7 @@ void MessageController::browse()
 				Poco::JSON::Object::Ptr jsonReason = new Poco::JSON::Object();
 				jsonDLH->set("Reason", jsonReason);
 				jsonReason->set("code", dlh->Reason);
-				std::string reasonCodeStr = MQMapper::getReasonString(dlh->Reason);
+				std::string reasonCodeStr = PCFCommand::getReasonString(dlh->Reason);
 				jsonReason->set("desc", reasonCodeStr);
 
 				jsonDLH->set("DestQName", Poco::trimRight(std::string(dlh->DestQName, MQ_Q_NAME_LENGTH)));
@@ -336,7 +336,7 @@ void MessageController::browse()
 				jsonDLH->set("Encoding", dlh->Encoding);
 				jsonDLH->set("CodedCharSetId", dlh->CodedCharSetId);
 				jsonDLH->set("Format", Poco::trimRight(std::string(dlh->Format, MQ_FORMAT_LENGTH)));
-				const TextMap& applTypes = MQMapper::getTextMap("QueueStatus", MQIA_APPL_TYPE);
+				const TextMap& applTypes = PCFCommand::getTextMap("QueueStatus", MQIA_APPL_TYPE);
 				TextMap::const_iterator it = applTypes.find(dlh->PutApplType);
 				jsonDLH->set("PutApplType", it == applTypes.end() ? "" : it->second);
 				jsonDLH->set("PutApplName", Poco::trimRight(std::string(dlh->PutApplName, MQ_PUT_APPL_NAME_LENGTH)));
@@ -357,7 +357,7 @@ void MessageController::browse()
 			Poco::JSON::Object::Ptr jsonReason = new Poco::JSON::Object();
 			jsonEvent->set("Reason", jsonReason);
 			jsonReason->set("code", pcfEvent.getReasonCode());
-			std::string reasonCodeStr = MQMapper::getReasonString(pcfEvent.getReasonCode());
+			std::string reasonCodeStr = PCFCommand::getReasonString(pcfEvent.getReasonCode());
 			jsonReason->set("desc", reasonCodeStr);
 
 			if ( pcfEvent.hasParameter(MQIACF_OBJECT_TYPE) )
@@ -365,12 +365,12 @@ void MessageController::browse()
 				Poco::SharedPtr<Dictionary> dictionary;
 				switch(pcfEvent.getParameterNum(MQIACF_OBJECT_TYPE))
 				{
-				case MQOT_Q_MGR: dictionary = MQMapper::dictionary("QueueManager"); break;
-				case MQOT_CHANNEL:  dictionary = MQMapper::dictionary("Channel"); break;
-				case MQOT_NAMELIST: dictionary = MQMapper::dictionary("Namelist"); break;
-				case MQOT_PROCESS: dictionary = MQMapper::dictionary("Process"); break;
-				case MQOT_Q: dictionary = MQMapper::dictionary("Queue"); break;
-				case MQOT_LISTENER: dictionary = MQMapper::dictionary("Listener"); break;
+				case MQOT_Q_MGR: dictionary = PCFCommand::dictionary("QueueManager"); break;
+				case MQOT_CHANNEL:  dictionary = PCFCommand::dictionary("Channel"); break;
+				case MQOT_NAMELIST: dictionary = PCFCommand::dictionary("Namelist"); break;
+				case MQOT_PROCESS: dictionary = PCFCommand::dictionary("Process"); break;
+				case MQOT_Q: dictionary = PCFCommand::dictionary("Queue"); break;
+				case MQOT_LISTENER: dictionary = PCFCommand::dictionary("Listener"); break;
 				default:
 					Poco::Logger::get("mq.web").warning("No dictionary set for event. ObjectType $0", pcfEvent.getParameterNum(MQIACF_OBJECT_TYPE));
 				}
@@ -380,7 +380,7 @@ void MessageController::browse()
 				}
 			}
 
-			Poco::SharedPtr<Dictionary> dictionary = MQMapper::dictionary("Event");
+			Poco::SharedPtr<Dictionary> dictionary = PCFCommand::dictionary("Event");
 			poco_assert_dbg(! dictionary.isNull());
 			dictionary->mapToJSON(pcfEvent, jsonEvent, false);
 		}
@@ -594,7 +594,7 @@ void MessageController::mapMessageToJSON(const Message& message, Poco::JSON::Obj
 	obj.set("AccountingToken", message.accountingToken()->toHex());
 	obj.set("ApplIdentityData", message.getApplIdentityData());
 
-	const TextMap& applTypes = MQMapper::getTextMap("QueueStatus", MQIA_APPL_TYPE);
+	const TextMap& applTypes = PCFCommand::getTextMap("QueueStatus", MQIA_APPL_TYPE);
 	TextMap::const_iterator it = applTypes.find(message.getPutApplType());
 	obj.set("PutApplType", it == applTypes.end() ? "" : it->second);
 
@@ -670,7 +670,7 @@ void MessageController::mapJSONToMessage(const Poco::JSON::Object& obj, Message&
 	if ( obj.has("ApplIdentityData") ) message.setApplIdentityData(obj.optValue<std::string>("ApplIdentityData", ""));
 	if ( obj.has("PutApplType") )
 	{
-		Poco::SharedPtr<Dictionary> dictionary = MQMapper::dictionary("QueueStatus");
+		Poco::SharedPtr<Dictionary> dictionary = PCFCommand::dictionary("QueueStatus");
 		MQLONG id = dictionary->getIdForText(MQIA_APPL_TYPE, obj.optValue<std::string>("PutApplType", ""));
 		if ( id == -1 ) // User defined?
 		{

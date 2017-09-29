@@ -19,7 +19,9 @@
 * SOFTWARE.
 */
 #include "MQ/Web/ClusterQueueManagerController.h"
-#include "MQ/Web/ClusterQueueManagerMapper.h"
+#include "MQ/Web/ClusterQueueManagerInquire.h"
+#include "MQ/Web/ClusterQueueManagerSuspend.h"
+#include "MQ/Web/ClusterQueueManagerResume.h"
 
 namespace MQ
 {
@@ -103,8 +105,8 @@ void ClusterQueueManagerController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 
-	ClusterQueueManagerMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	ClusterQueueManagerInquire command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 
@@ -137,10 +139,8 @@ void ClusterQueueManagerController::suspend()
 		if ( form().has("Mode") ) pcfParameters->set("Mode", form().get("Mode"));
 	}
 
-	ClusterQueueManagerMapper mapper(*commandServer(), pcfParameters);
-
-	Poco::JSON::Object::Ptr error = mapper.suspend();
-	if ( error->size() > 0 ) set("error", error);
+	ClusterQueueManagerSuspend command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 
@@ -172,10 +172,8 @@ void ClusterQueueManagerController::resume()
 		if ( form().has("CommandScope") ) pcfParameters->set("CommandScope", form().get("CommandScope"));
 	}
 
-	ClusterQueueManagerMapper mapper(*commandServer(), pcfParameters);
-
-	Poco::JSON::Object::Ptr error = mapper.resume();
-	if ( error->size() > 0 ) set("error", error);
+	ClusterQueueManagerResume command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 

@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/SubscriptionController.h"
-#include "MQ/Web/SubscriptionMapper.h"
+#include "MQ/Web/SubscriptionInquire.h"
 
 namespace MQ
 {
@@ -109,8 +109,8 @@ void SubscriptionController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 
-	SubscriptionMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	SubscriptionInquire command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 

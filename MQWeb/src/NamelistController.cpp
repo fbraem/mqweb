@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/NamelistController.h"
-#include "MQ/Web/NamelistMapper.h"
+#include "MQ/Web/NamelistInquire.h"
 
 namespace MQ
 {
@@ -111,8 +111,8 @@ void NamelistController::inquire()
 
 	pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
 
-	NamelistMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	NamelistInquire command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 

@@ -19,9 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/QueueManagerController.h"
-#include "MQ/Web/QueueManagerMapper.h"
-
-#include "Poco/StringTokenizer.h"
+#include "MQ/Web/QueueManagerInquire.h"
 
 namespace MQ
 {
@@ -70,8 +68,8 @@ void QueueManagerController::inquire()
 		}
 	}
 
-	QueueManagerMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	QueueManagerInquire command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 

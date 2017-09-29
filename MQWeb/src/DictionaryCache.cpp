@@ -33,13 +33,22 @@ namespace Web {
 
 using namespace Poco::Data::Keywords;
 
+DictionaryCache* DictionaryCache::_instance;
+
 DictionaryCache::DictionaryCache()
 {
+	setup();
 }
 
 
 DictionaryCache::~DictionaryCache()
 {
+}
+
+void DictionaryCache::setup()
+{
+	poco_assert(_instance == NULL);
+	_instance = this;
 }
 
 Poco::SharedPtr<Dictionary> DictionaryCache::getDictionary(const std::string& name)

@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/AuthorityRecordController.h"
-#include "MQ/Web/AuthorityRecordMapper.h"
+#include "MQ/Web/AuthorityRecordInquire.h"
 
 namespace MQ
 {
@@ -104,8 +104,8 @@ void AuthorityRecordController::inquire()
 		if ( form().has("ServiceComponent") ) pcfParameters->set("ServiceComponent", form().get("ServiceComponent"));
 	}
 
-	AuthorityRecordMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	AuthorityRecordInquire command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 

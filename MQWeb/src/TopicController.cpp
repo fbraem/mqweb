@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/TopicController.h"
-#include "MQ/Web/TopicMapper.h"
+#include "MQ/Web/TopicInquire.h"
 
 namespace MQ
 {
@@ -114,8 +114,8 @@ void TopicController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 
-	TopicMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	TopicInquire command(*commandServer(), pcfParameters);
+	set("data", command.execute());
 }
 
 
