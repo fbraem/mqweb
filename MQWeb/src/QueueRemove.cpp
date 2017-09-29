@@ -31,10 +31,19 @@ QueueRemove::QueueRemove(CommandServer& commandServer, Poco::JSON::Object::Ptr i
 	addParameter<std::string>(MQCA_Q_NAME, "QName");
 
 	// Optional Parameters
-	addParameterNumFromString(MQIACF_REMOVE_AUTHREC, "Authrec");
+	std::string authrec = input->optValue<std::string>("Authrec", "No");
+	if ( Poco::icompare(authrec, "Yes") == 0 )
+	{
+		pcf()->addParameter(MQIACF_REMOVE_AUTHREC, MQRAR_YES);
+	}
 	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
-	addParameter<MQLONG>(MQIA_PAGESET_ID, "PageSetId");
-	addParameterNumFromString(MQIACF_PURGE, "Purge");
+
+	std::string purge = input->optValue<std::string>("Purge", "No");
+	if ( Poco::icompare(authrec, "Yes") == 0 )
+	{
+		pcf()->addParameter(MQIACF_PURGE, MQPO_YES);
+	}
+
 	addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
 	addParameterNumFromString(MQIA_Q_TYPE, "QType");
 }
