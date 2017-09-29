@@ -42,6 +42,7 @@ private:
 
 	ChannelInquire(const ChannelInquire&);
 
+	bool _excludeSystem;
 };
 
 }} // Namespace MQ::Web

@@ -25,7 +25,7 @@ namespace MQ {
 namespace Web {
 
 QueueInquire::QueueInquire(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
-: PCFCommand(commandServer, MQCMD_INQUIRE_Q, "Queue", input)
+: PCFCommand(commandServer, MQCMD_INQUIRE_Q, "Queue", input), _usage(-1), _excludeSystem(false), _excludeTemp(false)
 {
 	// Required Parameters
 	addParameter<std::string>(MQCA_Q_NAME, "QName");
@@ -54,6 +54,23 @@ QueueInquire::QueueInquire(CommandServer& commandServer, Poco::JSON::Object::Ptr
 	addParameterNumFromString(MQIA_Q_TYPE, "QType");
 	addAttributeList(MQIACF_Q_ATTRS, "QAttrs");
 	addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
+
+	if ( input->has("Usage") )
+	{
+		std::string usageValue = input->optValue<std::string>("Usage", "");
+		if (   Poco::icompare(usageValue, "Transmission") == 0
+			|| Poco::icompare(usageValue, "XmitQ") == 0 )
+		{
+			_usage = MQUS_TRANSMISSION;
+		}
+		else if ( Poco::icompare(usageValue, "Normal") == 0 )
+		{
+			_usage = MQUS_NORMAL;
+		}
+	}
+
+	_excludeSystem = input->optValue("ExcludeSystem", false);
+	_excludeTemp = input->optValue("ExcludeTemp", false);
 }
 
 QueueInquire::~QueueInquire()
@@ -63,26 +80,8 @@ QueueInquire::~QueueInquire()
 
 Poco::JSON::Array::Ptr QueueInquire::execute()
 {
-	MQLONG usage = -1;
-	if ( _input->has("Usage") )
-	{
-		std::string usageValue = _input->optValue<std::string>("Usage", "");
-		if (   Poco::icompare(usageValue, "Transmission") == 0
-			|| Poco::icompare(usageValue, "XmitQ") == 0 )
-		{
-			usage = MQUS_TRANSMISSION;
-		}
-		else if ( Poco::icompare(usageValue, "Normal") == 0 )
-		{
-			usage = MQUS_NORMAL;
-		}
-	}
-
 	PCF::Vector commandResponse;
 	PCFCommand::execute(commandResponse);
-
-	bool excludeSystem = _input->optValue("ExcludeSystem", false);
-	bool excludeTemp = _input->optValue("ExcludeTemp", false);
 
 	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
@@ -93,23 +92,23 @@ Poco::JSON::Array::Ptr QueueInquire::execute()
 		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)
 			continue;
 
-		if ( usage != -1 && (*it)->hasParameter(MQIA_USAGE) )
+		if ( _usage != -1 && (*it)->hasParameter(MQIA_USAGE) )
 		{
 			MQLONG queueUsage = (*it)->getParameterNum(MQIA_USAGE);
-			if ( queueUsage != usage )
+			if ( queueUsage != _usage )
 			{
 				continue;
 			}
 		}
 
 		std::string qName = (*it)->getParameterString(MQCA_Q_NAME);
-		if ( excludeSystem
+		if ( _excludeSystem
 			&& qName.compare(0, 7, "SYSTEM.") == 0 )
 		{
 			continue;
 		}
 
-		if ( excludeTemp
+		if ( _excludeTemp
 			&& (*it)->hasParameter(MQIA_DEFINITION_TYPE)
 			&& (*it)->getParameterNum(MQIA_DEFINITION_TYPE) == MQQDT_TEMPORARY_DYNAMIC )
 		{

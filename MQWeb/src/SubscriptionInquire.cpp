@@ -27,14 +27,14 @@ namespace Web {
 
 
 SubscriptionInquire::SubscriptionInquire(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
-: PCFCommand(commandServer, MQCMD_INQUIRE_SUBSCRIPTION, "Sub", input)
+: PCFCommand(commandServer, MQCMD_INQUIRE_SUBSCRIPTION, "Sub", input), _excludeSystem(false)
 {
 	// Required parameters
 	addParameter<std::string>(MQCACF_SUB_NAME, "SubName");
 
-	if ( _input->has("SubId") )
+	if ( input->has("SubId") )
 	{
-		std::string hexId = _input->get("SubId");
+		std::string hexId = input->get("SubId");
 		if ( hexId.length() > MQ_CORREL_ID_LENGTH )
 		{
 			hexId.erase(MQ_CORREL_ID_LENGTH);
@@ -49,6 +49,8 @@ SubscriptionInquire::SubscriptionInquire(CommandServer& commandServer, Poco::JSO
 	addParameter<MQLONG>(MQIACF_DURABLE_SUBSCRIPTION, "Durable");
 	addAttributeList(MQIACF_SUB_ATTRS, "SubscriptionAttrs");
 	addParameterNumFromString(MQIACF_SUB_TYPE, "SubscriptionType");
+
+	_excludeSystem = input->optValue("ExcludeSystem", false);
 }
 
 SubscriptionInquire::~SubscriptionInquire()
@@ -60,8 +62,6 @@ Poco::JSON::Array::Ptr SubscriptionInquire::execute()
 	PCF::Vector commandResponse;
 	PCFCommand::execute(commandResponse);
 
-	bool excludeSystem = _input->optValue("ExcludeSystem", false);
-
 	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
@@ -71,7 +71,7 @@ Poco::JSON::Array::Ptr SubscriptionInquire::execute()
 		if ( (*it)->isExtendedResponse() ) // Skip extended response
 			continue;
 
-		if ( excludeSystem )
+		if ( _excludeSystem )
 		{
 			std::string subName = (*it)->getParameterString(MQCACF_SUB_NAME);
 			if ( subName.compare(0, 7, "SYSTEM.") == 0 )

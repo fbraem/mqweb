@@ -44,6 +44,7 @@ private:
 
 	TopicInquire(const TopicInquire&);
 
+	bool _excludeSystem;
 };
 
 }} // Namespace MQ::Web

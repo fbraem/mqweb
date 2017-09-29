@@ -44,6 +44,7 @@ private:
 
 	ProcessInquire(const ProcessInquire&);
 
+	bool _excludeSystem;
 };
 
 }} // Namespace MQ::Web

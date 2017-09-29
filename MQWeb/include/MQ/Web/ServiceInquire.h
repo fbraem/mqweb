@@ -44,6 +44,7 @@ private:
 
 	ServiceInquire(const ServiceInquire&);
 
+	bool _excludeSystem;
 };
 
 }} // Namespace MQ::Web

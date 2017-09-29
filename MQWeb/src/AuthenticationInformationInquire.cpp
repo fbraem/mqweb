@@ -24,7 +24,7 @@ namespace MQ {
 namespace Web {
 
 AuthenticationInformationInquire::AuthenticationInformationInquire(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
-: PCFCommand(commandServer, MQCMD_INQUIRE_AUTH_INFO, "AuthenticationInformation", input)
+: PCFCommand(commandServer, MQCMD_INQUIRE_AUTH_INFO, "AuthenticationInformation", input), _excludeSystem(false)
 {
 	// Required parameters
 	addParameter<std::string>(MQCA_AUTH_INFO_NAME, "AuthInfoName");
@@ -36,6 +36,8 @@ AuthenticationInformationInquire::AuthenticationInformationInquire(CommandServer
 	addIntegerFilter();
 	addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
 	addStringFilter();
+
+	_excludeSystem = input->optValue("ExcludeSystem", false);
 }
 
 AuthenticationInformationInquire::~AuthenticationInformationInquire()
@@ -48,8 +50,6 @@ Poco::JSON::Array::Ptr AuthenticationInformationInquire::execute()
 	PCF::Vector response;
 	PCFCommand::execute(response);
 
-	bool excludeSystem = _input->optValue("ExcludeSystem", false);
-
 	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 
 	for(PCF::Vector::iterator it = response.begin(); it != response.end(); it++)
@@ -61,7 +61,7 @@ Poco::JSON::Array::Ptr AuthenticationInformationInquire::execute()
 			continue;
 
 		std::string qName = (*it)->getParameterString(MQCA_AUTH_INFO_NAME);
-		if ( excludeSystem
+		if ( _excludeSystem
 			&& qName.compare(0, 7, "SYSTEM.") == 0 )
 		{
 			continue;

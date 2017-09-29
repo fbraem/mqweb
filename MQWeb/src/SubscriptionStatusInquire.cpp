@@ -32,7 +32,7 @@ SubscriptionStatusInquire::SubscriptionStatusInquire(CommandServer& commandServe
 	// Required parameters
 	addParameter<std::string>(MQCACF_SUB_NAME, "SubName");
 
-	if ( _input->has("SubId") )
+	if ( input->has("SubId") )
 	{
 		std::string hexId = input->get("SubId");
 		if ( hexId.length() > MQ_CORREL_ID_LENGTH )

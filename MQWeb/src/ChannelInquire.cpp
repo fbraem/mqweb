@@ -25,7 +25,7 @@ namespace Web {
 
 
 ChannelInquire::ChannelInquire(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
-: PCFCommand(commandServer, MQCMD_INQUIRE_CHANNEL, "Channel", input)
+: PCFCommand(commandServer, MQCMD_INQUIRE_CHANNEL, "Channel", input), _excludeSystem(false)
 {
 	// Required Parameters
 	addParameter<std::string>(MQCACH_CHANNEL_NAME, "ChannelName");
@@ -38,6 +38,8 @@ ChannelInquire::ChannelInquire(CommandServer& commandServer, Poco::JSON::Object:
 	addIntegerFilter();
 	addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
 	addStringFilter();
+
+	_excludeSystem = input->optValue("ExcludeSystem", false);
 }
 
 ChannelInquire::~ChannelInquire()
@@ -50,8 +52,6 @@ Poco::JSON::Array::Ptr ChannelInquire::execute()
 	PCF::Vector commandResponse;
 	PCFCommand::execute(commandResponse);
 
-	bool excludeSystem = _input->optValue("ExcludeSystem", false);
-
 	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
@@ -63,7 +63,7 @@ Poco::JSON::Array::Ptr ChannelInquire::execute()
 			continue;
 
 		std::string channelName = (*it)->getParameterString(MQCACH_CHANNEL_NAME);
-		if (    excludeSystem
+		if (    _excludeSystem
 			&& channelName.compare(0, 7, "SYSTEM.") == 0 )
 		{
 			continue;

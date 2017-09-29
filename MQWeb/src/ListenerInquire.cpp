@@ -24,7 +24,7 @@ namespace MQ {
 namespace Web {
 
 ListenerInquire::ListenerInquire(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
-: PCFCommand(commandServer, MQCMD_INQUIRE_LISTENER, "Listener", input)
+: PCFCommand(commandServer, MQCMD_INQUIRE_LISTENER, "Listener", input), _excludeSystem(false)
 {
 	// Required parameters
 	addParameter<std::string>(MQCACH_LISTENER_NAME, "ListenerName");
@@ -34,6 +34,8 @@ ListenerInquire::ListenerInquire(CommandServer& commandServer, Poco::JSON::Objec
 	addAttributeList(MQIACF_LISTENER_ATTRS, "ListenerAttrs");
 	addStringFilter();
 	addParameterNumFromString(MQIACH_XMIT_PROTOCOL_TYPE, "TransportType");
+
+	_excludeSystem = input->optValue("ExcludeSystem", false);
 }
 
 ListenerInquire::~ListenerInquire()
@@ -45,8 +47,6 @@ Poco::JSON::Array::Ptr ListenerInquire::execute()
 	PCF::Vector commandResponse;
 	PCFCommand::execute(commandResponse);
 
-	bool excludeSystem = _input->optValue("ExcludeSystem", false);
-
 	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
@@ -57,7 +57,7 @@ Poco::JSON::Array::Ptr ListenerInquire::execute()
 			continue;
 
 		std::string listenerName = (*it)->getParameterString(MQCACH_LISTENER_NAME);
-		if ( excludeSystem
+		if ( _excludeSystem
 			&& listenerName.compare(0, 7, "SYSTEM.") == 0 )
 		{
 			continue;

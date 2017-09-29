@@ -44,6 +44,7 @@ private:
 
 	NamelistInquire(const NamelistInquire&);
 
+	bool _excludeSystem;
 };
 
 }} // Namespace MQ::Web

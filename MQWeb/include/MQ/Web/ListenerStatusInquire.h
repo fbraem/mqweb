@@ -42,6 +42,8 @@ public:
 private:
 
 	ListenerStatusInquire(const ListenerStatusInquire&);
+
+	bool _excludeSystem;
 };
 
 

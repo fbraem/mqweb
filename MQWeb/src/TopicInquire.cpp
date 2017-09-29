@@ -25,7 +25,7 @@ namespace Web {
 
 
 TopicInquire::TopicInquire(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
-: PCFCommand(commandServer, MQCMD_INQUIRE_TOPIC, "Topic", input)
+: PCFCommand(commandServer, MQCMD_INQUIRE_TOPIC, "Topic", input), _excludeSystem(false)
 {
 	// Required parameters
 	addParameter<std::string>(MQCA_TOPIC_NAME, "TopicName");
@@ -50,6 +50,8 @@ TopicInquire::TopicInquire(CommandServer& commandServer, Poco::JSON::Object::Ptr
 	addStringFilter();
 	addAttributeList(MQIACF_TOPIC_ATTRS, "TopicAttrs");
 	addParameterNumFromString(MQIA_TOPIC_TYPE, "TopicType");
+
+	_excludeSystem = input->optValue("ExcludeSystem", false);
 }
 
 TopicInquire::~TopicInquire()
@@ -61,8 +63,6 @@ Poco::JSON::Array::Ptr TopicInquire::execute()
 	PCF::Vector commandResponse;
 	PCFCommand::execute(commandResponse);
 
-	bool excludeSystem = _input->optValue("ExcludeSystem", false);
-
 	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
@@ -73,7 +73,7 @@ Poco::JSON::Array::Ptr TopicInquire::execute()
 			continue;
 
 		std::string topicName = (*it)->getParameterString(MQCA_TOPIC_NAME);
-		if (   excludeSystem
+		if (   _excludeSystem
 			&& topicName.compare(0, 7, "SYSTEM.") == 0 )
 		{
 			continue;

@@ -43,6 +43,10 @@ public:
 private:
 
 	QueueStatusInquire(const QueueStatusInquire&);
+
+	bool _excludeSystem;
+
+	bool _excludeTemp;
 };
 
 

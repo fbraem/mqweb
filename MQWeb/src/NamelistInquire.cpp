@@ -25,7 +25,7 @@ namespace Web {
 
 
 NamelistInquire::NamelistInquire(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
-: PCFCommand(commandServer, MQCMD_INQUIRE_NAMELIST, "Namelist", input)
+: PCFCommand(commandServer, MQCMD_INQUIRE_NAMELIST, "Namelist", input), _excludeSystem(false)
 {
 	// Required parameters
 	addParameter<std::string>(MQCA_NAMELIST_NAME, "NamelistName");
@@ -37,6 +37,9 @@ NamelistInquire::NamelistInquire(CommandServer& commandServer, Poco::JSON::Objec
 	addParameterNumFromString(MQIA_NAMELIST_TYPE, "NamelistType");
 	addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
 	addStringFilter();
+
+	_excludeSystem = input->optValue("ExcludeSystem", false);
+
 }
 
 NamelistInquire::~NamelistInquire()
@@ -49,8 +52,6 @@ Poco::JSON::Array::Ptr NamelistInquire::execute()
 	PCF::Vector commandResponse;
 	PCFCommand::execute(commandResponse);
 
-	bool excludeSystem = _input->optValue("ExcludeSystem", false);
-
 	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
@@ -61,7 +62,7 @@ Poco::JSON::Array::Ptr NamelistInquire::execute()
 			continue;
 
 		std::string namelistName = (*it)->getParameterString(MQCA_NAMELIST_NAME);
-		if (   excludeSystem
+		if (   _excludeSystem
 			&& namelistName.compare(0, 7, "SYSTEM.") == 0 )
 		{
 			continue;

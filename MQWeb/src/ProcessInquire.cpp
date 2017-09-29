@@ -25,7 +25,7 @@ namespace Web {
 
 
 ProcessInquire::ProcessInquire(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
-: PCFCommand(commandServer, MQCMD_INQUIRE_PROCESS, "Process", input)
+: PCFCommand(commandServer, MQCMD_INQUIRE_PROCESS, "Process", input), _excludeSystem(false)
 {
 	// Required parameters
 	addParameter<std::string>(MQCA_PROCESS_NAME, "ProcessName");
@@ -36,6 +36,8 @@ ProcessInquire::ProcessInquire(CommandServer& commandServer, Poco::JSON::Object:
 	addAttributeList(MQIACF_PROCESS_ATTRS, "ProcessAttrs");
 	addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
 	addStringFilter();
+
+	_excludeSystem = input->optValue("ExcludeSystem", false);
 }
 
 ProcessInquire::~ProcessInquire()
@@ -47,8 +49,6 @@ Poco::JSON::Array::Ptr ProcessInquire::execute()
 	PCF::Vector commandResponse;
 	PCFCommand::execute(commandResponse);
 
-	bool excludeSystem = _input->optValue("ExcludeSystem", false);
-
 	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
@@ -59,7 +59,7 @@ Poco::JSON::Array::Ptr ProcessInquire::execute()
 			continue;
 
 		std::string processName = (*it)->getParameterString(MQCA_PROCESS_NAME);
-		if (   excludeSystem
+		if (   _excludeSystem
 			&& processName.compare(0, 7, "SYSTEM.") == 0 )
 		{
 			continue;

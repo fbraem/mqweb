@@ -24,7 +24,7 @@ namespace MQ {
 namespace Web {
 
 QueueStatusInquire::QueueStatusInquire(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
-: PCFCommand(commandServer, MQCMD_INQUIRE_Q_STATUS, "QueueStatus", input)
+: PCFCommand(commandServer, MQCMD_INQUIRE_Q_STATUS, "QueueStatus", input), _excludeSystem(false), _excludeTemp(false)
 {
 	// Required parameters
 	addParameter<std::string>(MQCA_Q_NAME, "QName");
@@ -38,6 +38,9 @@ QueueStatusInquire::QueueStatusInquire(CommandServer& commandServer, Poco::JSON:
 	addAttributeList(MQIACF_Q_STATUS_ATTRS, "QStatusAttrs");
 	addParameterNumFromString(MQIACF_STATUS_TYPE, "StatusType");
 	addStringFilter();
+
+	_excludeSystem = input->optValue("ExcludeSystem", false);
+	_excludeTemp = input->optValue("ExcludeTemp", false);
 }
 
 QueueStatusInquire::~QueueStatusInquire()
@@ -48,9 +51,6 @@ Poco::JSON::Array::Ptr QueueStatusInquire::execute()
 {
 	PCF::Vector commandResponse;
 	PCFCommand::execute(commandResponse);
-
-	bool excludeSystem = _input->optValue("ExcludeSystem", false);
-	bool excludeTemp = _input->optValue("ExcludeTemp", false);
 
 	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 
@@ -63,13 +63,13 @@ Poco::JSON::Array::Ptr QueueStatusInquire::execute()
 			continue;
 
 		std::string qName = (*it)->getParameterString(MQCA_Q_NAME);
-		if ( excludeSystem
+		if ( _excludeSystem
 			&& qName.compare(0, 7, "SYSTEM.") == 0 )
 		{
 			continue;
 		}
 
-		if ( excludeTemp
+		if ( _excludeTemp
 			&& (*it)->hasParameter(MQIA_DEFINITION_TYPE)
 			&& (*it)->getParameterNum(MQIA_DEFINITION_TYPE) == MQQDT_TEMPORARY_DYNAMIC )
 		{

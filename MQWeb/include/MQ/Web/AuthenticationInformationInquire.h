@@ -41,6 +41,8 @@ public:
 private:
 
 	AuthenticationInformationInquire(const AuthenticationInformationInquire&);
+
+	bool _excludeSystem;
 };
 
 

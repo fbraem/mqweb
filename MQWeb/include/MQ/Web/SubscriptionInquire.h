@@ -44,6 +44,7 @@ private:
 
 	SubscriptionInquire(const SubscriptionInquire&);
 
+	bool _excludeSystem;
 };
 
 }} // Namespace MQ::Web

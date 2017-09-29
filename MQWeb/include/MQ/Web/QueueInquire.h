@@ -43,6 +43,12 @@ public:
 private:
 
 	QueueInquire(const QueueInquire&);
+
+	MQLONG _usage;
+
+	bool _excludeSystem;
+
+	bool _excludeTemp;
 };
 
 

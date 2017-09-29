@@ -86,13 +86,13 @@ protected:
 	void execute(PCF::Vector& response);
 		/// Sends the PCF command to the command server
 
-	Poco::JSON::Object::Ptr _input;
-
 	PCF::Ptr pcf();
 
 private:
 
 	CommandServer& _commandServer;
+
+	Poco::JSON::Object::Ptr _input;
 
 	PCF::Ptr _pcf;
 

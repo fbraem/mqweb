@@ -43,6 +43,8 @@ public:
 private:
 
 	ListenerInquire(const ListenerInquire&);
+
+	bool _excludeSystem;
 };
 
 

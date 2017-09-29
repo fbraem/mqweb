@@ -25,7 +25,7 @@ namespace Web {
 
 
 ServiceInquire::ServiceInquire(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
-: PCFCommand(commandServer, MQCMD_INQUIRE_SERVICE, "Service", input)
+: PCFCommand(commandServer, MQCMD_INQUIRE_SERVICE, "Service", input), _excludeSystem(false)
 {
 	// Required parameters
 	addParameter<std::string>(MQCA_SERVICE_NAME, "ServiceName");
@@ -34,6 +34,8 @@ ServiceInquire::ServiceInquire(CommandServer& commandServer, Poco::JSON::Object:
 	addIntegerFilter();
 	addAttributeList(MQIACF_SERVICE_ATTRS, "ServiceAttrs");
 	addStringFilter();
+
+	_excludeSystem = input->optValue("ExcludeSystem", false);
 }
 
 ServiceInquire::~ServiceInquire()
@@ -45,8 +47,6 @@ Poco::JSON::Array::Ptr ServiceInquire::execute()
 	PCF::Vector commandResponse;
 	PCFCommand::execute(commandResponse);
 
-	bool excludeSystem = _input->optValue("ExcludeSystem", false);
-
 	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
 	for(PCF::Vector::iterator it = commandResponse.begin(); it != commandResponse.end(); it++)
 	{
@@ -57,7 +57,7 @@ Poco::JSON::Array::Ptr ServiceInquire::execute()
 			continue;
 
 		std::string serviceName = (*it)->getParameterString(MQCA_SERVICE_NAME);
-		if ( excludeSystem && serviceName.compare(0, 7, "SYSTEM.") == 0 )
+		if ( _excludeSystem && serviceName.compare(0, 7, "SYSTEM.") == 0 )
 		{
 			continue;
 		}
