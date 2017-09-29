@@ -1295,7 +1295,7 @@ Dictionary clusterQueueManagerDictionary = Dictionary()
 		(MQSUS_YES, "Yes")
 	)
 	(MQCACH_TP_NAME)
-	(MQCA_XMIT_Q_NAME)
+	(MQCACH_XMIT_Q_NAME)
 	(MQIACH_XMIT_PROTOCOL_TYPE)
 #ifdef MQIA_USE_DEAD_LETTER_Q
 	(MQIA_USE_DEAD_LETTER_Q)
