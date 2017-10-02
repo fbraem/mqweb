@@ -29,7 +29,7 @@ the [ChannelName](#inquireQueryChannelName) parameter is ignored.
 
 #### <a name="inquireQueryChannelName"></a>ChannelName
 The name of a channel. When this query parameter is not available, a *
-will be used which matches all channels. `name` can be used as synonym. This
+will be used which matches all channels. This
 parameter will be ignored when a channelname is passed as URL parameter.
 
 #### <a name="inquireQueryChannelInstanceType"></a>ChannelInstanceType
@@ -105,8 +105,7 @@ There are some differences between query parameters and a JSON object:
 + [ChannelInstanceAttrs](#inquireQueryChannelInstanceAttrs) is a JSON array
   with attributenames as element.
 + Synonyms can't be used, you need to use the name of the attribute
-  as described in the query parameters. You can't use *name*, it must be
-  [ChannelName](#inquireQueryChannelName) for example.
+  as described in the query parameters.
 + A filter is an object: *IntegerFilterCommand* can be used to filter on
   parameters which has integer values, while *StringFilterCommand* can be used
   to filter on parameters with string values. The filter object has these

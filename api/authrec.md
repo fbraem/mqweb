@@ -12,8 +12,8 @@ This controller can be used to get attributes of authority records.
 > AuthorityRecordController is not available for z/OS.
 
 ## <a name="inquire"></a>inquire
-Get information about one or more authority records. This action executes 
-the MQCMD_INQUIRE_AUTH_RECS pcf command. On success, the returned JSON object 
+Get information about one or more authority records. This action executes
+the MQCMD_INQUIRE_AUTH_RECS pcf command. On success, the returned JSON object
 will have a `data` array, on failure an `error` object.
 
 ### <a name="inquireUrl"></a>URL Parameters
@@ -60,7 +60,7 @@ With the *ProfileAttrs* parameter you can specify which attributes must be retur
 
 #### <a name="inquireQueryProfileName"></a>ProfileName
 The name of the profile for which to retrieve authorizations. When a [ProfileName](#inquireURLProfileName) is passed as
-part of the URL, this query parameter will be ignored. *Name* is a synonym for this parameter. A profilename is not
+part of the URL, this query parameter will be ignored. A profilename is not
 required when [ObjectType](#inquireQueryObjectType) is `Queuemanager`.
 
 #### <a name="inquireQueryServiceComponent"></a>ServiceComponent
@@ -84,9 +84,6 @@ There are some differences between query parameters and a JSON object:
 + JSON property names are case-sensitive
 + [ProfileAttrs](#inquireQueryProfileAttrs) is a JSON array with attributenames as element.
 + [Options](#inquireQueryOptions) is a JSON array.
-+ Synonyms can't be used, you need to use the name of the attribute
-  as described in the query parameters. You can't use *name*, it must be
-  [ProfileName](#inquireQueryProfileName) for example.
 
 {% capture sample %}{% include_relative samples/perl/authinfo_inq.md %}{% endcapture %}
 {{ sample | markdownify }}

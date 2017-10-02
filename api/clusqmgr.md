@@ -41,14 +41,14 @@ specified channel name. Generic names are supported.
 
 #### <a name="inquireQueryClusterName"></a>ClusterName
 The name of a cluster. Generic names are supported. This parameter is ignored,
-when a [URL parameter](#inquireURLClusterName) is used. *name* is a synonym
-for this parameter.
+when a [URL parameter](#inquireURLClusterName) is used.
 
 #### <a name="inquireQueryClusterQMgrAttrs"></a>ClusterQMgrAttrs
 With the *ClusterQMgrAttrs* parameter you can specify which attributes must be
 returned from the PCF command. Multiple occurences of this parameter are
-possible. The value must be a (case-sensitive) valid attribute name. *attrs* is
-a synonym for this parameter.
+possible. The value must be a (case-sensitive) valid attribute name.
+
+> Attrs is a synonym for ClusterQMgrAttrs
 
 #### <a name="inquireQueryClusterQMgrName"></a>ClusterQMgrName
 The name of a queuemanager that is part of the cluster. This parameter is
@@ -108,9 +108,6 @@ There are some differences between query parameters and a JSON object:
 + JSON property names are case-sensitive
 + [ClusterQMgrAttrs](#inquireQueryClusterQMgrAttrs) is a JSON array with
   attributenames as element.
-+ Synonyms can't be used, you need to use the name of the attribute
-  as described in the query parameters. You can't use *name*, it must be
-  [ClusterName](#inquireQueryClusterName) for example.
 + [ClusQMgrName](#inquireQueryClusterQMgrName) is required.
 + A filter is an object: *IntegerFilterCommand* can be used to filter on
   parameters which has integer values, while *StringFilterCommand* can be used

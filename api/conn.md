@@ -29,8 +29,9 @@ the query parameter for [ConnectionId](#inquireQueryConnectionId) is ignored.
 #### <a name="inquireQueryConnectionAttrs"></a>ConnectionAttrs
 With the *ConnectionAttrs* parameter you can specify which attributes must be
 returned from the PCF command. Multiple occurences of this parameter are
-possible. The value must be a (case-sensitive) valid attribute name. *attrs* is
-a synonym for this parameter.
+possible. The value must be a (case-sensitive) valid attribute name.
+
+> Attrs is a synonym for ConnectionAttrs.
 
 #### <a name="inquireQueryConnectionId"></a>ConnectionId
 A hexadecimal representation of a connection id. This parameter is ignored,

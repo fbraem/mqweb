@@ -58,7 +58,7 @@ possible. The value must be a (case-sensitive) valid attribute name.
 #### <a name="inquireQueryListenerName"></a>ListenerName
 The name of the listener. Generic names can be used. When an
 [listenername](#inquireURLListenerName) is passed as part of the URL, this
-query parameter will be ignored. *name* is a synonym for this parameter.
+query parameter will be ignored.
 
 #### <a name="inquireQueryTransportType"></a>TransportType
 Only return listeners with the given transport type. The following types are
@@ -96,9 +96,6 @@ There are some differences between query parameters and a JSON object:
 
 + JSON property names are case-sensitive
 + [ListenerAttrs](#inquireQueryListenerAttrs) is a JSON array with attributenames as element.
-+ Synonyms can't be used, you need to use the name of the attribute
-  as described in the query parameters. You can't use *name*, it must be
-  [ListenerName](#inquireQueryListenerName) for example.
 + A filter is an object: *IntegerFilterCommand* can be used to filter on parameters which has
   integer values, while *StringFilterCommand* can be used to filter on parameters with string values.
   The filter object has these three properties: Parameter (see [FilterParam](#inquireQueryFilterParam)),

@@ -10,7 +10,7 @@ The second part of the URI must be `topic` to call the TopicController.
 
 ## <a name="inquire"></a>inquire
 Get information about one or more topics. This action executes the
-MQCMD_INQUIRE_TOPIC pcf command. On success, the returned JSON 
+MQCMD_INQUIRE_TOPIC pcf command. On success, the returned JSON
 object will have a `data` array, on failure an `error` object.
 
 ### <a name="inquireUrl"></a>URL Parameters
@@ -64,8 +64,7 @@ are possible. The value must be a valid attribute name.
 
 #### <a name="inquireQueryTopicName"></a>TopicName
 Only return topics with a name that matches *TopicName*. By
-default * is used which matches all topics. *Name* is a synonym for this
-parameter.
+default * is used which matches all topics.
 
 This parameter is ignored when there is a URI parameter for a topicname.
 
@@ -109,8 +108,6 @@ There are some differences between query parameters and a JSON object:
 
 + JSON property names are case-sensitive
 + *TopicAttrs* is a JSON array with attributenames as element.
-+ Synonyms can't be used, you need to use the name of the attribute
-  as described in the query parameters. You can't use *name*, it must be *TopicName* for example.
 + A filter is an object: *IntegerFilterCommand* can be used to filter on parameters which has
   integer values, while *StringFilterCommand* can be used to filter on parameters with string values.
   The filter object has these three properties: Parameter (see [FilterParam](#inquireQueryFilterParam)),

@@ -33,7 +33,7 @@ With the *AuthInfoAttrs* parameter you can specify which attributes must be retu
 
 #### <a name="inquiryQueryAuthInfoName"></a>AuthInfoName
 The name of an authentication information object. When an authentication information object name is passed as
-part of the URL, this query parameter will be ignored. *name* is a synonym for this parameter. When no
+part of the URL, this query parameter will be ignored. When no
 *AuthInfoName* parameter is passed, * wil be used as default.
 
 #### <a name="inquiryQueryAuthInfoType"></a>AuthInfoType
@@ -98,9 +98,6 @@ There are some differences between query parameters and a JSON object:
 
 + JSON property names are case-sensitive
 + [AuthInfoAttrs](#inquireQueryAuthInfoAttrs) is a JSON array with attributenames as element.
-+ Synonyms can't be used, you need to use the name of the attribute
-  as described in the query parameters. You can't use *name*, it must be
-  [AuthInfoName](#inquireQueryAuthInfoName) for example.
 + A filter is an object: *IntegerFilterCommand* can be used to filter on parameters which has
   integer values, while *StringFilterCommand* can be used to filter on parameters with string values.
   The filter object has these three properties: Parameter (see [FilterParam](#inquireQueryFilterParam)),

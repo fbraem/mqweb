@@ -10,7 +10,7 @@ The second part of the URI must be `queue` to call the QueueController.
 
 ## <a name="inquire"></a>inquire
 Get information about one or more queues. This action executes the
- MQCMD_INQUIRE_Q pcf command. On success, the returned JSON 
+ MQCMD_INQUIRE_Q pcf command. On success, the returned JSON
 object will have a `data` array, on failure an `error` object.
 
 ### <a name="inquireUrl"></a>URL Parameters
@@ -41,9 +41,6 @@ Only return queues which have at least *CurrentQDepth* messages. This is
 actually a shortcut for a [Filter](#inquireQueryFilter) :
 
     filter=I&filter_param=CurrentQDepth&filter_op=NLT&filter_value=<value>
-
-For compatibility reasons with older versions this parameter can also
-be passed as *QueueDepth*.
 
 > Be aware that only one integer/string filter can be used for each call.
 
@@ -86,13 +83,8 @@ are possible. The value must be a valid attribute name.
 
 #### <a name="inquireQueryQName"></a>QName
 Only return queues with a name that matches *QName*. By
-default * is used which matches all queues. *Name* is a synonym for this
-parameter.
-
-This parameter is ignored when there is a URI parameter for a queuename.
-
->For compatibility reasons with older versions this parameter can also
->be passed as *QueueName*.
+default * is used which matches all queues. This parameter is ignored when
+there is a URI parameter for a queuename.
 
 #### <a name="inquireQueryQSGDisposition"></a>QSGDisposition
 Disposition of the object within the group. Possible values are `Live`, `Copy`,
@@ -117,9 +109,6 @@ case-sensitive.
 
 > When the QAttrs parameter is used, the Usage attribute must be selected to
 > make this work.
-
-For compatibility reasons with older versions this parameter can also
-be passed as *QueueUsage*.
 
 ### <a name="inquireExample"></a>Example
 
@@ -160,8 +149,6 @@ There are some differences between query parameters and a JSON object:
 
 + JSON property names are case-sensitive
 + *QAttrs* is a JSON array with attributenames as element.
-+ Synonyms can't be used, you need to use the name of the attribute
-  as described in the query parameters. You can't use *name*, it must be *QName* for example.
 + *CurrentQDepth* can't be used. You need to use an *IntegerFilterCommand* to do the same.
 + A filter is an object: *IntegerFilterCommand* can be used to filter on parameters which has
   integer values, while *StringFilterCommand* can be used to filter on parameters with string values.

@@ -11,7 +11,7 @@ ListenerStatusController.
 
 ## <a name="inquire"></a>inquire
 Get status information about one ore more listeners. This actions executes the
-PCF commando MQCMD_INQUIRE_LISTENER_STATUS. On success, the returned JSON 
+PCF commando MQCMD_INQUIRE_LISTENER_STATUS. On success, the returned JSON
 object will have a `data` array, on failure an `error` object.
 
 ### <a name="inquireURL"></a>URL Parameters
@@ -47,7 +47,7 @@ The name of the parameter to filter on. The names are based on the names used in
 The value to use for filtering. When a string is passed for an Integerfilter, a WebSphere MQ constant is assumed.
 
 #### <a name="inquireQueryListenerName"></a>ListenerName
-The name of the listener. *name* is a synonym for this parameter. It is ignored
+The name of the listener. It is ignored
 when a [URL parameter](#inquireURLListenerName) is used. Generic names are
 allowed.
 
@@ -86,9 +86,6 @@ There are some differences between query parameters and a JSON object:
 + JSON property names are case-sensitive
 + [ListenerStatusAttrs](#inquireQueryListenerStatusAttrs) is a JSON array with
   attributenames as element.
-+ Synonyms can't be used, you need to use the name of the attribute
-  as described in the query parameters. You can't use *name*, it must be
-  [ListenerName](#inquireQueryListenerName) for example.
 + A filter is an object: *IntegerFilterCommand* can be used to filter on parameters which has
   integer values, while *StringFilterCommand* can be used to filter on parameters with string values.
   The filter object has these three properties: Parameter (see [FilterParam](#inquireQueryFilterParam)),

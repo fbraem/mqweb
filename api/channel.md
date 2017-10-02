@@ -37,6 +37,8 @@ With the *ChannelAttrs* parameter you can specify which attributes must be
 returned from the PCF command. Multiple occurences of this parameter are
 possible. The value must be a (case-sensitive) valid attribute name.
 
+> Attrs is a synonym for ChannelAttrs
+
 #### <a name="inquireQueryChannelName"></a>ChannelName
 The name of a channel. Generic names are supported. This parameter is ignored
 when a [channelname](#inquireURLChannelName) is passed as URL parameter. When
@@ -115,9 +117,6 @@ There are some differences between query parameters and a JSON object:
 + ChannelName is a mandatory property. No default values is used.
 + [ChannelAttrs](#inquireQueryChannelAttrs) is a JSON array with attributenames
   as element.
-+ Synonyms can't be used, you need to use the name of the attribute
-  as described in the query parameters. You can't use *name*, it must be
-  [ChannelName](#inquireQueryChannelName) for example.
 + A filter is an object: *IntegerFilterCommand* can be used to filter on
   parameters which has integer values, while *StringFilterCommand* can be used
   to filter on parameters with string values. The filter object has these
