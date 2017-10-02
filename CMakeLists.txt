@@ -2,6 +2,15 @@ cmake_minimum_required(VERSION 2.6)
 
 option(POCO_INSTALLED "Poco Installed" ON)
 set(POCO_PREFIX "" CACHE STRING "Prefix Path for POCO")
+if (UNIX)
+  set(MQ_INSTALLATION_PATH "/opt/mqm" CACHE STRING "MQ Installation Path")
+  set(MQ_INCLUDE "${MQ_INSTALLATION_PATH}/inc")
+  set(MQ_LIB "${MQ_INSTALLATION_PATH}/lib64")
+else()
+  set(MQ_INSTALLATION_PATH "C:\\Program Files\\IBM\\WebSphere MQ" CACHE STRING "MQ Installation Path")
+  set(MQ_INCLUDE "${MQ_INSTALLATION_PATH}\\Tools\\c\\include")
+  set(MQ_LIB "${MQ_INSTALLATION_PATH}\\Tools\\Lib64")
+endif()
 
 project(MQWebSolution)
 
