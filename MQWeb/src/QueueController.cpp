@@ -133,25 +133,7 @@ void QueueController::inquire()
 		else
 		{
 			// Handle query parameters
-			std::string queueName;
-			if ( form().has("QName") )
-			{
-				queueName = form().get("QName");
-			}
-			else if ( form().has("QueueName") )
-			{
-				queueName = form().get("QueueName");
-			}
-			else if ( form().has("name") )
-			{
-				queueName = form().get("name");
-			}
-
-			if ( queueName.empty() )
-			{
-				queueName = "*";
-			}
-			pcfParameters->set("QName", queueName);
+			pcfParameters->set("QName", form().get("QName", "*"));
 		}
 
 		if ( form().has("ClusterInfo") )
@@ -222,18 +204,9 @@ void QueueController::inquire()
 			pcfParameters->set("Usage", form().get("Usage"));
 		}
 
-		std::string queueType;
 		if ( form().has("QueueType") )
 		{
-			queueType = form().get("QueueType");
-		}
-		else
-		{
-			queueType = form().get("QType", "");
-		}
-		if ( !queueType.empty() )
-		{
-			pcfParameters->set("QType", queueType);
+			pcfParameters->set("QType", form().get("QueueType"));
 		}
 
 		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);

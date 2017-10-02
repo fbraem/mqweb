@@ -65,20 +65,7 @@ void ChannelController::inquire()
 		else
 		{
 			// Handle query parameters
-			std::string channelNameField;
-			if ( form().has("ChannelName") )
-			{
-				channelNameField = form().get("ChannelName");
-			}
-			else if ( form().has("name") )
-			{
-				channelNameField = form().get("name");
-			}
-			if ( channelNameField.empty() )
-			{
-				channelNameField = "*";
-			}
-			pcfParameters->set("ChannelName", channelNameField);
+			pcfParameters->set("ChannelName", form().get("ChannelName", "*"));
 		}
 
 		if ( parameters.size() > 2 )

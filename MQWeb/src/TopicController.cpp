@@ -61,20 +61,7 @@ void TopicController::inquire()
 		else
 		{
 			// Handle query parameters
-			std::string topicNameField;
-			if ( form().has("TopicName") )
-			{
-				topicNameField = form().get("TopicName");
-			}
-			else if ( form().has("name") )
-			{
-				topicNameField = form().get("name");
-			}
-			if ( topicNameField.empty() )
-			{
-				topicNameField = "*";
-			}
-			pcfParameters->set("TopicName", topicNameField);
+			pcfParameters->set("TopicName", form().get("TopicName", "*"));
 		}
 
 		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);

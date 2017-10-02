@@ -72,10 +72,6 @@ void AuthorityRecordController::inquire()
 			{
 				pcfParameters->set("ProfileName", form().get("ProfileName"));
 			}
-			else if ( form().has("Name") )
-			{
-				pcfParameters->set("ProfileName", form().get("Name"));
-			}
 		}
 
 		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();

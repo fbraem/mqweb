@@ -61,16 +61,7 @@ void SubscriptionStatusController::inquire()
 		else
 		{
 			// Handle query parameters
-			std::string subNameField;
-			if ( form().has("SubName") )
-			{
-				subNameField = form().get("SubName");
-			}
-			else if ( form().has("name") )
-			{
-				subNameField = form().get("name");
-			}
-			pcfParameters->set("SubName", subNameField);
+			pcfParameters->set("SubName", form().get("SubName", "*"));
 		}
 
 		if ( form().has("SubId") )

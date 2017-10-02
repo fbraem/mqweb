@@ -61,25 +61,7 @@ void QueueStatusController::inquire()
 		else
 		{
 			// Handle query parameters
-			std::string queueName;
-			if ( form().has("QName") )
-			{
-				queueName = form().get("QName");
-			}
-			else if ( form().has("QueueName") )
-			{
-				queueName = form().get("QueueName");
-			}
-			else if ( form().has("name") )
-			{
-				queueName = form().get("name");
-			}
-
-			if ( queueName.empty() )
-			{
-				queueName = "*";
-			}
-			pcfParameters->set("QName", queueName);
+			pcfParameters->set("QName", form().get("QName", "*"));
 		}
 
 		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);

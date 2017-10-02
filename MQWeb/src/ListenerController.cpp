@@ -60,20 +60,7 @@ void ListenerController::inquire()
 		}
 		else
 		{
-			std::string listenerNameField;
-			if ( form().has("ListenerName") )
-			{
-				listenerNameField = form().get("ListenerName");
-			}
-			else if ( form().has("name") )
-			{
-				listenerNameField = form().get("name");
-			}
-			if ( listenerNameField.empty() )
-			{
-				listenerNameField = "*";
-			}
-			pcfParameters->set("ListenerName", listenerNameField);
+			pcfParameters->set("ListenerName", form().get("ListenerName", "*"));
 		}
 
 		if ( parameters.size() > 2 )

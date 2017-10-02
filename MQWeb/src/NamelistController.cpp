@@ -60,20 +60,7 @@ void NamelistController::inquire()
 		}
 		else
 		{
-			std::string namelistNameField;
-			if ( form().has("NamelistName") )
-			{
-				namelistNameField = form().get("NamelistName");
-			}
-			else if ( form().has("name") )
-			{
-				namelistNameField = form().get("name");
-			}
-			if ( namelistNameField.empty() )
-			{
-				namelistNameField = "*";
-			}
-			pcfParameters->set("NamelistName", namelistNameField);
+			pcfParameters->set("NamelistName", form().get("NamelistName", "*"));
 		}
 
 		if ( parameters.size() > 2 )

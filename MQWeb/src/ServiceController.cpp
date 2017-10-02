@@ -61,20 +61,7 @@ void ServiceController::inquire()
 		else
 		{
 			// Handle query parameters
-			std::string serviceNameField;
-			if ( form().has("ServiceName") )
-			{
-				serviceNameField = form().get("ServiceName");
-			}
-			else if ( form().has("name") )
-			{
-				serviceNameField = form().get("name");
-			}
-			if ( serviceNameField.empty() )
-			{
-				serviceNameField = "*";
-			}
-			pcfParameters->set("ServiceName", serviceNameField);
+			pcfParameters->set("ServiceName", form().get("ServiceName", "*"));
 		}
 
 		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);

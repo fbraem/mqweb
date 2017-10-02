@@ -60,20 +60,7 @@ void AuthenticationInformationController::inquire()
 		else
 		{
 			// Handle query parameters
-			std::string authInfoNameField;
-			if ( form().has("AuthInfoName") )
-			{
-				authInfoNameField = form().get("AuthInfoName");
-			}
-			else if ( form().has("name") )
-			{
-				authInfoNameField = form().get("name");
-			}
-			if ( authInfoNameField.empty() )
-			{
-				authInfoNameField = "*";
-			}
-			pcfParameters->set("AuthInfoName", authInfoNameField);
+			pcfParameters->set("AuthInfoName", form().get("AuthInfoName", "*"));
 		}
 
 		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();

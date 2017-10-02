@@ -61,20 +61,7 @@ void ProcessController::inquire()
 		else
 		{
 			// Handle query parameters
-			std::string processNameField;
-			if ( form().has("ProcessName") )
-			{
-				processNameField = form().get("ProcessName");
-			}
-			else if ( form().has("name") )
-			{
-				processNameField = form().get("name");
-			}
-			if ( processNameField.empty() )
-			{
-				processNameField = "*";
-			}
-			pcfParameters->set("ProcessName", processNameField);
+			pcfParameters->set("ProcessName", form().get("ProcessName", "*"));
 		}
 
 		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);

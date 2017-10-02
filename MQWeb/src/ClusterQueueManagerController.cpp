@@ -65,15 +65,7 @@ void ClusterQueueManagerController::inquire()
 			std::string clusterNameField;
 			if ( form().has("ClusterName") )
 			{
-				clusterNameField = form().get("ClusterName");
-			}
-			else if ( form().has("name") )
-			{
-				clusterNameField = form().get("name");
-			}
-			if ( !clusterNameField.empty() )
-			{
-				pcfParameters->set("ClusterName", clusterNameField);
+				pcfParameters->set("ClusterName", form().get("ClusterName"));
 			}
 		}
 
