@@ -48,8 +48,16 @@ void QueueController::create()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
+
+		std::vector<std::string> parameters = getParameters();
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("QName", parameters[1]);
+		}
+		// Copy all query parameters to PCF, except QName if it is already set on the URI
 		for(Poco::Net::NameValueCollection::ConstIterator it = form().begin(); it != form().end(); ++it)
 		{
+			if (parameters.size() > 1 && Poco::icompare(it->first, "QName") == 0) continue;
 			pcfParameters->set(it->first, it->second);
 		}
 	}
