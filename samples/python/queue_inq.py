@@ -1,7 +1,7 @@
 '''
  This sample will show all SYSTEM queues from a queuemanager and
  prints the current queue depth if this property exists for the queue.
- MQWeb runs on localhost and is listening on port 8081. 
+ MQWeb runs on localhost and is listening on port 8081.
 '''
 import sys
 import json
@@ -12,7 +12,7 @@ if len(sys.argv) < 2 :
 	print 'Please pass me the name of a queuemanager as argument'
 	sys.exit(1)
 
-url = "/api/queue/inquire/" + sys.argv[1] + "/SYSTEM*";
+url = "/api/queue/inquire/" + sys.argv[1] + "/SYSTEM*"
 
 try:
 	conn = httplib.HTTPConnection('localhost', 8081)
@@ -21,7 +21,7 @@ try:
 	result = json.loads(res.read())
 
 	if 'error' in result:
-		print ('Received a WebSphere MQ error: ' +	
+		print ('Received a WebSphere MQ error: ' +
 			str(result['error']['reason']['code'])
 		)
 	else:
