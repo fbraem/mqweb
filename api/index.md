@@ -7,21 +7,21 @@ api: true
 MQWeb API
 =========
 
-The api controllers are responsible of sending PCF commands to WebSphere MQ 
+The api controllers are responsible of sending PCF commands to WebSphere MQ
 and to return the answer in JSON format.
 
-Each WebSphere MQ object type will have its own controller. The URI determines 
-which controller will handle the request and which action will be called. The 
-URI always starts with `api`, the second part of the URI selects the controller 
-and the third part defines the action. For example: the URI `/api/queue/inquire` 
-will call the [inquire](queue.html#inquire) action on the 
-[QueueController](queue.html). 
+Each WebSphere MQ object type will have its own controller. The URI determines
+which controller will handle the request and which action will be called. The
+URI always starts with `api`, the second part of the URI selects the controller
+and the third part defines the action. For example: the URI `/api/queue/inquire`
+will call the [inquire](queue.html#inquire) action on the
+[QueueController](queue.html).
 
-An action needs some parameters to know which WebSphere MQ object to use. These 
-parameters are passed as part of the path of the URI or as query parameter. 
-The first parameter on the URI after the action is always the name of the 
+An action needs some parameters to know which WebSphere MQ object to use. These
+parameters are passed as part of the path of the URI or as query parameter.
+The first parameter on the URI after the action is always the name of the
 queuemanager. Other parameters depends on the called action.
-For example: `/api/queue/inquire/PIGEON` will return all queues from the queuemanager 
+For example: `/api/queue/inquire/PIGEON` will return all queues from the queuemanager
 PIGEON. Depending on the object type other input can be passed. Look at the api
 documentation to know what parameters can be used. The HTTP method can be GET or POST.
 
@@ -31,9 +31,9 @@ The name of a query parameter is not case sensitive.
 
 It's also possible to POST an application/json request. The URI is still formed
 with the object type, action and queuemanager name but all other information can be
-posted as a JSON object. This JSON object contains input information for the PFC 
-command. Look at the api documentation to know what properties can be used in 
-this object. The name of a property is likely the same as the corresponding 
+posted as a JSON object. This JSON object contains input information for the PFC
+command. Look at the api documentation to know what properties can be used in
+this object. The name of a property is likely the same as the corresponding
 query parameter but is now case sensitive!
 
 The answer of an api request is always a JSON object. This JSON object can contain the
@@ -45,7 +45,7 @@ following properties:
 
 + `input`
 
-  Contains the data which is used as input for the PCF command. This can be 
+  Contains the data which is used as input for the PCF command. This can be
   useful to debug a GET/POST request.
 
 + `error`
@@ -54,12 +54,12 @@ following properties:
 
 + `data`
 
-  An array with objects containing the requested attributes for the WebSphere 
-  MQ object type (only returned when no error occurred). This is always an 
+  An array with objects containing the requested attributes for the WebSphere
+  MQ object type (only returned when no error occurred). This is always an
   array, even when the PCF command responds with only one message.
 
-Attributes of WebSphere MQ objects are always returned with the name as documented 
-in the WebSphere MQ information center. For example: The property of the current 
+Attributes of WebSphere MQ objects are always returned with the name as documented
+in the WebSphere MQ information center. For example: The property of the current
 queue depth of a queue will have the name `CurrentQDepth`. Each property is an
 object with the following properties:
 
@@ -76,12 +76,20 @@ object with the following properties:
 
   When the value of the property is an MQ constant then this property will have
   the string representation of the value. For example: When `QueueType` has the
-  value 1 (MQQT_LOCAL), then this property will have the value `Local`. 
+  value 1 (MQQT_LOCAL), then this property will have the value `Local`.
 
-> A property with the name `id_nnnn` (where nnnn is the value of the C constant) 
-> means that the property is not defined in the SQLite database. Create an 
-> issue on [Github](https://github.com/fbraem/mqweb/issues) and this will be 
+> A property with the name `id_nnnn` (where nnnn is the value of the C constant)
+> means that the property is not defined in the SQLite database. Create an
+> issue on [Github](https://github.com/fbraem/mqweb/issues) and this will be
 > fixed as soon as possible.
+
+> Why isn't the [JSONAPI](http://jsonapi.org) specification used? JSONAPI is a
+> great way to model JSON responses, but it is difficult to map all MQ commands
+> to it. Inquire can be mapped to GET, create to POST, but what about SUSPEND or
+> CLEAR for example? Now it is straightforward : /api/<objtype>/<verb>. MQWeb
+> also returns propertynames with a capital letter. This is because MQWeb uses
+> the names as documented in the MQ information center, which makes it easier
+> to lookup information for the properties.
 
 Controllers
 -----------
@@ -106,4 +114,3 @@ Controllers
 |[TopicStatusController](tpstatus.html)|/api/tpstatus|
 |[SubController](sub.html)|/api/sub|
 |[SubStatusController](sbstatus.html)|/api/sbstatus|
-
