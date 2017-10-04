@@ -86,7 +86,7 @@ object with the following properties:
 > Why isn't the [JSONAPI](http://jsonapi.org) specification used? JSONAPI is a
 > great way to model JSON responses, but it is difficult to map all MQ commands
 > to it. Inquire can be mapped to GET, create to POST, but what about SUSPEND or
-> CLEAR for example? Now it is straightforward : /api/<objtype>/<verb>. MQWeb
+> CLEAR for example? Now it is straightforward : /api/&lt;objtype&gt;/&lt;verb&gt;. MQWeb
 > also returns propertynames with a capital letter. This is because MQWeb uses
 > the names as documented in the MQ information center, which makes it easier
 > to lookup information for the properties.
