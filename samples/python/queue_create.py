@@ -6,15 +6,17 @@ import sys
 import json
 import httplib
 import socket
+import argparse
 
-if len(sys.argv) < 2 :
-	print 'Please pass me the name of a queuemanager and a queue as argument'
-	sys.exit(1)
-if len(sys.argv) < 3 :
-	print 'Please pass me the name of a queue as argument'
-	sys.exit(1)
+parser = argparse.ArgumentParser(
+	description='MQWeb - Python sample - Create local queue',
+	epilog="For more information: http://www.mqweb.org"
+)
+parser.add_argument('-m', '--queuemanager', help='Name of the queuemanager', required=True)
+parser.add_argument('-q', '--queue', help='Name of the queue', required=True)
+args = parser.parse_args()
 
-url = "/api/queue/create/" + sys.argv[1] + "/" + sys.argv[2] + '?QType=Local'
+url = "/api/queue/create/" + args.queuemanager + "/" + args.queue + '?QType=Local'
 
 try:
 	conn = httplib.HTTPConnection('localhost', 8081)
@@ -28,10 +30,10 @@ try:
 			result['error']['reason']['desc']
 		)
 	else:
-		print(sys.argv[2] + ' created on ' + sys.argv[1])
+		print(args.queue + ' created on ' + args.queuemanager)
 
 except httplib.HTTPException as e:
-	print ('An HTTP error occurred while inquiring queues: ' +
+	print ('An HTTP error occurred while creating queue: ' +
 		e.errno + e.strerror
 	)
 except socket.error as e:
