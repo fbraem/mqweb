@@ -27,6 +27,10 @@ namespace Web {
 QueueCreate::QueueCreate(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
 : PCFCommand(commandServer, MQCMD_CREATE_Q, "Queue", input)
 {
+	// Required Parameters
+	addParameter<std::string>(MQCA_Q_NAME, "QName");
+	addParameterNumFromString(MQIA_Q_TYPE, "QType");
+
 	fillPCF();
 }
 
