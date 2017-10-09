@@ -171,14 +171,23 @@ void Dictionary::mapToPCF(Poco::JSON::Object::Ptr json, MQ::PCF &pcf) const
 	{
 		MQLONG id = getIdForName(it->first);
 		if ( id == -1 ) continue; // Skip unknown attributes
+		if (pcf.hasParameter(id)) continue; // Already added, so skip this now
 
 		if ( id > MQIA_FIRST && id < MQIA_LAST ) // Integer attributes
 		{
 			if ( hasTextMap(id) )
 			{
-				MQLONG value = getIdForText(id, it->second);
+				MQLONG value = getIdForText(id, it->second.toString());
 				if ( value != -1 )
 				{
+					pcf.addParameter(id, value);
+				}
+			}
+			else
+			{
+				if ( it->second.isNumeric() )
+				{
+					MQLONG value = it->second;
 					pcf.addParameter(id, value);
 				}
 			}
