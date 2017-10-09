@@ -7,6 +7,34 @@ QueueController
 ===============
 
 The second part of the URI must be `queue` to call the QueueController.
+This controller has the following actions:
+
++ [create](#create)
++ [inquire](#inquire)
+
+## <a name="create"></a>create
+Create a new queue. This action will execute MQCMD_CREATE_Q. On success the
+JSON response object will have an empty `data` array, on failure an `error`
+object.
+
+### <a name="createUrl"></a>URL Parameters
+`api/queue/create/<QueueManager>/<QName>`
+
+#### <a name="createUrlQueueManager"></a>QueueManager
+The name of the queuemanager. This parameter is required.
+
+#### <a name="createUrlQName"></a>QName
+The name of a queue. This parameter is optional.
+
+### <a name="createQuery">Query Parameters
+All query parameters are copied as attribute for the queue. *QName* and *QType*
+are required. If a queuename is passed on the URL, the QName query parameter
+will be ignored.
+
+### <a name="createJSON"></a>JSON Object
+When using an application/json POST request you can post a JSON object
+to create a queue. All URL parameters (except queuemanager) and query parameters
+are ignored.
 
 ## <a name="inquire"></a>inquire
 Get information about one or more queues. This action executes the
