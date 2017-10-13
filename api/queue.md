@@ -36,6 +36,15 @@ When using an application/json POST request you can post a JSON object
 to create a queue. All URL parameters (except queuemanager) and query parameters
 are ignored.
 
+### <a name="createExample"></a>Example
+
+`/api/queue/create/PIGEON/MQWEB.TEST.Q1&QType=Local`  
+
+This sample is a Python script that creates an alias queue:
+
+{% capture sample %}{% include_relative samples/php/queue_create_alias.md %}{% endcapture %}
+{{ sample | markdownify }}
+
 ## <a name="inquire"></a>inquire
 Get information about one or more queues. This action executes the
  MQCMD_INQUIRE_Q pcf command. On success, the returned JSON
