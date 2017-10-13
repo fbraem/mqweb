@@ -26,7 +26,7 @@ The name of the queuemanager. This parameter is required.
 #### <a name="createUrlQName"></a>QName
 The name of a queue. This parameter is optional.
 
-### <a name="createQuery">Query Parameters
+### <a name="createQuery"></a>Query Parameters
 All query parameters are copied as attribute for the queue. *QName* and *QType*
 are required. If a queuename is passed on the URL, the QName query parameter
 will be ignored.
