@@ -42,7 +42,7 @@ are ignored.
 
 This sample is a Python script that creates an alias queue:
 
-{% capture sample %}{% include_relative samples/php/queue_create_alias.md %}{% endcapture %}
+{% capture sample %}{% include_relative samples/python/queue_create_alias.md %}{% endcapture %}
 {{ sample | markdownify }}
 
 ## <a name="inquire"></a>inquire
