@@ -19,6 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/ListenerStatusInquire.h"
+#include "MQ/MQException.h"
 
 namespace MQ {
 namespace Web {
@@ -47,22 +48,33 @@ Poco::JSON::Array::Ptr ListenerStatusInquire::execute()
 	PCFCommand::execute();
 
 	Poco::JSON::Array::Ptr statuses = new Poco::JSON::Array();
-	for(PCF::Vector::const_iterator it = begin(); it != end(); it++)
+
+	if (hasResponse()) 
 	{
-		if ( (*it)->isExtendedResponse() ) // Skip extended response
-			continue;
-
-		if ( (*it)->getReasonCode() != MQRC_NONE )
-			continue;
-
-		std::string listenerName = (*it)->getParameterString(MQCACH_LISTENER_NAME);
-		if ( _excludeSystem
-			&& listenerName.compare(0, 7, "SYSTEM.") == 0 )
+		PCF::Vector::const_iterator it = begin();
+		if ( (*it)->getReasonCode() != MQRC_NONE 
+			&& (*it)->getReasonCode() != MQRC_UNKNOWN_OBJECT_NAME)
 		{
-			continue;
+			throw MQException("PCF", getCommandString((*it)->getCommand()), (*it)->getCompletionCode(), (*it)->getReasonCode());
 		}
 
-		statuses->add(createJSON(**it));
+		for(; it != end(); it++)
+		{
+			if ( (*it)->isExtendedResponse() ) // Skip extended response
+				continue;
+
+			if ( (*it)->getReasonCode() != MQRC_NONE )
+				continue;
+
+			std::string listenerName = (*it)->getParameterString(MQCACH_LISTENER_NAME);
+			if ( _excludeSystem
+				&& listenerName.compare(0, 7, "SYSTEM.") == 0 )
+			{
+				continue;
+			}
+
+			statuses->add(createJSON(**it));
+		}
 	}
 
 	return statuses;
