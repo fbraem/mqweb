@@ -19,8 +19,9 @@
 * SOFTWARE.
 */
 #include "MQ/Web/QueueController.h"
-#include "MQ/Web/QueueInquire.h"
+#include "MQ/Web/QueueCopy.h"
 #include "MQ/Web/QueueCreate.h"
+#include "MQ/Web/QueueInquire.h"
 #include "MQ/Web/QueueRemove.h"
 
 namespace MQ
@@ -36,6 +37,37 @@ QueueController::QueueController() : MQController()
 
 QueueController::~QueueController()
 {
+}
+
+void QueueController::copy()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
+	if ( data().has("input") && data().isObject("input") )
+	{
+		pcfParameters = data().getObject("input");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+
+		std::vector<std::string> parameters = getParameters();
+		if ( parameters.size() > 2 )
+		{
+			pcfParameters->set("FromQName", parameters[2]);
+		}
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("ToQName", parameters[1]);
+		}
+
+		// Copy all query parameters to PCF
+		for(Poco::Net::NameValueCollection::ConstIterator it = form().begin(); it != form().end(); ++it)
+		{
+			pcfParameters->set(it->first, it->second);
+		}
+	}
+	QueueCopy command(*commandServer(), pcfParameters);
+	command.execute();
 }
 
 void QueueController::create()
@@ -114,7 +146,7 @@ void QueueController::remove()
 	}
 
 	QueueRemove command(*commandServer(), pcfParameters);
-	set("data", command.execute());
+	command.execute();
 }
 
 void QueueController::inquire()

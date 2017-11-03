@@ -18,56 +18,24 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef _MQWeb_QueueController_h
-#define _MQWeb_QueueController_h
-
-#include "MQ/Web/MQController.h"
-#include "MQ/Web/MapInitializer.h"
+#include "MQ/Web/QueueCopy.h"
 
 namespace MQ {
 namespace Web {
 
-class QueueController : public MQController
-	/// Controller that shows the details of a queue
+QueueCopy::QueueCopy(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
+: PCFSimpleCommand(commandServer, MQCMD_COPY_Q, "Queue", input)
 {
-public:
-	QueueController();
-		/// Constructor
+	// Required Parameters
+	addParameter<std::string>(MQCACF_FROM_Q_NAME, "FromQName");
+	addParameter<std::string>(MQCACF_TO_Q_NAME, "ToQName");
+	addParameterNumFromString(MQIA_Q_TYPE, "QType");
 
-	virtual ~QueueController();
-		/// Destructor
-
-	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
-		/// Returns all available actions
-
-	void copy();
-		/// Action copy. Copy queue.
-
-	void create();
-		/// Action create. Define queue.
-
-	void remove();
-
-	void inquire();
-		/// Action inquire. Inquire queues and returns all data in JSON format.
-
-private:
-};
-
-
-inline const Controller::ActionMap& QueueController::getActions() const
-{
-	static Controller::ActionMap actions
-		= MapInitializer<std::string, Controller::ActionFn>
-			("copy", static_cast<ActionFn>(&QueueController::copy))
-			("create", static_cast<ActionFn>(&QueueController::create))
-			("delete", static_cast<ActionFn>(&QueueController::remove))
-			("inquire", static_cast<ActionFn>(&QueueController::inquire))
-		;
-	return actions;
+	fillPCF();
 }
 
+QueueCopy::~QueueCopy()
+{
+}
 
-} } // Namespace MQ::Web
-
-#endif // _MQWeb_QueueController_h
+}} //  Namespace MQ::Web
