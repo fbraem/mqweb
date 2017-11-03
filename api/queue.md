@@ -9,8 +9,47 @@ QueueController
 The second part of the URI must be `queue` to call the QueueController.
 This controller has the following actions:
 
++ [copy](#copy)
 + [create](#create)
 + [inquire](#inquire)
+
+## <a name="create"></a>copy
+Create a new queue by copying attributes from another queue.
+This action will execute MQCMD_COPY_Q. On success the
+JSON response object will have an empty `data` array, on failure an `error`
+object.
+
+### <a name="copyUrl"></a>URL Parameters
+`api/queue/copy/<QueueManager>/<FromQName>/<ToQName>`
+
+#### <a name="copyUrlQueueManager"></a>QueueManager
+The name of the queuemanager. This parameter is required.
+
+#### <a name="copyUrlFromQName"></a>FromQName
+The name of a queue to copy from. This parameter is optional if you use the
+corresponding query parameter.
+
+#### <a name="copyUrlToQName"></a>ToQName
+The name of the new queue.  This parameter is optional if you use the
+corresponding query parameter.
+
+### <a name="copyQuery"></a>Query Parameters
+All query parameters are copied as attribute for the queue. *FromQName*,
+*ToQname* and *QType* are required. When a [POST](#copyJSON) request is used, all query parameters will be ignored.
+
+`/api/queue/copy/PIGEON/MQWEB.TEST.Q1/MQWEB.TEST.Q2&QType=Local`  
+
+### <a name="copyJSON"></a>JSON Object
+When using an application/json POST request you can post a JSON object
+to create a queue. All URL parameters (except queuemanager) and query parameters
+are ignored.
+
+### <a name="createExample"></a>Example
+
+This sample is a Python script that creates a copy from a local queue:
+
+{% capture sample %}{% include_relative samples/python/queue_copy.md %}{% endcapture %}
+{{ sample | markdownify }}
 
 ## <a name="create"></a>create
 Create a new queue. This action will execute MQCMD_CREATE_Q. On success the
