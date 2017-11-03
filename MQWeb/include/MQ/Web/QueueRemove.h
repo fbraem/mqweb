@@ -21,13 +21,13 @@
 #ifndef _MQWeb_QueueRemove_H
 #define _MQWeb_QueueRemove_H
 
-#include "MQ/Web/PCFCommand.h"
+#include "MQ/Web/PCFSimpleCommand.h"
 
 namespace MQ {
 namespace Web {
 
-class QueueRemove : public PCFCommand
-	/// Maps queue object to Websphere MQ
+class QueueRemove : public PCFSimpleCommand
+	/// Removes a queue
 {
 public:
 
@@ -36,9 +36,6 @@ public:
 
 	virtual ~QueueRemove();
 		/// Destructor
-
-	Poco::JSON::Array::Ptr execute();
-		/// Implements the inquire queue command.
 
 private:
 

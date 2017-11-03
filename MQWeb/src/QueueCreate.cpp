@@ -19,13 +19,12 @@
 * SOFTWARE.
 */
 #include "MQ/Web/QueueCreate.h"
-#include "MQ/MQException.h"
 
 namespace MQ {
 namespace Web {
 
 QueueCreate::QueueCreate(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
-: PCFCommand(commandServer, MQCMD_CREATE_Q, "Queue", input)
+: PCFSimpleCommand(commandServer, MQCMD_CREATE_Q, "Queue", input)
 {
 	// Required Parameters
 	addParameter<std::string>(MQCA_Q_NAME, "QName");
@@ -36,23 +35,6 @@ QueueCreate::QueueCreate(CommandServer& commandServer, Poco::JSON::Object::Ptr i
 
 QueueCreate::~QueueCreate()
 {
-}
-
-Poco::JSON::Array::Ptr QueueCreate::execute()
-{
-	PCFCommand::execute();
-
-	for(PCF::Vector::const_iterator it = begin(); it != end(); it++)
-	{
-		if ( (*it)->isExtendedResponse() ) // Skip extended response
-			continue;
-
-		if ( (*it)->getReasonCode() != MQRC_NONE ) 
-		{
-			throw MQException("PCF", getCommandString((*it)->getCommand()), (*it)->getCompletionCode(), (*it)->getReasonCode());
-		}
-	}
-	return new Poco::JSON::Array();
 }
 
 }} //  Namespace MQ::Web

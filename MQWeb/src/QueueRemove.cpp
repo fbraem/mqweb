@@ -19,13 +19,12 @@
 * SOFTWARE.
 */
 #include "MQ/Web/QueueRemove.h"
-#include "MQ/MQException.h"
 
 namespace MQ {
 namespace Web {
 
 QueueRemove::QueueRemove(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
-: PCFCommand(commandServer, MQCMD_DELETE_Q, "Queue", input)
+: PCFSimpleCommand(commandServer, MQCMD_DELETE_Q, "Queue", input)
 {
 	// Required Parameters
 	addParameter<std::string>(MQCA_Q_NAME, "QName");
@@ -50,23 +49,6 @@ QueueRemove::QueueRemove(CommandServer& commandServer, Poco::JSON::Object::Ptr i
 
 QueueRemove::~QueueRemove()
 {
-}
-
-Poco::JSON::Array::Ptr QueueRemove::execute()
-{
-	PCFCommand::execute();
-
-	for(PCF::Vector::const_iterator it = begin(); it != end(); it++)
-	{
-		if ( (*it)->isExtendedResponse() ) // Skip extended response
-			continue;
-
-		if ( (*it)->getReasonCode() != MQRC_NONE )
-		{
-			throw MQException("PCF", getCommandString((*it)->getCommand()), (*it)->getCompletionCode(), (*it)->getReasonCode());
-		}
-	}
-	return new Poco::JSON::Array();
 }
 
 }} //  Namespace MQ::Web

@@ -21,12 +21,12 @@
 #ifndef _MQWeb_QueueCreate_H
 #define _MQWeb_QueueCreate_H
 
-#include "MQ/Web/PCFCommand.h"
+#include "MQ/Web/PCFSimpleCommand.h"
 
 namespace MQ {
 namespace Web {
 
-class QueueCreate : public PCFCommand
+class QueueCreate : public PCFSimpleCommand
 	/// Maps queue object to Websphere MQ
 {
 public:
@@ -36,9 +36,6 @@ public:
 
 	virtual ~QueueCreate();
 		/// Destructor
-
-	Poco::JSON::Array::Ptr execute();
-		/// Implements the inquire queue command.
 
 private:
 
