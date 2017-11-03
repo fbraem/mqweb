@@ -197,7 +197,7 @@ void PCFCommand::execute()
 {
 	_response.clear();
 	_commandServer.sendCommand(_pcf, _response);
-
+/*
 	if ( _response.size() > 0 )
 	{
 		PCF::Vector::const_iterator it = _response.begin();
@@ -211,6 +211,7 @@ void PCFCommand::execute()
 			throw MQException("PCF", getCommandString((*it)->getCommand()), (*it)->getCompletionCode(), (*it)->getReasonCode());
 		}
 	}
+*/
 }
 /*
 Poco::JSON::Object::Ptr PCFCommand::createError(const PCF& pcf)
