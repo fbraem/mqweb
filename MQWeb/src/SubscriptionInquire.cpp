@@ -72,7 +72,7 @@ Poco::JSON::Array::Ptr SubscriptionInquire::execute()
 
 		if ( _excludeSystem )
 		{
-			std::string subName = (*it)->getParameterString(MQCACF_SUB_NAME);
+			std::string subName = (*it)->getParameters().getString(MQCACF_SUB_NAME);
 			if ( subName.compare(0, 7, "SYSTEM.") == 0 )
 			{
 				continue;

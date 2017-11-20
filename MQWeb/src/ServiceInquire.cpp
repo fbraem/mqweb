@@ -55,7 +55,7 @@ Poco::JSON::Array::Ptr ServiceInquire::execute()
 		if ( (*it)->isExtendedResponse() ) // Skip extended response
 			continue;
 
-		std::string serviceName = (*it)->getParameterString(MQCA_SERVICE_NAME);
+		std::string serviceName = (*it)->getParameters().getString(MQCA_SERVICE_NAME);
 		if ( _excludeSystem && serviceName.compare(0, 7, "SYSTEM.") == 0 )
 		{
 			continue;

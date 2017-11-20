@@ -59,7 +59,7 @@ Poco::JSON::Array::Ptr AuthenticationInformationInquire::execute()
 		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)
 			continue;
 
-		std::string qName = (*it)->getParameterString(MQCA_AUTH_INFO_NAME);
+		std::string qName = (*it)->getParameters().getString(MQCA_AUTH_INFO_NAME);
 		if ( _excludeSystem
 			&& qName.compare(0, 7, "SYSTEM.") == 0 )
 		{

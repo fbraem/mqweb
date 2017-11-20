@@ -3066,6 +3066,42 @@ Dictionary channelInitiatorDictionary = Dictionary()
 	(MQCACF_RESPONSE_Q_MGR_NAME)
 ;
 
+Dictionary queueStatisticsDictionary = Dictionary()
+	(MQCA_Q_MGR_NAME)
+	(MQCAMO_START_DATE, "IntervalStartDate")
+	(MQCAMO_START_TIME, "IntervalStartTime")
+	(MQCAMO_START_DATE, "IntervalEndDate")
+	(MQCAMO_START_TIME, "IntervalEndTime")
+	(MQIA_COMMAND_LEVEL)
+	(MQIAMO_OBJECT_COUNT, "ObjectCount")
+	(MQGACF_Q_STATISTICS_DATA, "QStatisticsData")
+	(MQCA_Q_NAME)
+	(MQCA_CREATION_DATE)
+	(MQCA_CREATION_TIME)
+	(MQIA_Q_TYPE)
+	(MQIA_DEFINITION_TYPE)
+	(MQIAMO_Q_MIN_DEPTH, "QMinDepth")
+	(MQIAMO_Q_MAX_DEPTH, "QMaxDepth")
+	(MQIAMO64_AVG_Q_TIME, "AvgTimeOnQ")
+	(MQIAMO_PUTS, "PutCount")
+	(MQIAMO_PUTS_FAILED, "PutFailCount")
+	(MQIAMO_PUT1S, "Put1Count")
+	(MQIAMO_PUT1S_FAILED, "Put1FailCount")
+	(MQIAMO64_PUT_BYTES, "PutBytes")
+	(MQIAMO_GETS, "GetCount")
+	(MQIAMO_GENERATED_MSGS, "GeneratedMsgCount")
+	(MQIAMO_GETS_FAILED, "GetFailCount")
+	(MQIAMO64_GET_BYTES, "GetBytes")
+	(MQIAMO_BROWSES, "BrowseCount")
+	(MQIAMO_BROWSES_FAILED, "BrowseFailCount")
+	(MQIAMO64_BROWSE_BYTES, "BrowseBytes")
+	(MQIAMO_MSGS_NOT_QUEUED, "NonQueuedMsgCount")
+	(MQIAMO_MSGS_EXPIRED, "ExpiredMsgCount")
+	(MQIAMO_MSGS_PURGED, "PurgeCount")
+	(MQIAMO_CBS, "CBCount")
+	(MQIAMO_CBS_FAILED, "CBFailCount")
+;
+
 class MQDictionary : public Poco::Util::Application
 {
 public:
@@ -3187,6 +3223,7 @@ int main(const std::vector<std::string>& args)
 	store(session, ++oid, "SubStatus", subStatusDictionary);
 	store(session, ++oid, "AuthorityService", authorityServiceDictionary);
 	store(session, ++oid, "ChannelInitiator", channelInitiatorDictionary);
+	store(session, ++oid, "QueueStatistics", queueStatisticsDictionary);
 	return Application::EXIT_OK;
 }
 

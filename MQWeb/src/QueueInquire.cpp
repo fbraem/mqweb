@@ -93,14 +93,14 @@ Poco::JSON::Array::Ptr QueueInquire::execute()
 
 		if ( _usage != -1 && (*it)->hasParameter(MQIA_USAGE) )
 		{
-			MQLONG queueUsage = (*it)->getParameterNum(MQIA_USAGE);
+			MQLONG queueUsage = (*it)->getParameters().getNumber(MQIA_USAGE);
 			if ( queueUsage != _usage )
 			{
 				continue;
 			}
 		}
 
-		std::string qName = (*it)->getParameterString(MQCA_Q_NAME);
+		std::string qName = (*it)->getParameters().getString(MQCA_Q_NAME);
 		if ( _excludeSystem
 			&& qName.compare(0, 7, "SYSTEM.") == 0 )
 		{
@@ -109,7 +109,7 @@ Poco::JSON::Array::Ptr QueueInquire::execute()
 
 		if ( _excludeTemp
 			&& (*it)->hasParameter(MQIA_DEFINITION_TYPE)
-			&& (*it)->getParameterNum(MQIA_DEFINITION_TYPE) == MQQDT_TEMPORARY_DYNAMIC )
+			&& (*it)->getParameters().getNumber(MQIA_DEFINITION_TYPE) == MQQDT_TEMPORARY_DYNAMIC )
 		{
 			continue;
 		}

@@ -60,7 +60,7 @@ Poco::JSON::Array::Ptr NamelistInquire::execute()
 		if ( (*it)->isExtendedResponse() ) // Skip extended response
 			continue;
 
-		std::string namelistName = (*it)->getParameterString(MQCA_NAMELIST_NAME);
+		std::string namelistName = (*it)->getParameters().getString(MQCA_NAMELIST_NAME);
 		if (   _excludeSystem
 			&& namelistName.compare(0, 7, "SYSTEM.") == 0 )
 		{

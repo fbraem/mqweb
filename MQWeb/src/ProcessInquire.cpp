@@ -57,7 +57,7 @@ Poco::JSON::Array::Ptr ProcessInquire::execute()
 		if ( (*it)->isExtendedResponse() ) // Skip extended response
 			continue;
 
-		std::string processName = (*it)->getParameterString(MQCA_PROCESS_NAME);
+		std::string processName = (*it)->getParameters().getString(MQCA_PROCESS_NAME);
 		if (   _excludeSystem
 			&& processName.compare(0, 7, "SYSTEM.") == 0 )
 		{

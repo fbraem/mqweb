@@ -129,7 +129,7 @@ inline void PCFCommand::addParameter(MQLONG parameter, const std::string& name)
 inline Poco::JSON::Object::Ptr PCFCommand::createJSON(const PCF &pcf)
 {
 	Poco::JSON::Object::Ptr json = new Poco::JSON::Object();
-	_dictionary->mapToJSON(pcf, json);
+	_dictionary->mapToJSON(pcf.getParameters(), json);
 	return json;
 }
 

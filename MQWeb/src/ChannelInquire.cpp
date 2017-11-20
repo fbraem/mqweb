@@ -61,7 +61,7 @@ Poco::JSON::Array::Ptr ChannelInquire::execute()
 		if ( (*it)->isExtendedResponse() ) // Skip extended response
 			continue;
 
-		std::string channelName = (*it)->getParameterString(MQCACH_CHANNEL_NAME);
+		std::string channelName = (*it)->getParameters().getString(MQCACH_CHANNEL_NAME);
 		if (    _excludeSystem
 			&& channelName.compare(0, 7, "SYSTEM.") == 0 )
 		{

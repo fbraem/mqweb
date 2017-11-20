@@ -248,8 +248,9 @@ void MessageController::browse()
 			}
 			else if ( mqe.reason() == MQRC_TRUNCATED_MSG_FAILED )
 			{
-				if ( msg->getFormat().compare(MQFMT_EVENT ) == 0 ) {
-					// ignore size limit for event messages and retry to get it with the
+				if ( msg->getFormat().compare(MQFMT_EVENT) == 0 
+					|| msg->getFormat().compare(MQFMT_ADMIN) == 0 ) {
+					// ignore size limit for event/admin messages and retry to get it with the
 					// real length
 					msg->buffer().resize(msg->dataLength(), false);
 					msg->clear();
@@ -303,7 +304,8 @@ void MessageController::browse()
 				}
 				else
 				{
-					continue; // TODO: or throw ???;
+					//TODO: do we try a resize?
+					throw;
 				}
 			}
 			else
@@ -351,6 +353,7 @@ void MessageController::browse()
 		else if ( msg->getFormat().compare(MQFMT_EVENT) == 0 )
 		{
 			PCF pcfEvent(msg);
+			const PCFParameters& parameters = pcfEvent.getParameters();
 
 			Poco::JSON::Object::Ptr jsonEvent = new Poco::JSON::Object();
 			jsonMessage->set("event", jsonEvent);
@@ -363,7 +366,7 @@ void MessageController::browse()
 			if ( pcfEvent.hasParameter(MQIACF_OBJECT_TYPE) )
 			{
 				Poco::SharedPtr<Dictionary> dictionary;
-				switch(pcfEvent.getParameterNum(MQIACF_OBJECT_TYPE))
+				switch(parameters.getNumber(MQIACF_OBJECT_TYPE))
 				{
 				case MQOT_Q_MGR: dictionary = PCFCommand::dictionary("QueueManager"); break;
 				case MQOT_CHANNEL:  dictionary = PCFCommand::dictionary("Channel"); break;
@@ -372,17 +375,30 @@ void MessageController::browse()
 				case MQOT_Q: dictionary = PCFCommand::dictionary("Queue"); break;
 				case MQOT_LISTENER: dictionary = PCFCommand::dictionary("Listener"); break;
 				default:
-					Poco::Logger::get("mq.web").warning("No dictionary set for event. ObjectType $0", pcfEvent.getParameterNum(MQIACF_OBJECT_TYPE));
+					Poco::Logger::get("mq.web").warning("No dictionary set for event. ObjectType $0", parameters.getNumber(MQIACF_OBJECT_TYPE));
 				}
 				if ( !dictionary.isNull() )
 				{
-					dictionary->mapToJSON(pcfEvent, jsonEvent, false);
+					dictionary->mapToJSON(parameters, jsonEvent, false);
 				}
 			}
-
 			Poco::SharedPtr<Dictionary> dictionary = PCFCommand::dictionary("Event");
 			poco_assert_dbg(! dictionary.isNull());
-			dictionary->mapToJSON(pcfEvent, jsonEvent, false);
+			dictionary->mapToJSON(parameters, jsonEvent, false);
+		}
+		else if ( msg->getFormat().compare(MQFMT_ADMIN) == 0 )
+		{
+			PCF pcfAdmin(msg);
+			Poco::JSON::Object::Ptr jsonAdmin = new Poco::JSON::Object();
+			jsonMessage->set("admin", jsonAdmin);
+			
+			Poco::SharedPtr<Dictionary> dictionary;
+			if ( pcfAdmin.hasParameter(MQGACF_Q_STATISTICS_DATA) ) {
+				dictionary = PCFCommand::dictionary("QueueStatistics");
+			}
+			poco_assert_dbg(! dictionary.isNull());
+			const PCFParameters& parameters = pcfAdmin.getParameters();
+			dictionary->mapToJSON(parameters, jsonAdmin, false);
 		}
 		else if ( msg->getFormat().compare(MQFMT_STRING) == 0 )
 		{

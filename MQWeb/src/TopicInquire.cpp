@@ -71,7 +71,7 @@ Poco::JSON::Array::Ptr TopicInquire::execute()
 		if ( (*it)->isExtendedResponse() ) // Skip extended response
 			continue;
 
-		std::string topicName = (*it)->getParameterString(MQCA_TOPIC_NAME);
+		std::string topicName = (*it)->getParameters().getString(MQCA_TOPIC_NAME);
 		if (   _excludeSystem
 			&& topicName.compare(0, 7, "SYSTEM.") == 0 )
 		{

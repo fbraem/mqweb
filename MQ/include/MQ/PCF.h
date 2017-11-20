@@ -24,11 +24,10 @@
 #include <cmqc.h>
 #include <cmqcfc.h> /* PCF  */
 
-#include <map>
 #include <vector>
 
-#include "Poco/DateTime.h"
 #include "MQ/Message.h"
+#include "MQ/PCFParameters.h"
 
 namespace MQ {
 
@@ -67,6 +66,12 @@ public:
 	void addFilter(MQLONG parameter, MQLONG op, MQLONG value);
 		/// Add a filter with a numeric value.
 
+	const PCFParameters& getParameters() const;
+		/// Returns the parameters
+
+	bool hasParameter(MQLONG id) const;
+		/// Returns true when the parameter is found in the PCF message.
+
 	int getCommand() const;
 		/// Returns the command.
 
@@ -76,81 +81,20 @@ public:
 	int getReasonCode() const;
 		/// Returns the reason code.
 
-	bool isByteString(MQLONG parameter) const;
-		/// Returns true when the value of the parameter is a byte string.
-
 	bool isExtendedResponse() const;
 		/// Returns true when this is an extended response.
-
-	bool isNumber(MQLONG parameter) const;
-		/// Returns true when the value of the parameter is a numeric value.
-
-	bool isNumberList(MQLONG parameter) const;
-		/// Returns true when the value of the parameter is a numeric list.
-
-	bool isString(MQLONG parameter) const;
-		/// Returns true when the value of the parameter is a string value.
-		/// Note: a byte string will also return true! When getParameterString is called
-		/// a byte string will be returned as hex. Use isByteString to check if a
-		/// value contains byte string
-
-	bool isStringList(MQLONG parameter) const;
-		/// Returns true when the value of the parameter is a string list value.
 
 	bool isLast() const;
 		/// Returns true when this PCF message is the last of a response.
 
-	Poco::DateTime getParameterDate(MQLONG dateParameter, MQLONG timeParameter) const;
-		/// Combines a date and time parameter and returns it as a DateTime object
-		/// When the date parameter doesn't exist, the current date is returned.
-
-	MQLONG getParameterNum(MQLONG parameter) const;
-		/// Returns the numeric value of a parameter.
-		/// Poco::NotFoundException will be thrown when the parameter isn't found.
-		/// Poco::BadCastException will be thrown when the parameter doesn't contain a numeric value.
-
-	std::vector<MQLONG> getParameterNumList(MQLONG parameter) const;
-		/// Returns a numeric list.
-		/// Poco::NotFoundException will be thrown when the parameter isn't found.
-		/// Poco::BadCastException will be thrown when the parameter doesn't contain a numeric list value.
-
-	std::string getParameterString(MQLONG parameter) const;
-		/// Returns the string value of a parameter. A byte string is converted to a hex value.
-		/// If you need the real byte string, use getParameterByteString.
-		/// Poco::NotFoundException will be thrown when the parameter isn't found.
-		/// Poco::BadCastException will be thrown when the parameter doesn't contain a string or byte string value.
-
-	Buffer::Ptr getParameterByteString(MQLONG parameter) const;
-		/// Returns the byte string value as a buffer.
-		/// Poco::NotFoundException will be thrown when the parameter isn't found.
-		/// Poco::BadCastException will be thrown when the parameter doesn't contain a byte string value.
-
-	std::vector<std::string> getParameterStringList(MQLONG parameter) const;
-		/// Returns a vector of strings of a parameter.
-		/// Poco::NotFoundException will be thrown when the parameter isn't found.
-		/// Poco::BadCastException will be thrown when the parameter doesn't contain a string list.
-
-	bool hasParameter(MQLONG parameter) const;
-		/// Returns true when the parameter is found in the PCF message.
-
-	std::vector<MQLONG> getParameters() const;
-		/// Returns a vector with all parameter ids.
-
 	Message::Ptr message() const;
 
-	MQLONG optParameterNum(MQLONG parameter, MQLONG def = 0) const;
-		/// Returns the numeric value of a parameter.
-		/// When the parameter isn't found or doesn't contain a numeric value,
-		/// def will be returned.
-
-	std::string optParameterString(MQLONG parameter, const std::string& def = "") const;
-		/// Returns the string value of a parameter.
-		/// When the parameter doesn't exist or is not a string, an empty
-		/// string is returned.
 
 	typedef Poco::SharedPtr<PCF> Ptr;
 
+
 	typedef std::vector<Ptr> Vector;
+
 
 	static Ptr create(Message::Ptr message, bool zos = false);
 
@@ -158,20 +102,20 @@ private:
 
 	Message::Ptr _message;
 
-	std::map<MQLONG, size_t> _pointers;
-
-
+	
 	bool _zos;
 
 
-	PCF(const PCF& pcf);
+	PCFParameters _parameters;
 
+
+	PCF(const PCF& pcf);
+		/// Don't allow a copy
+
+	void incrementParameterCount();
+		/// Increment the parameter counter in the PCF header.
 
 	friend class CommandServer;
-
-
-	bool isType(MQLONG parameter, MQLONG type) const;
-		/// Returns true when the parameter is of given type.
 };
 
 inline void PCF::addParameterList(MQLONG parameter, const std::vector<MQLONG>& values)
@@ -191,15 +135,26 @@ inline int PCF::getCompletionCode() const
 	return header->CompCode;
 }
 
+inline const PCFParameters& PCF::getParameters() const
+{
+	return _parameters;
+}
+
 inline int PCF::getReasonCode() const
 {
 	MQCFH* header = (MQCFH*)(MQBYTE*) _message->buffer().data();
 	return header->Reason;
 }
 
-inline bool PCF::isByteString(MQLONG parameter) const
+inline bool PCF::hasParameter(MQLONG id) const
 {
-	return isType(parameter, MQCFT_BYTE_STRING);
+	return _parameters.has(id);
+}
+
+inline void PCF::incrementParameterCount()
+{
+	MQCFH* header = (MQCFH*) (MQBYTE*) _message->buffer().data();
+	header->ParameterCount++;
 }
 
 inline bool PCF::isExtendedResponse() const
@@ -208,49 +163,12 @@ inline bool PCF::isExtendedResponse() const
 	return header->Type == MQCFT_XR_SUMMARY;
 }
 
-
-inline bool PCF::hasParameter(MQLONG parameter) const
-{
-	return _pointers.find(parameter) != _pointers.end();
-}
-
 inline bool PCF::isLast() const
 {
 	MQCFH* header = (MQCFH*)(MQBYTE*) _message->buffer().data();
 	return header->Control == MQCFC_LAST;
 }
 
-inline bool PCF::isNumber(MQLONG parameter) const
-{
-	return isType(parameter, MQCFT_INTEGER);
-}
-
-inline bool PCF::isNumberList(MQLONG parameter) const
-{
-	return isType(parameter, MQCFT_INTEGER_LIST);
-}
-
-
-inline bool PCF::isString(MQLONG parameter) const
-{
-	return isType(parameter, MQCFT_STRING) || isType(parameter, MQCFT_BYTE_STRING);
-}
-
-inline bool PCF::isStringList(MQLONG parameter) const
-{
-	return isType(parameter, MQCFT_STRING_LIST);
-}
-
-inline bool PCF::isType(MQLONG parameter, MQLONG type) const
-{
-	std::map<MQLONG, size_t>::const_iterator it = _pointers.find(parameter);
-	if ( it != _pointers.end() )
-	{
-		MQLONG *pcfType = (MQLONG*) _message->buffer().data(it->second);
-		return *pcfType == type;
-	}
-	return false;
-}
 
 inline Message::Ptr PCF::message() const
 {

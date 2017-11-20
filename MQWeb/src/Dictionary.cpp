@@ -19,6 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/Dictionary.h"
+#include "MQ/PCF.h"
 
 namespace MQ {
 namespace Web {
@@ -73,10 +74,10 @@ MQLONG Dictionary::getIdForText(MQLONG id, const std::string& value) const
 	return -1;
 }
 
-void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, bool alwaysCreate) const
+void Dictionary::mapToJSON(const PCFParameters& parameters, Poco::JSON::Object::Ptr& json, bool alwaysCreate) const
 {
-	std::vector<MQLONG> parameters = pcf.getParameters();
-	for(std::vector<MQLONG>::iterator it = parameters.begin(); it != parameters.end(); ++it)
+	std::vector<MQLONG> ids = parameters.getIds();
+	for(std::vector<MQLONG>::iterator it = ids.begin(); it != ids.end(); ++it)
 	{
 		std::string name = getNameForId(*it);
 		if ( name.empty() )
@@ -98,9 +99,9 @@ void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, bool a
 
 		field->set("id", *it);
 
-		if ( pcf.isNumber(*it) )
+		if ( parameters.isNumber(*it) )
 		{
-			MQLONG value = pcf.getParameterNum(*it);
+			MQLONG value = parameters.getNumber(*it);
 			field->set("value", value);
 
 			if ( hasTextMap(*it) )
@@ -113,13 +114,13 @@ void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, bool a
 				field->set("text", text);
 			}
 		}
-		else if ( pcf.isString(*it) )
+		else if ( parameters.isString(*it) )
 		{
-			field->set("value", pcf.getParameterString(*it));
+			field->set("value", parameters.getString(*it));
 		}
-		else if ( pcf.isNumberList(*it) )
+		else if ( parameters.isNumberList(*it) )
 		{
-			std::vector<MQLONG> values = pcf.getParameterNumList(*it);
+			std::vector<MQLONG> values = parameters.getNumberList(*it);
 			Poco::JSON::Array::Ptr jsonValues = new Poco::JSON::Array();
 			field->set("value", jsonValues);
 
@@ -147,15 +148,38 @@ void Dictionary::mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, bool a
 				}
 			}
 		}
-		else if ( pcf.isStringList(*it) )
+		else if ( parameters.isNumber64List(*it) )
+		{
+			std::vector<MQINT64> values = parameters.getNumber64List(*it);
+			Poco::JSON::Array::Ptr jsonValues = new Poco::JSON::Array();
+			field->set("value", jsonValues);
+			for(std::vector<MQINT64>::iterator vit = values.begin(); vit != values.end(); ++vit)
+			{
+				jsonValues->add(*vit);
+			}
+		}
+		else if ( parameters.isStringList(*it) )
 		{
 			Poco::JSON::Array::Ptr jsonValues = new Poco::JSON::Array();
 			field->set("value", jsonValues);
 
-			std::vector<std::string> strings = pcf.getParameterStringList(*it);
+			std::vector<std::string> strings = parameters.getStringList(*it);
 			for(std::vector<std::string>::iterator vit = strings.begin(); vit != strings.end(); ++vit)
 			{
 				jsonValues->add(*vit);
+			}
+		}
+		else if ( parameters.isGroup(*it) )
+		{
+			Poco::JSON::Array::Ptr jsonGroups = new Poco::JSON::Array();
+			field->set("value", jsonGroups);
+			
+			size_t groupCount = parameters.getGroupCount(*it);
+			for(size_t i = 0; i < groupCount; ++i)
+			{
+				Poco::JSON::Object::Ptr jsonGroup = new Poco::JSON::Object();
+				jsonGroups->add(jsonGroup);
+				mapToJSON(parameters.getGroup(*it, i), jsonGroup, alwaysCreate);
 			}
 		}
 		else

@@ -61,7 +61,7 @@ Poco::JSON::Array::Ptr QueueStatusInquire::execute()
 		if ( (*it)->getReasonCode() != MQRC_NONE ) // Skip errors (2035 not authorized for example)
 			continue;
 
-		std::string qName = (*it)->getParameterString(MQCA_Q_NAME);
+		std::string qName = (*it)->getParameters().getString(MQCA_Q_NAME);
 		if ( _excludeSystem
 			&& qName.compare(0, 7, "SYSTEM.") == 0 )
 		{
@@ -70,7 +70,7 @@ Poco::JSON::Array::Ptr QueueStatusInquire::execute()
 
 		if ( _excludeTemp
 			&& (*it)->hasParameter(MQIA_DEFINITION_TYPE)
-			&& (*it)->getParameterNum(MQIA_DEFINITION_TYPE) == MQQDT_TEMPORARY_DYNAMIC )
+			&& (*it)->getParameters().getNumber(MQIA_DEFINITION_TYPE) == MQQDT_TEMPORARY_DYNAMIC )
 		{
 			continue;
 		}

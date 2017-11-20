@@ -66,7 +66,7 @@ Poco::JSON::Array::Ptr ListenerStatusInquire::execute()
 			if ( (*it)->getReasonCode() != MQRC_NONE )
 				continue;
 
-			std::string listenerName = (*it)->getParameterString(MQCACH_LISTENER_NAME);
+			std::string listenerName = (*it)->getParameters().getString(MQCACH_LISTENER_NAME);
 			if ( _excludeSystem
 				&& listenerName.compare(0, 7, "SYSTEM.") == 0 )
 			{

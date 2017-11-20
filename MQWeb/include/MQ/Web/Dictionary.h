@@ -81,7 +81,7 @@ public:
 	bool hasTextMap(MQLONG id) const;
 		/// Returns true when the id has a corresponding map with display values.
 
-	void mapToJSON(const PCF& pcf, Poco::JSON::Object::Ptr& json, bool alwaysCreate = true) const;
+	void mapToJSON(const PCFParameters& parameters, Poco::JSON::Object::Ptr& json, bool alwaysCreate = true) const;
 
 	void mapToPCF(Poco::JSON::Object::Ptr json, PCF &pcf) const;
 
