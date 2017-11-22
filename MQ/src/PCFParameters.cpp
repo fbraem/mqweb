@@ -338,7 +338,7 @@ void PCFParameters::parse(MQLONG parameterCount, size_t pos)
 	for(MQLONG i = 0; i < parameterCount; ++i)
 	{
 		MQLONG *pcfType = (MQLONG*) _buffer.data(pos);
-		_pointers.insert(std::make_pair<MQLONG, size_t>(pcfType[2], pos));
+		_pointers.insert(std::make_pair(pcfType[2], pos));
 		setNextPos(pcfType, pos);
 	}
 }
