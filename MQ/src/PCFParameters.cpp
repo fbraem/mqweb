@@ -169,8 +169,7 @@ std::string PCFParameters::getString(MQLONG parameter) const
 		std::string result(pcfParam->String, pcfParam->StringLength);
 
 		MQLONG length = pcfParam->StringLength -1;
-		for(; length > 0 && (result[length] == '\0' || result[length] == ' ');           \
-			length--);
+		while(length >= 0 && (result[length] == '\0' || result[length] == ' ')) length--;
 		result.resize(length + 1);
 		return result;
 	}
