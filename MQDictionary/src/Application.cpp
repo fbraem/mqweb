@@ -173,7 +173,11 @@ Dictionary queueManagerDictionary = Dictionary()
 		(MQCMDL_LEVEL_1, "Level 1")
 		(MQCMDL_LEVEL_101, "Level 101")
 		(MQCMDL_LEVEL_110, "Level 110")
+		(MQCMDL_LEVEL_114, "Level 114")
+		(MQCMDL_LEVEL_120, "Level 120")
 		(MQCMDL_LEVEL_200, "Level 200")
+		(MQCMDL_LEVEL_201, "Level 201")
+		(MQCMDL_LEVEL_210, "Level 210")
 		(MQCMDL_LEVEL_220, "Level 220")
 		(MQCMDL_LEVEL_221, "Level 221")
 		(MQCMDL_LEVEL_320, "Level 320")
@@ -187,14 +191,23 @@ Dictionary queueManagerDictionary = Dictionary()
 		(MQCMDL_LEVEL_700, "Level 700")
 		(MQCMDL_LEVEL_701, "Level 701")
 		(MQCMDL_LEVEL_710, "Level 710")
+#ifdef MQCMDL_LEVEL_711
+		(MQCMDL_LEVEL_711, "Level 711")
+#endif
 #ifdef MQCMDL_LEVEL_750
 		(MQCMDL_LEVEL_750, "Level 750")
 #endif
 #ifdef MQCMDL_LEVEL_800
 		(MQCMDL_LEVEL_800, "Level 800")
 #endif
+#ifdef MQCMDL_LEVEL_801
+		(MQCMDL_LEVEL_801, "Level 801")
+#endif
 #ifdef MQCMDL_LEVEL_802
 		(MQCMDL_LEVEL_802, "Level 802")
+#endif
+#ifdef MQCMDL_LEVEL_900
+		(MQCMDL_LEVEL_900, "Level 900")
 #endif
 	)
 	(MQIA_CMD_SERVER_CONTROL, "CommandServerControl", TextMapInitializer
