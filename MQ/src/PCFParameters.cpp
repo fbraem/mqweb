@@ -167,8 +167,12 @@ std::string PCFParameters::getString(MQLONG parameter) const
 	{
 		MQCFST* pcfParam = (MQCFST*) _buffer.data(it->second);
 		std::string result(pcfParam->String, pcfParam->StringLength);
-		if ( result[0] == '\0' ) result.resize(0);
-		return Poco::trimRightInPlace(result);
+
+		MQLONG length = pcfParam->StringLength -1;
+		for(; length > 0 && (result[length] == '\0' || result[length] == ' ');           \
+			length--);
+		result.resize(length + 1);
+		return result;
 	}
 	else if ( *pcfType == MQCFT_BYTE_STRING )
 	{
