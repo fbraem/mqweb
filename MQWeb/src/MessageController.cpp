@@ -377,7 +377,8 @@ void MessageController::browse()
 				default:
 					Poco::Logger::get("mq.web").warning("No dictionary set for event. ObjectType $0", parameters.getNumber(MQIACF_OBJECT_TYPE));
 				}
-				if ( !dictionary.isNull() )
+				poco_assert_msg_dbg(!dictionary.isNull(), "Dictionary missing");
+				if (!dictionary.isNull())
 				{
 					dictionary->mapToJSON(parameters, jsonEvent, false);
 				}
@@ -391,14 +392,41 @@ void MessageController::browse()
 			PCF pcfAdmin(msg);
 			Poco::JSON::Object::Ptr jsonAdmin = new Poco::JSON::Object();
 			jsonMessage->set("admin", jsonAdmin);
-			
+			jsonAdmin->set("command", PCFCommand::getCommandString(pcfAdmin.getCommand()));
+			Poco::JSON::Object::Ptr reason = new Poco::JSON::Object();
+			jsonAdmin->set("reason", reason);
+			reason->set("code", pcfAdmin.getReasonCode());
+			reason->set("desc", PCFCommand::getReasonString(pcfAdmin.getReasonCode()));
+
+			Poco::JSON::Object::Ptr jsonParameters = new Poco::JSON::Object();
+			jsonAdmin->set("parameters", jsonParameters);
+
 			Poco::SharedPtr<Dictionary> dictionary;
-			if ( pcfAdmin.hasParameter(MQGACF_Q_STATISTICS_DATA) ) {
-				dictionary = PCFCommand::dictionary("QueueStatistics");
+			switch (pcfAdmin.getCommand())
+			{
+			case MQCMD_ACCOUNTING_MQI:
+				dictionary = PCFCommand::dictionary("AccountingMQI");
+				break;
+			case MQCMD_ACCOUNTING_Q:
+				dictionary = PCFCommand::dictionary("AccountingQueue");
+				break;
+			case MQCMD_STATISTICS_MQI:
+				dictionary = PCFCommand::dictionary("StatisticsMQI");
+				break;
+			case MQCMD_STATISTICS_Q:
+			{
+				dictionary = PCFCommand::dictionary("StatisticsQueue");
+				break;
 			}
-			poco_assert_dbg(! dictionary.isNull());
-			const PCFParameters& parameters = pcfAdmin.getParameters();
-			dictionary->mapToJSON(parameters, jsonAdmin, false);
+			case MQCMD_STATISTICS_CHANNEL:
+				dictionary = PCFCommand::dictionary("StatisticsChannel");
+				break;
+			}
+			poco_assert_msg_dbg(!dictionary.isNull(), "Dictionary missing for statistics");
+			if (!dictionary.isNull()) {
+				const PCFParameters& parameters = pcfAdmin.getParameters();
+				dictionary->mapToJSON(parameters, jsonParameters, false);
+			}
 		}
 		else if ( msg->getFormat().compare(MQFMT_STRING) == 0 )
 		{
