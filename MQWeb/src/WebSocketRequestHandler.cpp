@@ -50,7 +50,7 @@ public:
 		_ws->setSendTimeout(ts);
 
 		QueueManager::Ptr qmgr = queueManagerPoolGuard->getObject();
-		_consumer = new MessageConsumer(*qmgr, queueName, MessageConsumer::BROWSE);
+		_consumer = new MessageConsumer(qmgr, queueName, MessageConsumer::BROWSE);
 		_consumer->message+= Poco::delegate(this, &MessageConsumerTask::onMessage);
 	}
 

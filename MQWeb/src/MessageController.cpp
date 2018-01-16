@@ -223,7 +223,7 @@ void MessageController::browse()
 
 	Poco::JSON::Array::Ptr jsonMessages = new Poco::JSON::Array();
 
-	Queue q(*qmgr(), queueName);
+	Queue q(qmgr(), queueName);
 	q.open(MQOO_BROWSE);
 
 	int count = 0;
@@ -502,7 +502,7 @@ void MessageController::dump()
 		return;
 	}
 
-	Queue q(*qmgr(), queueName);
+	Queue q(qmgr(), queueName);
 	q.open(MQOO_BROWSE);
 
 	try
@@ -779,11 +779,11 @@ void MessageController::publish()
 	std::string topicStr;
 	if ( parameters.size() > 2 )
 	{
-		topic = new Topic(*qmgr().get(), topicName, parameters[2]);
+		topic = new Topic(qmgr(), topicName, parameters[2]);
 	}
 	else
 	{
-		topic = new Topic(*qmgr().get(), topicName);
+		topic = new Topic(qmgr(), topicName);
 	}
 
 	std::string topicString;
@@ -851,7 +851,7 @@ void MessageController::put()
 		putOptions |= MQPMO_SET_ALL_CONTEXT;
 	}
 
-	Queue q(*qmgr().get(), qName);
+	Queue q(qmgr(), qName);
 	q.open(openOptions);
 
 	std::string d = input->getValue<std::string>("data");

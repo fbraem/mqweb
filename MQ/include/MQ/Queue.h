@@ -39,7 +39,9 @@ class Queue
 	/// Represents a Websphere MQ queue
 {
 public:
-	Queue(QueueManager& qmgr, const std::string& name);
+	typedef Poco::SharedPtr<Queue> Ptr;
+
+	Queue(Poco::SharedPtr<QueueManager> qmgr, const std::string& name);
 		/// Constructor
 
 	virtual ~Queue();
@@ -65,7 +67,7 @@ public:
 
 private:
 
-	QueueManager& _qmgr;
+	Poco::SharedPtr<QueueManager> _qmgr;
 
 	MQHOBJ _handle;
 

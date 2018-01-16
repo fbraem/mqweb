@@ -95,14 +95,20 @@ void MQController::beforeAction()
 	_meta->set("qmgr", qmgr->name());
 	_meta->set("zos", qmgr->zos());
 	_meta->set("qmgrId", qmgr->id());
+}
 
-	_commandServer = qmgr->commandServer();
-	if ( _commandServer == NULL )
+Poco::SharedPtr<CommandServer> MQController::commandServer()
+{
+	if (_commandServer.isNull())
 	{
-		std::string qmgrConfigReplyQ = "mq.web.qmgr." + qmgrName + ".reply";
+		MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQSubsystem>();
+		Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
+
+		QueueManager::Ptr qmgr = _qmgrPoolGuard->getObject();
+		std::string qmgrConfigReplyQ = "mq.web.qmgr." + qmgr->name() + ".reply";
 
 		std::string replyQ;
-		if ( config.has(qmgrConfigReplyQ) )
+		if (config.has(qmgrConfigReplyQ))
 		{
 			replyQ = config.getString(qmgrConfigReplyQ);
 		}
@@ -110,14 +116,12 @@ void MQController::beforeAction()
 		{
 			replyQ = config.getString("mq.web.reply", "SYSTEM.DEFAULT.MODEL.QUEUE");
 		}
-		_commandServer = qmgr->createCommandServer(replyQ);
-	}
-
-	if ( _commandServer != NULL )
-	{
+		_commandServer = new CommandServer(qmgr, replyQ);
 		_meta->set("replyq", _commandServer->replyQName());
 		_meta->set("cmdq", _commandServer->commandQName());
 	}
+
+	return _commandServer;
 }
 
 

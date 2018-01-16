@@ -24,7 +24,6 @@
 
 #include "MQ/MQSubsystem.h"
 #include "MQ/Topic.h"
-#include "MQ/QueueManager.h"
 #include "MQ/MQException.h"
 #include "MQ/Message.h"
 
@@ -33,7 +32,7 @@ namespace MQ
 
 MQOD Topic::_initialOD = { MQOD_DEFAULT };
 
-Topic::Topic(QueueManager& qmgr, const std::string& topic)
+Topic::Topic(QueueManager::Ptr qmgr, const std::string& topic)
 	: _qmgr(qmgr)
 	, _handle(0)
 	, _od(_initialOD)
@@ -44,7 +43,7 @@ Topic::Topic(QueueManager& qmgr, const std::string& topic)
 	_od.Version = MQOD_VERSION_4;
 }
 
-Topic::Topic(QueueManager& qmgr, const std::string& topic, const std::string& topicStr)
+Topic::Topic(QueueManager::Ptr qmgr, const std::string& topic, const std::string& topicStr)
 	: _qmgr(qmgr)
 	, _handle(0)
 	, _od(_initialOD)
@@ -83,7 +82,7 @@ void Topic::open(long options)
 	_od.ResObjectString.VSBufSize = MQ_TOPIC_STR_LENGTH;
 
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
-	_handle = mqSystem.functions().open(_qmgr.handle(), &_od, options);
+	_handle = mqSystem.functions().open(_qmgr->handle(), &_od, options);
 
 	_resObjectStr = resObjectString;
 	_resObjectStr = Poco::trimRightInPlace(_resObjectStr);
@@ -94,7 +93,7 @@ void Topic::close()
 	if ( _handle != 0 )
 	{
 		MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
-		mqSystem.functions().close(_qmgr.handle(), &_handle, MQCO_NONE);
+		mqSystem.functions().close(_qmgr->handle(), &_handle, MQCO_NONE);
 	}
 }
 
@@ -108,7 +107,7 @@ void Topic::publish(Message& msg, MQLONG options)
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
 	try
 	{
-		mqSystem.functions().put(_qmgr.handle(), _handle, msg.md(), &pmo, size, size > 0 ? msg.buffer().data() : NULL);
+		mqSystem.functions().put(_qmgr->handle(), _handle, msg.md(), &pmo, size, size > 0 ? msg.buffer().data() : NULL);
 	}
 	catch(MQException& mqe)
 	{
@@ -122,7 +121,7 @@ void Topic::inquire(const std::vector<int>& intSelectors, const std::map<int, in
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
 	try
 	{
-		mqSystem.functions().inq(_qmgr.handle(), _handle, intSelectors, charSelectors, intResult, charResult);
+		mqSystem.functions().inq(_qmgr->handle(), _handle, intSelectors, charSelectors, intResult, charResult);
 	}
 	catch(MQException& mqe)
 	{

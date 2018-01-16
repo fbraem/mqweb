@@ -29,9 +29,9 @@ namespace MQ
 
 MQGMO MessageConsumer::_initialGMO = { MQGMO_DEFAULT };
 
-MessageConsumer::MessageConsumer(QueueManager& qmgr, const std::string& queueName, Action action)
+MessageConsumer::MessageConsumer(QueueManager::Ptr qmgr, const std::string& queueName, Action action)
 	: _qmgr(qmgr)
-	, _queue(qmgr, queueName)
+	, _queue(new Queue(qmgr, queueName))
 	, _md(Message::_initialMD)
 	, _action(action)
 	, _gmo(MessageConsumer::_initialGMO)
@@ -42,7 +42,7 @@ MessageConsumer::MessageConsumer(QueueManager& qmgr, const std::string& queueNam
 	{
 		options |= MQOO_BROWSE;
 	}
-	_queue.open(options);
+	_queue->open(options);
 }
 
 MessageConsumer::~MessageConsumer()
@@ -72,7 +72,7 @@ void MessageConsumer::setup()
 	}
 
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
-	mqSystem.functions().cb(_qmgr.handle(), MQOP_REGISTER, &cbd, _queue.handle(), &_md, &_gmo);
+	mqSystem.functions().cb(_qmgr->handle(), MQOP_REGISTER, &cbd, _queue->handle(), &_md, &_gmo);
 
 	_state = READY;
 }
@@ -87,7 +87,7 @@ void MessageConsumer::clear()
 	}
 
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
-	mqSystem.functions().cb(_qmgr.handle(), MQOP_DEREGISTER, &cbd, _queue.handle(), &_md, &_gmo);
+	mqSystem.functions().cb(_qmgr->handle(), MQOP_DEREGISTER, &cbd, _queue->handle(), &_md, &_gmo);
 
 	_state = DIRTY;
 }
@@ -103,7 +103,7 @@ void MessageConsumer::start()
 	MQCTLO options = { MQCTLO_DEFAULT };
 
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
-	mqSystem.functions().ctl(_qmgr.handle(), MQOP_START, &options);
+	mqSystem.functions().ctl(_qmgr->handle(), MQOP_START, &options);
 
 	_state = STARTED;
 }
@@ -112,7 +112,7 @@ void MessageConsumer::stop()
 {
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
 	MQCTLO options = { MQCTLO_DEFAULT };
-	mqSystem.functions().ctl(_qmgr.handle(), MQOP_STOP, &options);
+	mqSystem.functions().ctl(_qmgr->handle(), MQOP_STOP, &options);
 
 	_state = STOPPED;
 }

@@ -37,6 +37,9 @@ class CommandServer
 	/// Class for sending PCF commands to a queuemanager
 {
 public:
+	CommandServer(Poco::SharedPtr<QueueManager> qmgr, const std::string& modelQueue);
+		/// Constructor.
+
 	std::string commandQName() const;
 		/// Returns the name of the command queue.
 
@@ -51,13 +54,10 @@ public:
 		/// Returns the name of the reply queue.
 
 private:
-	CommandServer(QueueManager& qmgr, const std::string& modelQueue);
-		/// Constructor.
-
 	CommandServer(const CommandServer& copy);
 	CommandServer& operator = (const  CommandServer& copy);
 
-	QueueManager& _qmgr;
+	Poco::SharedPtr<QueueManager> _qmgr;
 
 	Queue _commandQ;
 

@@ -30,19 +30,20 @@
 #include <vector>
 #include <map>
 
+#include "MQ/QueueManager.h"
+
 namespace MQ
 {
-class QueueManager;
 class Message;
 
 class Topic
 	/// Represents a Websphere MQ Topic to use for publish/subscribe
 {
 public:
-	Topic(QueueManager& qmgr, const std::string& topic);
+	Topic(QueueManager::Ptr qmgr, const std::string& topic);
 		/// Constructor. Use this for a fixed topic.
 
-	Topic(QueueManager& qmgr, const std::string& topic, const std::string& topicStr);
+	Topic(QueueManager::Ptr qmgr, const std::string& topic, const std::string& topicStr);
 		/// Constructor. Use this for a programmatically defined topic.
 
 	virtual ~Topic();
@@ -71,7 +72,7 @@ public:
 
 private:
 
-	QueueManager& _qmgr;
+	QueueManager::Ptr _qmgr;
 
 	MQHOBJ _handle;
 

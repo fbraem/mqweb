@@ -73,12 +73,6 @@ public:
 	bool connected() const;
 		/// Returns true when the queuemanager is connected.
 
-	CommandServer* createCommandServer(const std::string& replyQ);
-		/// Create a command server. Once created, you can use commandServer to
-		/// get the associated command server. Can throw an MQException. The
-		/// QueueManager instance is responsible for the CommandServer object
-		/// and will destroy it when the queuemanager is disconnected.
-
 	void disconnect();
 		/// Disconnects from the queuemanager. Can throw an MQException.
 		/// When a CommandServer object is owned by this queuemanager, it will
@@ -113,8 +107,6 @@ private:
 	std::string _commandQueue;
 
 	MQLONG _applicationType;
-
-	CommandServer* _commandServer;
 
 	void inquireQmgrAttrs();
 
@@ -154,17 +146,6 @@ inline MQHCONN QueueManager::handle() const
 inline bool QueueManager::zos() const
 {
 	return _applicationType == MQPL_ZOS;
-}
-
-inline CommandServer* QueueManager::commandServer()
-{
-	return _commandServer;
-}
-
-inline CommandServer* QueueManager::createCommandServer(const std::string& replyQ)
-{
-	_commandServer = new CommandServer(*this, replyQ);
-	return _commandServer;
 }
 
 } // Namespace MQ
