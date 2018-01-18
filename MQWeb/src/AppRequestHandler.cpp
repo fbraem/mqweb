@@ -78,6 +78,10 @@ void AppRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, Poc
 	{
 		staticPath.append(*it);
 	}
+	if (staticPath.isDirectory())
+	{
+		staticPath.append("index.html");
+	}
 
 	Poco::File staticFile(staticPath);
 
