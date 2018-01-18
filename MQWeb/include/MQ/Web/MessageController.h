@@ -22,7 +22,7 @@
 #define _MQWeb_MessageController_h
 
 #include "MQ/Web/MQController.h"
-#include "MQ/Web/Dictionary.h"
+#include "MQ/Web/MapInitializer.h"
 
 namespace MQ
 {
@@ -62,20 +62,6 @@ public:
 
 private:
 
-
-	static void mapMessageToJSON(const Message& message, Poco::JSON::Object& obj);
-
-
-	static void mapJSONToMessage(const Poco::JSON::Object& obj, Message& message);
-
-
-	static Dictionary _reportCodes;
-
-
-	static Dictionary _messageTypeCodes;
-
-
-	static Dictionary _feedbackCodes;
 };
 
 inline const Controller::ActionMap& MessageController::getActions() const

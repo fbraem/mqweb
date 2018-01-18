@@ -26,6 +26,8 @@
 #include "MQ/QueueManagerPool.h"
 #include "MQ/Web/QueueManagerPoolCache.h"
 #include "MQ/MQException.h"
+#include "MQ/Web/PCFCommand.h"
+#include "MQ/Web/JSONMessage.h"
 
 #include "Poco/URI.h"
 #include "Poco/Net/WebSocket.h"
@@ -98,16 +100,23 @@ public:
 		poco_debug(logger, "WebSocket connection closed.");
 	}
 
-	void onMessage(const void* pSender, Poco::SharedPtr<Message>& msg)
+	void onMessage(const void* pSender, Message::Ptr& msg)
 	{
 		Poco::Logger& logger = Poco::Logger::get("mq.web");
 		poco_trace_f1(logger, "A message received %s", msg->messageId()->toHex());
 
 		_count++;
-		std::string messageContent = msg->buffer().toString();
+
+		JSONMessage jsonMessage(msg);
+		Poco::JSON::Object::Ptr json = new Poco::JSON::Object();
+		jsonMessage.toJSON(json);
+		
+		std::stringstream ss;
+		json->stringify(ss);
+		std::string content = ss.str();
 		try
 		{
-			_ws->sendFrame(messageContent.c_str(), messageContent.size(), Poco::Net::WebSocket::FRAME_TEXT);
+			_ws->sendFrame(content.c_str(), content.length(), Poco::Net::WebSocket::FRAME_TEXT);
 		}
 		catch(Poco::Exception&)
 		{
@@ -157,7 +166,29 @@ void WebSocketRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& reques
 		return;
 	}
 
-	QueueManager::Ptr qmgr = qmgrPool->borrowObject();
+	QueueManager::Ptr qmgr;
+	try
+	{
+		qmgr = qmgrPool->borrowObject();
+	}
+	catch (MQ::MQException& mqex) 
+	{
+		std::string msg(paths[0]);
+		msg.append(" - ");
+		msg.append(mqex.function());
+		msg.append(" : CC=");
+		Poco::NumberFormatter::append(msg, mqex.code());
+		msg.append(" RC=");
+		Poco::NumberFormatter::append(msg, mqex.reason());
+		msg += "(";
+		msg += PCFCommand::getReasonString(mqex.reason());
+		msg += ")";
+		response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR, msg);
+		response.setContentLength(0);
+		response.send();
+		return;
+	}
+
 	if ( qmgr.isNull() )
 	{
 		response.setStatusAndReason(Poco::Net::HTTPServerResponse::HTTP_INTERNAL_SERVER_ERROR, "No queuemanager available in the pool. Check the connection pool configuration.");
@@ -188,6 +219,16 @@ void WebSocketRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& reques
 			response.send();
 			break;
 		}
+	}
+	catch (MQ::MQException& mqex)
+	{
+		std::string msg("MQ RC=");
+		Poco::NumberFormatter::append(msg, mqex.reason());
+		msg += " - ";
+		msg += PCFCommand::getReasonString(mqex.reason());
+		response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR, msg);
+		response.setContentLength(0);
+		response.send();
 	}
 }
 
