@@ -53,12 +53,14 @@ public:
 
 		QueueManager::Ptr qmgr = queueManagerPoolGuard->getObject();
 		_consumer = new MessageConsumer(qmgr, queueName, MessageConsumer::BROWSE);
-		_consumer->message+= Poco::delegate(this, &MessageConsumerTask::onMessage);
+		_consumer->messageEvent += Poco::delegate(this, &MessageConsumerTask::onMessage);
+		_consumer->errorEvent += Poco::delegate(this, &MessageConsumerTask::onError);
 	}
 
 	virtual ~MessageConsumerTask()
 	{
-		_consumer->message-= Poco::delegate(this, &MessageConsumerTask::onMessage);
+		_consumer->messageEvent -= Poco::delegate(this, &MessageConsumerTask::onMessage);
+		_consumer->errorEvent -= Poco::delegate(this, &MessageConsumerTask::onError);
 	}
 
 	void cancel()
@@ -122,6 +124,14 @@ public:
 		{
 			cancel();
 		}
+	}
+
+	void onError(const void* pSender, MQLONG& rc) 
+	{
+		Poco::Logger& logger = Poco::Logger::get("mq.web");
+		poco_trace_f1(logger, "An MQ error received %ld", rc);
+
+		cancel();
 	}
 
 private:
