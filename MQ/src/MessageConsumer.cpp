@@ -66,6 +66,7 @@ void MessageConsumer::setup()
 	cbd.CallbackFunction = (MQPTR) MessageConsumer::consume;
 	cbd.CallbackArea = this;
 
+	_gmo.Options |= MQGMO_FAIL_IF_QUIESCING;
 	if ( _action == BROWSE )
 	{
 		_gmo.Options |= MQGMO_BROWSE_NEXT;
@@ -119,11 +120,17 @@ void MessageConsumer::stop()
 
 void MessageConsumer::consume(MQHCONN conn, MQMD* md, MQGMO* gmo, MQBYTE* buffer, MQCBC* context)
 {
-	Poco::SharedPtr<Message> msg = new Message(buffer, context->DataLength);
-	memcpy(msg->md(), md, sizeof(MQMD));
-
 	MessageConsumer* consumer = reinterpret_cast<MessageConsumer*>(context->CallbackArea);
-	consumer->message.notify(consumer, msg);
+	if (context->CompCode == MQCC_OK)
+	{
+		Poco::SharedPtr<Message> msg = new Message(buffer, context->DataLength);
+		memcpy(msg->md(), md, sizeof(MQMD));
+		consumer->messageEvent.notify(consumer, msg);
+	}
+	else
+	{
+		consumer->errorEvent.notify(consumer, context->Reason);
+	}
 }
 
 }

@@ -81,9 +81,11 @@ public:
 	void stop();
 		/// Stops the consumer. Can throw a MQException.
 
-	typedef Poco::BasicEvent<Poco::SharedPtr<Message> > Event;
+	typedef Poco::BasicEvent<Poco::SharedPtr<Message> > MessageEvent;
+	MessageEvent messageEvent;
 
-	Event message;
+	typedef Poco::BasicEvent<MQLONG> ErrorEvent;
+	ErrorEvent errorEvent;
 
 private:
 
