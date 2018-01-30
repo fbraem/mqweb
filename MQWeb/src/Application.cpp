@@ -20,6 +20,7 @@
 */
 #include "MQ/MQSubsystem.h"
 #include "MQ/Web/Version.h"
+#include "MQ/Web/MQWebSubsystem.h"
 #include "MQ/Web/Application.h"
 #include "MQ/Web/RequestHandlerFactory.h"
 #include "MQ/Web/WebSocketRequestHandler.h"
@@ -46,6 +47,7 @@ MQWebApplication::MQWebApplication()
 , _versionRequested(false)
 {
 	addSubsystem(new MQ::MQSubsystem());
+	addSubsystem(new MQ::Web::MQWebSubsystem());
 }
 
 MQWebApplication::~MQWebApplication()
@@ -227,10 +229,6 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 	waitForTerminationRequest();
 	// Stop the HTTPServer
 	srv.stop();
-
-	MQ::Web::WebSocketRequestHandler::cancel();
-
-	_qmgrPoolCache.clear();
 
 	return Application::EXIT_OK;
 }

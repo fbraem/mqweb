@@ -26,9 +26,6 @@
 #include "Poco/Util/OptionSet.h"
 #include "Poco/Util/HelpFormatter.h"
 
-#include "MQ/Web/QueueManagerPoolCache.h"
-#include "MQ/Web/DictionaryCache.h"
-
 class MQWebApplication : public Poco::Util::ServerApplication
 	/// The MQWeb server application
 {
@@ -67,12 +64,6 @@ private:
 	bool _helpRequested;
 
 	bool _versionRequested;
-
-	MQ::Web::QueueManagerPoolCache _qmgrPoolCache;
-		/// Only one QueueManagerPoolCache object is allowed. The best place to
-		/// define it is here.
-
-	MQ::Web::DictionaryCache _dictionaryCache;
 };
 
 #endif //  _MQWeb_Application_H
