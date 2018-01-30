@@ -18,27 +18,44 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef _MQWeb_WebSocketRequestHandler_INCLUDED
-#define _MQWeb_WebSocketRequestHandler_INCLUDED
+#ifndef _MQWeb_MessageConsumerTask_INCLUDED
+#define _MQWeb_MessageConsumerTask_INCLUDED
 
-#include "Poco/Net/HTTPRequestHandler.h"
+#include "Poco/Task.h"
+#include "Poco/Net/WebSocket.h"
 
-#include "Poco/TaskManager.h"
+#include "MQ/QueueManagerPool.h"
+#include "MQ/MessageConsumer.h"
 
 namespace MQ {
 namespace Web {
 
-class WebSocketRequestHandler: public Poco::Net::HTTPRequestHandler
+class MessageConsumerTask : public Poco::Task
 {
-	/// Class for creating a controller based on the request.
 public:
-	WebSocketRequestHandler();
+	MessageConsumerTask(Poco::SharedPtr<Poco::Net::WebSocket> ws, QueueManagerPoolGuard::Ptr queueManagerPoolGuard, const std::string& queueName);
 
-	void handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
-		/// Handles the request.
+	virtual ~MessageConsumerTask();
+
+	void cancel();
+
+	void runTask();
+
+	void onMessage(const void* pSender, Message::Ptr& msg);
+
+	void onError(const void* pSender, MQLONG& rc);
+
+private:
+	Poco::SharedPtr<Poco::Net::WebSocket> _ws;
+
+	QueueManagerPoolGuard::Ptr _qmgrPoolGuard;
+
+	Poco::SharedPtr<MessageConsumer> _consumer;
+
+	int _count;
+
 };
 
+}} // Namespace MQ::Web
 
-} } // Namespace MQ::Web
-
-#endif // _MQWeb_WebSocketRequestHandler_INCLUDED
+#endif // _MQWeb_MessageConsumerTask_INCLUDED

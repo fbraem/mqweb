@@ -18,27 +18,62 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef _MQWeb_WebSocketRequestHandler_INCLUDED
-#define _MQWeb_WebSocketRequestHandler_INCLUDED
+#ifndef _MQ_MQWebSubsystem_h
+#define _MQ_MQWebSubsystem_h
 
-#include "Poco/Net/HTTPRequestHandler.h"
+#include "Poco/Util/Subsystem.h"
 
-#include "Poco/TaskManager.h"
+#include "MQ/Web/QueueManagerPoolCache.h"
+#include "MQ/Web/DictionaryCache.h"
+#include "MQ/Web/MessageConsumerTaskManager.h"
 
 namespace MQ {
 namespace Web {
 
-class WebSocketRequestHandler: public Poco::Net::HTTPRequestHandler
+class MQWebSubsystem : public Poco::Util::Subsystem
+	/// A POCO Subsystem for MQWeb
 {
-	/// Class for creating a controller based on the request.
 public:
-	WebSocketRequestHandler();
+	MQWebSubsystem();
+	/// Constructor
 
-	void handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
-		/// Handles the request.
+	virtual ~MQWebSubsystem();
+	/// Destructor
+
+	virtual const char* name() const;
+	/// Returns the name
+
+	virtual void initialize(Poco::Util::Application& app);
+	/// Initialize the subsystem
+
+	virtual void uninitialize();
+	/// Unitialize the subsystem
+
+	Poco::SharedPtr<QueueManagerPool> getQueueManagerPool(const std::string& qmgr);
+
+	MQ::Web::MessageConsumerTaskManager& messageConsumerTaskManager();
+
+private:
+
+	MQ::Web::QueueManagerPoolCache _qmgrPoolCache;
+
+	MQ::Web::DictionaryCache _dictionaryCache;
+
+	MQ::Web::MessageConsumerTaskManager _messageConsumerTaskManager;
+
 };
 
 
-} } // Namespace MQ::Web
+inline const char * MQWebSubsystem::name() const
+{
+	return "MQWeb";
+}
 
-#endif // _MQWeb_WebSocketRequestHandler_INCLUDED
+inline MQ::Web::MessageConsumerTaskManager& MQWebSubsystem::messageConsumerTaskManager()
+{
+	return _messageConsumerTaskManager;
+}
+
+}} // Namespace MQ::Web
+
+#endif // _MQ_MQWebSubsystem_h

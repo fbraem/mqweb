@@ -18,27 +18,47 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef _MQWeb_WebSocketRequestHandler_INCLUDED
-#define _MQWeb_WebSocketRequestHandler_INCLUDED
 
-#include "Poco/Net/HTTPRequestHandler.h"
+#include "MQ/Web/QueueManagerPoolCache.h"
 
-#include "Poco/TaskManager.h"
+#include "MQ/Web/MessageConsumerTaskManager.h"
+#include "MQ/Web/MessageConsumerTask.h"
 
 namespace MQ {
 namespace Web {
 
-class WebSocketRequestHandler: public Poco::Net::HTTPRequestHandler
+MessageConsumerTaskManager::MessageConsumerTaskManager() : _threadPool(), _taskManager(_threadPool)
 {
-	/// Class for creating a controller based on the request.
-public:
-	WebSocketRequestHandler();
+}
 
-	void handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
-		/// Handles the request.
-};
+MessageConsumerTaskManager::~MessageConsumerTaskManager()
+{
+	try 
+	{
+		_taskManager.cancelAll();
+		_taskManager.joinAll();
+	}
+	catch (Poco::Exception&)
+	{
 
+	}
+}
 
-} } // Namespace MQ::Web
+void MessageConsumerTaskManager::startTask(Poco::SharedPtr<Poco::Net::WebSocket> ws, const std::string& qmgrName, const std::string& queueName)
+{
+	Poco::SharedPtr<QueueManagerPool> qmgrPool = QueueManagerPoolCache::instance()->getQueueManagerPool(qmgrName);
+	if (qmgrPool.isNull())
+	{
+		throw Poco::OutOfMemoryException("Can't create a pool for queuemanager.");
+	}
 
-#endif // _MQWeb_WebSocketRequestHandler_INCLUDED
+	QueueManager::Ptr qmgr = qmgrPool->borrowObject();
+	if (qmgr.isNull())
+	{
+		throw Poco::OutOfMemoryException("No queuemanager available in the pool. Check the connection pool configuration.");
+	}
+
+	_taskManager.start(new MessageConsumerTask(ws, new QueueManagerPoolGuard(qmgrPool, qmgr), queueName));
+}
+
+}}

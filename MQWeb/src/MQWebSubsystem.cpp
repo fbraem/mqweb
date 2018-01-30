@@ -18,27 +18,29 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef _MQWeb_WebSocketRequestHandler_INCLUDED
-#define _MQWeb_WebSocketRequestHandler_INCLUDED
+#include <iostream>
 
-#include "Poco/Net/HTTPRequestHandler.h"
-
-#include "Poco/TaskManager.h"
+#include "MQ/Web/MQWebSubsystem.h"
+#include "Poco/Util/Application.h"
 
 namespace MQ {
 namespace Web {
 
-class WebSocketRequestHandler: public Poco::Net::HTTPRequestHandler
+MQWebSubsystem::MQWebSubsystem() : Poco::Util::Subsystem(), _messageConsumerTaskManager()
 {
-	/// Class for creating a controller based on the request.
-public:
-	WebSocketRequestHandler();
+}
 
-	void handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
-		/// Handles the request.
-};
+MQWebSubsystem::~MQWebSubsystem()
+{
+}
 
+void MQWebSubsystem::initialize(Poco::Util::Application& app)
+{
+}
 
-} } // Namespace MQ::Web
+void MQWebSubsystem::uninitialize()
+{
+	_qmgrPoolCache.clear();
+}
 
-#endif // _MQWeb_WebSocketRequestHandler_INCLUDED
+}} // Namespace MQ::Web
