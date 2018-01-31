@@ -18,6 +18,7 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
+#include "Poco/Logger.h"
 
 #include "MQ/Web/QueueManagerPoolCache.h"
 
@@ -27,12 +28,15 @@
 namespace MQ {
 namespace Web {
 
-MessageConsumerTaskManager::MessageConsumerTaskManager() : _threadPool(), _taskManager(_threadPool)
+MessageConsumerTaskManager::MessageConsumerTaskManager(Poco::ThreadPool& threadPool) : _taskManager(threadPool)
 {
 }
 
 MessageConsumerTaskManager::~MessageConsumerTaskManager()
 {
+	Poco::Logger& logger = Poco::Logger::get("mq.web");
+	logger.trace("Cancel all active MessageConsumerTasks");
+
 	try 
 	{
 		_taskManager.cancelAll();

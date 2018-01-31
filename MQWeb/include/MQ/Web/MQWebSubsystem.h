@@ -59,8 +59,9 @@ private:
 
 	MQ::Web::DictionaryCache _dictionaryCache;
 
-	MQ::Web::MessageConsumerTaskManager _messageConsumerTaskManager;
+	Poco::ThreadPool* _messageConsumerThreadPool;
 
+	MQ::Web::MessageConsumerTaskManager* _messageConsumerTaskManager;
 };
 
 
@@ -71,7 +72,7 @@ inline const char * MQWebSubsystem::name() const
 
 inline MQ::Web::MessageConsumerTaskManager& MQWebSubsystem::messageConsumerTaskManager()
 {
-	return _messageConsumerTaskManager;
+	return *_messageConsumerTaskManager;
 }
 
 }} // Namespace MQ::Web

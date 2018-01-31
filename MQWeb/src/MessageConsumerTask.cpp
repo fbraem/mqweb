@@ -53,7 +53,7 @@ MessageConsumerTask::~MessageConsumerTask()
 void MessageConsumerTask::cancel()
 {
 	Poco::Logger& logger = Poco::Logger::get("mq.web");
-	poco_debug(logger, "MessageConsumerTask cancelling ...");
+	logger.trace("MessageConsumerTask cancelling ...");
 
 	try
 	{
@@ -68,13 +68,13 @@ void MessageConsumerTask::cancel()
 
 	Poco::Task::cancel();
 
-	poco_debug(logger, "MessageConsumerTask cancelled.");
+	logger.trace("MessageConsumerTask cancelled.");
 }
 
 void MessageConsumerTask::runTask()
 {
 	Poco::Logger& logger = Poco::Logger::get("mq.web");
-	poco_trace(logger, "Starting task");
+	logger.trace("MessageConsumerTask started ...");
 
 	_consumer->start();
 
@@ -86,26 +86,27 @@ void MessageConsumerTask::runTask()
 		try
 		{
 			n = _ws->receiveFrame(buffer, sizeof(buffer), flags);
-			poco_trace_f1(logger, "Number of messages: so far %d", _count);
+			logger.trace("Number of messages: so far %d", _count);
 		}
-		catch (Poco::TimeoutException& toe)
+		catch (Poco::TimeoutException&)
 		{
-			poco_trace(logger, "Timeout");
+			logger.trace("Timeout");
 			break;
 		}
-		catch (Poco::Net::NetException& ne)
+		catch (Poco::Net::NetException&)
 		{
-			poco_trace(logger, "NetException received. WebSocket closed by the client?");
+			logger.trace("NetException received. WebSocket closed by the client?");
 			break;
 		}
 	} while (n > 0 || (flags & Poco::Net::WebSocket::FRAME_OP_BITMASK) != Poco::Net::WebSocket::FRAME_OP_CLOSE);
-	poco_debug(logger, "WebSocket connection closed.");
+
+	logger.trace("MessageConsumerTask ended.");
 }
 
 void MessageConsumerTask::onMessage(const void* pSender, Message::Ptr& msg)
 {
 	Poco::Logger& logger = Poco::Logger::get("mq.web");
-	poco_trace_f1(logger, "A message received %s", msg->messageId()->toHex());
+	logger.trace("A message is received %s", msg->messageId()->toHex());
 
 	_count++;
 
@@ -129,8 +130,7 @@ void MessageConsumerTask::onMessage(const void* pSender, Message::Ptr& msg)
 void MessageConsumerTask::onError(const void* pSender, MQLONG& rc)
 {
 	Poco::Logger& logger = Poco::Logger::get("mq.web");
-	poco_trace_f1(logger, "An MQ error received %ld", rc);
-
+	logger.trace("An MQ error is received %ld. Task will be cancelled.", rc);
 	cancel();
 }
 

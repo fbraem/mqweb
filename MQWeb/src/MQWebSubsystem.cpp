@@ -26,7 +26,7 @@
 namespace MQ {
 namespace Web {
 
-MQWebSubsystem::MQWebSubsystem() : Poco::Util::Subsystem(), _messageConsumerTaskManager()
+MQWebSubsystem::MQWebSubsystem() : Poco::Util::Subsystem(), _messageConsumerThreadPool(NULL), _messageConsumerTaskManager(NULL)
 {
 }
 
@@ -36,10 +36,18 @@ MQWebSubsystem::~MQWebSubsystem()
 
 void MQWebSubsystem::initialize(Poco::Util::Application& app)
 {
+	Poco::Logger& logger = Poco::Logger::get("mq.web");
+	logger.trace("Initialize MQWebSubsystem");
+
+	_messageConsumerThreadPool = new Poco::ThreadPool();
+	_messageConsumerTaskManager = new MessageConsumerTaskManager(*_messageConsumerThreadPool);
 }
 
 void MQWebSubsystem::uninitialize()
 {
+	delete _messageConsumerTaskManager;
+	delete _messageConsumerThreadPool;
+
 	_qmgrPoolCache.clear();
 }
 

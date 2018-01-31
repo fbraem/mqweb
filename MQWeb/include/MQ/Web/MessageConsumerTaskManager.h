@@ -31,13 +31,12 @@ namespace Web {
 class MessageConsumerTaskManager
 {
 public:
-	MessageConsumerTaskManager();
+	MessageConsumerTaskManager(Poco::ThreadPool& threadPool);
 	virtual ~MessageConsumerTaskManager();
 
 	void startTask(Poco::SharedPtr<Poco::Net::WebSocket> ws, const std::string& qmgrName, const std::string& queueName);
 
 private:
-	Poco::ThreadPool _threadPool;
 	Poco::TaskManager _taskManager;
 };
 
