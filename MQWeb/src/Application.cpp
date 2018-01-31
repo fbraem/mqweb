@@ -223,12 +223,14 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 	// start the HTTPServer
 	srv.start();
 
-	poco_information_f1(logger, "MQWeb started and listening on port %hu", port);
+	logger.information("MQWeb started and listening on port %hu", port);
 
 	// wait for CTRL-C or kill
 	waitForTerminationRequest();
 	// Stop the HTTPServer
 	srv.stop();
+
+	logger.trace("Application stopping ...");
 
 	return Application::EXIT_OK;
 }
