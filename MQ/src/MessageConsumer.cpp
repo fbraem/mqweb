@@ -37,10 +37,14 @@ MessageConsumer::MessageConsumer(QueueManager::Ptr qmgr, const std::string& queu
 	, _gmo(MessageConsumer::_initialGMO)
 	, _state(DIRTY)
 {
-	MQLONG options = MQOO_INPUT_SHARED | MQOO_FAIL_IF_QUIESCING;
+	MQLONG options = MQOO_FAIL_IF_QUIESCING;
 	if ( action == BROWSE )
 	{
 		options |= MQOO_BROWSE;
+	}
+	else
+	{
+		options |= MQOO_INPUT_SHARED;
 	}
 	_queue->open(options);
 }
