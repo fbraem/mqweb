@@ -359,8 +359,10 @@ void JSONMessage::toJSON(Poco::JSON::Object::Ptr jsonMessage)
 			case MQOT_PROCESS: dictionary = PCFCommand::dictionary("Process"); break;
 			case MQOT_Q: dictionary = PCFCommand::dictionary("Queue"); break;
 			case MQOT_LISTENER: dictionary = PCFCommand::dictionary("Listener"); break;
+			case MQOT_AUTH_REC: dictionary = PCFCommand::dictionary("AuthorityRecord"); break;
+			case MQOT_CHLAUTH: dictionary = PCFCommand::dictionary("ChannelAuthenticationRecord"); break;
 			default:
-				Poco::Logger::get("mq.web").warning("No dictionary set for event. ObjectType $0", parameters.getNumber(MQIACF_OBJECT_TYPE));
+				Poco::Logger::get("mq.web").warning("No dictionary set for event. ObjectType %d", parameters.getNumber(MQIACF_OBJECT_TYPE));
 			}
 			poco_assert_msg_dbg(!dictionary.isNull(), "Dictionary missing");
 			if (!dictionary.isNull())
