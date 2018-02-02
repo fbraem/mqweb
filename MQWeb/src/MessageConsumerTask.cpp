@@ -112,6 +112,7 @@ void MessageConsumerTask::onMessage(const void* pSender, Message::Ptr& msg)
 
 	JSONMessage jsonMessage(msg);
 	Poco::JSON::Object::Ptr json = new Poco::JSON::Object();
+	json->set("mqmd", jsonMessage.toJSONMQMD());
 	jsonMessage.toJSON(json);
 
 	std::stringstream ss;
