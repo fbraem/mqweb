@@ -44,6 +44,8 @@ Message::Message(int size)
 
 Message::Message(const MQBYTE* buffer, MQLONG size)
 	: _buffer(buffer, size)
+	, _md(_initialMD)
+	, _dataLength(size)
 {
 }
 
