@@ -1909,7 +1909,7 @@ Dictionary eventDictionary = Dictionary()
 		(MQOT_AMPQ_CHANNEL, "AMQP Channel")
 #endif
 #ifdef MQOT_AUTH_REC
-		(MQOT_AUTH_REC, "Auth Rec")
+		(MQOT_AUTH_REC, "Authority Record")
 #endif
 	)
 	(MQIACF_OPEN_OPTIONS)
@@ -3317,6 +3317,39 @@ Dictionary statisticsChannelDictionary = Dictionary()
 	(MQIAMO_PUT_RETRIES, "PutRetryCount")
 ;
 
+Dictionary channelAuthenticationRecordDictionary = Dictionary()
+	(MQCA_ALTERATION_DATE)
+	(MQCA_ALTERATION_TIME)
+	(MQCACH_CONNECTION_NAME)
+	(MQCACH_CONNECTION_NAME_LIST, "AddrList")
+	(MQCACH_CHANNEL_NAME)
+	(MQIA_CHECK_CLIENT_BINDING, "CheckClient")
+	(MQCACH_CLIENT_USER_ID)
+	(MQCA_CHLAUTH_DESC, "Description")
+	(MQCACH_MCA_USER_ID)
+	(MQCA_REMOTE_Q_MGR_NAME)
+	(MQCA_SSL_CERT_ISSUER_NAME, "SSLCertIssuer")
+	(MQCACH_SSL_PEER_NAME)
+	(MQIACF_CHLAUTH_TYPE, "Type", TextMapInitializer
+		(MQCAUT_BLOCKUSER, "BlockUser")
+		(MQCAUT_BLOCKADDR, "BlockAddress")
+		(MQCAUT_SSLPEERMAP, "SSLPeerMap")
+		(MQCAUT_ADDRESSMAP, "AddressMap")
+		(MQCAUT_USERMAP, "UserMap")
+		(MQCAUT_QMGRMAP, "QueueManagerMap")
+	)
+	(MQCACH_MCA_USER_ID_LIST, "UserList")
+	(MQIACH_USER_SOURCE, "UserSrc", TextMapInitializer
+		(MQUSRC_MAP, "Map")
+		(MQUSRC_NOACCESS, "NoAccess")
+		(MQUSRC_CHANNEL, "Channel")
+	)
+	(MQIACH_WARNING, "Warn", TextMapInitializer
+		(MQWARN_NO, "No")
+		(MQWARN_YES, "Yes")
+	)
+;
+
 
 class MQDictionary : public Poco::Util::Application
 {
@@ -3444,6 +3477,7 @@ int main(const std::vector<std::string>& args)
 	store(session, ++oid, "AccountingQueue", accountingQueueDictionary);
 	store(session, ++oid, "StatisticsMQI", statisticsMQIDictionary);
 	store(session, ++oid, "StatisticsChannel", statisticsChannelDictionary);
+	store(session, ++oid, "ChannelAuthenticationRecord", channelAuthenticationRecordDictionary);
 
 	return Application::EXIT_OK;
 }
