@@ -9,6 +9,11 @@ file(GLOB SOURCES "${PROJECT_SOURCE_DIR}/*.cpp")
 
 include_directories("${PROJECT_INCLUDE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/../MQ/include" "${CMAKE_CURRENT_SOURCE_DIR}/../MQWeb/include" "${POCO_Foundation_INCLUDE}" "${POCO_Util_INCLUDE}" "${POCO_JSON_INCLUDE}" "${POCO_Net_INCLUDE}" "${POCO_Data_INCLUDE}" "${POCO_DataSQLite_INCLUDE}" "${MQ_INCLUDE}")
 
+if (CMAKE_BUILD_TYPE STREQUAL debug)
+  set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin/debug)
+else()
+  set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin/release)
+endif()
 link_directories(${CMAKE_BINARY_DIR})
 
 add_executable(mqdict ${SOURCES} "${CMAKE_CURRENT_SOURCE_DIR}/../MQWeb/src/Dictionary.cpp")
