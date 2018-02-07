@@ -98,7 +98,7 @@ void MessageConsumerTask::runTask()
 			logger.trace("NetException received. WebSocket closed by the client?");
 			break;
 		}
-	} while (n > 0 || (flags & Poco::Net::WebSocket::FRAME_OP_BITMASK) != Poco::Net::WebSocket::FRAME_OP_CLOSE);
+	} while (n > 0 && (flags & Poco::Net::WebSocket::FRAME_OP_BITMASK) != Poco::Net::WebSocket::FRAME_OP_CLOSE);
 
 	logger.trace("MessageConsumerTask ended.");
 }
