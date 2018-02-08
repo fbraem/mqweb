@@ -35,6 +35,7 @@
 #include "Poco/Net/NetException.h"
 #include "Poco/Net/HTTPServerRequest.h"
 #include "Poco/Net/HTTPServerResponse.h"
+#include "Poco/Net/HTMLForm.h"
 #include "Poco/Task.h"
 
 namespace MQ {
@@ -60,11 +61,20 @@ void WebSocketRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& reques
 		return;
 	}
 
+	int limit = -1;
+	Poco::Net::HTMLForm form;
+	form.load(request, request.stream());
+	std::string limitField = form.get("limit", "");
+	if (!limitField.empty())
+	{
+		Poco::NumberParser::tryParse(limitField, limit);
+	}
+
 	try
 	{
 		Poco::SharedPtr<Poco::Net::WebSocket> ws = new Poco::Net::WebSocket(request, response);
 		MQWebSubsystem& mqWebsystem = Poco::Util::Application::instance().getSubsystem<MQWebSubsystem>();
-		mqWebsystem.messageConsumerTaskManager().startTask(ws, paths[0], paths[1]);
+		mqWebsystem.messageConsumerTaskManager().startTask(ws, paths[0], paths[1], limit);
 	}
 	catch (Poco::Net::WebSocketException& exc)
 	{

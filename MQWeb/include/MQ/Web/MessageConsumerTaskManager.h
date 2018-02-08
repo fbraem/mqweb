@@ -34,7 +34,7 @@ public:
 	MessageConsumerTaskManager(Poco::ThreadPool& threadPool);
 	virtual ~MessageConsumerTaskManager();
 
-	void startTask(Poco::SharedPtr<Poco::Net::WebSocket> ws, const std::string& qmgrName, const std::string& queueName);
+	void startTask(Poco::SharedPtr<Poco::Net::WebSocket> ws, const std::string& qmgrName, const std::string& queueName, int limit = -1);
 
 private:
 	Poco::TaskManager _taskManager;

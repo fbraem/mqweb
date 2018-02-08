@@ -48,7 +48,7 @@ MessageConsumerTaskManager::~MessageConsumerTaskManager()
 	}
 }
 
-void MessageConsumerTaskManager::startTask(Poco::SharedPtr<Poco::Net::WebSocket> ws, const std::string& qmgrName, const std::string& queueName)
+void MessageConsumerTaskManager::startTask(Poco::SharedPtr<Poco::Net::WebSocket> ws, const std::string& qmgrName, const std::string& queueName, int limit)
 {
 	Poco::SharedPtr<QueueManagerPool> qmgrPool = QueueManagerPoolCache::instance()->getQueueManagerPool(qmgrName);
 	if (qmgrPool.isNull())
@@ -62,7 +62,7 @@ void MessageConsumerTaskManager::startTask(Poco::SharedPtr<Poco::Net::WebSocket>
 		throw Poco::OutOfMemoryException("No queuemanager available in the pool. Check the connection pool configuration.");
 	}
 
-	_taskManager.start(new MessageConsumerTask(ws, new QueueManagerPoolGuard(qmgrPool, qmgr), queueName));
+	_taskManager.start(new MessageConsumerTask(ws, new QueueManagerPoolGuard(qmgrPool, qmgr), queueName, limit));
 }
 
 }}

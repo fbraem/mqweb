@@ -33,7 +33,7 @@ namespace Web {
 class MessageConsumerTask : public Poco::Task
 {
 public:
-	MessageConsumerTask(Poco::SharedPtr<Poco::Net::WebSocket> ws, QueueManagerPoolGuard::Ptr queueManagerPoolGuard, const std::string& queueName);
+	MessageConsumerTask(Poco::SharedPtr<Poco::Net::WebSocket> ws, QueueManagerPoolGuard::Ptr queueManagerPoolGuard, const std::string& queueName, int limit = -1);
 
 	virtual ~MessageConsumerTask();
 
@@ -49,6 +49,8 @@ private:
 	Poco::SharedPtr<Poco::Net::WebSocket> _ws;
 
 	QueueManagerPoolGuard::Ptr _qmgrPoolGuard;
+
+	int _limit;
 
 	Poco::SharedPtr<MessageConsumer> _consumer;
 

@@ -29,8 +29,8 @@
 namespace MQ {
 namespace Web {
 
-MessageConsumerTask::MessageConsumerTask(Poco::SharedPtr<Poco::Net::WebSocket> ws, QueueManagerPoolGuard::Ptr queueManagerPoolGuard, const std::string& queueName)
-	: Poco::Task("MessageConsumer"), _ws(ws), _qmgrPoolGuard(queueManagerPoolGuard), _count(0)
+MessageConsumerTask::MessageConsumerTask(Poco::SharedPtr<Poco::Net::WebSocket> ws, QueueManagerPoolGuard::Ptr queueManagerPoolGuard, const std::string& queueName, int limit)
+	: Poco::Task("MessageConsumer"), _ws(ws), _qmgrPoolGuard(queueManagerPoolGuard), _limit(limit), _count(0)
 {
 	poco_assert_dbg(!queueManagerPoolGuard.isNull());
 
@@ -100,7 +100,7 @@ void MessageConsumerTask::runTask()
 		}
 	} while (n > 0 && (flags & Poco::Net::WebSocket::FRAME_OP_BITMASK) != Poco::Net::WebSocket::FRAME_OP_CLOSE);
 
-	logger.trace("MessageConsumerTask ended.");
+	logger.trace("MessageConsumerTask ended (Total messages read : %d)", _count);
 }
 
 void MessageConsumerTask::onMessage(const void* pSender, Message::Ptr& msg)
@@ -121,6 +121,10 @@ void MessageConsumerTask::onMessage(const void* pSender, Message::Ptr& msg)
 	try
 	{
 		_ws->sendFrame(content.c_str(), content.length(), Poco::Net::WebSocket::FRAME_TEXT);
+		if (_limit != -1 && _count >= _limit) 
+		{
+			cancel();
+		}
 	}
 	catch (Poco::Exception&)
 	{
