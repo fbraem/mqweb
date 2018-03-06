@@ -47,10 +47,6 @@ public:
 	virtual ~QueueManager();
 		/// Destructor. Disconnects the queuemanager when it is still connected.
 
-	CommandServer* commandServer();
-		/// Returns the command server for this queuemanager. A command server
-		/// must be created first with createCommandServer.
-
 	void connect();
 		/// Connects to the queuemanager. Can throw an MQException.
 
