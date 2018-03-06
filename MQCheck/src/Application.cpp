@@ -128,7 +128,7 @@ int MQCheckApplication::main(const std::vector<std::string>& args)
     qmgr->connect();
   }
 
-  MQ::CommandServer* cmdServer = qmgr->createCommandServer("SYSTEM.DEFAULT.MODEL.QUEUE");
+  Poco::SharedPtr<MQ::CommandServer> cmdServer = new MQ::CommandServer(qmgr, "SYSTEM.DEFAULT.MODEL.QUEUE");
 
   std::string type = config().getString("mqcheck.options.type");
   std::transform(type.begin(), type.end(), type.begin(), ::toupper);
@@ -189,9 +189,9 @@ void MQCheckApplication::checkQueues(MQ::QueueManager::Ptr qmgr, MQ::CommandServ
 
     for(; it != commandResponse.end(); it++)
     {
-      std::string name = (*it)->getParameterString(MQCA_Q_NAME);
+      std::string name = (*it)->getParameters().getString(MQCA_Q_NAME);
       std::cout << std::setw(MQ_Q_NAME_LENGTH + 1) << std::left << name;
-      queueDepth = (*it)->getParameterNum(MQIA_CURRENT_Q_DEPTH);
+      queueDepth = (*it)->getParameters().getNumber(MQIA_CURRENT_Q_DEPTH);
       std::cout << " " << std::setw(6) << std::right;
       if ( queueDepth == -1 )
       {
@@ -201,8 +201,8 @@ void MQCheckApplication::checkQueues(MQ::QueueManager::Ptr qmgr, MQ::CommandServ
       {
         std::cout << queueDepth;
       }
-      int in = (*it)->getParameterNum(MQIA_OPEN_INPUT_COUNT);
-      int out = (*it)->getParameterNum(MQIA_OPEN_OUTPUT_COUNT);
+      int in = (*it)->getParameters().getNumber(MQIA_OPEN_INPUT_COUNT);
+      int out = (*it)->getParameters().getNumber(MQIA_OPEN_OUTPUT_COUNT);
       std::cout << " " << std::setw(3);
       if ( in == -1 )
       {
@@ -255,9 +255,9 @@ void MQCheckApplication::checkChannelStatus(MQ::QueueManager::Ptr qmgr, MQ::Comm
 
     for(; it != commandResponse.end(); it++)
     {
-      std::string name = (*it)->getParameterString(MQCACH_CHANNEL_NAME);
+      std::string name = (*it)->getParameters().getString(MQCACH_CHANNEL_NAME);
       std::cout << std::setw(MQ_Q_NAME_LENGTH + 1) << std::left << name;
-      switch((*it)->getParameterNum(MQIACH_CHANNEL_STATUS))
+      switch((*it)->getParameters().getNumber(MQIACH_CHANNEL_STATUS))
       {
       case MQCHS_BINDING:
         std::cout << "Binding";
