@@ -343,6 +343,9 @@ void JSONMessage::toJSON(Poco::JSON::Object::Ptr jsonMessage)
 		Poco::JSON::Object::Ptr jsonEvent = new Poco::JSON::Object();
 		jsonMessage->set("event", jsonEvent);
 		Poco::JSON::Object::Ptr jsonReason = new Poco::JSON::Object();
+		jsonEvent->set("MsgSeqNumber", pcfEvent.getMessageSequenceNumber());
+		jsonEvent->set("Control", pcfEvent.getControl());
+		jsonEvent->set("Command", PCFCommand::getCommandString(pcfEvent.getCommand()));
 		jsonEvent->set("Reason", jsonReason);
 		jsonReason->set("code", pcfEvent.getReasonCode());
 		std::string reasonCodeStr = PCFCommand::getReasonString(pcfEvent.getReasonCode());
@@ -379,9 +382,9 @@ void JSONMessage::toJSON(Poco::JSON::Object::Ptr jsonMessage)
 		PCF pcfAdmin(_msg);
 		Poco::JSON::Object::Ptr jsonAdmin = new Poco::JSON::Object();
 		jsonMessage->set("admin", jsonAdmin);
-		jsonAdmin->set("command", PCFCommand::getCommandString(pcfAdmin.getCommand()));
+		jsonAdmin->set("Command", PCFCommand::getCommandString(pcfAdmin.getCommand()));
 		Poco::JSON::Object::Ptr reason = new Poco::JSON::Object();
-		jsonAdmin->set("reason", reason);
+		jsonAdmin->set("Reason", reason);
 		reason->set("code", pcfAdmin.getReasonCode());
 		reason->set("desc", PCFCommand::getReasonString(pcfAdmin.getReasonCode()));
 

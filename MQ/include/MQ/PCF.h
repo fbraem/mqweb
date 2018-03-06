@@ -78,6 +78,12 @@ public:
 	int getCompletionCode() const;
 		/// Returns the completion code.
 
+	int getControl() const;
+		/// Returns the PCF message sequence number
+
+	int getMessageSequenceNumber() const;
+		/// Returns the PCF message sequence number
+
 	int getReasonCode() const;
 		/// Returns the reason code.
 
@@ -138,6 +144,18 @@ inline int PCF::getCompletionCode() const
 inline const PCFParameters& PCF::getParameters() const
 {
 	return _parameters;
+}
+
+inline int PCF::getMessageSequenceNumber() const
+{
+	MQCFH* header = (MQCFH*)(MQBYTE*)_message->buffer().data();
+	return header->MsgSeqNumber;
+}
+
+inline int PCF::getControl() const
+{
+	MQCFH* header = (MQCFH*)(MQBYTE*)_message->buffer().data();
+	return header->Control;
 }
 
 inline int PCF::getReasonCode() const
