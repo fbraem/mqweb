@@ -17,14 +17,8 @@ source C++ class libraries and frameworks for building network- and
 internet-based applications that run on desktop, server, mobile and embedded
 systems.
 
-MQWeb uses the 1.5.2 release. This is a development release, but it is stable to
-use. [Download](http://pocoproject.org/download/index.html) and extract the
+[Download](http://pocoproject.org/download/index.html) and extract the
 archive on your system.
-
-It's possible to build POCO as shared or static libraries. When you plan to use
-POCO for other projects, you can opt for shared libraries. I've choosen static
-ones, which makes it easier to install MQWeb: there's only one executable you
-need to care about.
 
 Premake / CMake
 ---------------
@@ -49,15 +43,9 @@ Linux
 
 ### POCO
 
-Create a directory *static* or *shared* in the directory where POCO is
+Create a directory *shared* in the directory where POCO is
 extracted. Make this directory the current working directory and run the
  *configure* command:
-
-for static build
-
-    ../configure --static --omit=Data/MySQL,Data/ODBC --no-tests --no-samples
-
-for shared build
 
     ../configure --shared --omit=Data/MySQL,Data/ODBC --no-tests --no-samples
 
@@ -74,7 +62,7 @@ Now you are ready to build POCO.
 
     make
 
-When you have build POCO as shared libraries, it is recommended to install them.
+and install ... (not required, but recommended for production)
 
     make install
 
