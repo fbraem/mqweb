@@ -105,7 +105,15 @@ void MQWebController::list()
 		{
 			std::string dbConnector = config.getString("mq.web.config.connector", Poco::Data::SQLite::Connector::KEY);
 			std::string dbConnection = config.getString("mq.web.config.connection");
-			qmgrConfig = new QueueManagerDatabaseConfig("", dbConnector, dbConnection);
+			if (config.hasProperty("mq.web.config.tablename"))
+			{
+				std::string tableName = config.getString("mq.web.config.tablename");
+				qmgrConfig = new QueueManagerDatabaseConfig("", dbConnector, dbConnection, tableName);
+			}
+			else
+			{
+				qmgrConfig = new QueueManagerDatabaseConfig("", dbConnector, dbConnection);
+			}
 		}
 		else
 		{

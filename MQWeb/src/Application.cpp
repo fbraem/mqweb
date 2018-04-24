@@ -32,6 +32,9 @@
 #include "Poco/Net/HTTPServerParams.h"
 
 #include "Poco/Data/SQLite/Connector.h"
+#ifdef MQWEB_ODBC_CONFIG
+	#include "Poco/Data/ODBC/Connector.h"
+#endif
 
 #include "Poco/Logger.h"
 #include "Poco/File.h"
@@ -73,6 +76,9 @@ void MQWebApplication::initialize(Application& self)
 	}
 
 	Poco::Data::SQLite::Connector::registerConnector();
+#ifdef MQWEB_ODBC_CONFIG
+	Poco::Data::ODBC::Connector::registerConnector();
+#endif
 
 	try
 	{
@@ -90,6 +96,9 @@ void MQWebApplication::uninitialize()
 	Poco::Logger::get("mq.web").information("MQWeb process stopped!");
 
 	Poco::Data::SQLite::Connector::unregisterConnector();
+#ifdef MQWEB_ODBC_CONFIG
+	Poco::Data::ODBC::Connector::unregisterConnector();
+#endif
 
 	ServerApplication::uninitialize();
 }

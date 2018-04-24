@@ -33,6 +33,9 @@ class QueueManagerDatabaseConfig : public QueueManagerConfig
 {
 public:
 
+	QueueManagerDatabaseConfig(const std::string& qmgrName, const std::string& connector, const std::string& connectionString, const std::string& tableName);
+	/// Constructor.
+
 	QueueManagerDatabaseConfig(const std::string& qmgrName, const std::string& connector, const std::string& connectionString);
 		/// Constructor.
 
@@ -48,6 +51,8 @@ public:
 private:
 
 	mutable Poco::SharedPtr<Poco::Data::Session> _session;
+
+	std::string _tableName;
 };
 
 }} // Namespace MQ::Web

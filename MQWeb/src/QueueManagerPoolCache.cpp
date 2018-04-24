@@ -94,7 +94,15 @@ QueueManagerPool::Ptr QueueManagerPoolCache::createPool(const std::string& qmgrN
 
 			try
 			{
-				qmgrConfig = new QueueManagerDatabaseConfig(qmgrName, dbConnector, dbConnection);
+				if (config.hasProperty("mq.web.config.tablename"))
+				{
+					std::string tableName = config.getString("mq.web.config.tablename");
+					qmgrConfig = new QueueManagerDatabaseConfig(qmgrName, dbConnector, dbConnection, tableName);
+				}
+				else
+				{
+					qmgrConfig = new QueueManagerDatabaseConfig(qmgrName, dbConnector, dbConnection);
+				}
 			}
 			catch(Poco::Exception& e)
 			{
