@@ -3348,6 +3348,12 @@ Dictionary channelAuthenticationRecordDictionary = Dictionary()
 		(MQWARN_NO, "No")
 		(MQWARN_YES, "Yes")
 	)
+	(MQIACH_MATCH, "Match", TextMapInitializer
+		(MQMATCH_RUNCHECK, "RunCheck")
+		(MQMATCH_EXACT, "Exact")
+		(MQMATCH_GENERIC, "Generic")
+		(MQMATCH_ALL, "All")
+	)
 ;
 
 
