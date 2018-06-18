@@ -50,7 +50,7 @@ void ChannelController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -109,7 +109,7 @@ void ChannelController::inquire()
 	}
 
 	ChannelInquire command(*commandServer(), pcfParameters);
-	set("data", command.execute());
+	setData("data", command.execute());
 }
 
 void ChannelController::start()
@@ -123,7 +123,7 @@ void ChannelController::start()
 	else
 	{
 			pcfParameters = new Poco::JSON::Object();
-			set("input", pcfParameters);
+			setData("input", pcfParameters);
 
 			std::vector<std::string> parameters = getParameters();
 			// First parameter is queuemanager
@@ -142,7 +142,7 @@ void ChannelController::start()
 	}
 
 	ChannelStart command(*commandServer(), pcfParameters);
-	set("data", command.execute());
+	setData("data", command.execute());
 }
 
 void ChannelController::stop()
@@ -156,7 +156,7 @@ void ChannelController::stop()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -178,7 +178,7 @@ void ChannelController::stop()
 	}
 
 	ChannelStop command(*commandServer(), pcfParameters);
-	set("data", command.execute());
+	setData("data", command.execute());
 }
 
 } } // Namespace MQ::Web

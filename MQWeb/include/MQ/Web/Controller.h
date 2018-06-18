@@ -91,8 +91,8 @@ public:
 	bool isPost() const;
 		/// Returns true when the HTTP method POST is used.
 
-	void set(const std::string& name, const Poco::Dynamic::Var& var);
-		/// Sets a variable in data for use in a view
+	void setData(const std::string& name, const Poco::Dynamic::Var& var);
+		/// Sets a variable in data
 
 	Poco::Net::HTTPServerRequest& request();
 		/// Returns the HTTP request
@@ -201,7 +201,7 @@ inline bool Controller::isPost() const
 }
 
 
-inline void Controller::set(const std::string& name, const Poco::Dynamic::Var& var)
+inline void Controller::setData(const std::string& name, const Poco::Dynamic::Var& var)
 {
 	_data->set(name, var);
 }

@@ -265,7 +265,7 @@ void QueueController::inquire()
 	}
 
 	QueueInquire command(*commandServer(), pcfParameters);
-	set("data", command.execute());
+	setData("data", command.execute());
 }
 
 

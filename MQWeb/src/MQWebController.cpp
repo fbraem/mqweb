@@ -55,7 +55,7 @@ MQWebController::~MQWebController()
 void MQWebController::inquire()
 {
 	Poco::JSON::Object::Ptr mqweb = new Poco::JSON::Object();
-	set("data", mqweb);
+	setData("data", mqweb);
 
 	Poco::JSON::Object::Ptr version = new Poco::JSON::Object();
 	mqweb->set("version", version);
@@ -93,7 +93,7 @@ void MQWebController::inquire()
 void MQWebController::list()
 {
 	Poco::JSON::Array::Ptr queuemanagers = new Poco::JSON::Array();
-	set("data", queuemanagers);
+	setData("data", queuemanagers);
 
 	MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQSubsystem>();
 	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();

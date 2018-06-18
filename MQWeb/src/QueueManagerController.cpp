@@ -69,7 +69,7 @@ void QueueManagerController::inquire()
 	}
 
 	QueueManagerInquire command(*commandServer(), pcfParameters);
-	set("data", command.execute());
+	setData("data", command.execute());
 }
 
 

@@ -48,7 +48,7 @@ void ChannelInitiatorController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		if ( form().has("CommandScope") )
 		{
@@ -58,7 +58,7 @@ void ChannelInitiatorController::inquire()
 	}
 
 	ChannelInitiatorInquire command(*commandServer(), pcfParameters);
-	set("data", command.execute());
+	setData("data", command.execute());
 }
 
 

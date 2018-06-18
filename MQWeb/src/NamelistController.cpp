@@ -48,7 +48,7 @@ void NamelistController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -99,7 +99,7 @@ void NamelistController::inquire()
 	pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
 
 	NamelistInquire command(*commandServer(), pcfParameters);
-	set("data", command.execute());
+	setData("data", command.execute());
 }
 
 

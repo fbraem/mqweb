@@ -218,7 +218,7 @@ void MessageController::browse()
 		jsonMessages->add(json);
 	}
 
-	set("data", jsonMessages);
+	setData("data", jsonMessages);
 }
 
 
@@ -353,7 +353,7 @@ void MessageController::dump()
 	JSONMessage jsonMessageConverter(message);
 	jsonMessage->set("mqmd", jsonMessageConverter.toJSONMQMD());
 
-	set("data", jsonMessage);
+	setData("data", jsonMessage);
 }
 
 

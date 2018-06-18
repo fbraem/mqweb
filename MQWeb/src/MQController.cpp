@@ -34,7 +34,7 @@ namespace Web {
 
 MQController::MQController() : Controller(), _meta(new Poco::JSON::Object()), _commandServer(NULL)
 {
-	set("meta", _meta);
+	setData("meta", _meta);
 }
 
 
@@ -129,7 +129,7 @@ void MQController::handleException(const MQException& mqe)
 {
 	Poco::JSON::Object::Ptr error = new Poco::JSON::Object();
 
-	set("error", error);
+	setData("error", error);
 	error->set("object", mqe.object());
 	error->set("fn", mqe.function());
 	switch(mqe.code())

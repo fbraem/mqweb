@@ -55,7 +55,7 @@ void QueueManagerStatusController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
 		formElementToJSONArray("QMStatusAttrs", attrs);
@@ -70,7 +70,7 @@ void QueueManagerStatusController::inquire()
 	}
 
 	QueueManagerStatusInquire command(*commandServer(), pcfParameters);
-	set("data", command.execute());
+	setData("data", command.execute());
 }
 
 

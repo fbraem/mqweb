@@ -55,7 +55,7 @@ void AuthorityServiceController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
 		formElementToJSONArray("AuthServiceAttrs", attrs);
@@ -78,7 +78,7 @@ void AuthorityServiceController::inquire()
 	}
 
 	AuthorityServiceInquire command(*commandServer(), pcfParameters);
-	set("data", command.execute());
+	setData("data", command.execute());
 }
 
 
