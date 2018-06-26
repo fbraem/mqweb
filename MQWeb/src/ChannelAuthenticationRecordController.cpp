@@ -20,7 +20,7 @@
 */
 #include "MQ/Web/ChannelAuthenticationRecordController.h"
 #include "MQ/Web/ChannelAuthenticationRecordInquire.h"
-//#include "MQ/Web/ChannelAuthenticationRecordSet.h"
+#include "MQ/Web/ChannelAuthenticationRecordSet.h"
 
 namespace MQ
 {
@@ -65,13 +65,15 @@ void ChannelAuthenticationRecordController::inquire()
 			pcfParameters->set("ChannelName", form().get("ChannelName", "*"));
 		}
 
-		if (form().has("Address"))
+		// Address in IBM Knowledge Center!
+		if (form().has("ConnectionName"))
 		{
-			pcfParameters->set("Address", form().get("Address"));
+			pcfParameters->set("ConnectionName", form().get("ConnectionName"));
 		}
-		if (form().has("ClntUser"))
+		// ClntUser in IBM Knowledge Center!
+		if (form().has("ClientUserIdentifier"))
 		{
-			pcfParameters->set("ClntUser", form().get("ClntUser"));
+			pcfParameters->set("ClientUserIdentifier", form().get("ClientUserIdentifier"));
 		}
 		if (form().has("Match"))
 		{
@@ -119,37 +121,29 @@ void ChannelAuthenticationRecordController::inquire()
 
 void ChannelAuthenticationRecordController::set()
 {
-/*
 	Poco::JSON::Object::Ptr pcfParameters;
-
-	if ( data().has("input") && data().isObject("input") )
+	if (data().has("input") && data().isObject("input"))
 	{
-			pcfParameters = data().getObject("input");
+		pcfParameters = data().getObject("input");
 	}
 	else
 	{
-			pcfParameters = new Poco::JSON::Object();
-			setData("input", pcfParameters);
+		pcfParameters = new Poco::JSON::Object();
 
-			std::vector<std::string> parameters = getParameters();
-			// First parameter is queuemanager
-			// Second parameter is a channelname
-			if ( parameters.size() > 1 )
-			{
-				  pcfParameters->set("ChannelName", parameters[1]);
-			}
-			else
-			{
-				  if ( form().has("ChannelName") ) pcfParameters->set("ChannelName", form().get("ChannelName"));
-			}
-
-			if ( form().has("CommandScope") ) pcfParameters->set("CommandScope", form().get("CommandScope"));
-			if ( form().has("ChannelDisposition") ) pcfParameters->set("ChannelDisposition", form().get("ChannelDisposition"));
+		std::vector<std::string> parameters = getParameters();
+		if (parameters.size() > 1)
+		{
+			pcfParameters->set("ProfileName", parameters[1]);
+		}
+		// Copy all query parameters to PCF, except ProfileName if it is already set on the URI
+		for (Poco::Net::NameValueCollection::ConstIterator it = form().begin(); it != form().end(); ++it)
+		{
+			if (parameters.size() > 1 && Poco::icompare(it->first, "ProfileName") == 0) continue;
+			pcfParameters->set(it->first, it->second);
+		}
 	}
-
-	ChannelStart command(*commandServer(), pcfParameters);
-	setData("data", command.execute());
-*/
+	ChannelAuthenticationRecordSet command(*commandServer(), pcfParameters);
+	command.execute();
 }
 
 } } // Namespace MQ::Web
