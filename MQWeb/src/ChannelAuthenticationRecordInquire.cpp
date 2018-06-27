@@ -31,14 +31,14 @@ ChannelAuthenticationRecordInquire::ChannelAuthenticationRecordInquire(CommandSe
 	addParameter<std::string>(MQCACH_CHANNEL_NAME, "ChannelName");
 
 	// Optional Parameters
-	addParameter<std::string>(MQCACH_CONNECTION_NAME, "Address");
+	addParameter<std::string>(MQCACH_CONNECTION_NAME, "ConnectionName");
 	// addByteStringFilter() // TODO?
 	addAttributeList(MQIACF_CHANNEL_ATTRS, "ChannelAuthAttrs");
-	addParameter<std::string>(MQCACH_CLIENT_USER_ID, "ClntUser");
+	addParameter<std::string>(MQCACH_CLIENT_USER_ID, "ClientUserIdentifier");
 	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
 	addIntegerFilter();
 	addParameterNumFromString(MQIACH_MATCH, "Match");
-	addParameter<std::string>(MQCA_REMOTE_Q_MGR_NAME, "QMName");
+	addParameter<std::string>(MQCA_REMOTE_Q_MGR_NAME, "RemoteQmgrName");
 	addParameter<std::string>(MQCACH_SSL_CERT_ISSUER_NAME, "SSLCertIssuer");
 	addParameter<std::string>(MQCACH_SSL_PEER_NAME, "SSLPeer");
 	addStringFilter();

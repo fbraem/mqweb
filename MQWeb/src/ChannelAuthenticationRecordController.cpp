@@ -64,11 +64,14 @@ void ChannelAuthenticationRecordController::inquire()
 			// Handle query parameters
 			pcfParameters->set("ChannelName", form().get("ChannelName", "*"));
 		}
-
 		// Address in IBM Knowledge Center!
 		if (form().has("ConnectionName"))
 		{
 			pcfParameters->set("ConnectionName", form().get("ConnectionName"));
+		}
+		if (form().has("ClientCheck"))
+		{
+			pcfParameters->set("ClientCheck", form().get("ClientCheck"));
 		}
 		// ClntUser in IBM Knowledge Center!
 		if (form().has("ClientUserIdentifier"))
@@ -79,9 +82,10 @@ void ChannelAuthenticationRecordController::inquire()
 		{
 			pcfParameters->set("Match", form().get("Match"));
 		}
-		if (form().has("QMName"))
+		// QMName in IBM Knowledge Center!
+		if (form().has("RemoteQmgrName"))
 		{
-			pcfParameters->set("QMName", form().get("QMName"));
+			pcfParameters->set("RemoteQmgrName", form().get("RemoteQmgrName"));
 		}
 		if (form().has("SSLCertIssuer"))
 		{
@@ -133,12 +137,12 @@ void ChannelAuthenticationRecordController::set()
 		std::vector<std::string> parameters = getParameters();
 		if (parameters.size() > 1)
 		{
-			pcfParameters->set("ProfileName", parameters[1]);
+			pcfParameters->set("ChannelName", parameters[1]);
 		}
 		// Copy all query parameters to PCF, except ProfileName if it is already set on the URI
 		for (Poco::Net::NameValueCollection::ConstIterator it = form().begin(); it != form().end(); ++it)
 		{
-			if (parameters.size() > 1 && Poco::icompare(it->first, "ProfileName") == 0) continue;
+			if (parameters.size() > 1 && Poco::icompare(it->first, "ChannelName") == 0) continue;
 			pcfParameters->set(it->first, it->second);
 		}
 	}
