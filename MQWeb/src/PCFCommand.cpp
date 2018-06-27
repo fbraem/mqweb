@@ -206,7 +206,8 @@ void PCFCommand::execute()
 			  && (*it)->getReasonCode() < 4000
 			  && (*it)->getReasonCode() != MQRCCF_NONE_FOUND
 			  && (*it)->getReasonCode() != MQRCCF_CHL_STATUS_NOT_FOUND
-			  && (*it)->getReasonCode() != MQRCCF_TOPIC_STRING_NOT_FOUND )
+			  && (*it)->getReasonCode() != MQRCCF_TOPIC_STRING_NOT_FOUND 
+			  && (*it)->getReasonCode() != MQRCCF_CHLAUTH_NOT_FOUND)
 		{
 			throw MQException("PCF", getCommandString((*it)->getCommand()), (*it)->getCompletionCode(), (*it)->getReasonCode());
 		}
