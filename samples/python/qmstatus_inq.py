@@ -7,12 +7,16 @@ import sys
 import json
 import httplib
 import socket
+import argparse
 
-if len(sys.argv) < 2 :
-	print 'Please pass me the name of a queuemanager as argument'
-	sys.exit(1)
+parser = argparse.ArgumentParser(
+	description='MQWeb - Python sample - Inquire startdate/time of a queuemanager',
+	epilog="For more information: http://www.mqweb.org"
+)
+parser.add_argument('-m', '--queuemanager', help='Name of the queuemanager', required=True)
+args = parser.parse_args()
 
-url = "/api/qmstatus/inquire/" + sys.argv[1]
+url = "/api/qmstatus/inquire/" + args.queuemanager
 input = {
 	'QMStatusAttrs' : [
 		'StartDate',
