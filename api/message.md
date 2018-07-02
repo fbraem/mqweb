@@ -9,7 +9,7 @@ MessageController
 The second part of the URI must be `message` to call the MessageController.
 
 ## <a name="browse"></a>browse
-The action browse is used to browse one or more messages. 
+The action browse is used to browse one or more messages.
 On success, the returned JSON object will have a `data` array, on failure an
 `error` object. The MQMD of each message will be translated into a JSON object.
 A message id or a correlation id is returned in hexadecimal format.
@@ -31,17 +31,14 @@ A message id in hex format.
 #### <a name="browseLimit"></a>Limit
 When no message id is passed, you can limit the number of messages to return.
 
-#### <a name="browseTeaser"></a>Teaser
-When a message has format MQFMT_STRING, a part of the message can be returned.
-
 ### <a name="browseExample"></a>Example
 `/api/message/browse/PIGEON/MQWEB.TEST.Q1`  
 `/api/message/browse/PIGEON/MQWEB.TEST.Q1?Limit=100`
 
 ## <a name="dump">
 The action dump can be used to browse one message and get the data in
-hexidecimal, ebcdic and ascii format.On success, the returned JSON object will 
-have a `data` array, on failure an  `error` object. The MQMD will be translated 
+hexidecimal, ebcdic and ascii format.On success, the returned JSON object will
+have a `data` array, on failure an  `error` object. The MQMD will be translated
 to JSON and results in properties on the `message` object. The message will also have a
  `dump` property which contains some arrays that represents the message data.
 The `hex` property will contain an array with a hexadecimal representation of
