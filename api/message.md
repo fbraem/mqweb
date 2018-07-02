@@ -35,9 +35,9 @@ When no message id is passed, you can limit the number of messages to return.
 `/api/message/browse/PIGEON/MQWEB.TEST.Q1`  
 `/api/message/browse/PIGEON/MQWEB.TEST.Q1?Limit=100`
 
-## <a name="dump">
+## <a name="dump">dump
 The action dump can be used to browse one message and get the data in
-hexidecimal, ebcdic and ascii format.On success, the returned JSON object will
+hexidecimal, ebcdic and ascii format. On success, the returned JSON object will
 have a `data` array, on failure an  `error` object. The MQMD will be translated
 to JSON and results in properties on the `message` object. The message will also have a
  `dump` property which contains some arrays that represents the message data.
