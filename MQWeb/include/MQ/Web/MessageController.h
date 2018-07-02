@@ -43,25 +43,19 @@ public:
 		/// Action browse.
 
 	void dump();
-		/// Action dump. Returns the message in ascii / hex / ebcdic in JSON format
-		/// URL':
-		///  /message/dump/<qmgrName>/<queuName>/<msgId>
-		///
-		/// Currently the message size is restricted to 16K.
+		/// Action dump.
+
+	void get();
+		/// Action get.
 
 	void publish();
 		/// Publish a message to a topic
-		///   /message/publish/<qmgrName>/<topicName>/<topicString>
 
 	void put();
 		/// Put a message on a queue
-		///   /message/put/<qmgrName>/<queueName>
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available action
-
-private:
-
 };
 
 inline const Controller::ActionMap& MessageController::getActions() const
@@ -70,6 +64,7 @@ inline const Controller::ActionMap& MessageController::getActions() const
 		= MapInitializer<std::string, Controller::ActionFn>
 			("browse", static_cast<ActionFn>(&MessageController::browse))
 			("dump", static_cast<ActionFn>(&MessageController::dump))
+			("get", static_cast<ActionFn>(&MessageController::get))
 			("publish", static_cast<ActionFn>(&MessageController::publish))
 			("put", static_cast<ActionFn>(&MessageController::put))
 		;
