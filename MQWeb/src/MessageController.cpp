@@ -72,10 +72,168 @@ MessageController::~MessageController()
 {
 }
 
-/**
- * URL: message/browse/<qmgrName>/<queueName>?limit=n&size=n
- *      message/browse/<qmgrName>/<queueName>/<msgId>
- */
+void MessageController::get()
+{
+	std::vector<std::string> parameters = getParameters();
+	// First parameter is queuemanager
+	// Second parameter is queuename
+	if (parameters.size() < 2)
+	{
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST, "Missing URI parameters");
+		return;
+	}
+
+	std::string queueName = parameters[1];
+	meta().set("queue", queueName);
+
+	int limit = -1;
+
+	std::string messageId;
+	if (parameters.size() > 2)
+	{
+		limit = 1;
+		messageId = parameters[2];
+		meta().set("messageId", messageId);
+	}
+	else
+	{
+		std::string limitField = form().get("limit", "");
+		if (!limitField.empty())
+		{
+			Poco::NumberParser::tryParse(limitField, limit);
+		}
+	}
+
+	int maxMessageSize = 1024;
+	std::string sizeField = form().get("size", "");
+	if (!sizeField.empty())
+	{
+		Poco::NumberParser::tryParse(sizeField, maxMessageSize);
+	}
+
+	Poco::JSON::Array::Ptr jsonMessages = new Poco::JSON::Array();
+
+	Queue q(qmgr(), queueName);
+	q.open(MQOO_INPUT_SHARED);
+
+	int count = 0;
+	while (limit == -1 || count < limit)
+	{
+		Message::Ptr msg = new Message(maxMessageSize);
+		if (!messageId.empty())
+		{
+			msg->messageId()->fromHex(messageId);
+		}
+
+		try
+		{
+			q.get(*msg, MQGMO_PROPERTIES_FORCE_MQRFH2, 0);
+		}
+		catch (MQException& mqe)
+		{
+			std::string currentMessageId = msg->messageId()->toHex();
+			if (mqe.reason() == MQRC_NO_MSG_AVAILABLE)
+			{
+				if (!messageId.empty()) throw;
+				break;
+			}
+			else if (mqe.reason() == MQRC_TRUNCATED_MSG_FAILED)
+			{
+				if (msg->getFormat().compare(MQFMT_EVENT) == 0
+					|| msg->getFormat().compare(MQFMT_ADMIN) == 0) {
+					// ignore size limit for event/admin messages and retry to get it with the
+					// real length
+					msg->buffer().resize(msg->dataLength(), false);
+					msg->clear();
+					msg->messageId()->fromHex(currentMessageId);
+
+					try
+					{
+						q.get(*msg, MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
+					}
+					catch (MQException& mqe2)
+					{
+						if (mqe2.reason() != MQRC_TRUNCATED_MSG_ACCEPTED)
+						{
+							throw;
+						}
+					}
+				}
+				else if (msg->getFormat().compare(MQFMT_XMIT_Q_HEADER) == 0)
+				{
+					// ignore size limit for xmitq messages and retry to get it with at least the
+					// length of the xmitq header
+					msg->buffer().resize(sizeof(MQXQH), false);
+					msg->clear();
+					msg->messageId()->fromHex(currentMessageId);
+					try
+					{
+						q.get(*msg, MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
+					}
+					catch (MQException& mqe2)
+					{
+						if (mqe2.reason() != MQRC_TRUNCATED_MSG_ACCEPTED)
+						{
+							throw;
+						}
+					}
+				}
+				else if (msg->getFormat().compare(MQFMT_DEAD_LETTER_HEADER) == 0)
+				{
+					// ignore size limit for dlh messages and retry to get it with at least the
+					// length of the dlh header
+					msg->buffer().resize(sizeof(MQDLH), false);
+					msg->clear();
+					msg->messageId()->fromHex(currentMessageId);
+					try
+					{
+						q.get(*msg, MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
+					}
+					catch (MQException& mqe2)
+					{
+						if (mqe2.reason() != MQRC_TRUNCATED_MSG_ACCEPTED)
+						{
+							throw;
+						}
+					}
+				}
+				else
+				{
+					MQLONG size = msg->dataLength();
+					msg->buffer().resize(size);
+					msg->messageId()->fromHex(currentMessageId);
+					try
+					{
+						q.get(*msg, MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
+					}
+					catch (MQException& mqe2)
+					{
+						if (mqe2.reason() != MQRC_TRUNCATED_MSG_ACCEPTED)
+						{
+							throw;
+						}
+					}
+				}
+			}
+			else
+			{
+				throw;
+			}
+		}
+
+		count++;
+
+		Poco::JSON::Object::Ptr json = new Poco::JSON::Object();
+
+		JSONMessage jsonMessage(msg);
+		json->set("mqmd", jsonMessage.toJSONMQMD());
+		jsonMessage.toJSON(json);
+		jsonMessages->add(json);
+	}
+
+	setData("data", jsonMessages);
+}
+
 void MessageController::browse()
 {
 	std::vector<std::string> parameters = getParameters();
@@ -91,7 +249,6 @@ void MessageController::browse()
 	meta().set("queue", queueName);
 
 	int limit = -1;
-	int maxMessageSize = 1024;
 
 	std::string messageId;
 	if ( parameters.size() > 2 )
@@ -107,12 +264,13 @@ void MessageController::browse()
 		{
 			Poco::NumberParser::tryParse(limitField, limit);
 		}
+	}
 
-		std::string sizeField = form().get("size", "");
-		if ( ! sizeField.empty() )
-		{
-			Poco::NumberParser::tryParse(sizeField, maxMessageSize);
-		}
+	int maxMessageSize = 1024;
+	std::string sizeField = form().get("size", "");
+	if (!sizeField.empty())
+	{
+		Poco::NumberParser::tryParse(sizeField, maxMessageSize);
 	}
 
 	Poco::JSON::Array::Ptr jsonMessages = new Poco::JSON::Array();
@@ -264,9 +422,8 @@ void MessageController::dump()
 		if ( mqe.reason()   == MQRC_TRUNCATED_MSG_FAILED
 			|| mqe.reason() == MQRC_TRUNCATED )
 		{
-			//message.buffer().resize(message.dataLength());
 			MQLONG size = message->dataLength();
-			if ( size > 1024 * 16) size = 1024 * 16;
+			//if ( size > 1024 * 16) size = 1024 * 16;
 			message = new Message(size);
 			message->messageId()->fromHex(messageId);
 
