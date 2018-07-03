@@ -1,8 +1,7 @@
 '''
  Inquire all channel authentication records.
- MQWeb runs on localhost and is listening on port 8081. 
+ MQWeb runs on localhost and is listening on port 8081.
 '''
-import sys
 import json
 import httplib
 import socket
@@ -25,7 +24,7 @@ try:
 	result = json.loads(res.read())
 
 	if 'error' in result:
-		print ('Received a WebSphere MQ error: ' +	
+		print ('Received a WebSphere MQ error: ' +
 			str(result['error']['reason']['code'])
 		)
 	else:
