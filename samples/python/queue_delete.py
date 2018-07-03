@@ -2,7 +2,6 @@
  This sample will delete a local queue.
  MQWeb runs on localhost and is listening on port 8081.
 '''
-import sys
 import json
 import httplib
 import socket
