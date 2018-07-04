@@ -20,6 +20,7 @@
 */
 #include "MQ/Web/QueueController.h"
 #include "MQ/Web/QueueCopy.h"
+#include "MQ/Web/QueueClear.h"
 #include "MQ/Web/QueueCreate.h"
 #include "MQ/Web/QueueInquire.h"
 #include "MQ/Web/QueueRemove.h"
@@ -37,6 +38,49 @@ QueueController::QueueController() : MQController()
 
 QueueController::~QueueController()
 {
+}
+
+void QueueController::clear()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
+
+	if (data().has("input") && data().isObject("input"))
+	{
+		pcfParameters = data().getObject("input");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		meta().set("input", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a queuename. If this is passed, the
+		// query parameter QName or queueName is ignored.
+		if (parameters.size() > 1)
+		{
+			pcfParameters->set("QName", parameters[1]);
+		}
+		else
+		{
+			// Handle query parameters
+			pcfParameters->set("QName", form().get("QName", "*"));
+		}
+
+		if (form().has("CommandScope"))
+		{
+			pcfParameters->set("CommandScope", form().get("CommandScope"));
+		}
+
+		if (form().has("QSGDisposition"))
+		{
+			pcfParameters->set("QSGDisposition", form().get("QSGDisposition"));
+		}
+
+	}
+
+	QueueClear command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 void QueueController::copy()
