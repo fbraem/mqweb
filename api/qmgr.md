@@ -7,16 +7,20 @@ QueueManagerController
 ======================
 
 The second part of the URI must be `qmgr` to call the QueueManagerController.
+This controller has the following actions:
+
++ [inquire](#inquire)
++ [ping](#ping)
 
 ## <a name="inquire"></a>inquire
 Returns all attributes of the queuemanager with the given name. This actions
- executes the PCF commando MQCMD_INQUIRE_Q_MGR. On success, the returned JSON 
+ executes the PCF commando MQCMD_INQUIRE_Q_MGR. On success, the returned JSON
 object will have a `data` array, on failure an `error` object.
 
 ### <a name="inquireURL"></a>URL Parameters
 `/api/qmgr/inquire/<QueueManager>`
 
-#### <a name="inquireURL"></a>QueueManager
+#### <a name="inquireUrlQueueManager"></a>QueueManager
 The name of the queuemanager. This parameter is required.
 
 ### <a name="inquireQuery"></a>Query Parameters
@@ -68,3 +72,16 @@ the queuemanager.
 
 {% capture sample %}{% include_relative samples/perl/qmgr_inq.md %}{% endcapture %}
 {{ sample | markdownify }}
+
+## <a name="ping"></a>ping
+This action executes the PCF commando MQCMD_PING_Q_MGR. On success, the returned JSON
+object will have an empty `data` array, on failure an `error` object.
+
+### <a name="pingURL"></a>URL Parameters
+`/api/qmgr/ping/<QueueManager>`
+
+#### <a name="pingUrlQueueManager"></a>QueueManager
+The name of the queuemanager. This parameter is required.
+
+### Example
+`/api/qmgr/ping/PIGEON`
