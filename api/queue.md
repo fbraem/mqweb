@@ -9,9 +9,35 @@ QueueController
 The second part of the URI must be `queue` to call the QueueController.
 This controller has the following actions:
 
++ [clear](#clear)
 + [copy](#copy)
 + [create](#create)
 + [inquire](#inquire)
+
+## <a name="clear"></a>clear
+Clears a queue by removing all messages.
+This action will execute MQCMD_CLEAR_Q. On success the
+JSON response object will have an empty `data` array, on failure an `error`
+object.
+
+### <a name="clearUrl"></a>URL Parameters
+`api/queue/clear/<QueueManager>/<QName>`
+
+#### <a name="clearUrlQueueManager"></a>QueueManager
+The name of the queuemanager. This parameter is required.
+
+#### <a name="clearUrlQName"></a>FromQName
+The name of a queue to copy from. This parameter is required.
+
+### <a name="clearQuery"></a>Query Parameters
+
+#### <a name="clearQueryCommandScope"></a>CommandScope
+Specifies how the command is executed when the queue manager is a member of a
+queue-sharing group. This parameter applies to z/OS only.
+
+#### <a name="clearQueryQSGDisposition"></a>QSGDisposition
+Disposition of the object within the group. Possible values are `Live`, `Copy`,
+`Group`, `QMgr`, `Private` or `All`. This parameter applies to z/OS only.
 
 ## <a name="create"></a>copy
 Create a new queue by copying attributes from another queue.
