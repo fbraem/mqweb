@@ -18,48 +18,37 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef _MQWeb_QueueManagerController_h
-#define _MQWeb_QueueManagerController_h
+#include "MQ/Web/QueueManagerPing.h"
 
-#include "MQ/Web/MQController.h"
-#include "MQ/Web/MapInitializer.h"
+namespace MQ {
+namespace Web {
 
-namespace MQ
+
+QueueManagerPing::QueueManagerPing(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
+: PCFCommand(commandServer, MQCMD_PING_Q_MGR, "QueueManager", input)
 {
-namespace Web
-{
-
-
-class QueueManagerController : public MQController
-	/// Controller for a QueueManager object
-{
-public:
-	QueueManagerController();
-		/// Constructor
-
-	virtual ~QueueManagerController();
-		/// Destructor
-
-	const std::map<std::string, Controller::ActionFn>& getActions() const;
-		/// Returns all available actions
-
-	void inquire();
-		/// Action inquire. Inquire the queuemanager and returns all data in JSON format.
-	void ping();
-		/// Action ping.
-};
-
-inline const Controller::ActionMap& QueueManagerController::getActions() const
-{
-	static Controller::ActionMap actions
-		= MapInitializer<std::string, Controller::ActionFn>
-			("inquire", static_cast<ActionFn>(&QueueManagerController::inquire))
-			("ping", static_cast<ActionFn>(&QueueManagerController::ping))
-		;
-	return actions;
 }
 
+QueueManagerPing::~QueueManagerPing()
+{
+}
 
-}} // Namespace MQ::Web
+Poco::JSON::Array::Ptr QueueManagerPing::execute()
+{
+	PCFCommand::execute();
 
-#endif // _MQWeb_QueueManagerController_h
+	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
+
+	for(PCF::Vector::const_iterator it = begin(); it != end(); it++)
+	{
+		if ( (*it)->isExtendedResponse() ) // Skip extended response
+			continue;
+
+		Poco::JSON::Object::Ptr data = new Poco::JSON::Object();
+		json->add(createJSON(**it));
+	}
+
+	return json;
+}
+
+}} //  Namespace MQ::Web

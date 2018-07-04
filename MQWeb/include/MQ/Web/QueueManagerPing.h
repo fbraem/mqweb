@@ -18,48 +18,34 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef _MQWeb_QueueManagerController_h
-#define _MQWeb_QueueManagerController_h
+#ifndef _MQWeb_QueueManagerPing_H
+#define _MQWeb_QueueManagerPing_H
 
-#include "MQ/Web/MQController.h"
-#include "MQ/Web/MapInitializer.h"
+#include "MQ/Web/PCFCommand.h"
 
-namespace MQ
-{
-namespace Web
-{
+namespace MQ {
+namespace Web {
 
-
-class QueueManagerController : public MQController
-	/// Controller for a QueueManager object
+class QueueManagerPing : public PCFCommand
+	/// Pings the queuemanager
 {
 public:
-	QueueManagerController();
+
+	QueueManagerPing(CommandServer& commandServer, Poco::JSON::Object::Ptr input);
 		/// Constructor
 
-	virtual ~QueueManagerController();
+	virtual ~QueueManagerPing();
 		/// Destructor
 
-	const std::map<std::string, Controller::ActionFn>& getActions() const;
-		/// Returns all available actions
+	Poco::JSON::Array::Ptr execute();
+		/// Implements the inquire queuemanager command.
 
-	void inquire();
-		/// Action inquire. Inquire the queuemanager and returns all data in JSON format.
-	void ping();
-		/// Action ping.
+private:
+
+	QueueManagerPing(const QueueManagerPing&);
+
 };
-
-inline const Controller::ActionMap& QueueManagerController::getActions() const
-{
-	static Controller::ActionMap actions
-		= MapInitializer<std::string, Controller::ActionFn>
-			("inquire", static_cast<ActionFn>(&QueueManagerController::inquire))
-			("ping", static_cast<ActionFn>(&QueueManagerController::ping))
-		;
-	return actions;
-}
-
 
 }} // Namespace MQ::Web
 
-#endif // _MQWeb_QueueManagerController_h
+#endif // _MQWeb_QueueManagerPing_H
