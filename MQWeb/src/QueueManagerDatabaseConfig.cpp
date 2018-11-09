@@ -25,13 +25,13 @@ namespace Web {
 
 using namespace Poco::Data::Keywords;
 
-QueueManagerDatabaseConfig::QueueManagerDatabaseConfig(const std::string& qmgrName, const std::string& connector, const std::string& connectionString, const std::string& tableName)
-	: QueueManagerConfig(qmgrName), _session(new Poco::Data::Session(connector, connectionString)), _tableName(tableName)
+QueueManagerDatabaseConfig::QueueManagerDatabaseConfig(const std::string& connector, const std::string& connectionString, const std::string& tableName)
+	: _session(new Poco::Data::Session(connector, connectionString)), _tableName(tableName)
 {
 }
 
-QueueManagerDatabaseConfig::QueueManagerDatabaseConfig(const std::string& qmgrName, const std::string& connector, const std::string& connectionString)
-	: QueueManagerConfig(qmgrName), _session(new Poco::Data::Session(connector, connectionString)), _tableName("queuemanagers")
+QueueManagerDatabaseConfig::QueueManagerDatabaseConfig(const std::string& connector, const std::string& connectionString)
+	: _session(new Poco::Data::Session(connector, connectionString)), _tableName("queuemanagers")
 {
 }
 
@@ -39,33 +39,23 @@ QueueManagerDatabaseConfig::~QueueManagerDatabaseConfig()
 {
 }
 
-void QueueManagerDatabaseConfig::list(std::vector<std::string>& arr) const
+
+std::map<std::string, Poco::DynamicStruct> QueueManagerDatabaseConfig::read() const
 {
-	typedef Poco::Tuple<std::string> Attribute;
+	std::map<std::string, Poco::DynamicStruct> result;
+
+	typedef Poco::Tuple<std::string, std::string, std::string, int> Attribute;
 	std::vector<Attribute> attributes;
 
-	*_session << "SELECT name FROM " + _tableName, into(attributes), now;
-	for(std::vector<Attribute>::iterator it = attributes.begin(); it != attributes.end(); ++it)
-	{
-		arr.push_back(it->get<0>());
+	*_session << "SELECT name, channel, server, port FROM " + _tableName, into(attributes), now;
+	for (std::vector<Attribute>::iterator it = attributes.begin(); it != attributes.end(); ++it) {
+		Poco::DynamicStruct connectionInformation;
+		connectionInformation.insert("channel", it->get<1>());
+		connectionInformation.insert("connection", Poco::format("%s(%d)", it->get<2>(), it->get<3>()));
+		result.insert(std::make_pair(it->get<0>(), connectionInformation));
 	}
-}
 
-Poco::DynamicStruct QueueManagerDatabaseConfig::read()
-{
-	Poco::DynamicStruct connectionInformation;
-
-	std::string name = qmgrName();
-	std::string channel;
-	std::string server;
-	int port = 0;
-
-	*_session << "SELECT channel, server, port FROM " + _tableName + " WHERE name = ?", into(channel), into(server), into(port), useRef(name), now;
-
-	connectionInformation.insert("channel", channel);
-	connectionInformation.insert("connection", Poco::format("%s(%d)", server, port));
-
-	return connectionInformation;
+	return result;
 }
 
 } } // Namespace MQ::Web

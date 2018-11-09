@@ -24,6 +24,7 @@
 #include "MQ/Web/Application.h"
 #include "MQ/Web/RequestHandlerFactory.h"
 #include "MQ/Web/WebSocketRequestHandler.h"
+#include "MQ/Web/QueueManagerDatabaseConfig.h"
 
 #include "Poco/Net/HTTPServer.h"
 #include "Poco/Net/HTTPServerParams.h"
@@ -184,6 +185,29 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 	}
 
 	Poco::Logger& logger = Poco::Logger::get("mq.web");
+
+	if (config().has("mq.web.config.connection"))
+	{
+		std::string dbConnector = config().getString("mq.web.config.connector", Poco::Data::SQLite::Connector::KEY);
+		std::string dbConnection = config().getString("mq.web.config.connection");
+
+		Poco::SharedPtr<MQ::Web::QueueManagerDatabaseConfig> qmgrConfig;
+		if (config().hasProperty("mq.web.config.tablename"))
+		{
+			std::string tableName = config().getString("mq.web.config.tablename");
+			qmgrConfig = new MQ::Web::QueueManagerDatabaseConfig(dbConnector, dbConnection, tableName);
+		}
+		else
+		{
+			qmgrConfig = new MQ::Web::QueueManagerDatabaseConfig(dbConnector, dbConnection);
+		}
+		std::map<std::string, Poco::DynamicStruct> qmgrs = qmgrConfig->read();
+		for (std::map<std::string, Poco::DynamicStruct>::iterator it = qmgrs.begin(); it != qmgrs.end(); ++it) 
+		{
+			config().setString("mq.web.qmgr." + it->first + ".channel", it->second["channel"]);
+			config().setString("mq.web.qmgr." + it->first + ".connection", it->second["connection"]);
+		}
+	}
 
 	MQ::MQSubsystem& mqSystem = getSubsystem<MQ::MQSubsystem>();
 

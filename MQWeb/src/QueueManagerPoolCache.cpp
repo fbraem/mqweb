@@ -82,50 +82,14 @@ QueueManagerPool::Ptr QueueManagerPoolCache::createPool(const std::string& qmgrN
 
 	if ( mqSystem.client() )
 	{
-		Poco::SharedPtr<QueueManagerConfig> qmgrConfig;
-		if ( config.has("mq.web.config.connection") )
-		{
-			// Queuemanagers connection information is stored in a database
-			std::string dbConnector = config.getString("mq.web.config.connector", Poco::Data::SQLite::Connector::KEY);
-			std::string dbConnection = config.getString("mq.web.config.connection");
-
-			Poco::Logger& logger = Poco::Logger::get("mq.web");
-			poco_information_f3(logger, "Using connector %s with connection %s to get information for queuemanager %s", dbConnector, dbConnection, qmgrName);
-
-			try
-			{
-				if (config.hasProperty("mq.web.config.tablename"))
-				{
-					std::string tableName = config.getString("mq.web.config.tablename");
-					qmgrConfig = new QueueManagerDatabaseConfig(qmgrName, dbConnector, dbConnection, tableName);
-				}
-				else
-				{
-					qmgrConfig = new QueueManagerDatabaseConfig(qmgrName, dbConnector, dbConnection);
-				}
-			}
-			catch(Poco::Exception& e)
-			{
-				logger.log(e);
-			}
-		}
-		else
-		{
-			qmgrConfig = new QueueManagerDefaultConfig(qmgrName, config);
-		}
-
-		if (qmgrConfig.isNull())
-		{
-			// Problems with the database configuration? An empty pool will be returned.
-			return pool;
-		}
+		QueueManagerDefaultConfig qmgrConfig(config);
 
 		Poco::Logger& logger = Poco::Logger::get("mq.web");
 
 		try
 		{
-			Poco::DynamicStruct connectionInformation = qmgrConfig->read();
-			poco_information_f1(logger, "Connection information: %s", connectionInformation.toString());
+			Poco::DynamicStruct connectionInformation = qmgrConfig.read(qmgrName);
+			poco_information_f2(logger, "%s - Connection information: %s", qmgrName, connectionInformation.toString());
 			factory = new QueueManagerFactory(qmgrName, connectionInformation);
 		}
 		catch(Poco::Exception& e)
@@ -166,7 +130,17 @@ QueueManagerPool::Ptr QueueManagerPoolCache::createPool(const std::string& qmgrN
 		}
 		idle = config.getInt(qmgrPoolIdle, 60);
 
-		pool = new QueueManagerPool(factory, capacity, peakCapacity, idle);
+		try 
+		{
+			pool = new QueueManagerPool(factory, capacity, peakCapacity, idle);
+		}
+		catch (Poco::NoThreadAvailableException& nta) 
+		{
+			Poco::Logger& logger = Poco::Logger::get("mq.web");
+			logger.information("No threads available anymore for our queuemanager pool. Will increase capacity with 16");
+			MQ::QueueManagerPool::timerThreadPool().addCapacity(16);
+			pool = new QueueManagerPool(factory, capacity, peakCapacity, idle);
+		}
 
 		_cache.add(qmgrName, pool);
 	}

@@ -21,6 +21,8 @@
 #ifndef _MQ_QueueManagerDatabaseConfig_h
 #define _MQ_QueueManagerDatabaseConfig_h
 
+#include <map>
+
 #include "MQ/Web/QueueManagerConfig.h"
 
 #include "Poco/Data/Session.h"
@@ -28,24 +30,20 @@
 namespace MQ {
 namespace Web {
 
-class QueueManagerDatabaseConfig : public QueueManagerConfig
+class QueueManagerDatabaseConfig
 	/// Class that retrieves queuemanager configuration from a database.
 {
 public:
-
-	QueueManagerDatabaseConfig(const std::string& qmgrName, const std::string& connector, const std::string& connectionString, const std::string& tableName);
+	QueueManagerDatabaseConfig(const std::string& connector, const std::string& connectionString, const std::string& tableName);
 	/// Constructor.
 
-	QueueManagerDatabaseConfig(const std::string& qmgrName, const std::string& connector, const std::string& connectionString);
+	QueueManagerDatabaseConfig(const std::string& connector, const std::string& connectionString);
 		/// Constructor.
 
 	virtual ~QueueManagerDatabaseConfig();
 		/// Destructor.
 
-	void list(std::vector<std::string>& arr) const;
-		/// Returns all configured queuemanagers
-
-	Poco::DynamicStruct read();
+	std::map<std::string, Poco::DynamicStruct> read() const;
 		/// Read the configuration
 
 private:

@@ -100,26 +100,8 @@ void MQWebController::list()
 	if ( mqSystem.client() )
 	{
 		std::vector<std::string> configuredQueuemanagers;
-		Poco::SharedPtr<QueueManagerConfig> qmgrConfig;
-		if ( config.has("mq.web.config.connection") )
-		{
-			std::string dbConnector = config.getString("mq.web.config.connector", Poco::Data::SQLite::Connector::KEY);
-			std::string dbConnection = config.getString("mq.web.config.connection");
-			if (config.hasProperty("mq.web.config.tablename"))
-			{
-				std::string tableName = config.getString("mq.web.config.tablename");
-				qmgrConfig = new QueueManagerDatabaseConfig("", dbConnector, dbConnection, tableName);
-			}
-			else
-			{
-				qmgrConfig = new QueueManagerDatabaseConfig("", dbConnector, dbConnection);
-			}
-		}
-		else
-		{
-			qmgrConfig = new QueueManagerDefaultConfig("", config);
-		}
-		qmgrConfig->list(configuredQueuemanagers);
+		QueueManagerDefaultConfig qmgrConfig(config);
+		qmgrConfig.list(configuredQueuemanagers);
 		for(std::vector<std::string>::iterator it = configuredQueuemanagers.begin(); it != configuredQueuemanagers.end(); ++it)
 		{
 			queuemanagers->add(*it);

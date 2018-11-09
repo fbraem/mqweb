@@ -23,8 +23,8 @@
 namespace MQ {
 namespace Web {
 
-QueueManagerDefaultConfig::QueueManagerDefaultConfig(const std::string& qmgrName, Poco::Util::AbstractConfiguration& config)
-: QueueManagerConfig(qmgrName), _config(config)
+QueueManagerDefaultConfig::QueueManagerDefaultConfig(Poco::Util::AbstractConfiguration& config)
+: QueueManagerConfig(), _config(config)
 {
 }
 
@@ -43,9 +43,9 @@ void QueueManagerDefaultConfig::list(std::vector<std::string>& arr) const
 	}
 }
 
-Poco::DynamicStruct QueueManagerDefaultConfig::read()
+Poco::DynamicStruct QueueManagerDefaultConfig::read(const std::string& qmgrName) const
 {
-	std::string qmgrConfig = "mq.web.qmgr." + qmgrName();
+	std::string qmgrConfig = "mq.web.qmgr." + qmgrName;
 
 	Poco::DynamicStruct connectionInformation;
 	std::string qmgrConfigConnection = qmgrConfig + ".connection";
