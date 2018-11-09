@@ -172,9 +172,9 @@ void MQController::handle(const std::vector<std::string>& parameters, Poco::Net:
 		handleException(mqe);
 		afterAction();
 	}
-	catch(...)
+	catch(Poco::Exception& e)
 	{
-		//TODO: redirect to an error page
+		setResponseStatus(Poco::Net::HTTPServerResponse::HTTP_INTERNAL_SERVER_ERROR, e.displayText());
 	}
 }
 
