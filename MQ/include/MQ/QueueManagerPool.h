@@ -21,6 +21,7 @@
 #ifndef _MQ_QueueManagerPool_h
 #define _MQ_QueueManagerPool_h
 
+#include "Poco/ThreadPool.h"
 #include "Poco/Timer.h"
 
 #include "MQ/QueueManager.h"
@@ -134,6 +135,8 @@ public:
 
 	std::size_t available() const;
 
+	static Poco::ThreadPool& timerThreadPool();
+
 protected:
 	QueueManager::Ptr activateObject(QueueManager::Ptr pObject);
 	void onJanitorTimer(Poco::Timer&);
@@ -152,6 +155,8 @@ private:
 
 	int _idleTime;
 	Poco::Timer _janitorTimer;
+
+	static Poco::ThreadPool _timerThreadPool;
 };
 
 inline std::size_t QueueManagerPool::capacity() const
@@ -178,6 +183,11 @@ inline std::size_t QueueManagerPool::available() const
 	return _pool.size() + _peakCapacity - _size;
 }
 
+
+inline Poco::ThreadPool& QueueManagerPool::timerThreadPool()
+{
+	return _timerThreadPool;
+}
 
 template<class Pool, class PObject>
 class PoolGuard
