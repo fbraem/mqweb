@@ -130,17 +130,7 @@ QueueManagerPool::Ptr QueueManagerPoolCache::createPool(const std::string& qmgrN
 		}
 		idle = config.getInt(qmgrPoolIdle, 60);
 
-		try 
-		{
-			pool = new QueueManagerPool(factory, capacity, peakCapacity, idle);
-		}
-		catch (Poco::NoThreadAvailableException& nta) 
-		{
-			Poco::Logger& logger = Poco::Logger::get("mq.web");
-			logger.information("No threads available anymore for our queuemanager pool. Will increase capacity with 16");
-			MQ::QueueManagerPool::timerThreadPool().addCapacity(16);
-			pool = new QueueManagerPool(factory, capacity, peakCapacity, idle);
-		}
+		pool = new QueueManagerPool(factory, capacity, peakCapacity, idle);
 
 		_cache.add(qmgrName, pool);
 	}

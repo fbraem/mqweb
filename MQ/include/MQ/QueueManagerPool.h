@@ -135,7 +135,7 @@ public:
 
 	std::size_t available() const;
 
-	static Poco::ThreadPool& timerThreadPool();
+	Poco::ThreadPool& timerThreadPool();
 
 protected:
 	QueueManager::Ptr activateObject(QueueManager::Ptr pObject);
@@ -156,7 +156,7 @@ private:
 	int _idleTime;
 	Poco::Timer _janitorTimer;
 
-	static Poco::ThreadPool _timerThreadPool;
+	Poco::ThreadPool _timerThreadPool;
 };
 
 inline std::size_t QueueManagerPool::capacity() const

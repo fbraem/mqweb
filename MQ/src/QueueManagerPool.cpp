@@ -84,7 +84,6 @@ void QueueManagerFactory::destroyObject(QueueManager::Ptr pObject)
 	}
 }
 
-Poco::ThreadPool QueueManagerPool::_timerThreadPool;
 
 QueueManagerPool::QueueManagerPool(Poco::SharedPtr<QueueManagerFactory> factory,
 	std::size_t capacity,
@@ -95,11 +94,12 @@ QueueManagerPool::QueueManagerPool(Poco::SharedPtr<QueueManagerFactory> factory,
 	_peakCapacity(peakCapacity),
 	_size(0),
 	_idleTime(idleTime),
+	_timerThreadPool(),
 	_janitorTimer(1000 * idleTime, 1000 * idleTime / 4)
 {
 	poco_assert(capacity <= peakCapacity);
 	Poco::TimerCallback<QueueManagerPool> callback(*this, &QueueManagerPool::onJanitorTimer);
-	_janitorTimer.start(callback, timerThreadPool());
+	_janitorTimer.start(callback, _timerThreadPool);
 }
 
 QueueManagerPool::~QueueManagerPool()
