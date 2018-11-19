@@ -247,6 +247,8 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 		}
 	}
 
+	Poco::ThreadPool::defaultPool().addCapacity(100);
+
 	unsigned short port = (unsigned short) config().getInt("mq.web.port", 8081);
 
 	// set-up a server socket
