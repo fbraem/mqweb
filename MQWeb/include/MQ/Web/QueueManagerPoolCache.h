@@ -21,7 +21,7 @@
 #ifndef _MQ_QueueManagerPoolCache_h
 #define _MQ_QueueManagerPoolCache_h
 
-#include "Poco/ExpireCache.h"
+#include "Poco/AccessExpireCache.h"
 #include "Poco/Dynamic/Struct.h"
 #include "MQ/QueueManagerPool.h"
 
@@ -59,7 +59,7 @@ private:
 
 	void setup();
 
-	Poco::ExpireCache<std::string, QueueManagerPool> _cache;
+	Poco::AccessExpireCache<std::string, QueueManagerPool> _cache;
 
 	Poco::Mutex _mutex;
 
