@@ -39,6 +39,7 @@ void MQWebSubsystem::initialize(Poco::Util::Application& app)
 	Poco::Logger& logger = Poco::Logger::get("mq.web");
 	logger.trace("Initialize MQWebSubsystem");
 
+	_qmgrPoolCache = new QueueManagerPoolCache();
 	_messageConsumerThreadPool = new Poco::ThreadPool();
 	_messageConsumerTaskManager = new MessageConsumerTaskManager(*_messageConsumerThreadPool);
 }
@@ -48,7 +49,8 @@ void MQWebSubsystem::uninitialize()
 	delete _messageConsumerTaskManager;
 	delete _messageConsumerThreadPool;
 
-	_qmgrPoolCache.clear();
+	_qmgrPoolCache->clear();
+	delete _qmgrPoolCache;
 }
 
 }} // Namespace MQ::Web

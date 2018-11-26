@@ -55,7 +55,7 @@ public:
 
 private:
 
-	MQ::Web::QueueManagerPoolCache _qmgrPoolCache;
+	MQ::Web::QueueManagerPoolCache* _qmgrPoolCache;
 
 	MQ::Web::DictionaryCache _dictionaryCache;
 
