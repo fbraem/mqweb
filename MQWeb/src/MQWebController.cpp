@@ -76,8 +76,8 @@ void MQWebController::inquire()
 
 	Poco::JSON::Array::Ptr connections = new Poco::JSON::Array();
 	mqweb->set("connections", connections);
-	std::set<std::string> pools = QueueManagerPoolCache::instance()->getAllPoolNames();
-	for(std::set<std::string>::const_iterator it = pools.begin(); it != pools.end(); ++it)
+	std::vector<std::string> pools = QueueManagerPoolCache::instance()->getAllPoolNames();
+	for(std::vector<std::string>::const_iterator it = pools.begin(); it != pools.end(); ++it)
 	{
 		QueueManagerPool::Ptr pool = QueueManagerPoolCache::instance()->getQueueManagerPool(*it);
 		Poco::JSON::Object::Ptr jsonPool = new Poco::JSON::Object();

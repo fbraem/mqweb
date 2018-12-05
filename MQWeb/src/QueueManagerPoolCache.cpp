@@ -52,18 +52,17 @@ void QueueManagerPoolCache::setup()
 
 QueueManagerPool::Ptr QueueManagerPoolCache::getQueueManagerPool(const std::string& qmgrName)
 {
-	QueueManagerPool::Ptr pool = _cache.get(qmgrName);
-	if ( pool.isNull() )
+	std::map<std::string, QueueManagerPool::Ptr>::iterator it = _cache.find(qmgrName);
+	if ( it == _cache.end() )
 	{
 		Poco::Mutex::ScopedLock lock(_mutex);
-		pool = _cache.get(qmgrName); // Check it again ...
-		if ( pool.isNull() )
-		{
-			pool = createPool(qmgrName);
+		it = _cache.find(qmgrName);
+		if (it == _cache.end()) {
+			return createPool(qmgrName);
 		}
 	}
 
-	return pool;
+	return it->second;
 }
 
 void QueueManagerPoolCache::clear()
@@ -132,7 +131,7 @@ QueueManagerPool::Ptr QueueManagerPoolCache::createPool(const std::string& qmgrN
 
 		pool = new QueueManagerPool(factory, capacity, peakCapacity, idle);
 
-		_cache.add(qmgrName, pool);
+		_cache.insert(std::make_pair(qmgrName, pool));
 	}
 
 	return pool;
