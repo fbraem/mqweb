@@ -1,6 +1,6 @@
 {% highlight python %}
 '''
- This sample will show the description of a queuemanager.
+ Inquire all channel authentication records.
  MQWeb runs on localhost and is listening on port 8081.
 '''
 import json
@@ -9,13 +9,14 @@ import socket
 import argparse
 
 parser = argparse.ArgumentParser(
-	description='MQWeb - Python sample - Show Queuemanager Description',
+	description='MQWeb - Python sample - Inquire Channel Authentication Record',
 	epilog="For more information: http://www.mqweb.org"
 )
 parser.add_argument('-m', '--queuemanager', help='Name of the queuemanager', required=True)
+parser.add_argument('-p', '--profile', help='Name of the channel', required=False)
 args = parser.parse_args()
 
-url = "/api/qmgr/inquire/" + args.queuemanager
+url = '/api/chlauth/inquire/' + args.queuemanager
 
 try:
 	conn = httplib.HTTPConnection('localhost', 8081)
@@ -28,11 +29,13 @@ try:
 			str(result['error']['reason']['code'])
 		)
 	else:
-		print (result['data'][0]['QMgrName']['value']
-			+ ' : ' + result['data'][0]['QMgrDesc']['value']
-		)
+		if len(result['data']) == 0:
+			print "No channels found"
+		else:
+			for data in result['data']:
+				print data
 except httplib.HTTPException as e:
-	print ('An HTTP error occurred while inquiring queuemanager: ' +
+	print ('An HTTP error occurred while inquiring channels: ' +
 		e.errno + e.strerror
 	)
 except socket.error as e:

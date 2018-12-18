@@ -63,7 +63,7 @@ corresponding query parameter.
 All query parameters are copied as attribute for the queue. *FromQName*,
 *ToQname* and *QType* are required. When a [POST](#copyJSON) request is used, all query parameters will be ignored.
 
-`/api/queue/copy/PIGEON/MQWEB.TEST.Q1/MQWEB.TEST.Q2&QType=Local`  
+`/api/queue/copy/PIGEON/MQWEB.TEST.Q1/MQWEB.TEST.Q2?QType=Local`  
 
 ### <a name="copyJSON"></a>JSON Object
 When using an application/json POST request you can post a JSON object
@@ -103,7 +103,7 @@ are ignored.
 
 ### <a name="createExample"></a>Example
 
-`/api/queue/create/PIGEON/MQWEB.TEST.Q1&QType=Local`  
+`/api/queue/create/PIGEON/MQWEB.TEST.Q1?QType=Local`  
 
 This sample is a Python script that creates an alias queue:
 

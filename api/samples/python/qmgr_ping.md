@@ -1,6 +1,6 @@
 {% highlight python %}
 '''
- This sample will show all services from a queuemanager.
+ This sample pings a queuemanager.
  MQWeb runs on localhost and is listening on port 8081.
 '''
 import json
@@ -9,13 +9,13 @@ import socket
 import argparse
 
 parser = argparse.ArgumentParser(
-	description='MQWeb - Python sample - Inquire Services',
-	epilog="For more information: http://www.mqweb.org"
+	description='MQWeb - Python sample - Ping Queuemanager',
+	epilog='For more information: http://www.mqweb.org'
 )
 parser.add_argument('-m', '--queuemanager', help='Name of the queuemanager', required=True)
 args = parser.parse_args()
 
-url = "/api/service/inquire/" + args.queuemanager;
+url = '/api/qmgr/ping/' + args.queuemanager
 
 try:
 	conn = httplib.HTTPConnection('localhost', 8081)
@@ -24,18 +24,12 @@ try:
 	result = json.loads(res.read())
 
 	if 'error' in result:
-		print ('Received a WebSphere MQ error: ' +
-			str(result['error']['reason']['code'])
-		)
+		print('MQ Error: {0} - {1}'.format(str(result['error']['reason']['code']), str(result['error']['reason']['desc'])))
 	else:
-		for data in result['data']:
-			print data['ServiceName']['value']
-
+		print('Ping successfull')
 except httplib.HTTPException as e:
-	print ('An HTTP error occurred while inquiring topics: ' +
-		e.errno + e.strerror
-	)
+	print('An HTTP error occurred while pinging queuemanager: {0} - {1}'.format(e.errno, e.strerror))
 except socket.error as e:
-	print e.strerror
-	print 'Is the MQWeb daemon running?'
+	print(e.strerror)
+	print('Is the MQWeb daemon running?')
 {% endhighlight %}

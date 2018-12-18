@@ -1,6 +1,6 @@
 {% highlight python %}
 '''
- This sample will show the description of a queuemanager.
+ This sample will clear a queue.
  MQWeb runs on localhost and is listening on port 8081.
 '''
 import json
@@ -9,13 +9,14 @@ import socket
 import argparse
 
 parser = argparse.ArgumentParser(
-	description='MQWeb - Python sample - Show Queuemanager Description',
+	description='MQWeb - Python sample - Clear Queue',
 	epilog="For more information: http://www.mqweb.org"
 )
 parser.add_argument('-m', '--queuemanager', help='Name of the queuemanager', required=True)
+parser.add_argument('-q', '--queue', help='Name of the queue', required=True)
 args = parser.parse_args()
 
-url = "/api/qmgr/inquire/" + args.queuemanager
+url = '/api/queue/clear/' + args.queuemanager + '/' + args.queue
 
 try:
 	conn = httplib.HTTPConnection('localhost', 8081)
@@ -24,17 +25,12 @@ try:
 	result = json.loads(res.read())
 
 	if 'error' in result:
-		print ('Received a WebSphere MQ error: ' +
-			str(result['error']['reason']['code'])
-		)
+		print('MQ Error: {0} - {1}'.format(str(result['error']['reason']['code']), str(result['error']['reason']['desc'])))
 	else:
-		print (result['data'][0]['QMgrName']['value']
-			+ ' : ' + result['data'][0]['QMgrDesc']['value']
-		)
+		print('Queue {0} cleared'.format(args.queue))
+
 except httplib.HTTPException as e:
-	print ('An HTTP error occurred while inquiring queuemanager: ' +
-		e.errno + e.strerror
-	)
+	print ('An HTTP error occurred while inquiring queues: {0} - {1}'.format(e.errno, e.strerror))
 except socket.error as e:
 	print e.strerror
 	print 'Is the MQWeb daemon running?'

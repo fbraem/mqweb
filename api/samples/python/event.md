@@ -1,20 +1,23 @@
 {% highlight python %}
 '''
- This sample will read all event messages from queue SYSTEM.ADMIN.CONFIG.EVENT
- and show all events that are related to queues.
- MQWeb runs on localhost and is listening on port 8081. 
+ This sample will read all event messages from a queue.
+ MQWeb runs on localhost and is listening on port 8081.
 '''
 
-import sys
 import json
 import httplib
 import socket
+import argparse
 
-if len(sys.argv) < 2 :
-	print 'Please pass me the name of a queuemanager as argument'
-	sys.exit(1)
+parser = argparse.ArgumentParser(
+	description='MQWeb - Python sample - Browse Event Queue',
+	epilog="For more information: http://www.mqweb.org"
+)
+parser.add_argument('-m', '--queuemanager', help='Name of the queuemanager', required=True)
+parser.add_argument('-q', '--queue', help='Name of the event queue', required=True)
+args = parser.parse_args()
 
-url = "/api/message/browse/" + sys.argv[1] + '/SYSTEM.ADMIN.CONFIG.EVENT'
+url = "/api/message/browse/" + args.queuemanager + '/' + args.queue
 
 try:
 	conn = httplib.HTTPConnection('localhost', 8081)
@@ -23,16 +26,17 @@ try:
 	result = json.loads(res.read())
 
 	if 'error' in result:
-		print('Received a WebSphere MQ error: ' +	
+		print('Received a WebSphere MQ error: ' +
 			str(result['error']['reason']['code'])
 		)
 	else:
 		for message in result['data']:
+			#print(json.dumps(message, indent=2))
 			if 'event' in message :
-					#print(json.dumps(message, indent=2))
+				if 'ObjectType' in message['event'] :
 					if message['event']['ObjectType']['text'] == 'Queue' :
 							print("MQ Command {0} generated a config event for {1}".format(
-									message['event']['EventOrigin']['text'], 
+									message['event']['EventOrigin']['text'],
 									message['event']['QName']['value'])
 							)
 except httplib.HTTPException as e:
