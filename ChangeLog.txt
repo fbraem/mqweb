@@ -12,6 +12,7 @@
   - Add create queue
   - Add delete queue
   - Add copy queue
+  - Queuemanager configuration can be read from ODBC
   
 0.1.0
   - Web app has its own repository now: mqwebapp
