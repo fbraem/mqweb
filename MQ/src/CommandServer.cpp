@@ -57,6 +57,8 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
 
 	command->message()->setReplyToQueue(_replyQ.name());
 	command->message()->setExpiry(1200000);
+	// Make sure responses expire and prevent them to go to the DLQ (See #18)
+	command->message()->setReport(MQRO_PASS_DISCARD_AND_EXPIRY | MQRO_DISCARD_MSG);
 	_commandQ.put(*command->message(), MQPMO_NO_SYNCPOINT);
 
 	long wait = 600000;
