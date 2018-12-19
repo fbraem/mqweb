@@ -12,12 +12,12 @@ shopt -s nullglob
 for language in "${!languages[@]}"
 do
   for f in ./$language/${languages["$language"]}
-  do 
+  do
     p=`basename $f | cut -f1 -d.`
     echo "processing $f"
-    mkdir -p $1/_includes/samples/$language
-    cp $f $1/_includes/samples/$language/$p.md
-    ed -s $1/_includes/samples/$language/$p.md <<EOF
+    mkdir -p $1/api/samples/$language
+    cp $f $1/api/samples/$language/$p.md
+    ed -s $1/api/samples/$language/$p.md <<EOF
 0a
 {% highlight $language %}
 .
@@ -28,4 +28,3 @@ w
 EOF
   done
 done
-

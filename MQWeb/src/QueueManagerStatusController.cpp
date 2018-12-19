@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/QueueManagerStatusController.h"
-#include "MQ/Web/QueueManagerStatusMapper.h"
+#include "MQ/Web/QueueManagerStatusInquire.h"
 
 namespace MQ
 {
@@ -55,7 +55,7 @@ void QueueManagerStatusController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
 		formElementToJSONArray("QMStatusAttrs", attrs);
@@ -69,8 +69,8 @@ void QueueManagerStatusController::inquire()
 		}
 	}
 
-	QueueManagerStatusMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	QueueManagerStatusInquire command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 

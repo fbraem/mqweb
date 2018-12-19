@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/NamelistController.h"
-#include "MQ/Web/NamelistMapper.h"
+#include "MQ/Web/NamelistInquire.h"
 
 namespace MQ
 {
@@ -48,7 +48,7 @@ void NamelistController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -60,20 +60,7 @@ void NamelistController::inquire()
 		}
 		else
 		{
-			std::string namelistNameField;
-			if ( form().has("NamelistName") )
-			{
-				namelistNameField = form().get("NamelistName");
-			}
-			else if ( form().has("name") )
-			{
-				namelistNameField = form().get("name");
-			}
-			if ( namelistNameField.empty() )
-			{
-				namelistNameField = "*";
-			}
-			pcfParameters->set("NamelistName", namelistNameField);
+			pcfParameters->set("NamelistName", form().get("NamelistName", "*"));
 		}
 
 		if ( parameters.size() > 2 )
@@ -111,8 +98,8 @@ void NamelistController::inquire()
 
 	pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
 
-	NamelistMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	NamelistInquire command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 

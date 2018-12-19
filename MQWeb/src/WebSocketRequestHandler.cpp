@@ -26,109 +26,21 @@
 #include "MQ/QueueManagerPool.h"
 #include "MQ/Web/QueueManagerPoolCache.h"
 #include "MQ/MQException.h"
+#include "MQ/Web/PCFCommand.h"
+#include "MQ/Web/JSONMessage.h"
+#include "MQ/Web/MQWebSubsystem.h"
 
 #include "Poco/URI.h"
 #include "Poco/Net/WebSocket.h"
 #include "Poco/Net/NetException.h"
 #include "Poco/Net/HTTPServerRequest.h"
 #include "Poco/Net/HTTPServerResponse.h"
+#include "Poco/Net/HTMLForm.h"
 #include "Poco/Task.h"
 
 namespace MQ {
 namespace Web {
 
-class MessageConsumerTask : public Poco::Task
-{
-public:
-	MessageConsumerTask(Poco::SharedPtr<Poco::Net::WebSocket> ws, QueueManagerPoolGuard::Ptr queueManagerPoolGuard, const std::string& queueName)
-		: Poco::Task("MessageConsumer"), _ws(ws), _qmgrPoolGuard(queueManagerPoolGuard), _count(0)
-	{
-		poco_assert_dbg(! queueManagerPoolGuard.isNull());
-
-		Poco::Timespan ts(600, 0);
-		_ws->setReceiveTimeout(ts);
-		_ws->setSendTimeout(ts);
-
-		QueueManager::Ptr qmgr = queueManagerPoolGuard->getObject();
-		_consumer = new MessageConsumer(*qmgr, queueName, MessageConsumer::BROWSE);
-		_consumer->message+= Poco::delegate(this, &MessageConsumerTask::onMessage);
-	}
-
-	virtual ~MessageConsumerTask()
-	{
-		_consumer->message-= Poco::delegate(this, &MessageConsumerTask::onMessage);
-	}
-
-	void cancel()
-	{
-		Poco::Logger& logger = Poco::Logger::get("mq.web");
-		poco_debug(logger, "MessageConsumerTask cancelling ...");
-
-		try
-		{
-			_consumer->stop();
-		}
-		catch(MQException&)
-		{
-			//Ignore to make sure the socket is closed and the task is cancelled.
-		}
-
-		_ws->close();
-
-		Poco::Task::cancel();
-
-		poco_debug(logger, "MessageConsumerTask cancelled.");
-	}
-
-	void runTask()
-	{
-		Poco::Logger& logger = Poco::Logger::get("mq.web");
-
-		_consumer->start();
-
-		char buffer[1024];
-		int n;
-		int flags;
-		do
-		{
-			n = _ws->receiveFrame(buffer, sizeof(buffer), flags);
-			poco_trace_f1(logger, "Number of messages: so far %d", _count);
-		}
-		while (n > 0 || (flags & Poco::Net::WebSocket::FRAME_OP_BITMASK) != Poco::Net::WebSocket::FRAME_OP_CLOSE);
-		poco_debug(logger, "WebSocket connection closed.");
-	}
-
-	void onMessage(const void* pSender, Poco::SharedPtr<Message>& msg)
-	{
-		Poco::Logger& logger = Poco::Logger::get("mq.web");
-		poco_trace_f1(logger, "A message received %s", msg->messageId()->toHex());
-
-		_count++;
-		std::string messageContent = msg->buffer().toString();
-		try
-		{
-			_ws->sendFrame(messageContent.c_str(), messageContent.size(), Poco::Net::WebSocket::FRAME_TEXT);
-		}
-		catch(Poco::Exception&)
-		{
-			cancel();
-		}
-	}
-
-private:
-	Poco::SharedPtr<Poco::Net::WebSocket> _ws;
-
-	QueueManagerPoolGuard::Ptr _qmgrPoolGuard;
-
-	Poco::SharedPtr<MessageConsumer> _consumer;
-
-	int _count;
-
-};
-
-Poco::ThreadPool WebSocketRequestHandler::_tmThreadPool;
-
-Poco::TaskManager WebSocketRequestHandler::_tm(WebSocketRequestHandler::_tmThreadPool);
 
 WebSocketRequestHandler::WebSocketRequestHandler() : HTTPRequestHandler()
 {
@@ -149,29 +61,20 @@ void WebSocketRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& reques
 		return;
 	}
 
-	Poco::SharedPtr<QueueManagerPool> qmgrPool = QueueManagerPoolCache::instance()->getQueueManagerPool(paths[0]);
-	if ( qmgrPool.isNull() )
+	int limit = -1;
+	Poco::Net::HTMLForm form;
+	form.load(request, request.stream());
+	std::string limitField = form.get("limit", "");
+	if (!limitField.empty())
 	{
-		response.setStatusAndReason(Poco::Net::HTTPServerResponse::HTTP_INTERNAL_SERVER_ERROR, "Out of memory: can't create a pool for queuemanager.");
-		response.send();
-		return;
+		Poco::NumberParser::tryParse(limitField, limit);
 	}
-
-	QueueManager::Ptr qmgr = qmgrPool->borrowObject();
-	if ( qmgr.isNull() )
-	{
-		response.setStatusAndReason(Poco::Net::HTTPServerResponse::HTTP_INTERNAL_SERVER_ERROR, "No queuemanager available in the pool. Check the connection pool configuration.");
-		response.send();
-		return;
-	}
-
-	QueueManagerPoolGuard::Ptr qmgrPoolGuard = new QueueManagerPoolGuard(qmgrPool, qmgr);
 
 	try
 	{
 		Poco::SharedPtr<Poco::Net::WebSocket> ws = new Poco::Net::WebSocket(request, response);
-		MQWebApplication& app = (MQWebApplication&) MQWebApplication::instance();
-		_tm.start(new MessageConsumerTask(ws, qmgrPoolGuard, paths[1]));
+		MQWebSubsystem& mqWebsystem = Poco::Util::Application::instance().getSubsystem<MQWebSubsystem>();
+		mqWebsystem.messageConsumerTaskManager().startTask(ws, paths[0], paths[1], limit);
 	}
 	catch (Poco::Net::WebSocketException& exc)
 	{
@@ -189,13 +92,22 @@ void WebSocketRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& reques
 			break;
 		}
 	}
-}
-
-void WebSocketRequestHandler::cancel()
-{
-	// Cancel all launched tasks and wait for them to end ...
-	_tm.cancelAll();
-	_tm.joinAll();
+	catch (Poco::OutOfMemoryException& oome)
+	{
+		response.setStatusAndReason(Poco::Net::HTTPServerResponse::HTTP_INTERNAL_SERVER_ERROR, oome.message());
+		response.setContentLength(0);
+		response.send();
+	}
+	catch (MQ::MQException& mqex)
+	{
+		std::string msg("MQ RC=");
+		Poco::NumberFormatter::append(msg, mqex.reason());
+		msg += " - ";
+		msg += PCFCommand::getReasonString(mqex.reason());
+		response.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR, msg);
+		response.setContentLength(0);
+		response.send();
+	}
 }
 
 }} // Namespace MQ::Web

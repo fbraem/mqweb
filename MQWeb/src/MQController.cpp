@@ -26,7 +26,7 @@
 #include "MQ/MQException.h"
 
 #include "MQ/Web/MQController.h"
-#include "MQ/Web/MQMapper.h"
+#include "MQ/Web/PCFCommand.h"
 
 namespace MQ {
 namespace Web {
@@ -34,7 +34,7 @@ namespace Web {
 
 MQController::MQController() : Controller(), _meta(new Poco::JSON::Object()), _commandServer(NULL)
 {
-	set("meta", _meta);
+	setData("meta", _meta);
 }
 
 
@@ -95,14 +95,20 @@ void MQController::beforeAction()
 	_meta->set("qmgr", qmgr->name());
 	_meta->set("zos", qmgr->zos());
 	_meta->set("qmgrId", qmgr->id());
+}
 
-	_commandServer = qmgr->commandServer();
-	if ( _commandServer == NULL )
+Poco::SharedPtr<CommandServer> MQController::commandServer()
+{
+	if (_commandServer.isNull())
 	{
-		std::string qmgrConfigReplyQ = "mq.web.qmgr." + qmgrName + ".reply";
+		MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQSubsystem>();
+		Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
+
+		QueueManager::Ptr qmgr = _qmgrPoolGuard->getObject();
+		std::string qmgrConfigReplyQ = "mq.web.qmgr." + qmgr->name() + ".reply";
 
 		std::string replyQ;
-		if ( config.has(qmgrConfigReplyQ) )
+		if (config.has(qmgrConfigReplyQ))
 		{
 			replyQ = config.getString(qmgrConfigReplyQ);
 		}
@@ -110,14 +116,12 @@ void MQController::beforeAction()
 		{
 			replyQ = config.getString("mq.web.reply", "SYSTEM.DEFAULT.MODEL.QUEUE");
 		}
-		_commandServer = qmgr->createCommandServer(replyQ);
-	}
-
-	if ( _commandServer != NULL )
-	{
+		_commandServer = new CommandServer(qmgr, replyQ);
 		_meta->set("replyq", _commandServer->replyQName());
 		_meta->set("cmdq", _commandServer->commandQName());
 	}
+
+	return _commandServer;
 }
 
 
@@ -125,7 +129,7 @@ void MQController::handleException(const MQException& mqe)
 {
 	Poco::JSON::Object::Ptr error = new Poco::JSON::Object();
 
-	set("error", error);
+	setData("error", error);
 	error->set("object", mqe.object());
 	error->set("fn", mqe.function());
 	switch(mqe.code())
@@ -138,7 +142,7 @@ void MQController::handleException(const MQException& mqe)
 	Poco::JSON::Object::Ptr reason = new Poco::JSON::Object();
 	error->set("reason", reason);
 	reason->set("code", mqe.reason());
-	reason->set("desc", MQMapper::getReasonString(mqe.reason()));
+	reason->set("desc", PCFCommand::getReasonString(mqe.reason()));
 }
 
 
@@ -168,9 +172,9 @@ void MQController::handle(const std::vector<std::string>& parameters, Poco::Net:
 		handleException(mqe);
 		afterAction();
 	}
-	catch(...)
+	catch(Poco::Exception& e)
 	{
-		//TODO: redirect to an error page
+		setResponseStatus(Poco::Net::HTTPServerResponse::HTTP_INTERNAL_SERVER_ERROR, e.displayText());
 	}
 }
 

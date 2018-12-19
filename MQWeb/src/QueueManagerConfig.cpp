@@ -23,7 +23,7 @@
 namespace MQ {
 namespace Web {
 
-QueueManagerConfig::QueueManagerConfig(const std::string& qmgrName) : _qmgrName(qmgrName)
+QueueManagerConfig::QueueManagerConfig()
 {
 }
 

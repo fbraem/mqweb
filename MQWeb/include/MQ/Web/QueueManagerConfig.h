@@ -33,30 +33,20 @@ class QueueManagerConfig
 {
 public:
 
-	QueueManagerConfig(const std::string& qmgrName);
+	QueueManagerConfig();
 		/// Constructor.
 
 	virtual ~QueueManagerConfig();
 		/// Destructor.
 
-	std::string qmgrName() const;
-		/// Returns the queuemanager name
-
 	virtual void list(std::vector<std::string>& arr) const = 0;
 		/// Returns all configured queuemanagers
 
-	virtual Poco::DynamicStruct read() = 0;
+	virtual Poco::DynamicStruct read(const std::string& qmgrName) const = 0;
 		/// Read the configuration
 
 private:
-
-	std::string _qmgrName;
 };
-
-inline std::string QueueManagerConfig::qmgrName() const
-{
-	return _qmgrName;
-}
 
 }} // Namespace MQ::Web
 

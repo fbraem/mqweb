@@ -19,7 +19,9 @@
 * SOFTWARE.
 */
 #include "MQ/Web/ClusterQueueManagerController.h"
-#include "MQ/Web/ClusterQueueManagerMapper.h"
+#include "MQ/Web/ClusterQueueManagerInquire.h"
+#include "MQ/Web/ClusterQueueManagerSuspend.h"
+#include "MQ/Web/ClusterQueueManagerResume.h"
 
 namespace MQ
 {
@@ -48,7 +50,7 @@ void ClusterQueueManagerController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -63,15 +65,7 @@ void ClusterQueueManagerController::inquire()
 			std::string clusterNameField;
 			if ( form().has("ClusterName") )
 			{
-				clusterNameField = form().get("ClusterName");
-			}
-			else if ( form().has("name") )
-			{
-				clusterNameField = form().get("name");
-			}
-			if ( !clusterNameField.empty() )
-			{
-				pcfParameters->set("ClusterName", clusterNameField);
+				pcfParameters->set("ClusterName", form().get("ClusterName"));
 			}
 		}
 
@@ -103,8 +97,8 @@ void ClusterQueueManagerController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 
-	ClusterQueueManagerMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	ClusterQueueManagerInquire command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 
@@ -119,7 +113,7 @@ void ClusterQueueManagerController::suspend()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -137,10 +131,8 @@ void ClusterQueueManagerController::suspend()
 		if ( form().has("Mode") ) pcfParameters->set("Mode", form().get("Mode"));
 	}
 
-	ClusterQueueManagerMapper mapper(*commandServer(), pcfParameters);
-
-	Poco::JSON::Object::Ptr error = mapper.suspend();
-	if ( error->size() > 0 ) set("error", error);
+	ClusterQueueManagerSuspend command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 
@@ -155,7 +147,7 @@ void ClusterQueueManagerController::resume()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -172,10 +164,8 @@ void ClusterQueueManagerController::resume()
 		if ( form().has("CommandScope") ) pcfParameters->set("CommandScope", form().get("CommandScope"));
 	}
 
-	ClusterQueueManagerMapper mapper(*commandServer(), pcfParameters);
-
-	Poco::JSON::Object::Ptr error = mapper.resume();
-	if ( error->size() > 0 ) set("error", error);
+	ClusterQueueManagerResume command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 

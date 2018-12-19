@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/AuthorityRecordController.h"
-#include "MQ/Web/AuthorityRecordMapper.h"
+#include "MQ/Web/AuthorityRecordInquire.h"
 
 namespace MQ
 {
@@ -55,7 +55,7 @@ void AuthorityRecordController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -71,10 +71,6 @@ void AuthorityRecordController::inquire()
 			if ( form().has("ProfileName") )
 			{
 				pcfParameters->set("ProfileName", form().get("ProfileName"));
-			}
-			else if ( form().has("Name") )
-			{
-				pcfParameters->set("ProfileName", form().get("Name"));
 			}
 		}
 
@@ -104,8 +100,8 @@ void AuthorityRecordController::inquire()
 		if ( form().has("ServiceComponent") ) pcfParameters->set("ServiceComponent", form().get("ServiceComponent"));
 	}
 
-	AuthorityRecordMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	AuthorityRecordInquire command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 

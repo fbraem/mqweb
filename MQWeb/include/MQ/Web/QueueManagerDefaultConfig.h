@@ -33,7 +33,7 @@ class QueueManagerDefaultConfig : public QueueManagerConfig
 {
 public:
 
-	QueueManagerDefaultConfig(const std::string& qmgrName, Poco::Util::AbstractConfiguration& config);
+	QueueManagerDefaultConfig(Poco::Util::AbstractConfiguration& config);
 		/// Constructor.
 
 	virtual ~QueueManagerDefaultConfig();
@@ -42,7 +42,7 @@ public:
 	void list(std::vector<std::string>& arr) const;
 		/// Returns all configured queuemanagers.
 
-	Poco::DynamicStruct read();
+	Poco::DynamicStruct read(const std::string& qmgrName) const;
 		/// Read the configuration
 
 private:

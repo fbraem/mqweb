@@ -23,8 +23,8 @@
 #include "Poco/Util/Application.h"
 
 #include "MQ/MQSubsystem.h"
-#include "MQ/Queue.h"
 #include "MQ/QueueManager.h"
+#include "MQ/Queue.h"
 #include "MQ/MQException.h"
 #include "MQ/Message.h"
 
@@ -33,7 +33,7 @@ namespace MQ
 
 MQOD Queue::_initialOD = { MQOD_DEFAULT };
 
-Queue::Queue(QueueManager& qmgr, const std::string& name)
+Queue::Queue(QueueManager::Ptr qmgr, const std::string& name)
 	: _qmgr(qmgr)
 	, _handle(0)
 	, _od(_initialOD)
@@ -60,7 +60,7 @@ Queue::~Queue()
 void Queue::open(long options)
 {
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
-	_handle = mqSystem.functions().open(_qmgr.handle(), &_od, options);
+	_handle = mqSystem.functions().open(_qmgr->handle(), &_od, options);
 }
 
 void Queue::close()
@@ -68,7 +68,7 @@ void Queue::close()
 	if ( _handle != 0 )
 	{
 		MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
-		mqSystem.functions().close(_qmgr.handle(), &_handle, MQCO_NONE);
+		mqSystem.functions().close(_qmgr->handle(), &_handle, MQCO_NONE);
 	}
 }
 
@@ -82,7 +82,7 @@ void Queue::put(Message& msg, MQLONG options)
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
 	try
 	{
-		mqSystem.functions().put(_qmgr.handle(), _handle, msg.md(), &pmo, (MQLONG) size, size > 0 ? msg.buffer().data() : NULL);
+		mqSystem.functions().put(_qmgr->handle(), _handle, msg.md(), &pmo, (MQLONG) size, size > 0 ? msg.buffer().data() : NULL);
 	}
 	catch(MQException& mqe)
 	{
@@ -122,7 +122,7 @@ void Queue::get(Message& msg, MQLONG options, long wait)
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
 	try
 	{
-		mqSystem.functions().get(_qmgr.handle(), _handle, msg.md(), &gmo, (MQLONG) size, size > 0 ? msg.buffer().data() : NULL, &msg._dataLength);
+		mqSystem.functions().get(_qmgr->handle(), _handle, msg.md(), &gmo, (MQLONG) size, size > 0 ? msg.buffer().data() : NULL, &msg._dataLength);
 	}
 	catch(MQException& mqe)
 	{
@@ -136,7 +136,7 @@ void Queue::inquire(const std::vector<int>& intSelectors, const std::map<int, in
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
 	try
 	{
-		mqSystem.functions().inq(_qmgr.handle(), _handle, intSelectors, charSelectors, intResult, charResult);
+		mqSystem.functions().inq(_qmgr->handle(), _handle, intSelectors, charSelectors, intResult, charResult);
 	}
 	catch(MQException& mqe)
 	{

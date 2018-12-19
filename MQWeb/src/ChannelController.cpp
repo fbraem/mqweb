@@ -19,7 +19,9 @@
 * SOFTWARE.
 */
 #include "MQ/Web/ChannelController.h"
-#include "MQ/Web/ChannelMapper.h"
+#include "MQ/Web/ChannelInquire.h"
+#include "MQ/Web/ChannelStart.h"
+#include "MQ/Web/ChannelStop.h"
 
 namespace MQ
 {
@@ -48,7 +50,7 @@ void ChannelController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -63,20 +65,7 @@ void ChannelController::inquire()
 		else
 		{
 			// Handle query parameters
-			std::string channelNameField;
-			if ( form().has("ChannelName") )
-			{
-				channelNameField = form().get("ChannelName");
-			}
-			else if ( form().has("name") )
-			{
-				channelNameField = form().get("name");
-			}
-			if ( channelNameField.empty() )
-			{
-				channelNameField = "*";
-			}
-			pcfParameters->set("ChannelName", channelNameField);
+			pcfParameters->set("ChannelName", form().get("ChannelName", "*"));
 		}
 
 		if ( parameters.size() > 2 )
@@ -119,8 +108,8 @@ void ChannelController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 
-	ChannelMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	ChannelInquire command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 void ChannelController::start()
@@ -134,7 +123,7 @@ void ChannelController::start()
 	else
 	{
 			pcfParameters = new Poco::JSON::Object();
-			set("input", pcfParameters);
+			setData("input", pcfParameters);
 
 			std::vector<std::string> parameters = getParameters();
 			// First parameter is queuemanager
@@ -152,10 +141,8 @@ void ChannelController::start()
 			if ( form().has("ChannelDisposition") ) pcfParameters->set("ChannelDisposition", form().get("ChannelDisposition"));
 	}
 
-	ChannelMapper mapper(*commandServer(), pcfParameters);
-
-	Poco::JSON::Object::Ptr error = mapper.start();
-	if ( error->size() > 0 ) set("error", error);
+	ChannelStart command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 void ChannelController::stop()
@@ -169,7 +156,7 @@ void ChannelController::stop()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -190,10 +177,8 @@ void ChannelController::stop()
 		if ( form().has("QMgrName") ) pcfParameters->set("QMgrName", form().get("QMgrName"));
 	}
 
-	ChannelMapper mapper(*commandServer(), pcfParameters);
-
-	Poco::JSON::Object::Ptr error = mapper.stop();
-	if ( error->size() > 0 ) set("error", error);
+	ChannelStop command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 } } // Namespace MQ::Web

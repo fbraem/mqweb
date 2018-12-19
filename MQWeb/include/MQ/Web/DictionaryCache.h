@@ -43,14 +43,25 @@ public:
 	Poco::SharedPtr<Dictionary> getDictionary(const std::string& name);
 		/// Returns a dictionary for a specific object
 
+	static DictionaryCache* instance();
+
 private:
+
+	void setup();
 
 	Poco::ExpireCache<std::string, Dictionary> _cache;
 
 	Poco::Mutex _mutex;
 
+	static DictionaryCache* _instance;
+
 	Poco::SharedPtr<Dictionary> load(const std::string& name);
 };
+
+inline DictionaryCache* DictionaryCache::instance()
+{
+	return _instance;
+}
 
 }} // Namespace MQ::Web
 

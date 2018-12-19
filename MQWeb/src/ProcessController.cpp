@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/ProcessController.h"
-#include "MQ/Web/ProcessMapper.h"
+#include "MQ/Web/ProcessInquire.h"
 
 namespace MQ
 {
@@ -48,7 +48,7 @@ void ProcessController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -61,20 +61,7 @@ void ProcessController::inquire()
 		else
 		{
 			// Handle query parameters
-			std::string processNameField;
-			if ( form().has("ProcessName") )
-			{
-				processNameField = form().get("ProcessName");
-			}
-			else if ( form().has("name") )
-			{
-				processNameField = form().get("name");
-			}
-			if ( processNameField.empty() )
-			{
-				processNameField = "*";
-			}
-			pcfParameters->set("ProcessName", processNameField);
+			pcfParameters->set("ProcessName", form().get("ProcessName", "*"));
 		}
 
 		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
@@ -103,8 +90,8 @@ void ProcessController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 
-	ProcessMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	ProcessInquire command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 

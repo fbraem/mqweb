@@ -20,9 +20,11 @@
 */
 #include "MQ/MQSubsystem.h"
 #include "MQ/Web/Version.h"
+#include "MQ/Web/MQWebSubsystem.h"
 #include "MQ/Web/Application.h"
 #include "MQ/Web/RequestHandlerFactory.h"
 #include "MQ/Web/WebSocketRequestHandler.h"
+#include "MQ/Web/QueueManagerDatabaseConfig.h"
 
 #include "Poco/Net/HTTPServer.h"
 #include "Poco/Net/HTTPServerParams.h"
@@ -31,6 +33,9 @@
 #include "Poco/Net/HTTPServerParams.h"
 
 #include "Poco/Data/SQLite/Connector.h"
+#ifdef MQWEB_ODBC_CONFIG
+	#include "Poco/Data/ODBC/Connector.h"
+#endif
 
 #include "Poco/Logger.h"
 #include "Poco/File.h"
@@ -46,6 +51,7 @@ MQWebApplication::MQWebApplication()
 , _versionRequested(false)
 {
 	addSubsystem(new MQ::MQSubsystem());
+	addSubsystem(new MQ::Web::MQWebSubsystem());
 }
 
 MQWebApplication::~MQWebApplication()
@@ -71,6 +77,9 @@ void MQWebApplication::initialize(Application& self)
 	}
 
 	Poco::Data::SQLite::Connector::registerConnector();
+#ifdef MQWEB_ODBC_CONFIG
+	Poco::Data::ODBC::Connector::registerConnector();
+#endif
 
 	try
 	{
@@ -88,6 +97,9 @@ void MQWebApplication::uninitialize()
 	Poco::Logger::get("mq.web").information("MQWeb process stopped!");
 
 	Poco::Data::SQLite::Connector::unregisterConnector();
+#ifdef MQWEB_ODBC_CONFIG
+	Poco::Data::ODBC::Connector::unregisterConnector();
+#endif
 
 	ServerApplication::uninitialize();
 }
@@ -174,6 +186,29 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 
 	Poco::Logger& logger = Poco::Logger::get("mq.web");
 
+	if (config().has("mq.web.config.connection"))
+	{
+		std::string dbConnector = config().getString("mq.web.config.connector", Poco::Data::SQLite::Connector::KEY);
+		std::string dbConnection = config().getString("mq.web.config.connection");
+
+		Poco::SharedPtr<MQ::Web::QueueManagerDatabaseConfig> qmgrConfig;
+		if (config().hasProperty("mq.web.config.tablename"))
+		{
+			std::string tableName = config().getString("mq.web.config.tablename");
+			qmgrConfig = new MQ::Web::QueueManagerDatabaseConfig(dbConnector, dbConnection, tableName);
+		}
+		else
+		{
+			qmgrConfig = new MQ::Web::QueueManagerDatabaseConfig(dbConnector, dbConnection);
+		}
+		std::map<std::string, Poco::DynamicStruct> qmgrs = qmgrConfig->read();
+		for (std::map<std::string, Poco::DynamicStruct>::iterator it = qmgrs.begin(); it != qmgrs.end(); ++it) 
+		{
+			config().setString("mq.web.qmgr." + it->first + ".channel", it->second["channel"]);
+			config().setString("mq.web.qmgr." + it->first + ".connection", it->second["connection"]);
+		}
+	}
+
 	MQ::MQSubsystem& mqSystem = getSubsystem<MQ::MQSubsystem>();
 
 	try
@@ -185,8 +220,6 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 		Poco::Logger::get("mq").fatal(lle.message());
 		return Application::EXIT_SOFTWARE;
 	}
-
-	_cache.setLogger(logger);
 
 	// Check the web app path configuration (mq.web.app)
 	if ( config().has("mq.web.app") )
@@ -214,6 +247,8 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 		}
 	}
 
+	Poco::ThreadPool::defaultPool().addCapacity(100);
+
 	unsigned short port = (unsigned short) config().getInt("mq.web.port", 8081);
 
 	// set-up a server socket
@@ -223,16 +258,14 @@ int MQWebApplication::main(const std::vector<std::string>& args)
 	// start the HTTPServer
 	srv.start();
 
-	poco_information_f1(logger, "MQWeb started and listening on port %hu", port);
+	logger.information("MQWeb started and listening on port %hu", port);
 
 	// wait for CTRL-C or kill
 	waitForTerminationRequest();
 	// Stop the HTTPServer
 	srv.stop();
 
-	MQ::Web::WebSocketRequestHandler::cancel();
-
-	_qmgrPoolCache.clear();
+	logger.trace("Application stopping ...");
 
 	return Application::EXIT_OK;
 }

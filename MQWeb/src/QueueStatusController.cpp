@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/QueueStatusController.h"
-#include "MQ/Web/QueueStatusMapper.h"
+#include "MQ/Web/QueueStatusInquire.h"
 
 namespace MQ
 {
@@ -48,7 +48,7 @@ void QueueStatusController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -61,25 +61,7 @@ void QueueStatusController::inquire()
 		else
 		{
 			// Handle query parameters
-			std::string queueName;
-			if ( form().has("QName") )
-			{
-				queueName = form().get("QName");
-			}
-			else if ( form().has("QueueName") )
-			{
-				queueName = form().get("QueueName");
-			}
-			else if ( form().has("name") )
-			{
-				queueName = form().get("name");
-			}
-
-			if ( queueName.empty() )
-			{
-				queueName = "*";
-			}
-			pcfParameters->set("QName", queueName);
+			pcfParameters->set("QName", form().get("QName", "*"));
 		}
 
 		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
@@ -112,8 +94,8 @@ void QueueStatusController::inquire()
 
 	}
 
-	QueueStatusMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	QueueStatusInquire command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 

@@ -35,9 +35,9 @@
 namespace MQ
 {
 
-CommandServer::CommandServer(QueueManager& qmgr, const std::string& modelQueue)
+CommandServer::CommandServer(Poco::SharedPtr<QueueManager> qmgr, const std::string& modelQueue)
 	: _qmgr(qmgr)
-	, _commandQ(qmgr, qmgr.commandQueue())
+	, _commandQ(qmgr, qmgr->commandQueue())
 	, _replyQ(qmgr, modelQueue)
 {
 	_commandQ.open(MQOO_OUTPUT);
@@ -47,7 +47,7 @@ CommandServer::CommandServer(QueueManager& qmgr, const std::string& modelQueue)
 
 PCF::Ptr CommandServer::createCommand(MQLONG command) const
 {
-	return new PCF(command, _qmgr.zos());
+	return new PCF(command, _qmgr->zos());
 }
 
 // Throws MQException
@@ -57,6 +57,8 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
 
 	command->message()->setReplyToQueue(_replyQ.name());
 	command->message()->setExpiry(1200000);
+	// Make sure responses expire and prevent them to go to the DLQ (See #18)
+	command->message()->setReport(MQRO_PASS_DISCARD_AND_EXPIRY | MQRO_DISCARD_MSG);
 	_commandQ.put(*command->message(), MQPMO_NO_SYNCPOINT);
 
 	long wait = 600000;
@@ -92,7 +94,7 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
 				// on z/OS we can't rely on isLast, because a response
 				// can have multiple sets of responses which have a
 				// last flag in each set ...
-				if ( _qmgr.zos() && mqe.reason() == MQRC_NO_MSG_AVAILABLE )
+				if ( _qmgr->zos() && mqe.reason() == MQRC_NO_MSG_AVAILABLE )
 				{
 					keepRunning = false;
 					continue;
@@ -104,10 +106,10 @@ void CommandServer::sendCommand(PCF::Ptr& command, PCF::Vector& response)
 		wait = 100;
 
 		msgResponse->buffer().resize(msgResponse->dataLength());
-		PCF::Ptr pcf = new PCF(msgResponse, _qmgr.zos());
+		PCF::Ptr pcf = new PCF(msgResponse, _qmgr->zos());
 		response.push_back(pcf);
 
-		if ( ! _qmgr.zos() && pcf->isLast() )
+		if ( ! _qmgr->zos() && pcf->isLast() )
 		{
 			keepRunning = false;
 		}

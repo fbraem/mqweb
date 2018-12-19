@@ -43,7 +43,7 @@ public:
 		GET
 	};
 
-	MessageConsumer(QueueManager& qmgr, const std::string& queueName, Action action = BROWSE);
+	MessageConsumer(QueueManager::Ptr qmgr, const std::string& queueName, Action action = BROWSE);
 		/// Constructor. Can throw a MQException.
 
 	virtual ~MessageConsumer();
@@ -81,18 +81,20 @@ public:
 	void stop();
 		/// Stops the consumer. Can throw a MQException.
 
-	typedef Poco::BasicEvent<Poco::SharedPtr<Message> > Event;
+	typedef Poco::BasicEvent<Poco::SharedPtr<Message> > MessageEvent;
+	MessageEvent messageEvent;
 
-	Event message;
+	typedef Poco::BasicEvent<MQLONG> ErrorEvent;
+	ErrorEvent errorEvent;
 
 private:
 
 	static void consume(MQHCONN conn, MQMD* md, MQGMO* gmo, MQBYTE* buffer, MQCBC* context);
 		/// Callback for MQCB
 
-	QueueManager& _qmgr;
+	QueueManager::Ptr _qmgr;
 
-	Queue _queue;
+	Queue::Ptr _queue;
 
 	Action _action;
 

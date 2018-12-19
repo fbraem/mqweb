@@ -29,20 +29,24 @@ namespace MQ
 
 MQGMO MessageConsumer::_initialGMO = { MQGMO_DEFAULT };
 
-MessageConsumer::MessageConsumer(QueueManager& qmgr, const std::string& queueName, Action action)
+MessageConsumer::MessageConsumer(QueueManager::Ptr qmgr, const std::string& queueName, Action action)
 	: _qmgr(qmgr)
-	, _queue(qmgr, queueName)
+	, _queue(new Queue(qmgr, queueName))
 	, _md(Message::_initialMD)
 	, _action(action)
 	, _gmo(MessageConsumer::_initialGMO)
 	, _state(DIRTY)
 {
-	MQLONG options = MQOO_INPUT_SHARED | MQOO_FAIL_IF_QUIESCING;
+	MQLONG options = MQOO_FAIL_IF_QUIESCING;
 	if ( action == BROWSE )
 	{
 		options |= MQOO_BROWSE;
 	}
-	_queue.open(options);
+	else
+	{
+		options |= MQOO_INPUT_SHARED;
+	}
+	_queue->open(options);
 }
 
 MessageConsumer::~MessageConsumer()
@@ -66,13 +70,14 @@ void MessageConsumer::setup()
 	cbd.CallbackFunction = (MQPTR) MessageConsumer::consume;
 	cbd.CallbackArea = this;
 
+	_gmo.Options |= MQGMO_FAIL_IF_QUIESCING;
 	if ( _action == BROWSE )
 	{
 		_gmo.Options |= MQGMO_BROWSE_NEXT;
 	}
 
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
-	mqSystem.functions().cb(_qmgr.handle(), MQOP_REGISTER, &cbd, _queue.handle(), &_md, &_gmo);
+	mqSystem.functions().cb(_qmgr->handle(), MQOP_REGISTER, &cbd, _queue->handle(), &_md, &_gmo);
 
 	_state = READY;
 }
@@ -87,7 +92,7 @@ void MessageConsumer::clear()
 	}
 
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
-	mqSystem.functions().cb(_qmgr.handle(), MQOP_DEREGISTER, &cbd, _queue.handle(), &_md, &_gmo);
+	mqSystem.functions().cb(_qmgr->handle(), MQOP_DEREGISTER, &cbd, _queue->handle(), &_md, &_gmo);
 
 	_state = DIRTY;
 }
@@ -103,7 +108,7 @@ void MessageConsumer::start()
 	MQCTLO options = { MQCTLO_DEFAULT };
 
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
-	mqSystem.functions().ctl(_qmgr.handle(), MQOP_START, &options);
+	mqSystem.functions().ctl(_qmgr->handle(), MQOP_START, &options);
 
 	_state = STARTED;
 }
@@ -112,18 +117,24 @@ void MessageConsumer::stop()
 {
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
 	MQCTLO options = { MQCTLO_DEFAULT };
-	mqSystem.functions().ctl(_qmgr.handle(), MQOP_STOP, &options);
+	mqSystem.functions().ctl(_qmgr->handle(), MQOP_STOP, &options);
 
 	_state = STOPPED;
 }
 
 void MessageConsumer::consume(MQHCONN conn, MQMD* md, MQGMO* gmo, MQBYTE* buffer, MQCBC* context)
 {
-	Poco::SharedPtr<Message> msg = new Message(buffer, context->DataLength);
-	memcpy(msg->md(), md, sizeof(MQMD));
-
 	MessageConsumer* consumer = reinterpret_cast<MessageConsumer*>(context->CallbackArea);
-	consumer->message.notify(consumer, msg);
+	if (context->CompCode == MQCC_OK)
+	{
+		Poco::SharedPtr<Message> msg = new Message(buffer, context->DataLength);
+		memcpy(msg->md(), md, sizeof(MQMD));
+		consumer->messageEvent.notify(consumer, msg);
+	}
+	else
+	{
+		consumer->errorEvent.notify(consumer, context->Reason);
+	}
 }
 
 }

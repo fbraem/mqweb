@@ -39,25 +39,6 @@ public:
 
 	void inquire();
 		/// Action inquire. Inquire the the attributes of queue managers in a cluster.
-		/// URL:
-		///  clusqmgr/inquire/<qmgrName>
-		///  clusqmgr/inquire/<qmgrName>/<clusterName>
-		///  clusqmgr/inquire/<qmgrName>?clusterName=BIRDS
-		///
-		/// Query Parameters:
-		///  clusterQmgrName: Queuemanager name. Generic queue manager names are supported. (* is default)
-		///  channelName: Specifies that eligible cluster queue managers are limited to those
-		///    having the specified channel name. Generic channel names are supported (* is default).
-		///  clusterName: Specifies that eligible cluster queue managers are limited to those
-		///    having the specified cluster name. Generic cluster names are supported (* is the default).
-		///
-		/// Query parameters are ignored when a clusterName is passed in the URI path.
-		///
-		/// The returned JSON object can contain following properties:
-		///  mqweb : An object with information about the MQWeb application and request.
-		///  clusqmgrs : An array with all mcluster. This is always an array (even when a clustername is passed in the URI path).
-		///   When an MQ error occurs there will be no clusqmgrs property.
-		///  error: An object describing the MQ error (only returned on error).
 
 	void suspend();
 

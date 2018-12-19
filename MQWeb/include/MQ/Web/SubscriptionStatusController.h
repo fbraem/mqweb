@@ -38,7 +38,7 @@ public:
 		/// Destructor
 
 	void inquire();
-		/// See: http://www.mqweb.org/api/sub.html#inquire
+		/// See: http://www.mqweb.org/api/sbstatus.html#inquire
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions.

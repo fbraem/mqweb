@@ -36,15 +36,6 @@ public:
 
 	void handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
 		/// Handles the request.
-
-	static void cancel();
-		/// Cancel all websocket tasks. Should be called before the application ends ...
-
-private:
-	static Poco::ThreadPool _tmThreadPool;
-
-	static Poco::TaskManager _tm;
-
 };
 
 

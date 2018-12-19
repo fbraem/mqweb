@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/ChannelInitiatorController.h"
-#include "MQ/Web/ChannelInitiatorMapper.h"
+#include "MQ/Web/ChannelInitiatorInquire.h"
 
 namespace MQ
 {
@@ -48,7 +48,7 @@ void ChannelInitiatorController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		if ( form().has("CommandScope") )
 		{
@@ -57,8 +57,8 @@ void ChannelInitiatorController::inquire()
 
 	}
 
-	ChannelInitiatorMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	ChannelInitiatorInquire command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 

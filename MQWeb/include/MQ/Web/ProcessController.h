@@ -39,22 +39,6 @@ public:
 
 	void inquire();
 		/// Action inquire. Inquire the processes and returns the details in JSON format.
-		/// URL:
-		///  process/inquire/<qmgrName>
-		///  process/inquire/<qmgrName>/<processName>
-		///  process/inquire/<qmgrName>?processName=MQWEB*
-		///
-		/// Query Parameters:
-		///  processName: Name of the process (* is default).
-		///  excludeSystem: When 'true', don't return system processes
-		///
-		/// Query parameters are ignored when a processName is passed in the URI path.
-		///
-		/// The returned JSON object can contain following properties:
-		///  mqweb : An object with information about the MQWeb application and request.
-		///  processes : An array with all matching processes. This is always an array (even when a processname is passed in the URI path).
-		///   When an MQ error occurs there will be no processes property.
-		///  error: An object describing the MQ error (only returned on error).
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions.

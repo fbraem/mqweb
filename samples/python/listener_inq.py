@@ -1,17 +1,20 @@
 '''
  Inquire all SYSTEM listeners with transporttype TCP from a queuemanager.
- MQWeb runs on localhost and is listening on port 8081. 
+ MQWeb runs on localhost and is listening on port 8081.
 '''
-import sys
 import json
 import httplib
 import socket
+import argparse
 
-if len(sys.argv) < 2 :
-	print 'Please pass me the name of a queuemanager as argument'
-	sys.exit(1)
+parser = argparse.ArgumentParser(
+	description='MQWeb - Python sample - Inquire all SYSTEM lisener with transporttype TCP',
+	epilog="For more information: http://www.mqweb.org"
+)
+parser.add_argument('-m', '--queuemanager', help='Name of the queuemanager', required=True)
+args = parser.parse_args()
 
-url = '/api/listener/inquire/' + sys.argv[1] + '/SYSTEM*/TCP'
+url = '/api/listener/inquire/' + args.queuemanager + '/SYSTEM*/TCP'
 
 try:
 	conn = httplib.HTTPConnection('localhost', 8081)
@@ -20,7 +23,7 @@ try:
 	result = json.loads(res.read())
 
 	if 'error' in result:
-		print ('Received a WebSphere MQ error: ' +	
+		print ('Received a WebSphere MQ error: ' +
 			str(result['error']['reason']['code'])
 		)
 	else:

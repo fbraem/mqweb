@@ -45,13 +45,8 @@ public:
 
 	void inquire();
 		/// Action inquire. Inquire the queuemanager and returns all data in JSON format.
-		/// URL's:
-		///  qmgr/inquire/<qmgrName>
-		///
-		/// The returned JSON object can contain following properties:
-		///  mqweb : An object with information about the MQWeb application and request.
-		///  qmgr : An object with all queuemanager details.
-		///  error: An object describing the MQ error (only returned on error).
+	void ping();
+		/// Action ping.
 };
 
 inline const Controller::ActionMap& QueueManagerController::getActions() const
@@ -59,6 +54,7 @@ inline const Controller::ActionMap& QueueManagerController::getActions() const
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
 			("inquire", static_cast<ActionFn>(&QueueManagerController::inquire))
+			("ping", static_cast<ActionFn>(&QueueManagerController::ping))
 		;
 	return actions;
 }

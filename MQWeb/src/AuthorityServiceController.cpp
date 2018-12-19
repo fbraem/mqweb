@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/AuthorityServiceController.h"
-#include "MQ/Web/AuthorityServiceMapper.h"
+#include "MQ/Web/AuthorityServiceInquire.h"
 
 namespace MQ
 {
@@ -55,7 +55,7 @@ void AuthorityServiceController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
 		formElementToJSONArray("AuthServiceAttrs", attrs);
@@ -77,8 +77,8 @@ void AuthorityServiceController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 
-	AuthorityServiceMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	AuthorityServiceInquire command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 

@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/ListenerController.h"
-#include "MQ/Web/ListenerMapper.h"
+#include "MQ/Web/ListenerInquire.h"
 
 namespace MQ
 {
@@ -48,7 +48,7 @@ void ListenerController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -60,20 +60,7 @@ void ListenerController::inquire()
 		}
 		else
 		{
-			std::string listenerNameField;
-			if ( form().has("ListenerName") )
-			{
-				listenerNameField = form().get("ListenerName");
-			}
-			else if ( form().has("name") )
-			{
-				listenerNameField = form().get("name");
-			}
-			if ( listenerNameField.empty() )
-			{
-				listenerNameField = "*";
-			}
-			pcfParameters->set("ListenerName", listenerNameField);
+			pcfParameters->set("ListenerName", form().get("ListenerName", "*"));
 		}
 
 		if ( parameters.size() > 2 )
@@ -101,8 +88,8 @@ void ListenerController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 
-	ListenerMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	ListenerInquire command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 

@@ -1,3 +1,19 @@
+0.1.1
+  - Return a HTTP status when a POCO exception occurs.
+  - Improve queuemanager pool management
+  - Add clear queue
+  - Add ping qmgr
+  - Add get message
+  - Add browse message
+  - Add inquire chlauth
+  - Add set chlauth
+  - Browse statistics/accounting messages
+  - Browse RFH messages
+  - Add create queue
+  - Add delete queue
+  - Add copy queue
+  - Queuemanager configuration can be read from ODBC
+  
 0.1.0
   - Web app has its own repository now: mqwebapp
   - 'filter' renamed to 'input' in mqweb JSON answer

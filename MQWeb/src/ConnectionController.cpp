@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/ConnectionController.h"
-#include "MQ/Web/ConnectionMapper.h"
+#include "MQ/Web/ConnectionInquire.h"
 
 namespace MQ
 {
@@ -48,7 +48,7 @@ void ConnectionController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -88,8 +88,8 @@ void ConnectionController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 
-	ConnectionMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	ConnectionInquire command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 

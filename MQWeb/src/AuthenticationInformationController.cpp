@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/AuthenticationInformationController.h"
-#include "MQ/Web/AuthenticationInformationMapper.h"
+#include "MQ/Web/AuthenticationInformationInquire.h"
 
 namespace MQ
 {
@@ -48,7 +48,7 @@ void AuthenticationInformationController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -60,20 +60,7 @@ void AuthenticationInformationController::inquire()
 		else
 		{
 			// Handle query parameters
-			std::string authInfoNameField;
-			if ( form().has("AuthInfoName") )
-			{
-				authInfoNameField = form().get("AuthInfoName");
-			}
-			else if ( form().has("name") )
-			{
-				authInfoNameField = form().get("name");
-			}
-			if ( authInfoNameField.empty() )
-			{
-				authInfoNameField = "*";
-			}
-			pcfParameters->set("AuthInfoName", authInfoNameField);
+			pcfParameters->set("AuthInfoName", form().get("AuthInfoName", "*"));
 		}
 
 		Poco::JSON::Array::Ptr attrs = new Poco::JSON::Array();
@@ -107,8 +94,8 @@ void AuthenticationInformationController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 
-	AuthenticationInformationMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	AuthenticationInformationInquire command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 

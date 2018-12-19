@@ -42,25 +42,6 @@ public:
 
 	void inquire();
 		/// Action inquire. Inquire status and returns all data in JSON format.
-		/// URL's:
-		///  qstatus/inquire/<qmgrName>
-		///  qstatus/inquire/<qmgrName>/<queueName>
-		///  qstatus/inquire/<qmgrName>?queueName=MQWEB*&openType=Input
-		///
-		/// Query Parameters:
-		///  queueName: Name of the queue (* is default).
-		///  openType: All, Input or Output (default is All)
-		///  statusType: Queue Status or Handle (default is Queue Status)
-		///  excludeSystem: when 'true', queues starting with 'SYSTEM.' are excluded.
-		///  excludeTemp: when 'true', temporary queues are excluded.
-		///
-		/// The queueName query parameter is ignored when a queueName is passed in the URI path.
-		///
-		/// The returned JSON object can contain following properties:
-		///  mqweb : An object with information about the MQWeb application and request.
-		///  statuses : An array with all statuses. This is always an array.
-		///  When an MQ error occurs there will be no statuses property.
-		///  error: An object describing the MQ error (only returned on error).
 
 private:
 };

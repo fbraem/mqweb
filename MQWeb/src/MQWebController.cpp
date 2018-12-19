@@ -34,6 +34,7 @@
 #include "MQ/MQSubsystem.h"
 #include "MQ/Web/QueueManagerDefaultConfig.h"
 #include "MQ/Web/QueueManagerDatabaseConfig.h"
+#include "MQ/Web/QueueManagerPoolCache.h"
 
 namespace MQ
 {
@@ -54,7 +55,7 @@ MQWebController::~MQWebController()
 void MQWebController::inquire()
 {
 	Poco::JSON::Object::Ptr mqweb = new Poco::JSON::Object();
-	set("data", mqweb);
+	setData("data", mqweb);
 
 	Poco::JSON::Object::Ptr version = new Poco::JSON::Object();
 	mqweb->set("version", version);
@@ -72,30 +73,35 @@ void MQWebController::inquire()
 	MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQSubsystem>();
 	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
 	mqweb->set("client", mqSystem.client());
+
+	Poco::JSON::Array::Ptr connections = new Poco::JSON::Array();
+	mqweb->set("connections", connections);
+	std::vector<std::string> pools = QueueManagerPoolCache::instance()->getAllPoolNames();
+	for(std::vector<std::string>::const_iterator it = pools.begin(); it != pools.end(); ++it)
+	{
+		QueueManagerPool::Ptr pool = QueueManagerPoolCache::instance()->getQueueManagerPool(*it);
+		Poco::JSON::Object::Ptr jsonPool = new Poco::JSON::Object();
+		connections->add(jsonPool);
+		jsonPool->set("name", *it);
+		jsonPool->set("size", pool->size());
+		jsonPool->set("capacity", pool->capacity());
+		jsonPool->set("peakCapacity", pool->peakCapacity());
+		jsonPool->set("available", pool->available());
+	}
 }
 
 void MQWebController::list()
 {
 	Poco::JSON::Array::Ptr queuemanagers = new Poco::JSON::Array();
-	set("data", queuemanagers);
+	setData("data", queuemanagers);
 
 	MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQSubsystem>();
 	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
 	if ( mqSystem.client() )
 	{
 		std::vector<std::string> configuredQueuemanagers;
-		Poco::SharedPtr<QueueManagerConfig> qmgrConfig;
-		if ( config.has("mq.web.config.connection") )
-		{
-			std::string dbConnector = config.getString("mq.web.config.connector", Poco::Data::SQLite::Connector::KEY);
-			std::string dbConnection = config.getString("mq.web.config.connection");
-			qmgrConfig = new QueueManagerDatabaseConfig("", dbConnector, dbConnection);
-		}
-		else
-		{
-			qmgrConfig = new QueueManagerDefaultConfig("", config);
-		}
-		qmgrConfig->list(configuredQueuemanagers);
+		QueueManagerDefaultConfig qmgrConfig(config);
+		qmgrConfig.list(configuredQueuemanagers);
 		for(std::vector<std::string>::iterator it = configuredQueuemanagers.begin(); it != configuredQueuemanagers.end(); ++it)
 		{
 			queuemanagers->add(*it);

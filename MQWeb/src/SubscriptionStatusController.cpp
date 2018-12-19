@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/SubscriptionStatusController.h"
-#include "MQ/Web/SubscriptionStatusMapper.h"
+#include "MQ/Web/SubscriptionStatusInquire.h"
 
 namespace MQ
 {
@@ -48,7 +48,7 @@ void SubscriptionStatusController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -61,16 +61,7 @@ void SubscriptionStatusController::inquire()
 		else
 		{
 			// Handle query parameters
-			std::string subNameField;
-			if ( form().has("SubName") )
-			{
-				subNameField = form().get("SubName");
-			}
-			else if ( form().has("name") )
-			{
-				subNameField = form().get("name");
-			}
-			pcfParameters->set("SubName", subNameField);
+			pcfParameters->set("SubName", form().get("SubName", "*"));
 		}
 
 		if ( form().has("SubId") )
@@ -107,8 +98,8 @@ void SubscriptionStatusController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 
-	SubscriptionStatusMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	SubscriptionStatusInquire command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 

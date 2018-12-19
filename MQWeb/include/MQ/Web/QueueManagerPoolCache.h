@@ -21,7 +21,7 @@
 #ifndef _MQ_QueueManagerPoolCache_h
 #define _MQ_QueueManagerPoolCache_h
 
-#include "Poco/ExpireCache.h"
+#include <map>
 #include "Poco/Dynamic/Struct.h"
 #include "MQ/QueueManagerPool.h"
 
@@ -48,6 +48,8 @@ public:
 	QueueManagerPool::Ptr getQueueManagerPool(const std::string& qmgrName);
 		/// Get a QueueManagerPool from the cache
 
+	std::vector<std::string> getAllPoolNames() const;
+
 	static QueueManagerPoolCache* instance();
 		/// Returns the only instance of this class
 
@@ -57,12 +59,21 @@ private:
 
 	void setup();
 
-	Poco::ExpireCache<std::string, QueueManagerPool> _cache;
+	std::map<std::string, QueueManagerPool::Ptr> _cache;
 
 	Poco::Mutex _mutex;
 
 	static QueueManagerPoolCache* _instance;
 };
+
+inline std::vector<std::string> QueueManagerPoolCache::getAllPoolNames() const
+{
+	std::vector<std::string> keys;
+	for (std::map<std::string, QueueManagerPool::Ptr>::const_iterator it = _cache.begin(); it != _cache.end(); ++it) {
+		keys.push_back(it->first);
+	}
+	return keys;
+}
 
 inline QueueManagerPoolCache* QueueManagerPoolCache::instance()
 {

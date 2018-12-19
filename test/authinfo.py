@@ -14,12 +14,18 @@ class TestAuthInfoActions(MQWebTest):
 		json = self.getJSON('/api/authinfo/inquire/' + self.qmgr)
 
 	'''
+	Test Empty Result with HTTP GET
+	'''
+	def testEmptyInquire(self):
+		json = self.getJSON('/api/authinfo/inquire/' + self.qmgr + '/ZZZ*', True)
+
+	'''
 	 Test Inquire with HTTP POST
 	'''
 	def testInquireJSON(self):
 
 		print
-		
+
 		filter = { "AuthInfoName" : "*" }
 		json = self.appJSON('/api/authinfo/inquire/' + self.qmgr, filter)
 

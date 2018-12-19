@@ -19,7 +19,11 @@
 * SOFTWARE.
 */
 #include "MQ/Web/QueueController.h"
-#include "MQ/Web/QueueMapper.h"
+#include "MQ/Web/QueueCopy.h"
+#include "MQ/Web/QueueClear.h"
+#include "MQ/Web/QueueCreate.h"
+#include "MQ/Web/QueueInquire.h"
+#include "MQ/Web/QueueRemove.h"
 
 namespace MQ
 {
@@ -36,8 +40,108 @@ QueueController::~QueueController()
 {
 }
 
+void QueueController::clear()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
 
-void QueueController::inquire()
+	if (data().has("input") && data().isObject("input"))
+	{
+		pcfParameters = data().getObject("input");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		meta().set("input", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a queuename. If this is passed, the
+		// query parameter QName or queueName is ignored.
+		if (parameters.size() > 1)
+		{
+			pcfParameters->set("QName", parameters[1]);
+		}
+		else
+		{
+			// Handle query parameters
+			pcfParameters->set("QName", form().get("QName", "*"));
+		}
+
+		if (form().has("CommandScope"))
+		{
+			pcfParameters->set("CommandScope", form().get("CommandScope"));
+		}
+
+		if (form().has("QSGDisposition"))
+		{
+			pcfParameters->set("QSGDisposition", form().get("QSGDisposition"));
+		}
+
+	}
+
+	QueueClear command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
+}
+
+void QueueController::copy()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
+	if ( data().has("input") && data().isObject("input") )
+	{
+		pcfParameters = data().getObject("input");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+
+		std::vector<std::string> parameters = getParameters();
+		if ( parameters.size() > 2 )
+		{
+			pcfParameters->set("FromQName", parameters[2]);
+		}
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("ToQName", parameters[1]);
+		}
+
+		// Copy all query parameters to PCF
+		for(Poco::Net::NameValueCollection::ConstIterator it = form().begin(); it != form().end(); ++it)
+		{
+			pcfParameters->set(it->first, it->second);
+		}
+	}
+	QueueCopy command(*commandServer(), pcfParameters);
+	command.execute();
+}
+
+void QueueController::create()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
+	if ( data().has("input") && data().isObject("input") )
+	{
+		pcfParameters = data().getObject("input");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+
+		std::vector<std::string> parameters = getParameters();
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("QName", parameters[1]);
+		}
+		// Copy all query parameters to PCF, except QName if it is already set on the URI
+		for(Poco::Net::NameValueCollection::ConstIterator it = form().begin(); it != form().end(); ++it)
+		{
+			if (parameters.size() > 1 && Poco::icompare(it->first, "QName") == 0) continue;
+			pcfParameters->set(it->first, it->second);
+		}
+	}
+	QueueCreate command(*commandServer(), pcfParameters);
+	command.execute();
+}
+
+void QueueController::remove()
 {
 	Poco::JSON::Object::Ptr pcfParameters;
 
@@ -66,20 +170,54 @@ void QueueController::inquire()
 			{
 				queueName = form().get("QName");
 			}
-			else if ( form().has("QueueName") )
-			{
-				queueName = form().get("QueueName");
-			}
-			else if ( form().has("name") )
-			{
-				queueName = form().get("name");
-			}
-
-			if ( queueName.empty() )
-			{
-				queueName = "*";
-			}
 			pcfParameters->set("QName", queueName);
+		}
+
+		if ( form().has("CommandScope") )
+		{
+			pcfParameters->set("CommandScope", form().get("CommandScope"));
+		}
+
+		if ( form().has("QSGDisposition") )
+		{
+			pcfParameters->set("QSGDisposition", form().get("QSGDisposition"));
+		}
+
+		if ( form().has("QType") )
+		{
+			pcfParameters->set("QType", form().get("QType"));
+		}
+	}
+
+	QueueRemove command(*commandServer(), pcfParameters);
+	command.execute();
+}
+
+void QueueController::inquire()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
+
+	if ( data().has("input") && data().isObject("input") )
+	{
+		pcfParameters = data().getObject("input");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		meta().set("input", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a queuename. If this is passed, the
+		// query parameter QName or queueName is ignored.
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("QName", parameters[1]);
+		}
+		else
+		{
+			// Handle query parameters
+			pcfParameters->set("QName", form().get("QName", "*"));
 		}
 
 		if ( form().has("ClusterInfo") )
@@ -150,18 +288,9 @@ void QueueController::inquire()
 			pcfParameters->set("Usage", form().get("Usage"));
 		}
 
-		std::string queueType;
 		if ( form().has("QueueType") )
 		{
-			queueType = form().get("QueueType");
-		}
-		else
-		{
-			queueType = form().get("QType", "");
-		}
-		if ( !queueType.empty() )
-		{
-			pcfParameters->set("QType", queueType);
+			pcfParameters->set("QType", form().get("QueueType"));
 		}
 
 		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
@@ -179,8 +308,8 @@ void QueueController::inquire()
 		}
 	}
 
-	QueueMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	QueueInquire command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 

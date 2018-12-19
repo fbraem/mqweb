@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/ServiceController.h"
-#include "MQ/Web/ServiceMapper.h"
+#include "MQ/Web/ServiceInquire.h"
 
 namespace MQ
 {
@@ -48,7 +48,7 @@ void ServiceController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -61,20 +61,7 @@ void ServiceController::inquire()
 		else
 		{
 			// Handle query parameters
-			std::string serviceNameField;
-			if ( form().has("ServiceName") )
-			{
-				serviceNameField = form().get("ServiceName");
-			}
-			else if ( form().has("name") )
-			{
-				serviceNameField = form().get("name");
-			}
-			if ( serviceNameField.empty() )
-			{
-				serviceNameField = "*";
-			}
-			pcfParameters->set("ServiceName", serviceNameField);
+			pcfParameters->set("ServiceName", form().get("ServiceName", "*"));
 		}
 
 		pcfParameters->set("ExcludeSystem", form().get("ExcludeSystem", "false").compare("true") == 0);
@@ -93,8 +80,8 @@ void ServiceController::inquire()
 		handleFilterForm(pcfParameters);
 	}
 
-	ServiceMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	ServiceInquire command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 

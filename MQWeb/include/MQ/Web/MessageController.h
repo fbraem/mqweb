@@ -22,7 +22,7 @@
 #define _MQWeb_MessageController_h
 
 #include "MQ/Web/MQController.h"
-#include "MQ/Web/Dictionary.h"
+#include "MQ/Web/MapInitializer.h"
 
 namespace MQ
 {
@@ -43,39 +43,19 @@ public:
 		/// Action browse.
 
 	void dump();
-		/// Action dump. Returns the message in ascii / hex / ebcdic in JSON format
-		/// URL':
-		///  /message/dump/<qmgrName>/<queuName>/<msgId>
-		///
-		/// Currently the message size is restricted to 16K.
+		/// Action dump.
+
+	void get();
+		/// Action get.
 
 	void publish();
 		/// Publish a message to a topic
-		///   /message/publish/<qmgrName>/<topicName>/<topicString>
 
 	void put();
 		/// Put a message on a queue
-		///   /message/publish/<qmgrName>/<queueName>
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available action
-
-private:
-
-
-	static void mapMessageToJSON(const Message& message, Poco::JSON::Object& obj);
-
-
-	static void mapJSONToMessage(const Poco::JSON::Object& obj, Message& message);
-
-
-	static Dictionary _reportCodes;
-
-
-	static Dictionary _messageTypeCodes;
-
-
-	static Dictionary _feedbackCodes;
 };
 
 inline const Controller::ActionMap& MessageController::getActions() const
@@ -84,6 +64,7 @@ inline const Controller::ActionMap& MessageController::getActions() const
 		= MapInitializer<std::string, Controller::ActionFn>
 			("browse", static_cast<ActionFn>(&MessageController::browse))
 			("dump", static_cast<ActionFn>(&MessageController::dump))
+			("get", static_cast<ActionFn>(&MessageController::get))
 			("publish", static_cast<ActionFn>(&MessageController::publish))
 			("put", static_cast<ActionFn>(&MessageController::put))
 		;

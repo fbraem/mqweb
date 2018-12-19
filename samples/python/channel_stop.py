@@ -1,17 +1,21 @@
 '''
- Stops a channel on a queuemanager 
- MQWeb runs on localhost and is listening on port 8081. 
+ Stops a channel on a queuemanager
+ MQWeb runs on localhost and is listening on port 8081.
 '''
-import sys
 import json
 import httplib
 import socket
+import argparse
 
-if len(sys.argv) < 3 :
-	print 'Please pass me the name of a queuemanager and a channelname as argument'
-	sys.exit(1)
+parser = argparse.ArgumentParser(
+	description='MQWeb - Python sample - Stop Channel',
+	epilog="For more information: http://www.mqweb.org"
+)
+parser.add_argument('-m', '--queuemanager', help='Name of the queuemanager', required=True)
+parser.add_argument('-c', '--channel', help='Name of the channel', required=True)
+args = parser.parse_args()
 
-url = "/api/channel/stop/" + sys.argv[1] + '/' + sys.argv[2];
+url = "/api/channel/stop/" + args.queuemanager + '/' + args.channel;
 
 try:
 	conn = httplib.HTTPConnection('localhost', 8081)
@@ -20,7 +24,7 @@ try:
 	result = json.loads(res.read())
 
 	if 'error' in result:
-		print ('Received a WebSphere MQ error: ' +	
+		print ('Received a WebSphere MQ error: ' +
 			str(result['error']['reason']['code'])
 		)
 	else:

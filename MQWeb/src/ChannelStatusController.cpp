@@ -19,7 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/ChannelStatusController.h"
-#include "MQ/Web/ChannelStatusMapper.h"
+#include "MQ/Web/ChannelStatusInquire.h"
 
 namespace MQ
 {
@@ -47,7 +47,7 @@ void ChannelStatusController::inquire()
 	else
 	{
 		pcfParameters = new Poco::JSON::Object();
-		set("input", pcfParameters);
+		setData("input", pcfParameters);
 
 		std::vector<std::string> parameters = getParameters();
 		// First parameter is queuemanager
@@ -60,20 +60,7 @@ void ChannelStatusController::inquire()
 		else
 		{
 			// Handle query parameters
-			std::string channelNameField;
-			if ( form().has("ChannelName") )
-			{
-				channelNameField = form().get("ChannelName");
-			}
-			else if ( form().has("name") )
-			{
-				channelNameField = form().get("name");
-			}
-			if ( channelNameField.empty() )
-			{
-				channelNameField = "*";
-			}
-			pcfParameters->set("ChannelName", channelNameField);
+			pcfParameters->set("ChannelName", form().get("ChannelName", "*"));
 		}
 
 		if ( form().has("ChannelType") )
@@ -105,8 +92,8 @@ void ChannelStatusController::inquire()
 
 		handleFilterForm(pcfParameters);
 	}
-	ChannelStatusMapper mapper(*commandServer(), pcfParameters);
-	set("data", mapper.inquire());
+	ChannelStatusInquire command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 
