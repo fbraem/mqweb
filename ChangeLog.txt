@@ -1,3 +1,6 @@
+0.1.2
+  - Add create/copy/remove channel
+
 0.1.1
   - Return a HTTP status when a POCO exception occurs.
   - Improve queuemanager pool management
