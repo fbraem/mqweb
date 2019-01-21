@@ -35,7 +35,7 @@ using namespace Poco::Data::Keywords;
 
 DictionaryCache* DictionaryCache::_instance;
 
-DictionaryCache::DictionaryCache()
+DictionaryCache::DictionaryCache(const std::string& dbName) : _dbName(dbName)
 {
 	setup();
 }
@@ -75,14 +75,12 @@ Poco::SharedPtr<Dictionary> DictionaryCache::load(const std::string& name)
 	typedef Poco::Tuple<int, std::string, Poco::Nullable<int>, Poco::Nullable<std::string> > Attribute;
 	std::vector<Attribute> attributes;
 
-	Poco::Util::LayeredConfiguration& config = Poco::Util::Application::instance().config();
-	std::string databaseName = config.getString("mq.web.db", "mqweb.db");
 	Poco::Logger& logger = Poco::Logger::get("mq.web");
-	poco_trace_f2(logger, "Trying to open SQLite database %s to load dictionary %s", databaseName, name);
+	poco_trace_f2(logger, "Trying to open SQLite database %s to load dictionary %s", _dbName, name);
 
 	try
 	{
-		Poco::Data::Session session(Poco::Data::SQLite::Connector::KEY, databaseName);
+		Poco::Data::Session session(Poco::Data::SQLite::Connector::KEY, _dbName);
 
 		int objectId = 0;
 		session << "SELECT id FROM objects WHERE name = :n", into(objectId), useRef(name), now;

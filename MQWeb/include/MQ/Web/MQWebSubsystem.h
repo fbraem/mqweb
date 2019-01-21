@@ -55,13 +55,13 @@ public:
 
 private:
 
-	MQ::Web::QueueManagerPoolCache* _qmgrPoolCache;
+	QueueManagerPoolCache* _qmgrPoolCache;
 
-	MQ::Web::DictionaryCache _dictionaryCache;
+	DictionaryCache* _dictionaryCache;
 
 	Poco::ThreadPool* _messageConsumerThreadPool;
 
-	MQ::Web::MessageConsumerTaskManager* _messageConsumerTaskManager;
+	MessageConsumerTaskManager* _messageConsumerTaskManager;
 };
 
 

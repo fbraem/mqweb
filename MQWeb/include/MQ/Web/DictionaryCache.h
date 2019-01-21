@@ -34,7 +34,7 @@ class DictionaryCache
 	/// Cache for dictionaries
 {
 public:
-	DictionaryCache();
+	DictionaryCache(const std::string& dbName);
 		/// Constructor
 
 	virtual ~DictionaryCache();
@@ -54,6 +54,8 @@ private:
 	Poco::Mutex _mutex;
 
 	static DictionaryCache* _instance;
+
+	std::string _dbName;
 
 	Poco::SharedPtr<Dictionary> load(const std::string& name);
 };
