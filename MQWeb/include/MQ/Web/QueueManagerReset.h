@@ -18,51 +18,34 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef _MQWeb_QueueManagerController_h
-#define _MQWeb_QueueManagerController_h
+#ifndef _MQWeb_QueueManagerReset_H
+#define _MQWeb_QueueManagerReset_H
 
-#include "MQ/Web/MQController.h"
-#include "MQ/Web/MapInitializer.h"
+#include "MQ/Web/PCFCommand.h"
 
-namespace MQ
-{
-namespace Web
-{
+namespace MQ {
+namespace Web {
 
-
-class QueueManagerController : public MQController
-	/// Controller for a QueueManager object
+class QueueManagerReset : public PCFCommand
+	/// Reset the queuemanager
 {
 public:
-	QueueManagerController();
+
+	QueueManagerReset(CommandServer& commandServer, Poco::JSON::Object::Ptr input);
 		/// Constructor
 
-	virtual ~QueueManagerController();
+	virtual ~QueueManagerReset();
 		/// Destructor
 
-	const std::map<std::string, Controller::ActionFn>& getActions() const;
-		/// Returns all available actions
+	Poco::JSON::Array::Ptr execute();
+		/// Implements the reset queuemanager command.
 
-	void inquire();
-		/// Action inquire. Inquire the queuemanager and returns all data in JSON format.
-	void ping();
-		/// Action ping.
-	void reset();
-		/// Action reset.
+private:
+
+	QueueManagerReset(const QueueManagerReset&);
+
 };
-
-inline const Controller::ActionMap& QueueManagerController::getActions() const
-{
-	static Controller::ActionMap actions
-		= MapInitializer<std::string, Controller::ActionFn>
-			("inquire", static_cast<ActionFn>(&QueueManagerController::inquire))
-			("ping", static_cast<ActionFn>(&QueueManagerController::ping))
-			("reset", static_cast<ActionFn>(&QueueManagerController::reset))
-			;
-	return actions;
-}
-
 
 }} // Namespace MQ::Web
 
-#endif // _MQWeb_QueueManagerController_h
+#endif // _MQWeb_QueueManagerReset_H
