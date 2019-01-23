@@ -1,4 +1,5 @@
 0.1.2
+  - Add reset qmgr
   - Add create/copy/remove channel
 
 0.1.1
@@ -16,7 +17,7 @@
   - Add delete queue
   - Add copy queue
   - Queuemanager configuration can be read from ODBC
-  
+
 0.1.0
   - Web app has its own repository now: mqwebapp
   - 'filter' renamed to 'input' in mqweb JSON answer
