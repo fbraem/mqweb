@@ -201,15 +201,25 @@ void PCFCommand::execute()
 	if ( _response.size() > 0 )
 	{
 		PCF::Vector::const_iterator it = _response.begin();
-		if (     (*it)->getCompletionCode() == MQCC_FAILED
-			  && (*it)->getReasonCode() > 3000
-			  && (*it)->getReasonCode() < 4000
-			  && (*it)->getReasonCode() != MQRCCF_NONE_FOUND
-			  && (*it)->getReasonCode() != MQRCCF_CHL_STATUS_NOT_FOUND
-			  && (*it)->getReasonCode() != MQRCCF_TOPIC_STRING_NOT_FOUND 
-			  && (*it)->getReasonCode() != MQRCCF_CHLAUTH_NOT_FOUND)
+		if ((*it)->getCompletionCode() == MQCC_FAILED)
 		{
-			throw MQException("PCF", getCommandString((*it)->getCommand()), (*it)->getCompletionCode(), (*it)->getReasonCode());
+			if ((*it)->getReasonCode() > 3000
+				&& (*it)->getReasonCode() < 4000) {
+				if ((*it)->getReasonCode() != MQRCCF_NONE_FOUND
+					&& (*it)->getReasonCode() != MQRCCF_CHL_STATUS_NOT_FOUND
+					&& (*it)->getReasonCode() != MQRCCF_TOPIC_STRING_NOT_FOUND
+					&& (*it)->getReasonCode() != MQRCCF_CHLAUTH_NOT_FOUND)
+				{
+					throw MQException("PCF", getCommandString((*it)->getCommand()), (*it)->getCompletionCode(), (*it)->getReasonCode());
+				}
+			} 
+			else 
+			{
+				if ( (*it)->getReasonCode() == MQRC_NOT_AUTHORIZED ) 
+				{
+					throw MQException("PCF", getCommandString((*it)->getCommand()), (*it)->getCompletionCode(), (*it)->getReasonCode());
+				}
+			}
 		}
 	}
 }
