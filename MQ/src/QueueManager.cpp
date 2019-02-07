@@ -66,7 +66,7 @@ void QueueManager::connect()
 	inquireQmgrAttrs();
 }
 
-void QueueManager::connect(const std::string& channel, const std::string& server, const std::string& user, const std::string& pwd)
+void QueueManager::connect(const std::string& channel, const std::string& connection, const std::string& user, const std::string& pwd)
 {
 	MQCNO cno = { MQCNO_DEFAULT };
 	cno.Version = MQCNO_VERSION_2;
@@ -74,7 +74,7 @@ void QueueManager::connect(const std::string& channel, const std::string& server
 
 	MQCD cd = { MQCD_CLIENT_CONN_DEFAULT };
 	strncpy(cd.ChannelName, channel.c_str(), MQ_CHANNEL_NAME_LENGTH);
-	strncpy(cd.ConnectionName, server.c_str(), MQ_CONN_NAME_LENGTH);
+	strncpy(cd.ConnectionName, connection.c_str(), MQ_CONN_NAME_LENGTH);
 	cd.TransportType = MQXPT_TCP;
 	cno.ClientConnPtr = &cd;
 
@@ -107,16 +107,16 @@ void QueueManager::connect(const Poco::DynamicStruct& connectionInformation)
 
 	MQCD cd = { MQCD_CLIENT_CONN_DEFAULT };
 	const std::string channel = connectionInformation["channel"];
-	const std::string server = connectionInformation["server"];
+	const std::string connection = connectionInformation["connection"];
 	strncpy(cd.ChannelName, channel.c_str(), MQ_CHANNEL_NAME_LENGTH);
-	strncpy(cd.ConnectionName, server.c_str(), MQ_CONN_NAME_LENGTH);
+	strncpy(cd.ConnectionName, connection.c_str(), MQ_CONN_NAME_LENGTH);
 	cd.TransportType = MQXPT_TCP;
 	cno.ClientConnPtr = &cd;
 
 	// User/Password needs at least MQCNO version 5
 #ifdef MQCNO_VERSION_5
 	MQCSP csp = { MQCSP_DEFAULT };
-	if (connectionInformation.contains("user")) 
+	if (connectionInformation.contains("user"))
 	{
 		const std::string user = connectionInformation["user"];
 		const std::string pwd = connectionInformation["pwd"];

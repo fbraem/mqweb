@@ -50,7 +50,7 @@ public:
 	void connect();
 		/// Connects to the queuemanager. Can throw an MQException.
 
-	void connect(const std::string& channel, const std::string& server, const std::string& user = "", const std::string& pwd = "");
+	void connect(const std::string& channel, const std::string& connection, const std::string& user = "", const std::string& pwd = "");
 		/// Connects to the queuemanager. Only use this method when the Websphere
 		/// MQ system is loaded in client mode. Can throw an MQException.
 
