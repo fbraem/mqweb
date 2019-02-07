@@ -64,6 +64,20 @@ Poco::DynamicStruct QueueManagerDefaultConfig::read(const std::string& qmgrName)
 			connectionInformation.insert("channel", _config.getString("mq.web.defaultChannel", "SYSTEM.DEF.SVRCONN"));
 		}
 
+		std::string qmgrConfigUser = qmgrConfig + ".user";
+		if ( _config.has(qmgrConfigUser) )
+		{
+			connectionInformation.insert("user", _config.getString(qmgrConfigUser));
+			connectionInformation.insert("pwd", _config.getString(qmgrConfig + ".pwd", ""));
+		} else {
+			std::string globalUser = "mq.web.defaultUser";
+			if (_config.has("mq.web.defaultUser"))
+			{
+				connectionInformation.insert("user", _config.getString("mq.web.defaultUser"));
+				connectionInformation.insert("pwd", _config.getString("mq.web.defaultPwd", ""));
+			}
+		}
+
 		if ( _config.has("mq.web.ssl.keyrepos") )
 		{
 			Poco::DynamicStruct ssl;
