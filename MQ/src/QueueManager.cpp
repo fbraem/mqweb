@@ -119,15 +119,17 @@ void QueueManager::connect(const Poco::DynamicStruct& connectionInformation)
 	if (connectionInformation.contains("user"))
 	{
 		const std::string user = connectionInformation["user"];
-		const std::string pwd = connectionInformation["pwd"];
-		csp.AuthenticationType = MQCSP_AUTH_USER_ID_AND_PWD;
-		csp.CSPUserIdPtr = (MQPTR)user.c_str();
-		csp.CSPUserIdLength = (MQLONG)user.length();
-		csp.CSPPasswordPtr = (MQPTR)pwd.c_str();
-		csp.CSPPasswordLength = (MQLONG)pwd.length();
+		if (user.length() > 0 ) {
+			const std::string pwd = connectionInformation["pwd"];
+			csp.AuthenticationType = MQCSP_AUTH_USER_ID_AND_PWD;
+			csp.CSPUserIdPtr = (MQPTR)user.c_str();
+			csp.CSPUserIdLength = (MQLONG)user.length();
+			csp.CSPPasswordPtr = (MQPTR)pwd.c_str();
+			csp.CSPPasswordLength = (MQLONG)pwd.length();
 
-		cno.SecurityParmsPtr = &csp;
-		cno.Version = MQCNO_VERSION_5;
+			cno.SecurityParmsPtr = &csp;
+			cno.Version = MQCNO_VERSION_5;
+		}
 	}
 #endif
 
