@@ -102,7 +102,7 @@ void QueueManager::connect(const Poco::DynamicStruct& connectionInformation)
 {
 	MQCNO cno = { MQCNO_DEFAULT };
 
-	cno.Version = MQCNO_CURRENT_VERSION;
+	cno.Version = MQCNO_VERSION_2;
 	cno.Options = MQCNO_HANDLE_SHARE_BLOCK;
 
 	MQCD cd = { MQCD_CLIENT_CONN_DEFAULT };
@@ -138,7 +138,7 @@ void QueueManager::connect(const Poco::DynamicStruct& connectionInformation)
 	MQAIR authInfoRec = { MQAIR_DEFAULT };
 	if (connectionInformation.contains("ssl"))
 	{
-		if (cno.Version == MQCNO_VERSION_1)
+		if (cno.Version == MQCNO_VERSION_2)
 		{
 			cno.Version = MQCNO_VERSION_4;
 		}
