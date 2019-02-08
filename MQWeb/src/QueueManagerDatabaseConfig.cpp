@@ -20,6 +20,9 @@
 */
 #include "MQ/Web/QueueManagerDatabaseConfig.h"
 
+#include "Poco/Data/RecordSet.h"
+#include "Poco/Data/Statement.h"
+
 namespace MQ {
 namespace Web {
 
@@ -44,17 +47,30 @@ std::map<std::string, Poco::DynamicStruct> QueueManagerDatabaseConfig::read() co
 {
 	std::map<std::string, Poco::DynamicStruct> result;
 
-	typedef Poco::Tuple<std::string, std::string, std::string, int> Attribute;
-	std::vector<Attribute> attributes;
-
-	*_session << "SELECT name, channel, server, port FROM " + _tableName, into(attributes), now;
-	for (std::vector<Attribute>::iterator it = attributes.begin(); it != attributes.end(); ++it) {
+	Poco::Data::Statement select(*_session);
+	select << "SELECT * from " + _tableName, now;
+	Poco::Data::RecordSet rs(select);
+	bool more = rs.moveFirst();
+	while(more)
+	{
 		Poco::DynamicStruct connectionInformation;
-		connectionInformation.insert("channel", it->get<1>());
-		connectionInformation.insert("connection", Poco::format("%s(%d)", it->get<2>(), it->get<3>()));
-		result.insert(std::make_pair(it->get<0>(), connectionInformation));
+		connectionInformation.insert("channel", rs.nvl("channel", ""));
+		Poco::Dynamic::Var server = rs.nvl("server", "");
+		Poco::Dynamic::Var port = rs.nvl("port", 0);
+		connectionInformation.insert("connection", Poco::format("%s(%d)", server.toString(), port.convert<int>()));
+		try
+		{
+			connectionInformation.insert("user", rs.nvl("user", ""));
+			connectionInformation.insert("pwd", rs.nvl("pwd", ""));
+		}
+		catch(Poco::NotFoundException& nfe)
+		{
+			//ignore
+		}
+		std::string name = rs.nvl("name", "");
+		result.insert(std::make_pair(name, connectionInformation));
+		more = rs.moveNext();
 	}
-
 	return result;
 }
 
