@@ -300,7 +300,7 @@ void MessageController::browse()
 			}
 			else if ( mqe.reason() == MQRC_TRUNCATED_MSG_FAILED )
 			{
-				if ( msg->getFormat().compare(MQFMT_EVENT) == 0 
+				if ( msg->getFormat().compare(MQFMT_EVENT) == 0
 					|| msg->getFormat().compare(MQFMT_ADMIN) == 0 ) {
 					// ignore size limit for event/admin messages and retry to get it with the
 					// real length
@@ -357,7 +357,19 @@ void MessageController::browse()
 				else
 				{
 					//TODO: do we try a resize?
-					throw;
+					//For now: browse the message again, but accept a trunctated message.
+					msg->clear();
+					try
+					{
+						q.get(*msg, MQGMO_BROWSE_NEXT | MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
+					}
+					catch(MQException& mqe2)
+					{
+						if ( mqe2.reason() != MQRC_TRUNCATED_MSG_ACCEPTED )
+						{
+							throw;
+						}
+					}
 				}
 			}
 			else
@@ -506,7 +518,7 @@ void MessageController::dump()
 	{
 		jsonMessageDump->set("ascii", oss.str());
 	}
-	
+
 	JSONMessage jsonMessageConverter(message);
 	jsonMessage->set("mqmd", jsonMessageConverter.toJSONMQMD());
 
