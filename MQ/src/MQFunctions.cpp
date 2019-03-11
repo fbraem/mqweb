@@ -451,7 +451,7 @@ void MQFunctions::dltmp(MQHCONN conn, MQHMSG hmsg, MQDMPO* options, MQCHARV* nam
 	}
 }
 
-void MQFunctions::inqmp(MQHCONN conn, MQHMSG hmsg, MQIMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG type, MQLONG valueLength, MQBYTE* value, MQLONG* dataLength, MQLONG* cc, MQLONG* rc)
+void MQFunctions::inqmp(MQHCONN conn, MQHMSG hmsg, MQIMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG* type, MQLONG valueLength, MQBYTE* value, MQLONG* dataLength, MQLONG* cc, MQLONG* rc)
 {
 	poco_assert_dbg(_inqMpFn != NULL);
 
@@ -460,7 +460,7 @@ void MQFunctions::inqmp(MQHCONN conn, MQHMSG hmsg, MQIMPO* options, MQCHARV* nam
 	trace("", "MQINQMP", cc, rc);
 }
 
-void MQFunctions::inqmp(MQHCONN conn, MQHMSG hmsg, MQIMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG type, MQLONG valueLength, MQBYTE* value, MQLONG* dataLength)
+void MQFunctions::inqmp(MQHCONN conn, MQHMSG hmsg, MQIMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG* type, MQLONG valueLength, MQBYTE* value, MQLONG* dataLength)
 {
 	MQLONG cc = MQCC_OK;
 	MQLONG rc = MQRC_NONE;

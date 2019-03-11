@@ -75,7 +75,7 @@ typedef void (*SetMpFn)(MQHCONN, MQHMSG, MQSMPO*, MQCHARV*, MQPD*, MQLONG, MQLON
 typedef void (*DltMpFn)(MQHCONN, MQHMSG, MQDMPO*, MQCHARV*, MQLONG*, MQLONG*);
 
 
-typedef void (*InqMpFn)(MQHCONN, MQHMSG, MQIMPO*, MQCHARV*, MQPD*, MQLONG, MQLONG, MQBYTE*, MQLONG*, MQLONG*, MQLONG*);
+typedef void (*InqMpFn)(MQHCONN, MQHMSG, MQIMPO*, MQCHARV*, MQPD*, MQLONG*, MQLONG, MQBYTE*, MQLONG*, MQLONG*, MQLONG*);
 
 class MQFunctions
 	/// Helper class for calling Websphere MQ functions dynamically. Depending on the loaded library
@@ -175,9 +175,9 @@ public:
 
 	void dltmp(MQHCONN conn, MQHMSG hmsg, MQDMPO* options, MQCHARV* name);
 
-	void inqmp(MQHCONN conn, MQHMSG, MQIMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG type, MQLONG valueLength, MQBYTE* value, MQLONG* dataLength, MQLONG* cc, MQLONG* rc);
+	void inqmp(MQHCONN conn, MQHMSG, MQIMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG* type, MQLONG valueLength, MQBYTE* value, MQLONG* dataLength, MQLONG* cc, MQLONG* rc);
 
-	void inqmp(MQHCONN conn, MQHMSG, MQIMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG type, MQLONG valueLength, MQBYTE* value, MQLONG* dataLength);
+	void inqmp(MQHCONN conn, MQHMSG, MQIMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG* type, MQLONG valueLength, MQBYTE* value, MQLONG* dataLength);
 private:
 	Poco::SharedLibrary _dll;
 
