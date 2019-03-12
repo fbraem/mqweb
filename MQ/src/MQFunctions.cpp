@@ -76,6 +76,11 @@ void MQFunctions::loadLibrary(const std::string& mqLibrary)
 	_inqFn = (InqFn) _dll.getSymbol("MQINQ");
 	_cbFn = (CbFn) _dll.getSymbol("MQCB");
 	_ctlFn = (CtlFn) _dll.getSymbol("MQCTL");
+	_crtMhFn = (CrtMhFn) _dll.getSymbol("MQCRTMH");
+	_dltMhFn = (DltMhFn) _dll.getSymbol("MQDLTMH");
+	_setMpFn = (SetMpFn) _dll.getSymbol("MQSETMP");
+	_dltMpFn = (DltMpFn) _dll.getSymbol("MQDLTMP");
+	_inqMpFn = (InqMpFn) _dll.getSymbol("MQINQMP");
 }
 
 void MQFunctions::conn(char* qmgrName, MQHCONN* hconn, MQLONG* cc, MQLONG* rc)
