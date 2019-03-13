@@ -37,6 +37,7 @@ Queue::Queue(QueueManager::Ptr qmgr, const std::string& name)
 	: _qmgr(qmgr)
 	, _handle(0)
 	, _od(_initialOD)
+	, _messageHandle(NULL)
 {
 	strncpy(_od.ObjectName, name.c_str(), MQ_Q_NAME_LENGTH);
 }
@@ -57,10 +58,14 @@ Queue::~Queue()
 	}
 }
 
-void Queue::open(long options)
+void Queue::open(long options, bool withProperties)
 {
 	MQ::MQSubsystem& mqSystem = Poco::Util::Application::instance().getSubsystem<MQ::MQSubsystem>();
 	_handle = mqSystem.functions().open(_qmgr->handle(), &_od, options);
+
+	if (withProperties) {
+		_messageHandle = new MessageHandle(_qmgr);
+	}
 }
 
 void Queue::close()
@@ -95,6 +100,16 @@ void Queue::put(Message& msg, MQLONG options)
 void Queue::get(Message& msg, MQLONG options, long wait)
 {
 	MQGMO gmo = { MQGMO_DEFAULT };
+	if (!_messageHandle.isNull())
+	{
+		gmo.MsgHandle = _messageHandle->handle();
+		gmo.Version = MQGMO_VERSION_4;
+		gmo.Options |= MQGMO_PROPERTIES_IN_HANDLE;
+	}
+	else
+	{
+		gmo.Version = MQGMO_VERSION_2;
+	}
 
 	if ( ! msg.messageId()->hasAllNullBytes() )
 	{
@@ -123,6 +138,10 @@ void Queue::get(Message& msg, MQLONG options, long wait)
 	try
 	{
 		mqSystem.functions().get(_qmgr->handle(), _handle, msg.md(), &gmo, (MQLONG) size, size > 0 ? msg.buffer().data() : NULL, &msg._dataLength);
+		if (!_messageHandle.isNull())
+		{
+			_messageHandle->getProperties(msg.getProperties());
+		}
 	}
 	catch(MQException& mqe)
 	{

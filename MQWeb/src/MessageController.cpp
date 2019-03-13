@@ -125,7 +125,7 @@ void MessageController::get()
 
 		try
 		{
-			q.get(*msg, MQGMO_PROPERTIES_FORCE_MQRFH2, 0);
+			q.get(*msg);
 		}
 		catch (MQException& mqe)
 		{
@@ -147,7 +147,7 @@ void MessageController::get()
 
 					try
 					{
-						q.get(*msg, MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
+						q.get(*msg, MQGMO_ACCEPT_TRUNCATED_MSG);
 					}
 					catch (MQException& mqe2)
 					{
@@ -166,7 +166,7 @@ void MessageController::get()
 					msg->messageId()->fromHex(currentMessageId);
 					try
 					{
-						q.get(*msg, MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
+						q.get(*msg, MQGMO_ACCEPT_TRUNCATED_MSG);
 					}
 					catch (MQException& mqe2)
 					{
@@ -185,7 +185,7 @@ void MessageController::get()
 					msg->messageId()->fromHex(currentMessageId);
 					try
 					{
-						q.get(*msg, MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
+						q.get(*msg, MQGMO_ACCEPT_TRUNCATED_MSG);
 					}
 					catch (MQException& mqe2)
 					{
@@ -202,7 +202,7 @@ void MessageController::get()
 					msg->messageId()->fromHex(currentMessageId);
 					try
 					{
-						q.get(*msg, MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
+						q.get(*msg, MQGMO_ACCEPT_TRUNCATED_MSG);
 					}
 					catch (MQException& mqe2)
 					{
@@ -274,7 +274,7 @@ void MessageController::browse()
 	Poco::JSON::Array::Ptr jsonMessages = new Poco::JSON::Array();
 
 	Queue q(qmgr(), queueName);
-	q.open(MQOO_BROWSE);
+	q.open(MQOO_BROWSE, true);
 
 	int count = 0;
 	while(limit == -1 || count < limit)
@@ -287,7 +287,7 @@ void MessageController::browse()
 
 		try
 		{
-			q.get(*msg, MQGMO_BROWSE_NEXT | MQGMO_PROPERTIES_FORCE_MQRFH2, 0);
+			q.get(*msg, MQGMO_BROWSE_NEXT, 0);
 		}
 		catch(MQException& mqe)
 		{
@@ -306,7 +306,7 @@ void MessageController::browse()
 					msg->clear();
 					try
 					{
-						q.get(*msg, MQGMO_BROWSE_NEXT | MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
+						q.get(*msg, MQGMO_BROWSE_NEXT | MQGMO_ACCEPT_TRUNCATED_MSG);
 					}
 					catch(MQException& mqe2)
 					{
@@ -324,7 +324,7 @@ void MessageController::browse()
 					msg->clear();
 					try
 					{
-						q.get(*msg, MQGMO_BROWSE_NEXT | MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
+						q.get(*msg, MQGMO_BROWSE_NEXT | MQGMO_ACCEPT_TRUNCATED_MSG);
 					}
 					catch(MQException& mqe2)
 					{
@@ -342,7 +342,7 @@ void MessageController::browse()
 					msg->clear();
 					try
 					{
-						q.get(*msg, MQGMO_BROWSE_NEXT | MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
+						q.get(*msg, MQGMO_BROWSE_NEXT | MQGMO_ACCEPT_TRUNCATED_MSG);
 					}
 					catch(MQException& mqe2)
 					{
@@ -359,7 +359,7 @@ void MessageController::browse()
 					msg->clear();
 					try
 					{
-						q.get(*msg, MQGMO_BROWSE_NEXT | MQGMO_PROPERTIES_FORCE_MQRFH2 | MQGMO_ACCEPT_TRUNCATED_MSG);
+						q.get(*msg, MQGMO_BROWSE_NEXT | MQGMO_ACCEPT_TRUNCATED_MSG);
 					}
 					catch(MQException& mqe2)
 					{
@@ -420,7 +420,7 @@ void MessageController::dump()
 	}
 
 	Queue q(qmgr(), queueName);
-	q.open(MQOO_BROWSE);
+	q.open(MQOO_BROWSE, true);
 
 	try
 	{

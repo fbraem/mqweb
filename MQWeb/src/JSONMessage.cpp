@@ -18,7 +18,7 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-
+#include <iostream>
 #include "Poco/Logger.h"
 
 #include "MQ/Web/JSONMessage.h"
@@ -429,7 +429,8 @@ void JSONMessage::toJSON(Poco::JSON::Object::Ptr jsonMessage)
 	else if (_msg->getFormat().compare(MQFMT_RF_HEADER_2) == 0)
 	{
 		MQBYTE* begin = (MQBYTE*)_msg->buffer().data();
-		MQRFH2* rfh2 = (MQRFH2*)begin;
+		MQRFH2* rfh2 = (MQRFH2*)_msg->buffer().data();
+
 		Poco::JSON::Object::Ptr jsonRfh2 = new Poco::JSON::Object();
 		jsonMessage->set("rfh2", jsonRfh2);
 		jsonRfh2->set("Encoding", rfh2->Encoding);
@@ -457,6 +458,7 @@ void JSONMessage::toJSON(Poco::JSON::Object::Ptr jsonMessage)
 			data += len;
 		}
 	}
+	jsonMessage->set("properties", _msg->getProperties());
 }
 
 }}

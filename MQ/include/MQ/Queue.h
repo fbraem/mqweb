@@ -26,6 +26,8 @@
 #include "Poco/SharedPtr.h"
 #include "Poco/String.h"
 
+#include "MQ/MessageHandle.h"
+
 #include <string>
 #include <vector>
 #include <map>
@@ -50,8 +52,10 @@ public:
 	std::string name() const;
 		/// Returns the name of the queue
 
-	void open(long options);
+	void open(long options, bool withProperties = false);
 		/// Open the queue with the given options. Can throw an MQException.
+		/// When withProperties is true, the properties of a message will also
+		/// be read.
 
 	void close();
 		/// Close the queue. Can throw an MQException.
@@ -74,6 +78,8 @@ private:
 	MQHOBJ handle() const;
 
 	MQOD _od;
+
+	MessageHandle::Ptr _messageHandle;
 
 	static MQOD _initialOD;
 

@@ -29,6 +29,7 @@
 #include "Poco/SharedPtr.h"
 #include "Poco/Buffer.h"
 #include "Poco/DateTimeFormatter.h"
+#include "Poco/Dynamic/Struct.h"
 
 #include "MQ/Buffer.h"
 
@@ -196,6 +197,9 @@ public:
 	void setPriority(MQLONG prio);
 		/// Sets the message priority
 
+	Poco::DynamicStruct& getProperties();
+		/// Get the RFH2 properties
+
 	std::string getPutApplName() const;
 		/// Returns the name of application that put the message
 
@@ -268,6 +272,8 @@ private:
 	// Contains the length of the message on the queue
 	// Only valid when the message is browsed or retrieved.
 	MQLONG _dataLength;
+
+	Poco::DynamicStruct _properties;
 
 	MQMD* md();
 
@@ -536,6 +542,12 @@ inline MQLONG Message::getPriority() const
 inline void Message::setPriority(MQLONG prio)
 {
 	_md.Priority = prio;
+}
+
+
+inline Poco::DynamicStruct& Message::getProperties()
+{
+	return _properties;
 }
 
 
