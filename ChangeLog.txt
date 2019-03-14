@@ -1,6 +1,8 @@
 0.1.2
   - Add reset qmgr
   - Add create/copy/remove channel
+  - Use MQINQMP for reading MQRFH2 properties
+  - User/Pwd for connecting to a queuemanager
 
 0.1.1
   - Return a HTTP status when a POCO exception occurs.
