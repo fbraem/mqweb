@@ -109,10 +109,15 @@ void MessageController::get()
 		Poco::NumberParser::tryParse(sizeField, maxMessageSize);
 	}
 
+	bool readProperties = Poco::icompare(
+		form().get("properties", "true"),
+		"true"
+	) == 0;
+
 	Poco::JSON::Array::Ptr jsonMessages = new Poco::JSON::Array();
 
 	Queue q(qmgr(), queueName);
-	q.open(MQOO_INPUT_SHARED);
+	q.open(MQOO_INPUT_SHARED, readProperties);
 
 	int count = 0;
 	while (limit == -1 || count < limit)
@@ -129,7 +134,6 @@ void MessageController::get()
 		}
 		catch (MQException& mqe)
 		{
-			std::string currentMessageId = msg->messageId()->toHex();
 			if (mqe.reason() == MQRC_NO_MSG_AVAILABLE)
 			{
 				if (!messageId.empty()) throw;
@@ -137,81 +141,46 @@ void MessageController::get()
 			}
 			else if (mqe.reason() == MQRC_TRUNCATED_MSG_FAILED)
 			{
+				std::string currentMessageId = msg->messageId()->toHex();
+
 				if (msg->getFormat().compare(MQFMT_EVENT) == 0
 					|| msg->getFormat().compare(MQFMT_ADMIN) == 0) {
 					// ignore size limit for event/admin messages and retry to get it with the
 					// real length
 					msg->buffer().resize(msg->dataLength(), false);
-					msg->clear();
-					msg->messageId()->fromHex(currentMessageId);
-
-					try
-					{
-						q.get(*msg, MQGMO_ACCEPT_TRUNCATED_MSG);
-					}
-					catch (MQException& mqe2)
-					{
-						if (mqe2.reason() != MQRC_TRUNCATED_MSG_ACCEPTED)
-						{
-							throw;
-						}
-					}
 				}
 				else if (msg->getFormat().compare(MQFMT_XMIT_Q_HEADER) == 0)
 				{
 					// ignore size limit for xmitq messages and retry to get it with at least the
 					// length of the xmitq header
 					msg->buffer().resize(sizeof(MQXQH), false);
-					msg->clear();
-					msg->messageId()->fromHex(currentMessageId);
-					try
-					{
-						q.get(*msg, MQGMO_ACCEPT_TRUNCATED_MSG);
-					}
-					catch (MQException& mqe2)
-					{
-						if (mqe2.reason() != MQRC_TRUNCATED_MSG_ACCEPTED)
-						{
-							throw;
-						}
-					}
 				}
 				else if (msg->getFormat().compare(MQFMT_DEAD_LETTER_HEADER) == 0)
 				{
 					// ignore size limit for dlh messages and retry to get it with at least the
 					// length of the dlh header
 					msg->buffer().resize(sizeof(MQDLH), false);
-					msg->clear();
-					msg->messageId()->fromHex(currentMessageId);
-					try
-					{
-						q.get(*msg, MQGMO_ACCEPT_TRUNCATED_MSG);
-					}
-					catch (MQException& mqe2)
-					{
-						if (mqe2.reason() != MQRC_TRUNCATED_MSG_ACCEPTED)
-						{
-							throw;
-						}
-					}
 				}
 				else
 				{
 					MQLONG size = msg->dataLength();
 					msg->buffer().resize(size);
-					msg->messageId()->fromHex(currentMessageId);
-					try
+				}
+				msg->clear();
+				msg->messageId()->fromHex(currentMessageId);
+
+				try
+				{
+					q.get(*msg, MQGMO_ACCEPT_TRUNCATED_MSG);
+				}
+				catch (MQException& mqe2)
+				{
+					if (mqe2.reason() != MQRC_TRUNCATED_MSG_ACCEPTED)
 					{
-						q.get(*msg, MQGMO_ACCEPT_TRUNCATED_MSG);
-					}
-					catch (MQException& mqe2)
-					{
-						if (mqe2.reason() != MQRC_TRUNCATED_MSG_ACCEPTED)
-						{
-							throw;
-						}
+						throw;
 					}
 				}
+
 			}
 			else
 			{
@@ -271,10 +240,15 @@ void MessageController::browse()
 		Poco::NumberParser::tryParse(sizeField, maxMessageSize);
 	}
 
+	bool readProperties = Poco::icompare(
+		form().get("properties", "true"),
+		"true"
+	) == 0;
+
 	Poco::JSON::Array::Ptr jsonMessages = new Poco::JSON::Array();
 
 	Queue q(qmgr(), queueName);
-	q.open(MQOO_BROWSE, true);
+	q.open(MQOO_BROWSE, readProperties);
 
 	int count = 0;
 	while(limit == -1 || count < limit)
@@ -303,70 +277,34 @@ void MessageController::browse()
 					// ignore size limit for event/admin messages and retry to get it with the
 					// real length
 					msg->buffer().resize(msg->dataLength(), false);
-					msg->clear();
-					try
-					{
-						q.get(*msg, MQGMO_BROWSE_NEXT | MQGMO_ACCEPT_TRUNCATED_MSG);
-					}
-					catch(MQException& mqe2)
-					{
-						if ( mqe2.reason() != MQRC_TRUNCATED_MSG_ACCEPTED )
-						{
-							throw;
-						}
-					}
 				}
 				else if ( msg->getFormat().compare(MQFMT_XMIT_Q_HEADER) == 0 )
 				{
 					// ignore size limit for xmitq messages and retry to get it with at least the
 					// length of the xmitq header
 					msg->buffer().resize(sizeof(MQXQH), false);
-					msg->clear();
-					try
-					{
-						q.get(*msg, MQGMO_BROWSE_NEXT | MQGMO_ACCEPT_TRUNCATED_MSG);
-					}
-					catch(MQException& mqe2)
-					{
-						if ( mqe2.reason() != MQRC_TRUNCATED_MSG_ACCEPTED )
-						{
-							throw;
-						}
-					}
 				}
 				else if ( msg->getFormat().compare(MQFMT_DEAD_LETTER_HEADER) == 0 )
 				{
 					// ignore size limit for dlh messages and retry to get it with at least the
 					// length of the dlh header
 					msg->buffer().resize(sizeof(MQDLH), false);
-					msg->clear();
-					try
-					{
-						q.get(*msg, MQGMO_BROWSE_NEXT | MQGMO_ACCEPT_TRUNCATED_MSG);
-					}
-					catch(MQException& mqe2)
-					{
-						if ( mqe2.reason() != MQRC_TRUNCATED_MSG_ACCEPTED )
-						{
-							throw;
-						}
-					}
 				}
 				else
 				{
 					//TODO: do we try a resize?
-					//For now: browse the message again, but accept a trunctated message.
-					msg->clear();
-					try
+				}
+
+				msg->clear();
+				try
+				{
+					q.get(*msg, MQGMO_BROWSE_NEXT | MQGMO_ACCEPT_TRUNCATED_MSG);
+				}
+				catch(MQException& mqe2)
+				{
+					if ( mqe2.reason() != MQRC_TRUNCATED_MSG_ACCEPTED )
 					{
-						q.get(*msg, MQGMO_BROWSE_NEXT | MQGMO_ACCEPT_TRUNCATED_MSG);
-					}
-					catch(MQException& mqe2)
-					{
-						if ( mqe2.reason() != MQRC_TRUNCATED_MSG_ACCEPTED )
-						{
-							throw;
-						}
+						throw;
 					}
 				}
 			}
@@ -419,8 +357,13 @@ void MessageController::dump()
 		return;
 	}
 
+	bool readProperties = Poco::icompare(
+		form().get("properties", "true"),
+		"true"
+	) == 0;
+
 	Queue q(qmgr(), queueName);
-	q.open(MQOO_BROWSE, true);
+	q.open(MQOO_BROWSE, readProperties);
 
 	try
 	{
@@ -443,7 +386,7 @@ void MessageController::dump()
 			}
 			catch(MQException& mqe)
 			{
-				if ( mqe.reason()   != MQRC_TRUNCATED_MSG_FAILED
+				if ( mqe.reason() != MQRC_TRUNCATED_MSG_FAILED
 					&& mqe.reason() != MQRC_TRUNCATED )
 				{
 					throw;
