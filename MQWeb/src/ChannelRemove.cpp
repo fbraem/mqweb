@@ -31,7 +31,17 @@ ChannelRemove::ChannelRemove(CommandServer& commandServer, Poco::JSON::Object::P
 
 	// Optional Parameters
 	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
-	addParameterNumFromString(MQIACH_CHANNEL_TABLE, "ChannelTable");
+	static TextMap channelTableMap = TextMapInitializer
+		(MQCHTAB_Q_MGR, "QMgr")
+		(MQCHTAB_CLNTCONN, "Client-connection")
+	;
+	std::string channelTable = input->get("ChannelTable");
+	for (TextMap::const_iterator it = channelTableMap.begin(); it != channelTableMap.end(); ++it)
+	{
+		if (it->second.compare(channelTable) == 0) {
+			pcf()->addParameter(MQIACH_CHANNEL_TABLE, it->first);
+		}
+	}
 	addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
 	addParameterNumFromString(MQIACH_CHANNEL_TYPE, "ChannelType");
 }
