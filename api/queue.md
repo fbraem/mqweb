@@ -286,7 +286,7 @@ passed as query parameter.
 #### <a name="removeQueryQName"></a>QName
 The name of the queue to remove.
 
-#### <a name="removeQueryAuthRec"></a>AuthRec
+#### <a name="removeQueryAuthrec"></a>Authrec
 Specifies whether the associated authority record is also deleted. Possible
 values are `Yes`(default) or `No`.
 
