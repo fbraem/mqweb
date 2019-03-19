@@ -151,6 +151,11 @@ void ChannelController::remove()
 		{
 			pcfParameters->set("ChannelType", form().get("ChannelType"));
 		}
+
+		if (form().has("ChannelTable"))
+		{
+			pcfParameters->set("ChannelTable", form().get("ChannelTable"));
+		}
 	}
 
 	ChannelRemove command(*commandServer(), pcfParameters);
