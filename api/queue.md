@@ -39,7 +39,7 @@ queue-sharing group. This parameter applies to z/OS only.
 Disposition of the object within the group. Possible values are `Live`, `Copy`,
 `Group`, `QMgr`, `Private` or `All`. This parameter applies to z/OS only.
 
-## <a name="create"></a>copy
+## <a name="copy"></a>copy
 Create a new queue by copying attributes from another queue.
 This action will execute MQCMD_COPY_Q. On success the
 JSON response object will have an empty `data` array, on failure an `error`
@@ -70,7 +70,7 @@ When using an application/json POST request you can post a JSON object
 to create a queue. All URL parameters (except queuemanager) and query parameters
 are ignored.
 
-### <a name="createExample"></a>Example
+### <a name="copyExample"></a>Example
 
 This sample is a Python script that creates a copy from a local queue:
 
