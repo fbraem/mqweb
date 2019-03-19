@@ -3,6 +3,7 @@
   - Add create/copy/remove channel
   - Use MQINQMP for reading MQRFH2 properties
   - User/Pwd for connecting to a queuemanager
+  - Remove premake4 support
 
 0.1.1
   - Return a HTTP status when a POCO exception occurs.
