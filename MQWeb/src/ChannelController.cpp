@@ -68,7 +68,7 @@ void ChannelController::copy()
 			pcfParameters->set(it->first, it->second);
 		}
 	}
-	
+
 	ChannelCopy command(*commandServer(), pcfParameters);
 	command.execute();
 }
@@ -89,10 +89,15 @@ void ChannelController::create()
 		{
 			pcfParameters->set("ChannelName", parameters[1]);
 		}
-		// Copy all query parameters to PCF, except QName if it is already set on the URI
+		if (parameters.size() > 2)
+		{
+			pcfParameters->set("ChannelType", parameters[2]);
+		}
+		// Copy all query parameters to PCF, except ChannelName if it is already set on the URI
 		for (Poco::Net::NameValueCollection::ConstIterator it = form().begin(); it != form().end(); ++it)
 		{
-			if (parameters.size() > 1 && Poco::icompare(it->first, "QName") == 0) continue;
+			if (parameters.size() > 1 && Poco::icompare(it->first, "ChannelName") == 0) continue;
+			if (parameters.size() > 2 && Poco::icompare(it->first, "ChannelType") == 0) continue;
 			pcfParameters->set(it->first, it->second);
 		}
 	}
