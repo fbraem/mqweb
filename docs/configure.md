@@ -21,6 +21,11 @@ configuration file named *MQWeb.properties* if it exists and if
 > Note that the working directory for an application running as a service is
 > the Windows system directory (e.g., C:\Windows\system32).
 
+> In all properties the application and system properties are available. When a
+> value contains a ${<property>}, the property will be expanded. See
+> [SystemConfiguration](https://pocoproject.org/docs/Poco.Util.SystemConfiguration.html)
+> and [Application Configuration](https://pocoproject.org/docs/Poco.Util.Application.html).
+
 SQLite Database
 ---------------
 MQWeb uses a SQLite database that defines all WebSphere MQ attributes.
@@ -59,15 +64,26 @@ Add mq.web.qmgr properties as follows:
 
     mq.web.qmgr.<qmgrName>.connection=<host>(<port>)
     mq.web.qmgr.<qmgrName>.channel=<channelName>
+    mq.web.qmgr.<qmgrName>.user=<user>
+    mq.web.qmgr.<qmgrName>.pwd=<pwd>
 
-Where &lt;qmgrName&gt; is the name of the queuemanager, &lt;host&gt; the server where the queuemanager is running. &lt;port&gt; is the port of the listener and
-&lt;channelName&gt; is the name of the server connection channel. When no channel property is set, `SYSTEM.DEF.SVRCONN` will be used as default.
+Where &lt;qmgrName&gt; is the name of the queuemanager, &lt;host&gt; the server
+where the queuemanager is running. &lt;port&gt; is the port of the listener and
+&lt;channelName&gt; is the name of the server connection channel. When no
+channel property is set, `SYSTEM.DEF.SVRCONN` will be used as default.
+
+If the connection needs a user and password, the `user` and `pwd` properties can
+be used. When the same user/pwd is used for all queuemanagers, define the
+properties without the queuemanager name.
+
+> Environment variables can be used by using the system properties. For example: 
+> `mq.web.qmgr.PIGEON.user=${system.ENV.MQWEB_PIGEON_USER}`
 
 #### Use a database
 Create a database with a `queuemanagers` table which contains the following
 columns: `name`, `server`, `port`, `channel`. The port column must be of type
-Integer and the name column must be the primary key. Add the following
-properties to mqweb.properties:
+Integer and the name column must be the primary key. `user`and `pwd` columns can
+be used but are not required. Add the following properties to mqweb.properties:
 
 + `mq.web.config.connector` : The name of the data connector. Currently only
  SQLite is supported. SQLite is also the default value of this property.
