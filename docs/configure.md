@@ -76,7 +76,7 @@ If the connection needs a user and password, the `user` and `pwd` properties can
 be used. When the same user/pwd is used for all queuemanagers, define the
 properties without the queuemanager name.
 
-> Environment variables can be used by using the system properties. For example: 
+> Environment variables can be used by using the system properties. For example:
 > `mq.web.qmgr.PIGEON.user=${system.ENV.MQWEB_PIGEON_USER}`
 
 #### Use a database
@@ -96,8 +96,7 @@ For example:
     mq.web.config.connector=SQLite
     mq.web.config.connection=${application.dir}/qmgrs.db
 
-> Currently only an SQLite database is supported. Other databases will be
-> supported in next versions of MQWeb.
+> Currently SQLite and ODBC connectors are supported.
 
 Default Queuemanager
 --------------------
