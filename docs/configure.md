@@ -36,6 +36,13 @@ configure it:
 
     mq.web.db=${application.dir}/mqweb.db
 
+Port
+----
+The MQWeb http server listens by default to port 8081. This can be changed with
+the property mq.web.port:
+
+    mq.web.port=<port>
+
 Connection Mode
 ---------------
 By default mqweb connects in bindings mode. This can be changed by setting the
