@@ -11,6 +11,7 @@ This controller has the following actions:
 
 + [inquire](#inquire)
 + [ping](#ping)
++ [reset](#reset)
 
 ## <a name="inquire"></a>inquire
 Returns all attributes of the queuemanager with the given name. This actions
@@ -74,7 +75,7 @@ the queuemanager.
 {{ sample | markdownify }}
 
 ## <a name="ping"></a>ping
-This action executes the PCF commando MQCMD_PING_Q_MGR. On success, the returned JSON
+This action executes the PCF command MQCMD_PING_Q_MGR. On success, the returned JSON
 object will have an empty `data` array, on failure an `error` object.
 
 ### <a name="pingURL"></a>URL Parameters
@@ -85,3 +86,35 @@ The name of the queuemanager. This parameter is required.
 
 ### Example
 `/api/qmgr/ping/PIGEON`
+
+## <a name="reset"></a>reset
+This action executes the PCF command MQCMD_RESET_Q_MGR. On success, the returend
+JSON object will have an empty `data` array, on failure an `error` object.
+
+### <a name="resetURL"</a>URL Parameters
+`/api/qmgr/reset/<QueueManager>/<Action>`
+
+#### <a name="resetUrlQueueManager"></a>QueueManager
+The name of the queuemanager. This parameter is required.
+
+#### <a name="resetUrlAction"></a>Action
+Specifies the action to take place. Possible values are `AdvanceLog`,
+`Statistics` or `PubSub`. This parameter is optional, if you use the query
+parameter.
+
+### <a name="resetQuery"></a>Query Parameters
+
+#### <a name="resetQueryAction"></a>Action
+Specifies the action to take place. Possible values are `AdvanceLog`,
+`Statistics` or `PubSub`. This option is optional when action is passed on the
+URL.
+
+#### <a name="resetQueryChildName"></a>ChildName
+The name of the child queue manager for which the hierarchical connection is to
+be forcibly canceled. This parameter is valid only when the action parameter has
+the value `PubSub`.
+
+#### <a name="resetQueryParentName"></a>ParentName
+The name of the parent queue manager for which the hierarchical connection is to
+be forcibly canceled. This parameter is valid only when the action parameter has
+the value `PubSub`.

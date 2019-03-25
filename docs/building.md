@@ -20,12 +20,12 @@ systems.
 [Download](http://pocoproject.org/download/index.html) and extract the
 archive on your system.
 
-Premake / CMake
----------------
+CMake
+-----
 
-MQWeb can be build using [premake](http://premake.github.io/) version 4.4
-or [CMake](https://cmake.org) as build tool. Premake or CMake can generate
-Visual Studio solutions, make files, [Codelite](http://codelite.org/) workspaces and more.
+MQWeb needs [CMake](https://cmake.org) as build tool. CMake can generate
+Visual Studio solutions, make files, [Codelite](http://codelite.org/)
+workspaces and more.
 
 WebSphere MQ
 ------------
@@ -75,33 +75,6 @@ from the [source tree](https://github.com/fbraem/mqweb). Note that the
 latest release.
 
 Premake or CMake can be used to generate makefiles, project files, ...
-
-#### Premake
-
-Extract the archive and make the root folder of the archive the current
-folder. Open *poco.lua* and *mq.lua* and see if you need to make any changes.
-Now run premake:
-
-    premake4 gmake
-
-for makefiles or create [Codelite](http://codelite.org/) workspaces with
-
-    premake4 codelite
-
-Premake will generate the build files in the *build* folder. In this folder
-you'll find another folder with the name of the action you have specified when
-running premake4. With *gmake* change the current folder to *build/gmake* and
-run *make* to build MQWeb:
-
-    make config=debug32
-
-Other available build configurations are debug64, release32 and release64. Just
-run *make help* for more information.
-
-When you use [Codelite](http://codelite.org/), you'll find the workspaces in
-*build/codelite*.
-
-The result of your build will be placed in *bin/Debug* or *bin/Release*.
 
 #### CMake
 
@@ -153,16 +126,6 @@ from the [source tree](https://github.com/fbraem/mqweb). Note that the
 latest release, while the source tree with the latest branch points to code
 that is work in progress and it is possible that it doesn't work.
 
-#### Premake
-
-Extract the archive and make the root folder of the archive the current
-folder. Open *poco.lua* and *mq.lua* and see if you need to make any changes.
-Now run premake:
-
-    premake4 vs2008
-
-Now you have a Visual Studio solution file in the build folder.
-
 #### CMake
 
-Building MQWeb on Windows with CMake is not yet supported.
+Use CMake to generate a Visual Studio solution, codelite workspace, ...
