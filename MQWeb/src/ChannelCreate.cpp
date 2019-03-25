@@ -18,51 +18,25 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef _MQWeb_QueueManagerController_h
-#define _MQWeb_QueueManagerController_h
+#include "MQ/Web/ChannelCreate.h"
 
-#include "MQ/Web/MQController.h"
-#include "MQ/Web/MapInitializer.h"
+#include "cmqxc.h"
 
-namespace MQ
+namespace MQ {
+namespace Web {
+
+ChannelCreate::ChannelCreate(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
+: PCFSimpleCommand(commandServer, MQCMD_CREATE_CHANNEL, "Channel", input)
 {
-namespace Web
-{
+	// Required Parameters
+	addParameter<std::string>(MQCACH_CHANNEL_NAME, "ChannelName");
+	addParameterNumFromString(MQIACH_CHANNEL_TYPE, "ChannelType");
 
-
-class QueueManagerController : public MQController
-	/// Controller for a QueueManager object
-{
-public:
-	QueueManagerController();
-		/// Constructor
-
-	virtual ~QueueManagerController();
-		/// Destructor
-
-	const std::map<std::string, Controller::ActionFn>& getActions() const;
-		/// Returns all available actions
-
-	void inquire();
-		/// Action inquire. Inquire the queuemanager and returns all data in JSON format.
-	void ping();
-		/// Action ping.
-	void reset();
-		/// Action reset.
-};
-
-inline const Controller::ActionMap& QueueManagerController::getActions() const
-{
-	static Controller::ActionMap actions
-		= MapInitializer<std::string, Controller::ActionFn>
-			("inquire", static_cast<ActionFn>(&QueueManagerController::inquire))
-			("ping", static_cast<ActionFn>(&QueueManagerController::ping))
-			("reset", static_cast<ActionFn>(&QueueManagerController::reset))
-			;
-	return actions;
+	fillPCF();
 }
 
+ChannelCreate::~ChannelCreate()
+{
+}
 
-}} // Namespace MQ::Web
-
-#endif // _MQWeb_QueueManagerController_h
+}} //  Namespace MQ::Web

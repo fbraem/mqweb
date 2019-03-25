@@ -18,53 +18,55 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef _MQWeb_DictionaryCache_H
-#define _MQWeb_DictionaryCache_H
-
-#include "Poco/ExpireCache.h"
-#include "Poco/Mutex.h"
-
+#include "MQ/Web/QueueManagerReset.h"
 #include "MQ/Web/Dictionary.h"
 
 namespace MQ {
 namespace Web {
 
 
-class DictionaryCache
-	/// Cache for dictionaries
+QueueManagerReset::QueueManagerReset(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
+: PCFCommand(commandServer, MQCMD_RESET_Q_MGR, "QueueManager", input)
 {
-public:
-	DictionaryCache(const std::string& dbName);
-		/// Constructor
-
-	virtual ~DictionaryCache();
-		/// Destructor
-
-	Poco::SharedPtr<Dictionary> getDictionary(const std::string& name);
-		/// Returns a dictionary for a specific object
-
-	static DictionaryCache* instance();
-
-private:
-
-	void setup();
-
-	Poco::ExpireCache<std::string, Dictionary> _cache;
-
-	Poco::Mutex _mutex;
-
-	static DictionaryCache* _instance;
-
-	std::string _dbName;
-
-	Poco::SharedPtr<Dictionary> load(const std::string& name);
-};
-
-inline DictionaryCache* DictionaryCache::instance()
-{
-	return _instance;
+	static TextMap actionMap = TextMapInitializer
+		(MQACT_ADVANCE_LOG, "AdvanceLog")
+		(MQACT_COLLECT_STATISTICS, "Statistics")
+		(MQACT_PUBSUB, "PubSub")
+	;
+	std::string action = input->get("Action");
+	for (TextMap::const_iterator it = actionMap.begin(); it != actionMap.end(); ++it)
+	{
+		if (it->second.compare(action) == 0) {
+			pcf()->addParameter(MQIACF_ACTION, it->first);
+		}
+	}
+	if (action.compare("PubSub")) 
+	{
+		addParameter<std::string>(MQCA_CHILD, "ChildName");
+		addParameter<std::string>(MQCA_PARENT, "ParentName");
+	}
 }
 
-}} // Namespace MQ::Web
+QueueManagerReset::~QueueManagerReset()
+{
+}
 
-#endif // _MQWeb_DictionaryCache_H
+Poco::JSON::Array::Ptr QueueManagerReset::execute()
+{
+	PCFCommand::execute();
+
+	Poco::JSON::Array::Ptr json = new Poco::JSON::Array();
+
+	for(PCF::Vector::const_iterator it = begin(); it != end(); it++)
+	{
+		if ( (*it)->isExtendedResponse() ) // Skip extended response
+			continue;
+
+		Poco::JSON::Object::Ptr data = new Poco::JSON::Object();
+		json->add(createJSON(**it));
+	}
+
+	return json;
+}
+
+}} //  Namespace MQ::Web

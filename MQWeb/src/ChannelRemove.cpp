@@ -18,51 +18,36 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef _MQWeb_QueueManagerController_h
-#define _MQWeb_QueueManagerController_h
+#include "MQ/Web/ChannelRemove.h"
 
-#include "MQ/Web/MQController.h"
-#include "MQ/Web/MapInitializer.h"
+namespace MQ {
+namespace Web {
 
-namespace MQ
+ChannelRemove::ChannelRemove(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
+: PCFSimpleCommand(commandServer, MQCMD_DELETE_CHANNEL, "Channel", input)
 {
-namespace Web
-{
+	// Required Parameters
+	addParameter<std::string>(MQCACH_CHANNEL_NAME, "ChannelName");
 
-
-class QueueManagerController : public MQController
-	/// Controller for a QueueManager object
-{
-public:
-	QueueManagerController();
-		/// Constructor
-
-	virtual ~QueueManagerController();
-		/// Destructor
-
-	const std::map<std::string, Controller::ActionFn>& getActions() const;
-		/// Returns all available actions
-
-	void inquire();
-		/// Action inquire. Inquire the queuemanager and returns all data in JSON format.
-	void ping();
-		/// Action ping.
-	void reset();
-		/// Action reset.
-};
-
-inline const Controller::ActionMap& QueueManagerController::getActions() const
-{
-	static Controller::ActionMap actions
-		= MapInitializer<std::string, Controller::ActionFn>
-			("inquire", static_cast<ActionFn>(&QueueManagerController::inquire))
-			("ping", static_cast<ActionFn>(&QueueManagerController::ping))
-			("reset", static_cast<ActionFn>(&QueueManagerController::reset))
-			;
-	return actions;
+	// Optional Parameters
+	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
+	static TextMap channelTableMap = TextMapInitializer
+		(MQCHTAB_Q_MGR, "QMgr")
+		(MQCHTAB_CLNTCONN, "Client-connection")
+	;
+	std::string channelTable = input->get("ChannelTable");
+	for (TextMap::const_iterator it = channelTableMap.begin(); it != channelTableMap.end(); ++it)
+	{
+		if (it->second.compare(channelTable) == 0) {
+			pcf()->addParameter(MQIACH_CHANNEL_TABLE, it->first);
+		}
+	}
+	addParameterNumFromString(MQIA_QSG_DISP, "QSGDisposition");
+	addParameterNumFromString(MQIACH_CHANNEL_TYPE, "ChannelType");
 }
 
+ChannelRemove::~ChannelRemove()
+{
+}
 
-}} // Namespace MQ::Web
-
-#endif // _MQWeb_QueueManagerController_h
+}} //  Namespace MQ::Web

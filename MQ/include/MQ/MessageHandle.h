@@ -1,5 +1,5 @@
 /*
-* Copyright 2017 - KBC Group NV - Franky Braem - The MIT license
+* Copyright 2019 - KBC Group NV - Franky Braem - The MIT license
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
@@ -18,53 +18,45 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef _MQWeb_DictionaryCache_H
-#define _MQWeb_DictionaryCache_H
+#ifndef _MQ_MessageHandle_H
+#define _MQ_MessageHandle_H
 
-#include "Poco/ExpireCache.h"
-#include "Poco/Mutex.h"
+#include <cmqc.h>
 
-#include "MQ/Web/Dictionary.h"
+#include "Poco/SharedPtr.h"
+#include "Poco/Dynamic/Struct.h"
 
-namespace MQ {
-namespace Web {
+namespace MQ
+{
+class QueueManager;
 
-
-class DictionaryCache
-	/// Cache for dictionaries
+class MessageHandle
+	/// Represents a Websphere MQ queue
 {
 public:
-	DictionaryCache(const std::string& dbName);
-		/// Constructor
+	typedef Poco::SharedPtr<MessageHandle> Ptr;
 
-	virtual ~DictionaryCache();
-		/// Destructor
+	MessageHandle(Poco::SharedPtr<QueueManager> qmgr);
+		/// Constructor.
 
-	Poco::SharedPtr<Dictionary> getDictionary(const std::string& name);
-		/// Returns a dictionary for a specific object
+	virtual ~MessageHandle();
+		/// Destructor.
 
-	static DictionaryCache* instance();
+	void getProperties(Poco::DynamicStruct& properties);
+
+	MQHMSG handle() const;
 
 private:
 
-	void setup();
+	Poco::SharedPtr<QueueManager> _qmgr;
 
-	Poco::ExpireCache<std::string, Dictionary> _cache;
-
-	Poco::Mutex _mutex;
-
-	static DictionaryCache* _instance;
-
-	std::string _dbName;
-
-	Poco::SharedPtr<Dictionary> load(const std::string& name);
+	MQHMSG _handle;
 };
 
-inline DictionaryCache* DictionaryCache::instance()
+inline MQHMSG MessageHandle::handle() const
 {
-	return _instance;
+	return _handle;
 }
 
-}} // Namespace MQ::Web
-
-#endif // _MQWeb_DictionaryCache_H
+}
+#endif // _MQ_MessageHandle_H

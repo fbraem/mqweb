@@ -37,12 +37,23 @@ public:
 	virtual ~ChannelController();
 		/// Destructor
 
+	void copy();
+	/// Action copy. Copy a channel.
+
+	void create();
+	/// Action create. Create a channel.
+
 	void inquire();
 		/// Action inquire. Inquire the channels and returns the details in JSON format.
 
+	void remove();
+		/// Action remove. Remove a channel.
+
 	void start();
+		/// Action start. Start a channel.
 
 	void stop();
+		/// Action stop. Stop a channel.
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions.
@@ -55,10 +66,13 @@ inline const Controller::ActionMap& ChannelController::getActions() const
 {
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
+			("copy", static_cast<ActionFn>(&ChannelController::copy))
+			("create", static_cast<ActionFn>(&ChannelController::create))
 			("inquire", static_cast<ActionFn>(&ChannelController::inquire))
 			("stop", static_cast<ActionFn>(&ChannelController::stop))
 			("start", static_cast<ActionFn>(&ChannelController::start))
-		;
+			("remove", static_cast<ActionFn>(&ChannelController::remove))
+			;
 	return actions;
 }
 

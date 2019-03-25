@@ -173,6 +173,11 @@ void QueueController::remove()
 			pcfParameters->set("QName", queueName);
 		}
 
+		if ( form().has("Authrec") )
+		{
+			pcfParameters->set("Authrec", form().get("Authrec"));
+		}
+
 		if ( form().has("CommandScope") )
 		{
 			pcfParameters->set("CommandScope", form().get("CommandScope"));
@@ -186,6 +191,11 @@ void QueueController::remove()
 		if ( form().has("QType") )
 		{
 			pcfParameters->set("QType", form().get("QType"));
+		}
+
+		if ( form().has("Purge") )
+		{
+			pcfParameters->set("Purge", form().get("Purge"));
 		}
 	}
 

@@ -22,6 +22,9 @@
 #include "MQ/Web/ChannelInquire.h"
 #include "MQ/Web/ChannelStart.h"
 #include "MQ/Web/ChannelStop.h"
+#include "MQ/Web/ChannelCopy.h"
+#include "MQ/Web/ChannelRemove.h"
+#include "MQ/Web/ChannelCreate.h"
 
 namespace MQ
 {
@@ -38,6 +41,126 @@ ChannelController::~ChannelController()
 
 }
 
+void ChannelController::copy()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
+	if (data().has("input") && data().isObject("input"))
+	{
+		pcfParameters = data().getObject("input");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+
+		std::vector<std::string> parameters = getParameters();
+		if (parameters.size() > 2)
+		{
+			pcfParameters->set("FromChannelName", parameters[2]);
+		}
+		if (parameters.size() > 1)
+		{
+			pcfParameters->set("ToChannelName", parameters[1]);
+		}
+
+		// Copy all query parameters to PCF
+		for (Poco::Net::NameValueCollection::ConstIterator it = form().begin(); it != form().end(); ++it)
+		{
+			pcfParameters->set(it->first, it->second);
+		}
+	}
+
+	ChannelCopy command(*commandServer(), pcfParameters);
+	command.execute();
+}
+
+void ChannelController::create()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
+	if (data().has("input") && data().isObject("input"))
+	{
+		pcfParameters = data().getObject("input");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+
+		std::vector<std::string> parameters = getParameters();
+		if (parameters.size() > 1)
+		{
+			pcfParameters->set("ChannelName", parameters[1]);
+		}
+		if (parameters.size() > 2)
+		{
+			pcfParameters->set("ChannelType", parameters[2]);
+		}
+		// Copy all query parameters to PCF, except ChannelName if it is already set on the URI
+		for (Poco::Net::NameValueCollection::ConstIterator it = form().begin(); it != form().end(); ++it)
+		{
+			if (parameters.size() > 1 && Poco::icompare(it->first, "ChannelName") == 0) continue;
+			if (parameters.size() > 2 && Poco::icompare(it->first, "ChannelType") == 0) continue;
+			pcfParameters->set(it->first, it->second);
+		}
+	}
+	ChannelCreate command(*commandServer(), pcfParameters);
+	command.execute();
+}
+
+void ChannelController::remove()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
+
+	if (data().has("input") && data().isObject("input"))
+	{
+		pcfParameters = data().getObject("input");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		meta().set("input", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a queuename. If this is passed, the
+		// query parameter QName or queueName is ignored.
+		if (parameters.size() > 1)
+		{
+			pcfParameters->set("ChannelName", parameters[1]);
+		}
+		else
+		{
+			// Handle query parameters
+			std::string channelName;
+			if (form().has("ChannelName"))
+			{
+				channelName = form().get("ChannelName");
+			}
+			pcfParameters->set("ChannelName", channelName);
+		}
+
+		if (form().has("CommandScope"))
+		{
+			pcfParameters->set("CommandScope", form().get("CommandScope"));
+		}
+
+		if (form().has("QSGDisposition"))
+		{
+			pcfParameters->set("QSGDisposition", form().get("QSGDisposition"));
+		}
+
+		if (form().has("ChannelType"))
+		{
+			pcfParameters->set("ChannelType", form().get("ChannelType"));
+		}
+
+		if (form().has("ChannelTable"))
+		{
+			pcfParameters->set("ChannelTable", form().get("ChannelTable"));
+		}
+	}
+
+	ChannelRemove command(*commandServer(), pcfParameters);
+	command.execute();
+}
 
 void ChannelController::inquire()
 {

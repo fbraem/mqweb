@@ -21,6 +21,7 @@
 #include "MQ/Web/QueueManagerController.h"
 #include "MQ/Web/QueueManagerInquire.h"
 #include "MQ/Web/QueueManagerPing.h"
+#include "MQ/Web/QueueManagerReset.h"
 
 namespace MQ
 {
@@ -75,11 +76,43 @@ void QueueManagerController::inquire()
 
 void QueueManagerController::ping()
 {
-	Poco::JSON::Object::Ptr pcfParameters;
-	
+	Poco::JSON::Object::Ptr pcfParameters = new Poco::JSON::Object();
+	meta().set("input", pcfParameters);
+
 	QueueManagerPing command(*commandServer(), pcfParameters);
 	setData("data", command.execute());
 }
 
+void QueueManagerController::reset()
+{
+	Poco::JSON::Object::Ptr pcfParameters = new Poco::JSON::Object();
+	meta().set("input", pcfParameters);
+
+	std::vector<std::string> parameters = getParameters();
+	if (parameters.size() > 1)
+	{
+		pcfParameters->set("Action", parameters[1]);
+	}
+	else
+	{
+		// Handle query parameters
+		if (form().has("Action"))
+		{
+			pcfParameters->set("Action", form().get("Action"));
+		}
+	}
+
+	if (form().has("ChildName"))
+	{
+		pcfParameters->set("ChildName", form().get("ChildName"));
+	}
+	if (form().has("Parent"))
+	{
+		pcfParameters->set("Parent", form().get("Parent"));
+	}
+
+	QueueManagerReset command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
+}
 
 } } // Namespace MQ::Web

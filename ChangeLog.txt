@@ -1,3 +1,10 @@
+0.1.2
+  - Add reset qmgr
+  - Add create/copy/remove channel
+  - Use MQINQMP for reading MQRFH2 properties
+  - User/Pwd for connecting to a queuemanager
+  - Remove premake4 support
+
 0.1.1
   - Return a HTTP status when a POCO exception occurs.
   - Improve queuemanager pool management
@@ -13,7 +20,7 @@
   - Add delete queue
   - Add copy queue
   - Queuemanager configuration can be read from ODBC
-  
+
 0.1.0
   - Web app has its own repository now: mqwebapp
   - 'filter' renamed to 'input' in mqweb JSON answer

@@ -76,6 +76,11 @@ void MQFunctions::loadLibrary(const std::string& mqLibrary)
 	_inqFn = (InqFn) _dll.getSymbol("MQINQ");
 	_cbFn = (CbFn) _dll.getSymbol("MQCB");
 	_ctlFn = (CtlFn) _dll.getSymbol("MQCTL");
+	_crtMhFn = (CrtMhFn) _dll.getSymbol("MQCRTMH");
+	_dltMhFn = (DltMhFn) _dll.getSymbol("MQDLTMH");
+	_setMpFn = (SetMpFn) _dll.getSymbol("MQSETMP");
+	_dltMpFn = (DltMpFn) _dll.getSymbol("MQDLTMP");
+	_inqMpFn = (InqMpFn) _dll.getSymbol("MQINQMP");
 }
 
 void MQFunctions::conn(char* qmgrName, MQHCONN* hconn, MQLONG* cc, MQLONG* rc)
@@ -451,7 +456,7 @@ void MQFunctions::dltmp(MQHCONN conn, MQHMSG hmsg, MQDMPO* options, MQCHARV* nam
 	}
 }
 
-void MQFunctions::inqmp(MQHCONN conn, MQHMSG hmsg, MQIMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG type, MQLONG valueLength, MQBYTE* value, MQLONG* dataLength, MQLONG* cc, MQLONG* rc)
+void MQFunctions::inqmp(MQHCONN conn, MQHMSG hmsg, MQIMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG* type, MQLONG valueLength, MQBYTE* value, MQLONG* dataLength, MQLONG* cc, MQLONG* rc)
 {
 	poco_assert_dbg(_inqMpFn != NULL);
 
@@ -460,7 +465,7 @@ void MQFunctions::inqmp(MQHCONN conn, MQHMSG hmsg, MQIMPO* options, MQCHARV* nam
 	trace("", "MQINQMP", cc, rc);
 }
 
-void MQFunctions::inqmp(MQHCONN conn, MQHMSG hmsg, MQIMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG type, MQLONG valueLength, MQBYTE* value, MQLONG* dataLength)
+void MQFunctions::inqmp(MQHCONN conn, MQHMSG hmsg, MQIMPO* options, MQCHARV* name, MQPD* propDesc, MQLONG* type, MQLONG valueLength, MQBYTE* value, MQLONG* dataLength)
 {
 	MQLONG cc = MQCC_OK;
 	MQLONG rc = MQRC_NONE;
