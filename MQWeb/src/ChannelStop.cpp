@@ -34,6 +34,7 @@ ChannelStop::ChannelStop(CommandServer& commandServer, Poco::JSON::Object::Ptr i
 	// Optional Parameters
 	addParameterNumFromString(MQIACH_CHANNEL_DISP, "ChannelDisposition");
 	addParameterNumFromString(MQIACH_CHANNEL_STATUS, "ChannelStatus");
+	addParameter<std::string>(MQCACF_COMMAND_SCOPE, "CommandScope");
 	addParameter<std::string>(MQCACH_CONNECTION_NAME, "ConnectionName");
 	addParameterNumFromString(MQIACF_MODE, "Mode");
 	addParameter<std::string>(MQCA_Q_MGR_NAME, "QMgrName");
