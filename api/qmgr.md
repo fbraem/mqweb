@@ -91,7 +91,7 @@ The name of the queuemanager. This parameter is required.
 This action executes the PCF command MQCMD_RESET_Q_MGR. On success, the returend
 JSON object will have an empty `data` array, on failure an `error` object.
 
-### <a name="resetURL"</a>URL Parameters
+### <a name="resetURL"></a>URL Parameters
 `/api/qmgr/reset/<QueueManager>/<Action>`
 
 #### <a name="resetUrlQueueManager"></a>QueueManager
