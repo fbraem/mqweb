@@ -46,14 +46,17 @@ public:
 	void inquire();
 		/// Action inquire. Inquire the channels and returns the details in JSON format.
 
-	void remove();
-		/// Action remove. Remove a channel.
+	void ping();
+		/// Action ping. Ping a channel.
 
 	void start();
 		/// Action start. Start a channel.
 
 	void stop();
 		/// Action stop. Stop a channel.
+
+	void remove();
+		/// Action remove. Remove a channel.
 
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions.
@@ -69,6 +72,7 @@ inline const Controller::ActionMap& ChannelController::getActions() const
 			("copy", static_cast<ActionFn>(&ChannelController::copy))
 			("create", static_cast<ActionFn>(&ChannelController::create))
 			("inquire", static_cast<ActionFn>(&ChannelController::inquire))
+			("ping", static_cast<ActionFn>(&ChannelController::ping))
 			("stop", static_cast<ActionFn>(&ChannelController::stop))
 			("start", static_cast<ActionFn>(&ChannelController::start))
 			("remove", static_cast<ActionFn>(&ChannelController::remove))

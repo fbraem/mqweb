@@ -25,6 +25,7 @@
 #include "MQ/Web/ChannelCopy.h"
 #include "MQ/Web/ChannelRemove.h"
 #include "MQ/Web/ChannelCreate.h"
+#include "MQ/Web/ChannelPing.h"
 
 namespace MQ
 {
@@ -232,6 +233,39 @@ void ChannelController::inquire()
 	}
 
 	ChannelInquire command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
+}
+
+void ChannelController::ping()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
+
+	if ( data().has("input") && data().isObject("input") )
+	{
+		pcfParameters = data().getObject("input");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		setData("input", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter is a channelname
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("ChannelName", parameters[1]);
+		}
+		else
+		{
+			if ( form().has("ChannelName") ) pcfParameters->set("ChannelName", form().get("ChannelName"));
+		}
+
+		if ( form().has("CommandScope") ) pcfParameters->set("CommandScope", form().get("CommandScope"));
+		if ( form().has("ChannelDisposition") ) pcfParameters->set("ChannelDisposition", form().get("ChannelDisposition"));
+	}
+
+	ChannelPing command(*commandServer(), pcfParameters);
 	setData("data", command.execute());
 }
 
