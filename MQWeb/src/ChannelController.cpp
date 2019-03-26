@@ -295,6 +295,7 @@ void ChannelController::stop()
 
 		if ( form().has("ChannelDisposition") ) pcfParameters->set("ChannelDisposition", form().get("ChannelDisposition"));
 		if ( form().has("ChannelStatus") ) pcfParameters->set("ChannelStatus", form().get("ChannelStatus"));
+		if ( form().has("CommandScope") ) pcfParameters->set("CommandScope", form().get("CommandScope"));
 		if ( form().has("ConnectionName") ) pcfParameters->set("ConnectionName", form().get("ConnectionName"));
 		if ( form().has("Mode") ) pcfParameters->set("Mode", form().get("Mode"));
 		if ( form().has("QMgrName") ) pcfParameters->set("QMgrName", form().get("QMgrName"));
