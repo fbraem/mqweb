@@ -12,8 +12,8 @@ This controller has the following actions:
 + [clear](#clear)
 + [copy](#copy)
 + [create](#create)
++ [delete](#delete)
 + [inquire](#inquire)
-+ [remove](#remove)
 
 ## <a name="clear"></a>clear
 Clears a queue by removing all messages.
@@ -110,6 +110,48 @@ This sample is a Python script that creates an alias queue:
 
 {% capture sample %}{% include_relative samples/python/queue_create_alias.md %}{% endcapture %}
 {{ sample | markdownify }}
+
+## <a name="delete"></a>delete
+Deletes a queue. This action will execute MQCMD_DELETE_Q. On success the
+JSON response object will have an empty `data` array, on failure an `error`
+object.
+
+### <a name="deleteUrl"></a>URL Parameters
+`api/queue/delete/<QueueManager>/<QName>`
+
+#### <a name="deleteUrlQueueManager"></a>QueueManager
+The name of the queuemanager. This parameter is required.
+
+#### <a name="deleteUrlQName"></a>QName
+The name of the queue to delete. This parameter is optional when the QName is
+passed as query parameter.
+
+### <a name="deleteQuery"></a>Query Parameters
+
+#### <a name="deleteQueryQName"></a>QName
+The name of the queue to delete.
+
+#### <a name="deleteQueryAuthrec"></a>Authrec
+Specifies whether the associated authority record is also deleted. Possible
+values are `Yes`(default) or `No`.
+
+#### <a name="deleteQueryCommandScope"></a>CommandScope
+Specifies how the command is executed when the queue manager is a member of a
+queue-sharing group. This parameter applies to z/OS only.
+
+#### <a name="deleteQueryPurge"></a>Purge
+If there are messages on the queue `Yes` must be specified, otherwise the
+command fails. If this parameter is not present the queue is not purged.
+Possible values are `Yes` or `No`(default).
+
+#### <a name="deleteQueryQSGDisposition"></a>QSGDisposition
+Disposition of the object within the group. Possible values are `Live`, `Copy`,
+`Group`, `QMgr`, `Private` or `All`. This parameter applies to z/OS only.
+
+#### <a name="deleteQueryQType"></a>QType
+If this parameter is present, the queue must be of the specified type.
+Possible values are `Local`, `Remote`, `Model` or `Alias`. The value is
+case-sensitive.
 
 ## <a name="inquire"></a>inquire
 Get information about one or more queues. This action executes the
@@ -265,45 +307,3 @@ current depth of these queues:
 
 {% capture sample %}{% include_relative samples/perl/queue_inq.md %}{% endcapture %}
 {{ sample | markdownify }}
-
-## <a name="remove"></a>remove
-Removes a queue. This action will execute MQCMD_DELETE_Q. On success the
-JSON response object will have an empty `data` array, on failure an `error`
-object.
-
-### <a name="removeUrl"></a>URL Parameters
-`api/queue/remove/<QueueManager>/<QName>`
-
-#### <a name="removeUrlQueueManager"></a>QueueManager
-The name of the queuemanager. This parameter is required.
-
-#### <a name="removeUrlQName"></a>QName
-The name of the queue to remove. This parameter is optional when the QName is
-passed as query parameter.
-
-### <a name="removeQuery"></a>Query Parameters
-
-#### <a name="removeQueryQName"></a>QName
-The name of the queue to remove.
-
-#### <a name="removeQueryAuthrec"></a>Authrec
-Specifies whether the associated authority record is also deleted. Possible
-values are `Yes`(default) or `No`.
-
-#### <a name="removeQueryCommandScope"></a>CommandScope
-Specifies how the command is executed when the queue manager is a member of a
-queue-sharing group. This parameter applies to z/OS only.
-
-#### <a name="removeQueryPurge"></a>Purge
-If there are messages on the queue `Yes` must be specified, otherwise the
-command fails. If this parameter is not present the queue is not purged.
-Possible values are `Yes` or `No`(default).
-
-#### <a name="removeQueryQSGDisposition"></a>QSGDisposition
-Disposition of the object within the group. Possible values are `Live`, `Copy`,
-`Group`, `QMgr`, `Private` or `All`. This parameter applies to z/OS only.
-
-#### <a name="removeQueryQType"></a>QType
-If this parameter is present, the queue must be of the specified type.
-Possible values are `Local`, `Remote`, `Model` or `Alias`. The value is
-case-sensitive.
