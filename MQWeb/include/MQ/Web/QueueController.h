@@ -40,6 +40,9 @@ public:
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions
 
+	void change();
+		/// Action change. Change a queue.
+
 	void clear();
 		/// Action clear. Clear a queue.
 
@@ -62,6 +65,7 @@ inline const Controller::ActionMap& QueueController::getActions() const
 {
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
+			("change", static_cast<ActionFn>(&QueueController::change))
 			("clear", static_cast<ActionFn>(&QueueController::clear))
 			("copy", static_cast<ActionFn>(&QueueController::copy))
 			("create", static_cast<ActionFn>(&QueueController::create))

@@ -19,6 +19,7 @@
 * SOFTWARE.
 */
 #include "MQ/Web/QueueController.h"
+#include "MQ/Web/QueueChange.h"
 #include "MQ/Web/QueueCopy.h"
 #include "MQ/Web/QueueClear.h"
 #include "MQ/Web/QueueCreate.h"
@@ -38,6 +39,33 @@ QueueController::QueueController() : MQController()
 
 QueueController::~QueueController()
 {
+}
+
+void QueueController::change()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
+	if ( data().has("input") && data().isObject("input") )
+	{
+		pcfParameters = data().getObject("input");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+
+		std::vector<std::string> parameters = getParameters();
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("QName", parameters[1]);
+		}
+		// Copy all query parameters to PCF, except QName if it is already set on the URI
+		for(Poco::Net::NameValueCollection::ConstIterator it = form().begin(); it != form().end(); ++it)
+		{
+			if (parameters.size() > 1 && Poco::icompare(it->first, "QName") == 0) continue;
+			pcfParameters->set(it->first, it->second);
+		}
+	}
+	QueueChange command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 void QueueController::clear()
