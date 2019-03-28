@@ -24,7 +24,7 @@ namespace MQ {
 namespace Web {
 
 QueueChange::QueueChange(CommandServer& commandServer, Poco::JSON::Object::Ptr input)
-: PCFSimpleCommand(commandServer, MQCMD_CREATE_Q, "Queue", input)
+: PCFSimpleCommand(commandServer, MQCMD_CHANGE_Q, "Queue", input)
 {
 	// Required Parameters
 	addParameter<std::string>(MQCA_Q_NAME, "QName");
