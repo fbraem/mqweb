@@ -111,7 +111,7 @@ void QueueController::copy()
 		}
 	}
 	QueueCopy command(*commandServer(), pcfParameters);
-	command.execute();
+	setData("data", command.execute());
 }
 
 void QueueController::create()
@@ -138,7 +138,7 @@ void QueueController::create()
 		}
 	}
 	QueueCreate command(*commandServer(), pcfParameters);
-	command.execute();
+	setData("data", command.execute());
 }
 
 void QueueController::remove()
@@ -200,7 +200,7 @@ void QueueController::remove()
 	}
 
 	QueueRemove command(*commandServer(), pcfParameters);
-	command.execute();
+	setData("data", command.execute());
 }
 
 void QueueController::inquire()
