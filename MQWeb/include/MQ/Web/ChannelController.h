@@ -75,7 +75,7 @@ inline const Controller::ActionMap& ChannelController::getActions() const
 			("ping", static_cast<ActionFn>(&ChannelController::ping))
 			("stop", static_cast<ActionFn>(&ChannelController::stop))
 			("start", static_cast<ActionFn>(&ChannelController::start))
-			("remove", static_cast<ActionFn>(&ChannelController::remove))
+			("delete", static_cast<ActionFn>(&ChannelController::remove))
 			;
 	return actions;
 }
