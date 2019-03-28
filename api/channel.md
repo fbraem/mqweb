@@ -11,10 +11,10 @@ This controller can be used to get information from a channel.
 
 + [copy](#copy)
 + [create](#create)
++ [delete](#delete)
 + [inquire](#inquire)
 + [start](#start)
 + [stop](#stop)
-+ [remove](#remove)
 
 ## <a name="copy"></a>copy
 Create a new channel by copying attributes from another channel.
@@ -85,6 +85,44 @@ passed on the URL, the ChannelType query parameter will be ignored.
 When using an application/json POST request you can post a JSON object
 to create a channel. All URL parameters (except queuemanager) and query
 parameters are ignored.
+
+## <a name="delete"></a>delete
+Removes a channel. This action will execute MQCMD_DELETE_CHANNEL. On success the
+JSON response object will have an empty `data` array, on failure an `error`
+object.
+
+### <a name="deleteUrl"></a>URL Parameters
+`api/queue/delete/<QueueManager>/<QName>`
+
+#### <a name="deleteUrlQueueManager"></a>QueueManager
+The name of the queuemanager. This parameter is required.
+
+#### <a name="deleteUrlChannelName"></a>ChannelName
+The name of the channel to delete. This parameter is optional when the ChannelName
+ is passed as query parameter.
+
+### <a name="deleteQuery"></a>Query Parameters
+
+#### <a name="deleteQueryChannelName"></a>ChannelName
+The name of the channel to delete.
+
+#### <a name="deleteQueryChannelTable"></a>ChannelTable
+Specifies the ownership of the channel definition table that contains the
+specified channel definition. Possible values are `QMgr` or `Client-connection`.
+
+#### <a name="deleteQueryChannelType"></a>ChannelType
+The type of a channel. ChannelType must be `Sender`, `Server`,
+`Receiver`, `Requester`, `Server-connection`, `Client-connection`,
+`Cluster-receiver` or `Cluster-sender`. This value is case-sensitive.
+This parameter is optional if you use the corresponding query parameter.
+
+#### <a name="deleteQueryCommandScope"></a>CommandScope
+Specifies how the command is executed when the queue manager is a member of a
+queue-sharing group. This parameter applies to z/OS only.
+
+#### <a name="deleteQueryQSGDisposition"></a>QSGDisposition
+Disposition of the object within the group. Possible values are `Live`, `Copy`,
+`Group`, `QMgr`, `Private` or `All`. This parameter applies to z/OS only.
 
 ## <a name="inquire"></a>inquire
 Get information about one or more channels. This action executes the
@@ -274,41 +312,3 @@ or `Terminate`.
 #### <a name="stopQMgrName"></a>QMgrName
 This parameter is the name of the remote queue manager to which the channel is
  connected.
-
-## <a name="remove"></a>remove
-Removes a channel. This action will execute MQCMD_DELETE_CHANNEL. On success the
-JSON response object will have an empty `data` array, on failure an `error`
-object.
-
-### <a name="removeUrl"></a>URL Parameters
-`api/queue/remove/<QueueManager>/<QName>`
-
-#### <a name="removeUrlQueueManager"></a>QueueManager
-The name of the queuemanager. This parameter is required.
-
-#### <a name="removeUrlChannelName"></a>ChannelName
-The name of the channel to remove. This parameter is optional when the ChannelName
- is passed as query parameter.
-
-### <a name="removeQuery"></a>Query Parameters
-
-#### <a name="removeQueryChannelName"></a>ChannelName
-The name of the channel to remove.
-
-#### <a name="removeQueryChannelTable"></a>ChannelTable
-Specifies the ownership of the channel definition table that contains the
-specified channel definition. Possible values are `QMgr` or `Client-connection`.
-
-#### <a name="removeQueryChannelType"></a>ChannelType
-The type of a channel. ChannelType must be `Sender`, `Server`,
-`Receiver`, `Requester`, `Server-connection`, `Client-connection`,
-`Cluster-receiver` or `Cluster-sender`. This value is case-sensitive.
-This parameter is optional if you use the corresponding query parameter.
-
-#### <a name="removeQueryCommandScope"></a>CommandScope
-Specifies how the command is executed when the queue manager is a member of a
-queue-sharing group. This parameter applies to z/OS only.
-
-#### <a name="removeQueryQSGDisposition"></a>QSGDisposition
-Disposition of the object within the group. Possible values are `Live`, `Copy`,
-`Group`, `QMgr`, `Private` or `All`. This parameter applies to z/OS only.
