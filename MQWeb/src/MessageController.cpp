@@ -523,6 +523,9 @@ void MessageController::publish()
 	memcpy(message->buffer().data(), d.c_str(), d.length());
 
 	topic->publish(*message, publishOptions);
+
+	Poco::JSON::Array::Ptr empty = new Poco::JSON::Array();
+	setData("data", empty);
 }
 
 void MessageController::put()
@@ -566,6 +569,9 @@ void MessageController::put()
 	memcpy(message->buffer().data(), d.c_str(), d.length());
 
 	q.put(*message, putOptions);
+
+	Poco::JSON::Array::Ptr empty = new Poco::JSON::Array();
+	setData("data", empty);
 }
 
 } } // Namespace MQ::Web
