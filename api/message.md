@@ -12,6 +12,7 @@ This controller has the following actions:
 + [browse](#browse)
 + [dump](#dump)
 + [get](#get)
++ [put](#put)
 
 ## <a name="browse"></a>browse
 The action browse is used to browse one or more messages.
@@ -100,3 +101,39 @@ you can override this with this parameter.
 ### <a name="browseExample"></a>Example
 `/api/message/get/PIGEON/MQWEB.TEST.Q1`  
 `/api/message/get/PIGEON/MQWEB.TEST.Q1?Limit=100`
+
+## <a name="put"></a>put
+The action put is used to put a message on a queue. On success, the returned
+JSON object will have an empty `data` array, on failure an `error` object.
+
+### <a name="putURL"></a>URL Parameters
+`/api/message/put/<QueueManager>/<QueueName`
+
+#### <a name="putURLQueueManager"></a>QueueManager
+The name of the queuemanager. This parameter is required.
+
+#### <a name="putURLQueueName"></a>QueueName
+The name of a queue. This parameter is required.
+
+### <a name="putJSON"></a>JSON Object
+Putting a message on a queue can only be done using the POST method and sending
+a JSON object. The JSON object must have a `data` property and can have a `mqmd`
+property:
+
+    {
+      "data": "Hello World"
+    }
+
+or
+
+    {
+      "mqmd": {
+        "Persistence": true
+      },
+      "data": "Hello World"
+    }
+
+> When a mqmd is used, make sure the MQWeb user has setall permissions on the
+> queuemanager and the queue!
+
+The format of the message will always be `MQSTR`.
