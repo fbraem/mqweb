@@ -2,6 +2,7 @@
   - Add change queue
   - Update docs for remove queue: action is delete
   - Wrong action name used for remove channel
+  - Put message is documented
 
 0.1.2
   - Add reset qmgr
