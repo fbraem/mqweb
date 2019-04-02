@@ -9,7 +9,63 @@ AuthorityRecordController
 The second part of the URI must be `authrec` to call the AuthorityRecordController.
 This controller can be used to get attributes of authority records.
 
+This controller has the following actions:
+
++ [delete](#delete)
++ [inquire](#inquire)
++ [set](#set)
+
 > AuthorityRecordController is not available for z/OS.
+
+## <a name="delete"></a>delete
+Deletes an authority record.
+
+### <a name="deleteURL"></a>URL Parameters
+`/api/authrec/delete/<QueueManager>/<ProfileName>`
+
+#### <a name="deleteURLQueuemanager"></a>QueueManager
+The name of the queuemanager. This parameter is required!
+
+#### <a name="deleteURLProfileName"></a>ProfileName
+This parameter is the name of the profile for which to delete authorizations.
+Generic profile names are supported. When this parameter is used, the
+[ProfileName](#deleteQueryProfileName) query parameter is ignored. This parameter
+is optional.
+
+### <a name="deleteQuery"></a>Query Parameters
+
+#### <a name="deleteQueryGroupNames"> GroupNames
+The names of groups having a profile deleted. This parameter can be repeated.
+
+#### <a name="deleteQueryObjectType"></a> ObjectType
+The type of object referred to by the profile. See [ObjectType](#inquireQueryObjectType)
+for possible values. The value is case-sensitive.
+
+#### <a name="deleteQueryPrincipalNames"></a> PrincipalNames
+The names of principals having a profile deleted. This parameter can be repeated.
+
+#### <a name="deleteQueryProfileName"></a>ProfileName
+The name of the profile for which to delete authorizations. When a
+[ProfileName](#deleteURLProfileName) is passed as part of the URL, this query
+parameter will be ignored.
+
+### <a name="setJSON"></a>JSON Object
+When using an application/json POST request you can post a JSON object with
+names like the query parameters.
+
+{% highlight javascript %}
+    {
+      "ProfileName" : "MQWEB.TEST.Q1",
+      "ObjectType" : "Queue",
+      "GroupNames" : [
+        "mqweb"
+      ]
+    }
+{% endhighlight %}
+
+There are some differences between query parameters and a JSON object:
+
++ *GroupNames* and *PrincipalNames* are arrays.
 
 ## <a name="inquire"></a>inquire
 Get information about one or more authority records. This action executes
