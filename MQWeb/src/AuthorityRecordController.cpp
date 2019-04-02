@@ -21,6 +21,7 @@
 #include "MQ/Web/AuthorityRecordController.h"
 #include "MQ/Web/AuthorityRecordInquire.h"
 #include "MQ/Web/AuthorityRecordSet.h"
+#include "MQ/Web/AuthorityRecordRemove.h"
 
 namespace MQ
 {
@@ -200,5 +201,73 @@ void AuthorityRecordController::set()
 	setData("data", command.execute());
 }
 
+
+void AuthorityRecordController::remove()
+{
+	if ( qmgr()->zos() )
+	{
+		// Authority records are not supported on z/OS
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_NOT_IMPLEMENTED, "/authrec/remove not implemented for z/OS");
+		return;
+	}
+
+	Poco::JSON::Object::Ptr pcfParameters;
+
+	if ( data().has("input") && data().isObject("input") )
+	{
+		pcfParameters = data().getObject("input");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		setData("input", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a authentication information name and will result in inquiring
+		// only that queue and ignores all query parameters.
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("ProfileName", parameters[1]);
+		}
+		else
+		{
+			// Handle query parameters
+			if ( form().has("ProfileName") )
+			{
+				pcfParameters->set("ProfileName", form().get("ProfileName"));
+			}
+		}
+
+		if ( form().has("ObjectType") ) pcfParameters->set("ObjectType", form().get("ObjectType"));
+
+		if (form().has("GroupNames"))
+		{
+			Poco::JSON::Array::Ptr jsonGroupNames = new Poco::JSON::Array();
+			pcfParameters->set("GroupNames", jsonGroupNames);
+			for(Poco::Net::NameValueCollection::ConstIterator itGroupNames = form().find("GroupNames");
+				itGroupNames != form().end() && Poco::icompare(itGroupNames->first, "GroupNames") == 0;
+				++itGroupNames)
+			{
+				jsonGroupNames->add(itGroupNames->second);
+			}
+		}
+
+		if (form().has("PrincipalNames"))
+		{
+			Poco::JSON::Array::Ptr jsonPrincipalNames = new Poco::JSON::Array();
+			pcfParameters->set("PrincipalNames", jsonPrincipalNames);
+			for(Poco::Net::NameValueCollection::ConstIterator itPrincipalNames = form().find("PrincipalNames");
+				itPrincipalNames != form().end() && Poco::icompare(itPrincipalNames->first, "PrincipalNames") == 0;
+				++itPrincipalNames)
+			{
+				jsonPrincipalNames->add(itPrincipalNames->second);
+			}
+		}
+	}
+
+	AuthorityRecordRemove command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
+}
 
 } } // Namespace MQ::Web
