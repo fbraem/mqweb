@@ -20,6 +20,7 @@
 */
 #include "MQ/Web/AuthorityRecordController.h"
 #include "MQ/Web/AuthorityRecordInquire.h"
+#include "MQ/Web/AuthorityRecordSet.h"
 
 namespace MQ
 {
@@ -101,6 +102,101 @@ void AuthorityRecordController::inquire()
 	}
 
 	AuthorityRecordInquire command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
+}
+
+
+void AuthorityRecordController::set()
+{
+	if ( qmgr()->zos() )
+	{
+		// Authority records are not supported on z/OS
+		setResponseStatus(Poco::Net::HTTPResponse::HTTP_NOT_IMPLEMENTED, "/authrec/set not implemented for z/OS");
+		return;
+	}
+
+	Poco::JSON::Object::Ptr pcfParameters;
+
+	if ( data().has("input") && data().isObject("input") )
+	{
+		pcfParameters = data().getObject("input");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		setData("input", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a authentication information name and will result in inquiring
+		// only that queue and ignores all query parameters.
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("ProfileName", parameters[1]);
+		}
+		else
+		{
+			// Handle query parameters
+			if ( form().has("ProfileName") )
+			{
+				pcfParameters->set("ProfileName", form().get("ProfileName"));
+			}
+		}
+
+		if ( form().has("ObjectType") ) pcfParameters->set("ObjectType", form().get("ObjectType"));
+
+		Poco::JSON::Array::Ptr jsonAdd = new Poco::JSON::Array();
+		pcfParameters->set("AuthorityAdd", jsonAdd);
+		if ( form().has("AuthorityAdd") )
+		{
+			for(Poco::Net::NameValueCollection::ConstIterator itAuthority = form().find("AuthorityAdd");
+				itAuthority != form().end() && Poco::icompare(itAuthority->first, "AuthorityAdd") == 0;
+				++itAuthority)
+			{
+				jsonAdd->add(itAuthority->second);
+			}
+		}
+
+		Poco::JSON::Array::Ptr jsonRemove = new Poco::JSON::Array();
+		pcfParameters->set("AuthorityRemove", jsonRemove);
+		if ( form().has("AuthorityRemove") )
+		{
+			for(Poco::Net::NameValueCollection::ConstIterator itAuthority = form().find("AuthorityRemove");
+				itAuthority != form().end() && Poco::icompare(itAuthority->first, "AuthorityRemove") == 0;
+				++itAuthority)
+			{
+				jsonRemove->add(itAuthority->second);
+			}
+		}
+
+		if (form().has("GroupNames"))
+		{
+			Poco::JSON::Array::Ptr jsonGroupNames = new Poco::JSON::Array();
+			pcfParameters->set("GroupNames", jsonGroupNames);
+			for(Poco::Net::NameValueCollection::ConstIterator itGroupNames = form().find("GroupNames");
+				itGroupNames != form().end() && Poco::icompare(itGroupNames->first, "GroupNames") == 0;
+				++itGroupNames)
+			{
+				jsonGroupNames->add(itGroupNames->second);
+			}
+		}
+
+		if (form().has("PrincipalNames"))
+		{
+			Poco::JSON::Array::Ptr jsonPrincipalNames = new Poco::JSON::Array();
+			pcfParameters->set("PrincipalNames", jsonPrincipalNames);
+			for(Poco::Net::NameValueCollection::ConstIterator itPrincipalNames = form().find("PrincipalNames");
+				itPrincipalNames != form().end() && Poco::icompare(itPrincipalNames->first, "PrincipalNames") == 0;
+				++itPrincipalNames)
+			{
+				jsonPrincipalNames->add(itPrincipalNames->second);
+			}
+		}
+
+		if ( form().has("ServiceComponent") ) pcfParameters->set("ServiceComponent", form().get("ServiceComponent"));
+	}
+
+	AuthorityRecordSet command(*commandServer(), pcfParameters);
 	setData("data", command.execute());
 }
 

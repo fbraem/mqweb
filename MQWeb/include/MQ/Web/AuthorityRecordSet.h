@@ -18,49 +18,31 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef _MQWeb_AuthorityRecordController_h
-#define _MQWeb_AuthorityRecordController_h
+#ifndef _MQWeb_AuthorityRecordSet_H
+#define _MQWeb_AuthorityRecordSet_H
 
-#include "MQ/Web/MQController.h"
-#include "MQ/Web/MapInitializer.h"
+#include "MQ/Web/PCFSimpleCommand.h"
 
 namespace MQ {
 namespace Web {
 
-class AuthorityRecordController : public MQController
-	/// Controller that shows the status of queues
+class AuthorityRecordSet : public PCFSimpleCommand
+	/// The set authority record command.
 {
 public:
-	AuthorityRecordController();
+
+	AuthorityRecordSet(CommandServer& commandServer, Poco::JSON::Object::Ptr input);
 		/// Constructor
 
-	virtual ~AuthorityRecordController();
+	virtual ~AuthorityRecordSet();
 		/// Destructor
 
-	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
-		/// Returns all available actions
-
-	void inquire();
-		/// Action inquire. Inquire authority records and returns all data in JSON format.
-
-	void set();
-		/// Action set. Set authority records.
-
 private:
+
+	AuthorityRecordSet(const AuthorityRecordSet&);
 };
 
 
-inline const Controller::ActionMap& AuthorityRecordController::getActions() const
-{
-	static Controller::ActionMap actions
-		= MapInitializer<std::string, Controller::ActionFn>
-			("inquire", static_cast<ActionFn>(&AuthorityRecordController::inquire))
-			("set", static_cast<ActionFn>(&AuthorityRecordController::set))
-		;
-	return actions;
-}
+}} // Namespace MQ::Web
 
-
-} } // Namespace MQ::Web
-
-#endif // _MQWeb_AuthorityRecordController_h
+#endif // _MQWeb_AuthorityRecordSet_H
