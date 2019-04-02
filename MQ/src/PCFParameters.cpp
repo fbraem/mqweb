@@ -59,7 +59,7 @@ void PCFParameters::add(MQLONG parameter, const std::string& value)
 void PCFParameters::add(MQLONG parameter, MQLONG value)
 {
 	size_t pos =  _buffer.size();
-	_pointers.insert(std::make_pair(parameter, pos)); 
+	_pointers.insert(std::make_pair(parameter, pos));
 	_buffer.resize(_buffer.size() + MQCFIN_STRUC_LENGTH);
 	MQCFIN* pcfParam = (MQCFIN*) _buffer.data(pos);
 	pcfParam->Type        = MQCFT_INTEGER;
@@ -126,6 +126,36 @@ void PCFParameters::addFilter(MQLONG parameter, MQLONG op, MQLONG value)
 	pcfFilter->FilterValue       = value;
 }
 
+void PCFParameters::addStringList(MQLONG parameter, const std::vector<std::string>& list)
+{
+	MQLONG maxLength = 0;
+	for(std::vector<std::string>::const_iterator it = list.begin(); it != list.end(); ++it)
+	{
+		if (it->length() > maxLength)
+		{
+			maxLength = it->length();
+		}
+	}
+	size_t pos = _buffer.size();
+	int strucLength = ((MQCFSL_STRUC_LENGTH_FIXED + list.size() * maxLength * sizeof(MQCHAR)) / 4 + 1) * 4;
+	_pointers.insert(std::make_pair(parameter, pos));
+	_buffer.resize(_buffer.size() + strucLength);
+	MQCFSL *pcfStringList = (MQCFSL *) _buffer.data(pos);
+	pcfStringList->Count          = list.size();
+	pcfStringList->CodedCharSetId = MQCCSI_DEFAULT;
+	pcfStringList->Type           = MQCFT_STRING_LIST;
+	pcfStringList->StrucLength    = strucLength;
+	pcfStringList->Parameter      = parameter;
+	pcfStringList->StringLength   = maxLength;
+	MQCHAR* stringPos = pcfStringList->Strings;
+	for(std::vector<std::string>::const_iterator it = list.begin(); it != list.end(); ++it)
+	{
+		memset(stringPos, ' ', maxLength);
+		memcpy(stringPos, it->c_str(), it->length() < maxLength ? it->length() : maxLength);
+		stringPos += maxLength;
+	}
+}
+
 PCFParameters PCFParameters::getGroup(MQLONG parameter, size_t pos) const
 {
 	size_t realPos = 0;
@@ -133,7 +163,7 @@ PCFParameters PCFParameters::getGroup(MQLONG parameter, size_t pos) const
 	size_t i = 0;
 	for(ParameterPositionMap::const_iterator it = range.first; it != range.second; ++it, ++i)
 	{
-		if ( i == pos ) 
+		if ( i == pos )
 		{
 			realPos = it->second;
 			break;

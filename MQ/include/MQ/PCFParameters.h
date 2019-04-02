@@ -68,6 +68,9 @@ public:
 	void addFilter(MQLONG parameter, MQLONG op, MQLONG value);
 		/// Add a filter with a numeric value.
 
+	void addStringList(MQLONG parameter, const std::vector<std::string>& list);
+		/// Adds a String list
+
 	bool isByteString(MQLONG parameter) const;
 		/// Returns true when the value of the parameter is a byte string.
 

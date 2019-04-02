@@ -66,6 +66,9 @@ public:
 	void addFilter(MQLONG parameter, MQLONG op, MQLONG value);
 		/// Add a filter with a numeric value.
 
+	void addStringList(MQLONG parameter, const std::vector<std::string>& list);
+		/// Add a string list
+
 	const PCFParameters& getParameters() const;
 		/// Returns the parameters
 
@@ -108,7 +111,7 @@ private:
 
 	Message::Ptr _message;
 
-	
+
 	bool _zos;
 
 

@@ -92,13 +92,17 @@ void PCF::addParameterList(MQLONG parameter, MQLONG *values, unsigned int count)
 	incrementParameterCount();
 }
 
-
 void PCF::addFilter(MQLONG parameter, MQLONG op, const std::string& value)
 {
 	_parameters.addFilter(parameter, op, value);
 	incrementParameterCount();
 }
 
+void PCF::addStringList(MQLONG parameter, const std::vector<std::string>& list)
+{
+	_parameters.addStringList(parameter, list);
+	incrementParameterCount();
+}
 
 void PCF::addFilter(MQLONG parameter, MQLONG op, MQLONG value)
 {
