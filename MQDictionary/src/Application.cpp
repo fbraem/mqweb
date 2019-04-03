@@ -2890,10 +2890,18 @@ Dictionary serviceDictionary = Dictionary()
 ;
 
 Dictionary authenticationInformationDictionary = Dictionary()
+	(MQIA_ADOPT_CONTEXT, "AdoptContext", TextMapInitializer
+		(MQADPCTX_YES, "Yes")
+		(MQADPCTX_NO, "No")
+	)
 	(MQCA_ALTERATION_DATE)
 	(MQCA_ALTERATION_TIME)
 	(MQCA_AUTH_INFO_CONN_NAME, "AuthInfoConnName")
 	(MQCA_AUTH_INFO_DESC, "AuthInfoDesc")
+	(MQIA_AUTHENTICATION_METHOD, "AuthenticationMethod", TextMapInitializer
+		(MQAUTHENTICATE_OS, "OS")
+		(MQAUTHENTICATE_PAM, "PAM")
+	)
 	(MQCA_AUTH_INFO_NAME, "AuthInfoName")
 	(MQIA_AUTH_INFO_TYPE, "AuthInfoType", TextMapInitializer
 		(MQAIT_ALL, "All")
@@ -2902,10 +2910,46 @@ Dictionary authenticationInformationDictionary = Dictionary()
 		(MQAIT_IDPW_OS, "IDPW OS")
 		(MQAIT_IDPW_LDAP, "IDPW LDAP")
 	)
+	(MQIA_LDAP_AUTHORMD, "AuthorizationMethod", TextMapInitializer
+		(MQLDAP_AUTHORMD_OS, "AuthorMD OS")
+		(MQLDAP_AUTHORMD_SEARCHGRP, "AuthorMD SearchGRP")
+		(MQLDAP_AUTHORMD_SEARCHUSR, "AuthorMD SearchUSR")
+#ifdef MQLDAP_AUTHORMD_SRCHGRPSN
+		(MQLDAP_AUTHORMD_SRCHGRPSN, "AuthorMD SRCHGRPSN")
+#endif
+	)
+	(MQCA_LDAP_BASE_DN_GROUPS, "BaseDNGroup")
+	(MQIA_CHECK_CLIENT_BINDING, "CheckClient", TextMapInitializer
+		(MQCHK_NONE, "None")
+		(MQCHK_OPTIONAL, "Optional")
+		(MQCHK_REQUIRED, "Required")
+		(MQCHK_REQUIRED_ADMIN, "Required Admin")
+	)
+	(MQIA_CHECK_LOCAL_BINDING, "CheckLocal", TextMapInitializer
+		(MQCHK_NONE, "None")
+		(MQCHK_OPTIONAL, "Optional")
+		(MQCHK_REQUIRED, "Required")
+		(MQCHK_REQUIRED_ADMIN, "Required Admin")
+	)
+	(MQCA_LDAP_USER_OBJECT_CLASS, "Classuser")
+	(MQIA_AUTHENTICATION_FAIL_DELAY, "FailureDelay")
+	(MQCA_LDAP_FIND_GROUP_FIELD, "FindGroup")
+	(MQCA_LDAP_GROUP_ATTR_FIELD, "GroupField")
+	(MQIA_LDAP_NESTGRP, "GroupNesting", TextMapInitializer
+		(MQLDAP_NESTGRP_YES, "Yes")
+		(MQLDAP_NESTGRP_NO, "No")
+	)
 	(MQCA_LDAP_PASSWORD, "LDAPPassword")
 	(MQCA_LDAP_USER_NAME, "LDAPUserName")
 	(MQCA_AUTH_INFO_OCSP_URL, "OCSPResponderURL")
 	(MQIA_QSG_DISP)
+	(MQIA_LDAP_SECURE_COMM, "SecureComms", TextMapInitializer
+		(MQSECCOMM_YES, "Yes")
+		(MQSECCOMM_ANON, "Anon")
+		(MQSECCOMM_NO, "No")
+	)
+	(MQCA_LDAP_SHORT_USER_FIELD, "ShortUser")
+	(MQCA_LDAP_USER_ATTR_FIELD, "UserField")
 	// Extended Response
 	(MQBACF_RESPONSE_ID)
 	(MQCACF_RESPONSE_Q_MGR_NAME)
