@@ -18,49 +18,31 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef _MQWeb_AuthenticationInformationController_h
-#define _MQWeb_AuthenticationInformationController_h
+#ifndef _MQWeb_AuthenticationInformationCreate_H
+#define _MQWeb_AuthenticationInformationCreate_H
 
-#include "MQ/Web/MQController.h"
-#include "MQ/Web/MapInitializer.h"
+#include "MQ/Web/PCFReplaceCommand.h"
 
 namespace MQ {
 namespace Web {
 
-class AuthenticationInformationController : public MQController
-	/// Controller that shows the status of queues
+class AuthenticationInformationCreate : public PCFReplaceCommand
+	/// Create Authentication information
 {
 public:
-	AuthenticationInformationController();
+
+	AuthenticationInformationCreate(CommandServer& commandServer, Poco::JSON::Object::Ptr input, bool replace);
 		/// Constructor
 
-	virtual ~AuthenticationInformationController();
+	virtual ~AuthenticationInformationCreate();
 		/// Destructor
 
-	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
-		/// Returns all available actions
-
-	void create();
-		/// Action create
-
-	void inquire();
-		/// Action inquire. Inquire authentication information objects and returns all data in JSON format.
-
 private:
+
+	AuthenticationInformationCreate(const AuthenticationInformationCreate&);
 };
 
 
-inline const Controller::ActionMap& AuthenticationInformationController::getActions() const
-{
-	static Controller::ActionMap actions
-		= MapInitializer<std::string, Controller::ActionFn>
-			("create", static_cast<ActionFn>(&AuthenticationInformationController::create))
-			("inquire", static_cast<ActionFn>(&AuthenticationInformationController::inquire))
-		;
-	return actions;
-}
+}} // Namespace MQ::Web
 
-
-} } // Namespace MQ::Web
-
-#endif // _MQWeb_AuthenticationInformationController_h
+#endif // _MQWeb_AuthenticationInformationCreate_H

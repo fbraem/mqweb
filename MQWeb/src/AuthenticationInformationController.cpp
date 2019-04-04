@@ -20,6 +20,7 @@
 */
 #include "MQ/Web/AuthenticationInformationController.h"
 #include "MQ/Web/AuthenticationInformationInquire.h"
+#include "MQ/Web/AuthenticationInformationCreate.h"
 
 namespace MQ
 {
@@ -34,6 +35,40 @@ AuthenticationInformationController::AuthenticationInformationController() : MQC
 
 AuthenticationInformationController::~AuthenticationInformationController()
 {
+}
+
+
+void AuthenticationInformationController::create()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
+
+	if ( data().has("input") && data().isObject("input") )
+	{
+		pcfParameters = data().getObject("input");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		setData("input", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		if (parameters.size() > 1)
+		{
+			pcfParameters->set("AuthInfoName", parameters[1]);
+		}
+
+		// Copy all query parameters to PCF, except AuthInfoName if it is already set on the URI
+		for (Poco::Net::NameValueCollection::ConstIterator it = form().begin(); it != form().end(); ++it)
+		{
+			if (Poco::icompare(it->first, "Replace") == 0 ) continue;
+			if (parameters.size() > 1 && Poco::icompare(it->first, "AuthInfoName") == 0) continue;
+
+			pcfParameters->set(it->first, it->second);
+		}
+	}
+
+	AuthenticationInformationCreate command(*commandServer(), pcfParameters, form().has("replace"));
+	setData("data", command.execute());
 }
 
 
