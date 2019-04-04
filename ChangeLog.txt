@@ -5,7 +5,7 @@
   - Put message is documented
   - Add set authrec
   - Add delete authrec
-  - Add create authinfo
+  - Add create/change/delete authinfo
 
 0.1.2
   - Add reset qmgr

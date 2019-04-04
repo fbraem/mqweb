@@ -21,6 +21,8 @@
 #include "MQ/Web/AuthenticationInformationController.h"
 #include "MQ/Web/AuthenticationInformationInquire.h"
 #include "MQ/Web/AuthenticationInformationCreate.h"
+#include "MQ/Web/AuthenticationInformationChange.h"
+#include "MQ/Web/AuthenticationInformationRemove.h"
 
 namespace MQ
 {
@@ -35,6 +37,40 @@ AuthenticationInformationController::AuthenticationInformationController() : MQC
 
 AuthenticationInformationController::~AuthenticationInformationController()
 {
+}
+
+
+void AuthenticationInformationController::change()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
+
+	if ( data().has("input") && data().isObject("input") )
+	{
+		pcfParameters = data().getObject("input");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		setData("input", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		if (parameters.size() > 1)
+		{
+			pcfParameters->set("AuthInfoName", parameters[1]);
+		}
+
+		// Copy all query parameters to PCF, except AuthInfoName if it is already set on the URI
+		for (Poco::Net::NameValueCollection::ConstIterator it = form().begin(); it != form().end(); ++it)
+		{
+			if (Poco::icompare(it->first, "Replace") == 0 ) continue;
+			if (parameters.size() > 1 && Poco::icompare(it->first, "AuthInfoName") == 0) continue;
+
+			pcfParameters->set(it->first, it->second);
+		}
+	}
+
+	AuthenticationInformationChange command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
 }
 
 
@@ -130,6 +166,48 @@ void AuthenticationInformationController::inquire()
 	}
 
 	AuthenticationInformationInquire command(*commandServer(), pcfParameters);
+	setData("data", command.execute());
+}
+
+
+void AuthenticationInformationController::remove()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
+
+	if ( data().has("input") && data().isObject("input") )
+	{
+		pcfParameters = data().getObject("input");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		setData("input", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		// First parameter is queuemanager
+		// Second parameter can be a authentication information name (generic name is allowed)
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("AuthInfoName", parameters[1]);
+		}
+		else
+		{
+			// Handle query parameters
+			pcfParameters->set("AuthInfoName", form().get("AuthInfoName", "*"));
+		}
+
+		if ( form().has("CommandScope") )
+		{
+			pcfParameters->set("CommandScope", form().get("CommandScope"));
+		}
+
+		if ( form().has("QSGDisposition") )
+		{
+			pcfParameters->set("QSGDisposition", form().get("QSGDisposition"));
+		}
+	}
+
+	AuthenticationInformationRemove command(*commandServer(), pcfParameters);
 	setData("data", command.execute());
 }
 

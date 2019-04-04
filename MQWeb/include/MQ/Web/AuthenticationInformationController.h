@@ -40,11 +40,17 @@ public:
 	virtual const std::map<std::string, Controller::ActionFn>& getActions() const;
 		/// Returns all available actions
 
+	void change();
+		/// Action change
+
 	void create();
 		/// Action create
 
 	void inquire();
 		/// Action inquire. Inquire authentication information objects and returns all data in JSON format.
+
+	void remove();
+		/// Action delete.
 
 private:
 };
@@ -54,7 +60,9 @@ inline const Controller::ActionMap& AuthenticationInformationController::getActi
 {
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
+			("change", static_cast<ActionFn>(&AuthenticationInformationController::change))
 			("create", static_cast<ActionFn>(&AuthenticationInformationController::create))
+			("delete", static_cast<ActionFn>(&AuthenticationInformationController::remove))
 			("inquire", static_cast<ActionFn>(&AuthenticationInformationController::inquire))
 		;
 	return actions;
