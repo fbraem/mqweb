@@ -38,7 +38,7 @@ public:
 	virtual ~PCFSimpleCommand();
 		/// Destructor
 
-	Poco::JSON::Array::Ptr execute();
+	virtual Poco::JSON::Array::Ptr execute();
 		/// Sends the PCF command to the command server.
 		/// Because MQ doesn't return any data except when there is
 		/// an error, an empty array is returned. An MQException
