@@ -82,6 +82,9 @@ void Controller::handle(const std::vector<std::string>& parameters, Poco::Net::H
 	std::string contentType = request.getContentType();
 	if ( contentType == "application/json" )
 	{
+		Poco::URI uri(request.getURI());
+		_form.read(uri.getQuery());
+
 		Poco::JSON::Parser parser;
 		try
 		{
