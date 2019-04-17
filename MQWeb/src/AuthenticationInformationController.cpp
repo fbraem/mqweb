@@ -23,6 +23,7 @@
 #include "MQ/Web/AuthenticationInformationCreate.h"
 #include "MQ/Web/AuthenticationInformationChange.h"
 #include "MQ/Web/AuthenticationInformationRemove.h"
+#include "MQ/Web/AuthenticationInformationCopy.h"
 
 namespace MQ
 {
@@ -73,6 +74,41 @@ void AuthenticationInformationController::change()
 	setData("data", command.execute());
 }
 
+void AuthenticationInformationController::copy()
+{
+	Poco::JSON::Object::Ptr pcfParameters;
+
+	if ( data().has("input") && data().isObject("input") )
+	{
+		pcfParameters = data().getObject("input");
+	}
+	else
+	{
+		pcfParameters = new Poco::JSON::Object();
+		setData("input", pcfParameters);
+
+		std::vector<std::string> parameters = getParameters();
+		if ( parameters.size() > 2 )
+		{
+			pcfParameters->set("FromAuthInfoName", parameters[2]);
+		}
+		if ( parameters.size() > 1 )
+		{
+			pcfParameters->set("ToAuthInfoName", parameters[1]);
+		}
+
+		// Copy all query parameters to PCF, except AuthInfoName if it is already set on the URI
+		for (Poco::Net::NameValueCollection::ConstIterator it = form().begin(); it != form().end(); ++it)
+		{
+			if (Poco::icompare(it->first, "Replace") == 0 ) continue;
+
+			pcfParameters->set(it->first, it->second);
+		}
+	}
+
+	AuthenticationInformationCopy command(*commandServer(), pcfParameters, form().has("replace"));
+	setData("data", command.execute());
+}
 
 void AuthenticationInformationController::create()
 {

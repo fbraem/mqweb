@@ -43,6 +43,9 @@ public:
 	void change();
 		/// Action change
 
+	void copy();
+		/// Action copy
+
 	void create();
 		/// Action create
 
@@ -61,6 +64,7 @@ inline const Controller::ActionMap& AuthenticationInformationController::getActi
 	static Controller::ActionMap actions
 		= MapInitializer<std::string, Controller::ActionFn>
 			("change", static_cast<ActionFn>(&AuthenticationInformationController::change))
+			("copy", static_cast<ActionFn>(&AuthenticationInformationController::copy))
 			("create", static_cast<ActionFn>(&AuthenticationInformationController::create))
 			("delete", static_cast<ActionFn>(&AuthenticationInformationController::remove))
 			("inquire", static_cast<ActionFn>(&AuthenticationInformationController::inquire))
